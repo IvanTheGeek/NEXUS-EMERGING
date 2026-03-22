@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea99-7b9f-94c8-28cfab3b0f93"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+conversation_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+message_id = "019d174e-ea99-7e3a-b8e9-856d1a3b2255"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-14T15:44:03.910443Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "b13aaea4b7c936b0b5ca94961fe42e2a70bbca6839e3dd953da9245e1e8087a9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ced04-9e5b-7788-a15a-52fc4b237d3c"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+message_native_id = "019ced04-9e5b-7788-a15a-52fc4b237d3c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ced04-9e5b-7788-a15a-52fc4b237d3c"
+role = "assistant"
+sequence_hint = 10
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-14T15:43:50.765075Z\",\"stop_timestamp\":\"2026-03-14T15:43:50.765075Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-14T15:43:50.817169Z\",\"stop_timestamp\":\"2026-03-14T15:43:53.187628Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to add \\u0022motivation\\u0022 to the vocabulary. Let me think about where it fits precisely relative to Intent, Trigger, Action, and the Agency dimension.\\n\\nMotivation vs Intent: Intent is the goal - what you\\u0027re trying to accomplish. Motivation is the *why behind the why* - the deeper driving force. Intent is more specific and proximate; motivation is more fundamental and persistent.\\n\\nLet me think carefully about this placement and definition.\",\"summaries\":[{\"summary\":\"Distinguishing motivation from intent and agency.\"},{\"summary\":\"Differentiated motivation from intent within conceptual framework.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Motivation** — the underlying force or need that generates Intent. Where Intent is specific and proximate (\"I want to record this expense\"), Motivation is persistent and fundamental (\"I don't want to lose money I'm owed at tax time\").\n\n- *Examples:* A driver's motivation is financial security and compliance peace of mind — that generates the intent to document every laundry run. An Agent's motivation is encoded in its goal function. A consultant's motivation shapes which problems they even notice.\n- *Scope:* Deeper than Intent — often stable across many contexts and sessions\n- *Key distinction:* Motivation persists. Intent is situational. The same Motivation generates many Intents over time. If you only capture Intent, you lose the *why behind the why* — and that's where design goes wrong. Features that serve the stated Intent but frustrate the underlying Motivation fail in use.\n- *Relation to existing terms:* Motivation → Intent → Action → Event is now the complete human causal chain, paralleling Trigger → Action → Event on the mechanical side.\n\n---\n\n## Updated Agency Dimension\n\n```\nAGENCY DIMENSION\n─────────────────────────────────────────\nRole         defined function within a system\nActor        entity exercising agency\n  Agent      autonomous Actor with goals and a principal\nMotivation   persistent underlying force generating intent\nIntent       specific goal driving a particular action\n```\n\n---\n\n## The Two Causal Chains Now Sit Cleanly Side by Side\n\n```\nCAUSAL CHAINS\n─────────────────────────────────────────\nHuman:     Motivation → Intent → Action → Event\nMechanical:              Trigger → Action → Event\n```\n\nThis is a meaningful distinction. Human-initiated actions have a motivational depth that mechanical triggers don't. When designing for Actors, you design for Motivation. When designing for Agents and automations, you design for Trigger conditions. Getting these confused — treating human users like trigger-response machines — is a root cause of bad UX."
+

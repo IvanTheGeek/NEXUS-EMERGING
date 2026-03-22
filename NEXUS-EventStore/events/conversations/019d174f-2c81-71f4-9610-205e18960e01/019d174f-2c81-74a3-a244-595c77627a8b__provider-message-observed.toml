@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c81-74a3-a244-595c77627a8b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-7de7-97c8-26d25ee62b90"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T15:00:01.556545Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "9fbd85b6d6d5ee18d9c411a865527e84e6fa114706162eb0c7461cb3ca270234"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ef566488-bfda-4e0d-a9af-ca522435e2fb"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "ef566488-bfda-4e0d-a9af-ca522435e2fb"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ef566488-bfda-4e0d-a9af-ca522435e2fb"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 104
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — because once you start thinking of the system as a **graph**, the Event Model page stops being a random whiteboard and becomes a **structured layout of the graph**. The trick is to organize it so the graph remains readable even when it grows to **hundreds of events**.\n\nThis is something teams run into quickly when practicing **entity[\"software_methodology\",\"Event Modeling\",\"software design methodology\"]**.\n\nI'll show you the structure that scales well and also fits your **Nexus / Paths / emIDE** thinking.\n\n---\n\n# The Core Layout Principle\n\nEvents are arranged **left → right in time**.\n\nSlices stack **vertically**.\n\nSo the event model becomes something like a **railway system**.\n\n```\nTIME →\n```\n\n---\n\n# The Five Horizontal Lanes\n\nEven if you don’t draw arrows, the lanes keep the model readable.\n\nTop → Bottom structure:\n\n```text\nExternal Systems\nUI\nCommands\nEvents\nProjections\nUI Screens\n```\n\nIn practice you often collapse it to the core five.\n\n```\nUI\nCommands\nEvents\nProjections\nUI Screens\n```\n\n---\n\n# Visual Example\n\nLaundryLog simplified:\n\n```\nUI          [Start Button]\n\nCOMMAND     [StartLaundry]\n\nEVENT       [LaundryStarted]───[WashCompleted]───[DryCompleted]\n\nPROJECTION                      [LaundryStatusView]\n\nUI SCREEN                       [LaundryLogScreen]\n```\n\nEven without arrows, alignment tells you relationships.\n\n---\n\n# Why This Scales\n\nBecause events remain the **spine of the system**.\n\nEverything else references them.\n\n```\nCommand → Event → Projection → UI\n```\n\nEvents are the **central rail line**.\n\n---\n\n# The Event Spine\n\nPlace **events in a straight horizontal line**.\n\nExample:\n\n```\nLaundryStarted ─ WashCompleted ─ DryCompleted ─ LaundryLogged\n```\n\nWhen systems grow, this might be:\n\n```\nUserRegistered ─ EmailVerified ─ AccountActivated ─ SubscriptionStarted\n```\n\nThe key rule:\n\n**Events are never stacked vertically unless they occur at the same time boundary.**\n\n---\n\n# Vertical Stacking = Alternate Outcomes\n\nBranching outcomes stack vertically.\n\nExample:\n\n```\nLaundryStarted\n      │\n      ├─ LaundryCanceled\n      │\n      └─ WashCompleted\n```\n\nVisually:\n\n```\nLaundryStarted\n      │\n ┌────┴─────┐\nCanceled  WashCompleted\n```\n\nThis keeps the **timeline clean**.\n\n---\n\n# Commands Sit Above Their Event\n\nCommands should always sit **directly above the event they produce**.\n\nExample:\n\n```\nCOMMAND     StartLaundry\nEVENT       LaundryStarted\n```\n\nYou immediately know:\n\n```\nStartLaundry → LaundryStarted\n```\n\nNo arrow required.\n\n---\n\n# Projections Sit Below the Events They Consume\n\nExample:\n\n```\nEVENTS       LaundryStarted ─ WashCompleted ─ DryCompleted\n\nPROJECTION             LaundryStatusView\n```\n\nThis implies:\n\n```\nLaundryStatusView depends on those events\n```\n\n---\n\n# UI Screens Sit Below Projections\n\nExample:\n\n```\nPROJECTION     LaundryStatusView\nUI SCREEN      LaundryLogScreen\n```\n\nWhich implies:\n\n```\nProjection → UI state\n```\n\n---\n\n# What This Looks Like in Figma\n\nOn your **Event Model page**, you would structure rows like this:\n\n```\nRow 1   UI Triggers\nRow 2   Commands\nRow 3   Events\nRow 4   Projections\nRow 5   UI Screens\n```\n\nEach row becomes a **Figma frame lane**.\n\nExample layout:\n\n```\n---------------------------------------------------------\nUI           [Start Laundry Button]\n\nCOMMAND      [StartLaundry]\n\nEVENT        [LaundryStarted]─[WashCompleted]─[DryCompleted]\n\nPROJECTION                    [LaundryStatusView]\n\nUI SCREEN                     [LaundryLogScreen]\n---------------------------------------------------------\n```\n\n---\n\n# Handling Hundreds of Events\n\nThe trick is **domain segmentation**.\n\nInstead of one giant event line, group them by **bounded context / feature**.\n\nExample:\n\n```\nLaundry Cycle\n──────────────\nLaundryStarted\nWashCompleted\nDryCompleted\nLaundryLogged\n\n\nMachine Maintenance\n───────────────────\nMachineErrorDetected\nMaintenanceRequested\nMaintenanceCompleted\n```\n\nThese become **separate horizontal clusters**.\n\n---\n\n# The Secret Trick (Most Teams Miss This)\n\nUse **event epochs**.\n\nAn epoch is a **phase of the system lifecycle**.\n\nExample:\n\n```\nLaundry Creation\nLaundry Running\nLaundry Completion\n```\n\nVisually:\n\n```\n| Creation | Running | Completion |\n\nLaundryStarted ─ WashCompleted ─ DryCompleted ─ LaundryLogged\n```\n\nThis prevents models from becoming spaghetti.\n\n---\n\n# Where Paths Fit\n\nPaths become **overlays on the graph**.\n\nExample path:\n\n```\nNormalLaundryFlow\n\nStartLaundry\n→ LaundryStarted\n→ WashCompleted\n→ DryCompleted\n→ LaundryLogged\n```\n\nIn emViewer, this path could simply **highlight nodes in the graph**.\n\n---\n\n# The Powerful Realization\n\nYour Event Model page in Figma is actually just a **visual projection of the system graph**.\n\nLater, the emIDE could store something like:\n\n```\nnodes:\n  - StartLaundry (command)\n  - LaundryStarted (event)\n  - LaundryStatusView (projection)\n\nedges:\n  - StartLaundry → LaundryStarted\n  - LaundryStarted → LaundryStatusView\n```\n\nFigma becomes the **visual editing surface**.\n\n---\n\n# One Important Tip for Your Figma Setup\n\nCreate **five horizontal guide frames**.\n\nName them exactly:\n\n```\nUI\nCommands\nEvents\nProjections\nUI Screens\n```\n\nThen drop nodes inside them.\n\nThis keeps the structure consistent even as the model grows.\n\n---\n\n# Why This Matters for Nexus\n\nOnce the model is structured like this, an emIDE could:\n\n• parse the graph  \n• validate slices  \n• simulate paths  \n• generate code  \n• generate UI wiring  \n\nAll from the same artifact.\n\nWhich matches your statement earlier:\n\n> The event model becomes the authoritative system spec.\n\n---\n\nIf you'd like, I can also show you something that might be **the most important design decision for Nexus**:\n\n**How to represent Paths so they don’t explode combinatorially as the system grows.**\n\nThis is a problem most scenario systems run into, and your idea can avoid it if structured correctly."
+

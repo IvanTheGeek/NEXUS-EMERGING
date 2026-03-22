@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cd6-7536-ab4d-faf96fa16eea"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+conversation_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+message_id = "019d174f-2cd6-790d-8acb-2b620a9dec81"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T21:57:40.358416Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "93f3ddac96fd2fad6fa0b95ba4de1d8229950bafd9e44ddd0bd6fc27389766d9"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "80aee1e9-4fd7-4ed8-bb0d-ad2ab0203d64"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+message_native_id = "80aee1e9-4fd7-4ed8-bb0d-ad2ab0203d64"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "80aee1e9-4fd7-4ed8-bb0d-ad2ab0203d64"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 61
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good question—this is where SignalR gets really practical.\n\n## 🧠 Short answer\n\nSignalR doesn’t just use one transport. It **automatically falls back through several “modes”** depending on what the client and server support.\n\n---\n\n# 🔄 SignalR transport fallback order\n\n### 1️⃣ WebSockets (best, preferred)\nimage_group{\"aspect_ratio\":\"16:9\",\"query\":[\"websocket full duplex connection diagram\",\"signalr websocket architecture client server\",\"real time websocket communication flow diagram\",\"websocket persistent connection illustration\"],\"num_per_query\":1}\n\n- Full duplex (client ↔ server at same time)\n- Persistent connection\n- Lowest latency\n\n👉 This is what you want in most cases\n\n---\n\n### 2️⃣ Server-Sent Events (SSE)\nimage_group{\"aspect_ratio\":\"16:9\",\"query\":[\"server sent events sse diagram http streaming client server\",\"sse one way communication flow diagram\",\"event stream http connection browser server\",\"sse vs websocket diagram\"],\"num_per_query\":1}\n\n- Server → client only (one-way)\n- Uses HTTP streaming\n- Still near real-time\n\n👉 SignalR simulates two-way by combining with HTTP calls\n\n---\n\n### 3️⃣ Long Polling (fallback of last resort)\nimage_group{\"aspect_ratio\":\"16:9\",\"query\":[\"long polling http diagram repeated requests client server\",\"signalr long polling flow diagram\",\"http polling loop architecture diagram\",\"long polling request response cycle illustration\"],\"num_per_query\":1}\n\n- Client repeatedly asks:\n  “Any updates?”\n- Server holds request open until data available\n\n👉 Works almost everywhere, but:\n- higher latency\n- more overhead\n\n---\n\n# ⚙️ How fallback works\n\nSignalR does this automatically:\n\n```text\nTry WebSockets\n   ↓ (if not available)\nTry Server-Sent Events\n   ↓\nTry Long Polling\n```\n\nYou don’t usually have to configure anything.\n\n---\n\n# 🧠 What determines which one is used?\n\n### Depends on:\n\n- Browser support\n- Server support\n- Network restrictions (proxies, firewalls)\n- Hosting environment\n\n---\n\n## Examples\n\n### Modern browser + normal network\n👉 WebSockets\n\n---\n\n### Corporate proxy blocking WebSockets\n👉 Falls back to SSE or Long Polling\n\n---\n\n### Very restricted environments\n👉 Long Polling\n\n---\n\n# ⚠️ WASM context (your earlier question)\n\nIn a **Blazor WASM app**:\n\n- SignalR client runs in browser\n- Uses browser networking stack\n\n👉 So:\n- WebSockets usually work\n- But fallback still applies automatically\n\n---\n\n# 🔧 Can you force a mode?\n\nYes, if needed:\n\n```csharp\n.WithUrl(\"/hub\", options =>\n{\n    options.Transports = HttpTransportType.WebSockets;\n})\n```\n\n👉 But usually you let SignalR decide\n\n---\n\n# 🧬 In your NEXUS framing\n\nThink of it like:\n\n- **SignalR = communication edge**\n- **Transport = implementation detail (lens)**\n\n```text\nEvent Stream\n     ↓\nSignalR\n     ↓\n[ WebSocket | SSE | LongPolling ]\n```\n\n👉 Same logical connection, different physical realization\n\n---\n\n# 🔥 Practical takeaway\n\n- You design for **real-time messaging**\n- SignalR guarantees **best available transport**\n\nSo your system:\n\n- behaves the same logically\n- adapts to environment automatically\n\n---\n\n# 🧾 Bottom line\n\n- ✅ WebSockets (best)\n- ✅ Server-Sent Events (fallback)\n- ✅ Long Polling (last resort)\n- 🔄 Automatic fallback handled by SignalR\n\n---\n\nIf you want next step:\n\n👉 I can show how to design your event stream so it remains **idempotent + replayable**, which makes these transport differences almost irrelevant (this is where your graph model shines)."
+

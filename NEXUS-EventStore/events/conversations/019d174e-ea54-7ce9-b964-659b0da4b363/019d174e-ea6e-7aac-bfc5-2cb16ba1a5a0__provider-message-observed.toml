@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea6e-7aac-bfc5-2cb16ba1a5a0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-77ae-a5e1-bd6d3772f703"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T01:08:22.02716Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "a04256c450a70a710df9a176f24d093678e3d515b74d8d97d846b0116c5d4e78"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac16-5085-7615-944f-092228fb11d8"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac16-5085-7615-944f-092228fb11d8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac16-5085-7615-944f-092228fb11d8"
+role = "assistant"
+sequence_hint = 379
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-02T01:07:53.066078Z\",\"stop_timestamp\":\"2026-03-02T01:07:53.066078Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-02T01:07:53.114266Z\",\"stop_timestamp\":\"2026-03-02T01:07:53.406971Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Next item on the checklist is \\u0060Paths as first-class artifacts\\u0060.\",\"summaries\":[{\"summary\":\"Thinking about clarifying the user\\u0027s next request or task.\"},{\"summary\":\"Identified next checklist item to address.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Paths as first-class artifacts`\n**Type:** Wiki\n\n```markdown\nA path is a named, purposeful journey through the \nEvent Model from a specific actor's perspective. \nPaths are not informal descriptions or user stories \n— they are typed design artifacts that exist in \nLOGOS, are linked to the Event Model elements they \ntraverse, and carry their own lifecycle.\n\n## What a Path Is\n\nA path traces a specific actor's journey through \nthe system to accomplish a specific goal. It is a \nnamed sequence of slices — command slices and \nprojection slices — that together represent a \ncomplete, meaningful interaction.\n\nA path has:\n\n- **A name** — meaningful to the domain. Not \n  \"user flow 3\" but \"Driver submits monthly \n  expense report\" or \"Admin reviews flagged \n  entry.\"\n- **An actor** — the swim lane persona whose \n  journey this is. The path belongs to that \n  actor.\n- **A goal** — what the actor is trying to \n  accomplish. The path is complete when the \n  goal is achieved or definitively not achieved.\n- **A sequence of slices** — the specific command \n  and projection slices traversed, in order, to \n  move from start to goal.\n- **A status** — paths have a lifecycle. A path \n  can be identified, modeled, specified, \n  implemented, and verified.\n\n## Why Paths Are First-Class\n\nIn conventional Event Modeling, paths are implicit. \nThe Event Model shows the slices. A reader infers \nthe journeys by tracing through the timeline. The \njourneys are not named, not typed, not tracked — \nthey exist only as understanding in someone's head.\n\nNEXUS makes paths explicit because:\n\n**Intent becomes traceable.** A named path connects \na human goal to the specific slices that serve it. \nSix months later, the question \"why does this slice \nexist?\" has an answer — it serves this path, which \nserves this actor trying to accomplish this goal.\n\n**Gaps become visible.** If a path cannot be \ncompleted because a slice is missing, that gap is \na named, findable gap — not an unnamed hole \ndiscovered during implementation or testing.\n\n**Specs attach to paths.** A Spec topic in LOGOS \nis linked to the path it implements. The path is \nthe unit that connects design to implementation. \nThe spec is not floating — it belongs to a path.\n\n**Testing has a target.** A path is a testable \nunit. Does this actor, starting here, following \nthese slices, reach this goal? Path-based testing \nis behavioral testing at the right level of \nabstraction.\n\n## Paths and Bug Tracing\n\nPaths enable a capability that transforms debugging: \nexact reproduction through path playback.\n\nWhen a user experiences an issue, their actual \nevent sequence — the literal path they took through \nthe system — is the bug report. Not a description \nof what happened, not a screenshot, not a \nreconstruction from logs. The actual sequence of \nevents the system recorded as they traversed it.\n\nA path viewer replays that sequence event by event. \nThe developer observes exactly what happened — \nwhich command produced which event, which projection \nconsumed which events, which state the UI derived. \nThe exact failure point is observable, not inferred.\n\nThis requires the user's consent — it is their \nevent data and they share it willingly. With consent, \nthe developer loads the path and watches it play. \nWithout reconstruction. Without archaeology.\n\nCross-user pattern analysis extends this further. \nMultiple users experiencing the same issue will \nhave paths that converge at the same failure point \neven if they arrived there differently. Analyzing \npaths across users reveals systemic issues that \nindividual bug reports obscure.\n\nThe bug, once found, becomes a documented path in \nLOGOS — linked to the failure point, linked to the \nfix, permanently part of the knowledge base.\n\n## Path Lifecycle\n\nA path moves through states:\n\n**Identified** — the path is named and its actor \nand goal are defined. The specific slices it \ntraverses may not yet be fully modeled.\n\n**Modeled** — the path is traced through the Event \nModel. Every slice it requires is identified. Gaps \nare visible.\n\n**Specified** — the slices the path requires have \nSpec topics in LOGOS. The path is ready for \nimplementation.\n\n**Implemented** — the slices the path requires are \nbuilt. The path can be traversed in the running \nsystem.\n\n**Verified** — the path has been tested end to end. \nThe actor can accomplish the goal.\n\n## Paths in LOGOS\n\nEach path is a topic in the relevant project \ncategory in LOGOS. The topic contains the path \ndefinition, links to the Event Model elements it \ntraverses, links to the Spec topics for each slice, \nand status. The path topic is the thread that \nconnects design intent to implementation reality.\n\n*See: Specs and the design-before-implementation \ndiscipline.*\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [The Command / Event / Projection triad](https://talkyard.ivanthegeek.com/-86/the-command-event-projection-triad)\n- [Slice patterns — the two fundamentals and how they compose](https://talkyard.ivanthegeek.com/-88/slice-patterns-the-two-fundamentals-and-how-they-compose)\n- NEXUS → Specs and the design-before-implementation discipline\n- NEXUS → Insights → The Event Model viewer and path playback for debugging\n```\n\n---\n\nNote: I used -85, -86, -88 for previous wikis — verify before posting. Create and let me know when done."
+

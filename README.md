@@ -41,7 +41,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 
 ## Current Status
 
-The project is in architecture and scaffolding mode.
+The project is past pure scaffolding and into first working ingestion.
 
 Already established:
 
@@ -50,6 +50,8 @@ Already established:
 - Provider exports are acquisition inputs, not absolute truth.
 - Raw artifacts must be preserved.
 - Canonical history should prefer `Observed` language at the ingestion layer.
+- A first working CLI importer exists for ChatGPT and Claude full-export zips.
+- Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 
 Not yet established:
 

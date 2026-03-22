@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cc6-788a-9f0d-be68d9e081cd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+conversation_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+message_id = "019d174f-2cc6-7c6c-abb2-2c7386e91723"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T01:35:52.1061398Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "2266a5bed37c647de0e615c9a2041932ecce02b32ac7dc08a612cec1cd244d48"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "807a18c7-a34a-438a-916f-22b5d43b0622"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+message_native_id = "807a18c7-a34a-438a-916f-22b5d43b0622"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "807a18c7-a34a-438a-916f-22b5d43b0622"
+role = "assistant"
+model_name = "gpt-5-mini"
+sequence_hint = 82
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect — let’s make a clear **graph (or “gravel”) diagram** showing how a transformer produces events in one graph and propagates them across multiple graphs via triggers/signals. I’ll explain each part visually.  \n\n---\n\n## Cross-Graph Transformer Flow Diagram\n\n```text\n                ┌─────────────────────┐\n                │      UI Command      │\n                │ SubmitTransaction    │\n                └─────────┬───────────┘\n                          │\n                          ▼\n                ┌─────────────────────┐\n                │ Command Transformer │\n                │  (applies rules,   │\n                │   produces events) │\n                └─────────┬───────────┘\n                          │\n        ┌─────────────────┼─────────────────┐\n        │                 │                 │\n        ▼                 ▼                 ▼\n┌───────────────┐  ┌───────────────┐  ┌───────────────┐\n│ Event Graph    │  │ Projection    │  │ External /     │\n│ TransactionSubmitted │ Transformer │  │ Integration    │\n│ Node added     │  │ updates nodes │  │ Graph Transformer │\n│               │  │ in Projection│  │ sync nodes     │\n└───────────────┘  └───────────────┘  └───────────────┘\n        │                 │                 │\n        ▼                 ▼                 ▼\n   Graph edges        Updated UI       External System\n   show provenance    or reports       receives event\n```\n\n---\n\n### How to Read This Diagram\n\n1. **UI Command → Command Transformer**\n   - User intent (click, submit) is represented as a **command node**.  \n   - Transformer takes **current relevant state** (from event nodes in graph) and **produces events**.\n\n2. **Event Node Added to Event Graph**\n   - The canonical event node (`TransactionSubmitted`) is added to the **Event Graph**.  \n   - This is the **single source of truth** for this action.\n\n3. **Triggers / Signals → Other Graphs**\n   - Event node has **trigger edges** to downstream transformers:  \n     - **Projection Transformer** updates the **UI / reporting graph**.  \n     - **Integration Transformer** updates an **external system graph**.  \n\n4. **Graph Provenance**\n   - Each edge carries **causal information**: which command or prior event caused this node to appear.  \n   - Allows **traceability** across graphs.\n\n5. **Symmetry**\n   - Command transformers and projection transformers are both just **graph transformers**.  \n   - They differ in **input/output nodes** but use the same mechanics (edges, triggers, signals).\n\n---\n\n### Key Points\n\n- **Graphs remain separate** but are causally linked.  \n- **Transformers** are pure functions operating on nodes and edges.  \n- **Triggers/signals** propagate changes across graph boundaries instead of direct mutation.  \n- **Provenance is explicit**: every node can be traced back to its origin.  \n\n---\n\nIf you want, I can also **draw a more detailed “gravel” version showing selective lazy loading of prior events**, where the transformer only pulls in relevant nodes/edges from the graph instead of the whole history. That would tie together your **incremental graph growth idea** with cross-graph propagation.  \n\nDo you want me to do that?"
+

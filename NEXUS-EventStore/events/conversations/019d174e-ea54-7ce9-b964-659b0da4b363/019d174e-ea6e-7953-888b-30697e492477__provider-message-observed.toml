@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea6e-7953-888b-30697e492477"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-7dfc-b46d-7e9859ffbeeb"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T01:27:59.716699Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "26b25d56ba0bdd3483b33893e028fe635f5481bc8198f2ad2d0d669db0c72567"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac28-31e8-7040-a5b3-841c436739d1"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac28-31e8-7040-a5b3-841c436739d1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac28-31e8-7040-a5b3-841c436739d1"
+role = "assistant"
+sequence_hint = 383
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-02T01:27:25.654641Z\",\"stop_timestamp\":\"2026-03-02T01:27:25.654641Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-02T01:27:25.654641Z\",\"stop_timestamp\":\"2026-03-02T01:27:26.052269Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Next item on the checklist is \\u0060Specs and the design-before-implementation discipline\\u0060.\",\"summaries\":[{\"summary\":\"Thinking about awaiting clarification on next task or item.\"},{\"summary\":\"Identified next checklist item regarding specifications and design discipline.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Specs and the design-before-implementation discipline`\n**Type:** Wiki\n\n```markdown\nA Spec is a typed design artifact that describes a \nspecific slice of the Event Model in enough detail \nto implement from. Specs are written before code. \nThis is not a preference — it is the discipline that \nmakes NEXUS work.\n\n## What a Spec Is\n\nA Spec takes a slice from the Event Model and makes \nit actionable. Where the Event Model shows the shape \nof the system — commands, events, projections, and \ntheir relationships — a Spec describes a specific \nslice in enough detail that an implementer, human or \nAI, can produce correct code from it without \nambiguity.\n\nA Spec contains:\n\n- **The slice it describes** — which command, event, \n  or projection this spec covers, linked to the \n  Event Model element\n- **The path or paths it serves** — which paths \n  traverse this slice, linked to the path topics \n  in LOGOS\n- **Inputs** — what the slice receives. For a \n  command: the command fields and their types and \n  constraints. For a projection: which events it \n  consumes and what it extracts from them.\n- **Outputs** — what the slice produces. For a \n  command: the event or events produced and their \n  fields. For a projection: the shape of the \n  derived state.\n- **Rules and constraints** — the logic within \n  the slice. Validation rules, business rules, \n  error conditions, edge cases.\n- **Example data** — the concrete values from \n  the paths that traverse this slice. The spec \n  is not abstract — it is grounded in the example \n  data that flows through it.\n- **Acceptance criteria** — how you would know \n  the implementation is correct.\n\n## The Workflow\n\nA Spec topic in LOGOS moves through defined states:\n\n**Draft** — being written. Not ready for review. \nThe slice is understood well enough to start \nspecifying but the spec is not yet complete.\n\n**Under Review** — complete enough to review. \nFeedback is being gathered. The spec may change \nbased on review. It is not yet safe to implement \nfrom.\n\n**Approved** — reviewed and accepted. The spec \nis the basis for implementation. An approved spec \nis an input to AI-assisted code generation. It \nshould not change without moving back through \nreview.\n\n**Linked to Implementation** — implementation \nexists and is linked back to this spec. The loop \nis closed. The spec and the code it produced are \nconnected in both directions.\n\nState transitions are explicit events — not just \nedits to the topic. Each transition is timestamped \nand attributed. The history of a spec's journey \nfrom Draft to Linked to Implementation is part \nof the permanent record.\n\n## Design Before Implementation\n\nThe discipline is absolute: specs are written \nbefore code. Not alongside code. Not after code \nas documentation. Before.\n\nThis discipline exists because of what gets lost \nwhen it is violated. When implementation precedes \nspecification, the design decisions that shaped \nthe code exist only in the developer's head at \nthe moment of writing. They are never made \nexplicit. They are never reviewed. They cannot \nbe questioned, improved, or reused. Six months \nlater they are gone.\n\nWhen specification precedes implementation, every \ndesign decision passes through a moment of \nexplicit articulation. Writing the spec forces \nclarity that implementation alone does not require. \nGaps and ambiguities that would have been resolved \nimplicitly during coding — in ways that might not \nbe correct — are instead resolved explicitly, \nvisibly, before any code is written.\n\nThe spec is not documentation of the implementation. \nThe implementation is a rendering of the spec.\n\n## Specs and AI Implementation\n\nAn approved spec is the primary input to \nAI-assisted code generation within NEXUS. This \nis not incidental — the spec format is designed \nwith AI consumption in mind.\n\nAn AI given an approved spec has:\n- Unambiguous inputs and outputs\n- Explicit rules and constraints\n- Concrete example data to validate against\n- Acceptance criteria to verify against\n\nThis is everything needed to implement correctly. \nThe AI does not need to infer intent, guess at \nedge cases, or make design decisions. Those are \nresolved in the spec. The AI renders the spec \ninto code.\n\nThe language-agnostic nature of a well-formed \nspec means the same spec can be rendered into \nF#, JavaScript, or any other target language. \nThe spec describes what — the AI and the target \nlanguage determine how.\n\n*See: NEXUS → AI-assisted implementation.*\n*See: NEXUS → Language-agnostic design — one \nmodel, many implementations.*\n\n## Specs and Example Data\n\nExample data from paths flows into specs. The \nconcrete values that a path carries through the \nEvent Model appear in the spec for each slice \nthat path traverses. This grounds the spec in \nreality — the spec is not specifying an abstract \nslice, it is specifying the slice as it behaves \nfor these concrete cases.\n\nThe example data in the spec becomes the test \ndata for the implementation. The acceptance \ncriteria are verified against the example data. \nIf the implementation passes the example data \ncases, it implements the spec correctly for all \ndesigned paths.\n\n*See: NEXUS → Paths as first-class artifacts.*\n\n## Specs in LOGOS\n\nEach spec is a topic in the relevant project \ncategory in LOGOS. Specs are linked bidirectionally:\n\n- To the Event Model element they describe\n- To the paths that traverse them\n- To the implementation they produced\n\nA spec topic is never an island. It is always \nconnected — to the design above it and the \nimplementation below it. That connectivity is \nwhat makes the system traceable from intent to \nrunning code.\n\n*See: LOGOS → Requirements → Spec-to-implementation \nlinking.*\n\n## Acceptance\n\nA developer or AI given only the spec — with no \nother context — can produce a correct \nimplementation. The spec is sufficient. If \nadditional context is required to implement, the \nspec is incomplete.\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [Paths as first-class artifacts](https://talkyard.ivanthegeek.com/-90/paths-as-first-class-artifacts)\n- [LOGOS → Requirements → Spec topic type with defined workflow states](https://talkyard.ivanthegeek.com/-77/spec-topic-type-with-defined-workflow-states)\n- [LOGOS → Requirements → Spec-to-implementation linking](https://talkyard.ivanthegeek.com/-78/spec-to-implementation-linking)\n- NEXUS → AI-assisted implementation\n- NEXUS → Language-agnostic design — one model, \n  many implementations\n```\n\n---\n\nNote: I used -85 for Event Modeling and -90 for Paths — verify both before posting. Create and let me know when done."
+

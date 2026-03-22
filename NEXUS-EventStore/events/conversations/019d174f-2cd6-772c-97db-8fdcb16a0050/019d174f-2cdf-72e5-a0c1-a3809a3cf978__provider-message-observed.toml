@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cdf-72e5-a0c1-a3809a3cf978"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+conversation_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+message_id = "019d174f-2cdf-74a8-99ca-5689e8c61190"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T23:14:53.481209Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "265654d2f569e28b4da1557ee426b29c7ed3bbd56ad76e95fde314a7b5ff645c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "cbcb5a8b-5f4d-4cdc-b699-59463dc00003"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+message_native_id = "cbcb5a8b-5f4d-4cdc-b699-59463dc00003"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "cbcb5a8b-5f4d-4cdc-b699-59463dc00003"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 132
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — **Processor** sounds like a very good fit there.\n\nAnd with your definition:\n\n> **Processor = top type**\n> **Actor = a kind of Processor**\n\nthat becomes a clean hierarchy.\n\n## A shape that fits what you’re describing\n\n```text\nProcessor\n├── Actor\n└── Projector\n```\n\nOr if you want it more read/write explicit:\n\n```text\nProcessor\n├── WriteProcessor\n│   └── Actor\n└── ReadProcessor\n    └── Projector\n```\n\nThat gives you symmetry.\n\n## Applied to Blazor\n\n### Write side\n```text\nDOM Event\n   ↓\nBlazor as Actor\n   ↓\nCommand\n   ↓\nEvent\n```\n\n### Read side\n```text\nEvent\n   ↓\nBlazor as Processor\n   ↓\nView\n```\n\nThat is much closer to your framing than calling Blazor “Actor” on both sides.\n\n## Why Processor works well\n\nBecause it is more neutral.\n\n“Actor” implies:\n- initiates\n- receives signal\n- triggers change\n\n“Processor” implies:\n- takes input\n- transforms/applies/handles it\n- produces output\n\nThat makes **Processor** a better umbrella term.\n\n## One refinement\n\nOn the read side, if you want a more specific subtype than just `Processor`, I think the strongest candidates are:\n\n- **Projector**\n- **Renderer**\n- **Interpreter**\n- **Materializer**\n\n### My take\n\nIf the concern is specifically:\n\n> take event-derived read data and turn it into visible UI\n\nthen these have different flavors:\n\n- **Projector** = best if you are emphasizing read-model creation from events\n- **Renderer** = best if you are emphasizing turning a view into DOM/UI\n- **Materializer** = best if you are emphasizing making an abstract view concrete\n- **Processor** = best as the broad parent type\n\nSo I would probably do:\n\n```text\nProcessor\n├── Actor\n└── Projector\n```\n\nand then possibly below Projector:\n\n```text\nProjector\n└── Renderer\n```\n\nif you want that extra split.\n\n## With Blazor specifically\n\nYou might say:\n\n- On the **write/change** side, Blazor is an **Actor**\n- On the **read/view** side, Blazor is a **Renderer** or **Projector**\n- At the broadest level, Blazor is a **Processor**\n\nThat feels very coherent.\n\n## Clean ontology version\n\n```text\nProcessor\n  = anything that receives input and performs system work\n\nActor\n  = a Processor that receives a signal and initiates change/write flow\n\nProjector\n  = a Processor that derives read/view state from events\n\nRenderer\n  = a Processor that materializes view state into visible UI\n```\n\n## My recommendation\n\nIf you want one top type, I think **Processor** is solid.\n\nThen:\n\n- **Actor** for write boundary participation\n- **Projector** for read model shaping\n- **Renderer** for final UI materialization\n\nThat gives you better precision than using Actor everywhere.\n\n## Compact version\n\n```text\nWRITE\nDOM Event → Blazor Actor → Command → Event\n\nREAD\nEvent → Projector/Renderer → View\n```\n\nAnd above both:\n\n```text\nActor, Projector, Renderer : Processor\n```\n\nThat seems like the cleanest fit for what you’re building."
+

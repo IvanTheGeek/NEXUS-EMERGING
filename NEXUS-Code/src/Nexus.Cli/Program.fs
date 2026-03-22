@@ -6,16 +6,21 @@ open System.Security.Cryptography
 open System.Text
 open Nexus.Domain
 open Nexus.EventStore
+open Nexus.Importers
 
 module Program =
     type Command =
         | WriteSampleEventStore of eventStoreRoot: string
+        | ImportProviderExport of request: ImportRequest
 
     let private repoRoot =
         Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "..", "..", ".."))
 
     let private defaultEventStoreRoot =
         Path.Combine(repoRoot, "NEXUS-EventStore")
+
+    let private defaultObjectsRoot =
+        Path.Combine(repoRoot, "NEXUS-Objects")
 
     let private sha256ForText (value: string) =
         let bytes = Encoding.UTF8.GetBytes(value)
@@ -28,8 +33,16 @@ module Program =
         printfn ""
         printfn "Commands:"
         printfn "  write-sample-event-store    Write a small sample canonical history bundle"
+        printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
         printfn ""
         printfn "Options for write-sample-event-store:"
+        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for import-provider-export:"
+        printfn "  --provider <chatgpt|claude> Provider adapter to use"
+        printfn "  --zip <path>                Path to the provider export zip"
+        printfn "  --window <kind>             Import window; defaults to full"
+        printfn "  --objects-root <path>       Override the objects root"
         printfn "  --event-store-root <path>   Override the event-store root"
 
     let private parseWriteSampleEventStore (args: string list) =
@@ -44,6 +57,54 @@ module Program =
 
         loop defaultEventStoreRoot args
 
+    let private parseImportProviderExport (args: string list) =
+        let rec loop provider zipPath window objectsRoot eventStoreRoot remaining =
+            match remaining with
+            | [] ->
+                match provider, zipPath with
+                | Some providerKind, Some sourceZipPath ->
+                    Ok
+                        (ImportProviderExport
+                            { Provider = providerKind
+                              SourceZipPath = sourceZipPath
+                              Window = window
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot })
+                | None, _ ->
+                    eprintfn "Missing required option for import-provider-export: --provider"
+                    usage ()
+                    Error 1
+                | _, None ->
+                    eprintfn "Missing required option for import-provider-export: --zip"
+                    usage ()
+                    Error 1
+            | "--provider" :: value :: rest ->
+                match ProviderNaming.tryParse value with
+                | Some providerKind -> loop (Some providerKind) zipPath window objectsRoot eventStoreRoot rest
+                | None ->
+                    eprintfn "Unsupported provider: %s" value
+                    usage ()
+                    Error 1
+            | "--zip" :: value :: rest ->
+                loop provider (Some value) window objectsRoot eventStoreRoot rest
+            | "--window" :: value :: rest ->
+                match ImportWindowNaming.tryParse value with
+                | Some parsedWindow -> loop provider zipPath (Some parsedWindow) objectsRoot eventStoreRoot rest
+                | None ->
+                    eprintfn "Unsupported window: %s" value
+                    usage ()
+                    Error 1
+            | "--objects-root" :: value :: rest ->
+                loop provider zipPath window value eventStoreRoot rest
+            | "--event-store-root" :: value :: rest ->
+                loop provider zipPath window objectsRoot value rest
+            | option :: _ ->
+                eprintfn "Unknown option for import-provider-export: %s" option
+                usage ()
+                Error 1
+
+        loop None None (Some Full) defaultObjectsRoot defaultEventStoreRoot args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -55,6 +116,8 @@ module Program =
             Error 0
         | "write-sample-event-store" :: rest ->
             parseWriteSampleEventStore rest
+        | "import-provider-export" :: rest ->
+            parseImportProviderExport rest
         | command :: _ ->
             eprintfn "Unknown command: %s" command
             usage ()
@@ -288,10 +351,43 @@ module Program =
         printfn "  Manifest written: %s" manifestPath
         0
 
+    let private importProviderExport request =
+        let result = ImportWorkflow.run request
+
+        printfn "Provider export imported."
+        printfn "  Provider: %s" (ProviderNaming.slug result.Provider)
+        printfn "  Import ID: %s" (ImportId.format result.ImportId)
+        printfn "  Archived zip: %s" result.ArchivedZipRelativePath
+        printfn "  Latest zip: %s" result.LatestZipRelativePath
+
+        match result.ExtractedConversationRelativePath with
+        | Some path -> printfn "  Extracted conversations.json: %s" path
+        | None -> ()
+
+        printfn "  Event manifest: %s" result.ManifestRelativePath
+        printfn "  Events written: %d" result.EventPaths.Length
+        printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
+        printfn "  Messages seen: %d" result.Counts.MessagesSeen
+        printfn "  Artifact references seen: %d" result.Counts.ArtifactsReferenced
+        printfn "  New events appended: %d" result.Counts.NewEventsAppended
+        printfn "  Duplicates skipped: %d" result.Counts.DuplicatesSkipped
+        printfn "  Revisions observed: %d" result.Counts.RevisionsObserved
+
+        if not result.EventPaths.IsEmpty then
+            printfn "  First event files:"
+
+            result.EventPaths
+            |> List.truncate 5
+            |> List.iter (printfn "    %s")
+
+        0
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
         | Ok (WriteSampleEventStore eventStoreRoot) ->
             writeSampleEventStore eventStoreRoot
+        | Ok (ImportProviderExport request) ->
+            importProviderExport request
         | Error exitCode ->
             exitCode

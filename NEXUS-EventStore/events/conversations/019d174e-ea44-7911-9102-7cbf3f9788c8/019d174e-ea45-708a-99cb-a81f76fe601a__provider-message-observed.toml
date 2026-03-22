@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea45-708a-99cb-a81f76fe601a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea44-7911-9102-7cbf3f9788c8"
+conversation_id = "019d174e-ea44-7911-9102-7cbf3f9788c8"
+message_id = "019d174e-ea45-7d9c-915c-005a8bcf1cdd"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T02:34:53.326398Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "57c562593e5b5e59abecaee14dc5f36796a09547d435424ad115e0b3191da35d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "40d432e6-b9aa-4f98-87a7-8aa63b075df8"
+conversation_native_id = "40d432e6-b9aa-4f98-87a7-8aa63b075df8"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8faa-1024-70d0-897a-38007b21fcbe"
+conversation_native_id = "40d432e6-b9aa-4f98-87a7-8aa63b075df8"
+message_native_id = "019a8faa-1024-70d0-897a-38007b21fcbe"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8faa-1024-70d0-897a-38007b21fcbe"
+role = "assistant"
+sequence_hint = 50
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T02:34:40.999869Z\",\"stop_timestamp\":\"2025-11-17T02:34:45.176917Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Perfect! The Nexus-Data repository has been moved successfully to /var/lib/nexus/event-store. I can see:\\n1. The .git directory is there\\n2. Git status shows it\\u0027s on main branch, up to date with origin/main\\n3. Git log shows the commit history intact\\n4. All the directory structure is there (events, apps, nexus, framework, etc.)\\n5. There are some untracked files (SemanticSearchPerformed and ProjectionQueried events) which is normal\\n\\nNow we should move to Step 5 - creating the Caddyfile, then Step 6 - environment template, then Step 7 - validation.\",\"summaries\":[{\"summary\":\"Thinking about verifying a successful repository migration to a new location.\"},{\"summary\":\"Verifying repository integrity and confirming successful migration.\"},{\"summary\":\"Validated repository migration and charted next deployment steps.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect! Nexus-Data moved successfully. The git repository is intact with full history, and you can see it has some untracked events from recent searches. Everything looks good.\n\nNow Step 5 - Create the Caddyfile:\n\n```bash\nsudo tee /etc/caddy/Caddyfile > /dev/null <<'EOF'\n{\n    email your-email@example.com\n    # Disable admin API for production\n    admin off\n}\n\nmcp.nexus.ivanthegeek.com {\n    # Placeholder - will configure reverse proxy in Phase 4\n    respond \"Nexus MCP - Coming Soon\" 200\n}\n\nfiles.nexus.ivanthegeek.com {\n    # Placeholder - will configure reverse proxy in Phase 6\n    respond \"Nexus Files - Coming Soon\" 200\n}\nEOF\n\n# Verify it was created\ncat /etc/caddy/Caddyfile\n```\n\n**Important:** Replace `your-email@example.com` with your actual email address before running this command. Let's Encrypt will use this for certificate expiration notifications.\n\nLet me know when you've created the Caddyfile with your email.\n\n---\n\n**Token Usage:** 77,099 / 190,000 tokens used | **112,901 remaining**"
+

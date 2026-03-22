@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c82-72ff-9374-f6f3cad5540d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c82-775d-b984-88ffb455ba05"
+conversation_id = "019d174f-2c82-775d-b984-88ffb455ba05"
+message_id = "019d174f-2c82-7072-bf01-a7272ba57671"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T06:40:10.881596Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "3e896a9ed4000d281c76ee3e3f85558aac6918074ba3713333e6453a9fe0222d"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a9253c-da14-8325-8b93-82c7be60e909"
+conversation_native_id = "69a9253c-da14-8325-8b93-82c7be60e909"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "37f64b41-a2af-46e9-9868-888cb6242ab7"
+conversation_native_id = "69a9253c-da14-8325-8b93-82c7be60e909"
+message_native_id = "37f64b41-a2af-46e9-9868-888cb6242ab7"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "37f64b41-a2af-46e9-9868-888cb6242ab7"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "plain_text"
+text = "The terms **requirement** and **specification (spec)** are closely related but serve different roles in system design, engineering, and software architecture. Since you’re thinking in terms of **event modeling and system design** (like the Nexus work you mentioned), the distinction becomes especially important.\n\n---\n\n## 1. Requirement — *What must be true*\nA **requirement** describes a **need, goal, or constraint** the system must satisfy.\n\nIt answers:\n\n> **What problem must be solved?**  \n> **What outcome must exist?**\n\nRequirements are usually **technology-agnostic** and **implementation-independent**.\n\n### Examples\n- A user **must be able to log a laundry load**.\n- The system **must store historical laundry events**.\n- The app **must work offline**.\n- Only authorized users **may modify existing records**.\n\nThese describe **desired capabilities or rules**, not how they’re implemented.\n\n### Types of requirements\nCommon categories:\n\n**Functional requirements**\n- What the system does  \n- Example: “User can record a laundry cycle.”\n\n**Non-functional requirements**\n- Quality attributes  \n- Example:\n  - Performance\n  - Reliability\n  - Security\n  - Offline capability\n\n**Constraints**\n- Limits on the solution  \n- Example:\n  - Must run on Android\n  - Must use local-first storage\n\n---\n\n## 2. Specification — *How the requirement is satisfied*\nA **specification** defines **precisely how the system behaves or is built** to meet requirements.\n\nIt answers:\n\n> **How exactly will the system implement the requirement?**\n\nSpecs are **precise, structured, and testable**.\n\n### Examples\nRequirement:\n> Users must be able to log a laundry load.\n\nSpecification:\n```\nEvent: LaundryLoadLogged\nFields:\n- load_id: UUID\n- machine_id: string\n- detergent_type: enum\n- timestamp: ISO8601\n- temperature: enum (cold, warm, hot)\n```\n\nAnother spec might define:\n\n```\nUI Behavior:\nWhen the user presses \"Start Load\":\n1. Create LaundryLoadStarted event\n2. Store event locally\n3. Sync with server when online\n```\n\n---\n\n## 3. Key difference\n\n| Aspect | Requirement | Specification |\n|---|---|---|\n| Purpose | Defines **need** | Defines **implementation details** |\n| Focus | **What** must happen | **How** it happens |\n| Level | High-level | Detailed |\n| Audience | Stakeholders, product owners | Engineers, designers |\n| Flexibility | Can have multiple solutions | Usually one precise definition |\n\n---\n\n## 4. Simple analogy (house building)\n\nRequirement:\n> The house must have **3 bedrooms**.\n\nSpecification:\n```\nBedroom 1:\n- Size: 12x14 ft\n- Window: south wall\n- Closet: 4 ft sliding\n- Electrical outlets: 4\n```\n\nThe requirement allows many solutions.  \nThe spec **locks one down**.\n\n---\n\n## 5. How this maps to event modeling\nIn **event modeling** (which you mentioned Adam advocating), the mapping often looks like this:\n\n| Layer | Example |\n|---|---|\nRequirement | Users must track laundry history |\nEvent model | LaundryLoadStarted, LaundryLoadFinished |\nSpecification | Event schema, UI flow, storage rules |\n\nSo the **event model becomes part of the specification**, not the requirement.\n\n---\n\n## 6. A subtle but powerful insight\nA good requirement should **not contain design decisions**.\n\nBad requirement:\n> The system must store laundry events in PostgreSQL.\n\nThat’s actually a **specification**, because it dictates *how*.\n\nBetter requirement:\n> The system must persist laundry history for later retrieval.\n\n---\n\n## 7. A rule many architects follow\n\n**Requirements should survive technology changes.**\n\nIf you rewrite the system in another language or database, the **requirements remain the same**, but the **specification changes**.\n\n---\n\n## 8. One more layer (often missed)\nLarge systems often add an intermediate step:\n\n```\nRequirement\n   ↓\nDesign\n   ↓\nSpecification\n```\n\nExample:\n\nRequirement:\n> Track laundry cycles.\n\nDesign:\n> Use event sourcing.\n\nSpecification:\n> Events: LaundryLoadStarted, LaundryLoadFinished  \n> Storage: append-only log.\n\n---\n\n💡 **Interesting connection to your Nexus idea**\n\nYour principle:\n\n> *replace slices (atomic units) instead of mutating them*\n\nThat’s actually **a design philosophy that shapes specifications**, not a requirement itself.\n\nIt influences specs like:\n\n```\nState updates must occur by replacing immutable slices.\n```\n\n---\n\n✅ **In one sentence**\n\n- **Requirement:** the **problem statement**\n- **Specification:** the **precise instructions for solving it**\n\n---\n\nIf you'd like, I can also explain something **very important for the kind of system you're designing**:\n\n**The difference between**\n- **requirements**\n- **specifications**\n- **invariants**\n\nThat third concept is where **“making invalid states impossible”** (your F# reference) really lives, and it becomes extremely powerful in architectures like the one you're exploring."
+

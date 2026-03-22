@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-e9f5-7930-91e5-a26238eefb07"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+conversation_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+message_id = "019d174e-e9f5-732c-856f-f34385522653"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T07:29:57.087472Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "923f13aa09b42c3cfbdc46f12186343f1d099fc2c968da98cdb1e1bb9c060dc1"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a90b8-1576-767e-be4e-ba8d212789e1"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+message_native_id = "019a90b8-1576-767e-be4e-ba8d212789e1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a90b8-1576-767e-be4e-ba8d212789e1"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T07:29:37.451275Z\",\"stop_timestamp\":\"2025-11-17T07:29:45.885161Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Ivan is building a dedicated Nexus home server with:\\n- 1Gbit symmetric fiber\\n- Single RTX 3090\\n- Considering mini PCs\\n- Wondering about NPU utility\\n\\nHe\\u0027s asking specifically what workloads NPUs are good for, which suggests he\\u0027s evaluating whether to pay extra for an NPU-equipped CPU.\\n\\nFor Nexus context:\\n- RAG tier: Vector search (Qdrant) - CPU/RAM bound\\n- LoRA tier: Fine-tuning - GPU bound\\n- Event sourcing: CPU/memory bound\\n- Phi-4 inference: GPU bound\\n\\nNPUs in consumer hardware (Intel Core Ultra, AMD Ryzen AI):\\n- 10-45 TOPS typically\\n- Designed for battery-efficient laptop inference\\n- Can\\u0027t access discrete GPU memory\\n- Limited model support\\n- Mainly for Windows Copilot, background AI features\\n\\nWith a 3090 in the system, the NPU becomes irrelevant for ML workloads.\\n\\nMini PC considerations for Nexus:\\n- Need good single-thread for F# compilation\\n- Enough RAM for event store (16GB min, 32GB better)\\n- PCIe slot for 3090 (most mini PCs don\\u0027t have this!)\\n- Network throughput for serving\\n- 24/7 reliability\\n\\nWait - most mini PCs can\\u0027t take a 3090. He might be thinking of small form factor cases, not actual mini PCs like Intel NUC/Beelink.\",\"summaries\":[{\"summary\":\"Evaluating NPU utility for mini PC workloads.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NPUs are good for:**\n\n1. **Battery-powered laptop inference** - Running 2-5B parameter models at 2-5W power draw\n2. **Windows Copilot features** - Background AI (live captions, image generation, local assist)\n3. **Edge AI cameras** - Real-time video processing without GPU\n4. **Always-on ambient tasks** - Voice assistants, notification summarization\n\n**NPUs are NOT useful when you have a 3090 because:**\n\n- **Speed**: Your 3090 is 100-1000x faster for any ML task\n- **Capability**: NPUs can't run Phi-4 (too large) or access your 24GB VRAM\n- **Software**: Limited framework support - most tools target CUDA\n- **Architecture conflict**: NPU can't help with GPU workloads, they're separate\n\n**For Nexus specifically:**\n\n| Workload | What Handles It |\n|----------|----------------|\n| Phi-4 inference | RTX 3090 (CUDA) |\n| Qdrant vector search | CPU cores + RAM |\n| Embedding generation | RTX 3090 or CPU |\n| F# compilation | CPU single-thread speed |\n| Event sourcing | CPU + RAM bandwidth |\n\n**The NPU sits idle** because your 3090 handles all ML work faster.\n\n**Critical mini PC issue:**\n\nMost mini PCs (Intel NUC, Beelink, Minisforum) **cannot fit a 3090**:\n- No PCIe x16 slot\n- No 350W PSU for 3090\n- No physical space (3090 is 12+ inches long)\n\nAre you looking at:\n1. **Actual mini PC** (NUC-style) + external GPU enclosure?\n2. **Small form factor case** (like Dan Case, NCase) that fits full GPU?\n3. **Pre-built compact workstation** with discrete GPU support?\n\nThis changes the CPU recommendation significantly."
+

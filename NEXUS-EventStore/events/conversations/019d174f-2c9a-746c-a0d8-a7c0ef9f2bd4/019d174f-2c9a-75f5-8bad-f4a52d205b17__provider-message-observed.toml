@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c9a-75f5-8bad-f4a52d205b17"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c9a-746c-a0d8-a7c0ef9f2bd4"
+conversation_id = "019d174f-2c9a-746c-a0d8-a7c0ef9f2bd4"
+message_id = "019d174f-2c9a-7b67-b0b9-ba36c4b07fec"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T12:07:26.02639Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "69e72c4251707694c8bff0fc55238a2e78dccb5db4a62347d718bdceac774799"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+conversation_native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "81bf320e-6554-4ed1-80bd-ac69f97c0524"
+conversation_native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+message_native_id = "81bf320e-6554-4ed1-80bd-ac69f97c0524"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "81bf320e-6554-4ed1-80bd-ac69f97c0524"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is a good constraint. Starting **extremely small** is exactly how Event Modeling is supposed to work. One slice. One behavior. One event. Then grow.\n\nAlso your interpretation — **“a sequence diagram rotated on its side”** — is actually a very good way to prototype event models with Mermaid.\n\nYour columns:\n\n```\nUI | Command / Projection | Event\n```\n\nAnd each **horizontal row = a Slice**.\n\nSo the first slice should answer a very simple question:\n\n> *What happens when the app opens for the very first time?*\n\nThere are two important rules here:\n\n1. **Commands change system state**\n2. **Projections shape read state**\n\nOpening the app does **not** change domain state.  \nIt just **reads state**.\n\nTherefore:\n\n**The first slice is a Projection Slice, not a Command Slice.**\n\nBut since you asked for the **first Command slice**, we should go one step further and find the **first user action that actually changes state**.\n\nFor a brand new install, the first meaningful action is likely something like:\n\n> user logs their **first laundry entry**\n\nHowever, we usually still emit an initialization event first so projections have something to anchor to.\n\n---\n\n# Slice 0 (Projection) — App Opens\n\nThis establishes UI state.\n\n```\nUI: App Opened\nProjection: LoadSessionView\nEvent: (none)\n```\n\nIt simply returns:\n\n```\nSessionTotal = 0\nRecentEntries = []\nDraftEntry = empty\n```\n\nNo event because nothing changed.\n\n---\n\n# Slice 1 (First Command Slice)\n\nNow we introduce the **first actual system change**.\n\nThe minimal command is:\n\n```\nCreateFirstLaundryEntry\n```\n\nBut we only issue that **after the user fills the form**.\n\nSo the command is effectively:\n\n```\nRecordLaundryEntry\n```\n\nThe resulting event:\n\n```\nLaundryEntryRecorded\n```\n\n---\n\n# Minimal Command\n\nTOML structure (high level)\n\n```toml\ncommand = \"RecordLaundryEntry\"\n\nlocation = \"Pilot Travel Center\"\nmachine = \"washer\"\n"
+

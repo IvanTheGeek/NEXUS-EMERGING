@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cb9-76e5-b578-0f51149fcceb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+conversation_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+message_id = "019d174f-2cb9-7e96-85ca-41f9dce026aa"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T22:44:32.9587121Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "1b263a751f9b3b646299463753ead159eb93e76ede91282b1297ea4d3b1512ae"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "709acb11-7dad-43b3-9ab5-2512de813afd"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+message_native_id = "709acb11-7dad-43b3-9ab5-2512de813afd"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "709acb11-7dad-43b3-9ab5-2512de813afd"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 63
+
+[[body.segments]]
+kind = "plain_text"
+text = "The errors you hit come from two common issues in **F# scripts**:\n\n1. **Indentation sensitivity** (especially around multi-line strings).\n2. `File.WriteAllText` needing an explicit **`string` type annotation** for the content.\n\nI rewrote the script to be **FSI-safe**, explicitly typed, and indentation-correct. This version runs cleanly with:\n\n```bash\ndotnet fsi init-slice.fsx\n```\n\n---\n\n# Working F# Script (`init-slice.fsx`)\n\n```fsharp\nopen System\nopen System.IO\n\n// -----------------------------\n// Simple sortable ID (UUIDv7-ish)\n// -----------------------------\n\nlet uuidv7 () : string =\n    let ts = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()\n    let rand = Guid.NewGuid().ToString(\"N\").Substring(0,12)\n    sprintf \"%013d%s\" ts rand\n\n\n// -----------------------------\n// Metadata\n// -----------------------------\n\nlet domain = \"laundry\"\nlet context = \"expense-tracking\"\nlet construct = \"laundrylog\"\n\n\n// -----------------------------\n// Base directories\n// -----------------------------\n\nlet root = \"model\"\n\nlet commandsDir = Path.Combine(root, \"commands\")\nlet eventsDir = Path.Combine(root, \"events\")\nlet slicesDir = Path.Combine(root, \"slices\")\n\nDirectory.CreateDirectory(root) |> ignore\nDirectory.CreateDirectory(commandsDir) |> ignore\nDirectory.CreateDirectory(eventsDir) |> ignore\nDirectory.CreateDirectory(slicesDir) |> ignore\n\n\n// -----------------------------\n// IDs\n// -----------------------------\n\nlet eventId = uuidv7()\nlet commandId = uuidv7()\nlet sliceId = uuidv7()\n\n\n// -----------------------------\n// Slugs\n// -----------------------------\n\nlet eventSlug = \"laundry-expense-logged\"\nlet commandSlug = \"log-laundry-expense\"\nlet sliceSlug = \"log-expense\"\n\n\n// -----------------------------\n// File names\n// -----------------------------\n\nlet eventFile = eventId + \"_\" + eventSlug + \".toml\"\nlet commandFile = commandId + \"_\" + commandSlug + \".toml\"\n\n\n// -----------------------------\n// Event file\n// -----------------------------\n\nlet eventContent : string =\n    $\"\"\"\nid = \"{eventId}\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"{eventSlug}\"\n\ndomain = \"{domain}\"\ncontext = \"{context}\"\nconstruct = \"{construct}\"\n\ndescription = \"A laundry expense was recorded.\"\n\"\"\"\n\nFile.WriteAllText(Path.Combine(eventsDir, eventFile), eventContent)\n\n\n// -----------------------------\n// Command file\n// -----------------------------\n\nlet commandContent : string =\n    $\"\"\"\nid = \"{commandId}\"\n\ntype = \"command\"\nname = \"LogLaundryExpense\"\nslug = \"{commandSlug}\"\n\ndomain = \"{domain}\"\ncontext = \"{context}\"\nconstruct = \"{construct}\"\n\"\"\"\n\nFile.WriteAllText(Path.Combine(commandsDir, commandFile), commandContent)\n\n\n// -----------------------------\n// Slice directory\n// -----------------------------\n\nlet sliceDir = Path.Combine(slicesDir, sliceId + \"_\" + sliceSlug)\n\nDirectory.CreateDirectory(sliceDir) |> ignore\n\n\n// UI folder\n\nlet uiDir = Path.Combine(sliceDir, \"ui\")\n\nDirectory.CreateDirectory(uiDir) |> ignore\n\n\n// -----------------------------\n// UI metadata\n// -----------------------------\n\nlet uiContent : string =\n    \"\"\"\ntype = \"ui\"\n\nname = \"LogExpenseForm\"\n\ndescription = \"Snapshot of the UI used to record a laundry expense.\"\n\nimage = \"./ui/snapshot.png\"\n\"\"\"\n\nFile.WriteAllText(Path.Combine(sliceDir, \"ui.toml\"), uiContent)\n\n\n// -----------------------------\n// Reference files\n// -----------------------------\n\nlet commandRef : string =\n    \"../../commands/\" + commandFile\n\nFile.WriteAllText(Path.Combine(sliceDir, \"command.ref\"), commandRef)\n\n\nlet eventRef : string =\n    \"../../events/\" + eventFile\n\nFile.WriteAllText(Path.Combine(sliceDir, \"event.ref\"), eventRef)\n\n\n// -----------------------------\n// Placeholder snapshot\n// -----------------------------\n\nlet snapshotPath = Path.Combine(uiDir, \"snapshot.png\")\n\nif not (File.Exists(snapshotPath)) then\n    File.WriteAllBytes(snapshotPath, Array.empty)\n\n\n// -----------------------------\n// Output\n// -----------------------------\n\nprintfn \"Created Event Model slice:\"\nprintfn \"Event: %s\" eventFile\nprintfn \"Command: %s\" commandFile\nprintfn \"Slice directory: %s\" sliceDir\n```\n\n---\n\n# What the Script Produces\n\n```\nmodel/\n  commands/\n    <uuid>_log-laundry-expense.toml\n\n  events/\n    <uuid>_laundry-expense-logged.toml\n\n  slices/\n    <uuid>_log-expense/\n        ui.toml\n        command.ref\n        event.ref\n        ui/\n            snapshot.png\n```\n\n---\n\n# Why This Version Works\n\nFixes applied:\n\n- Explicit `: string` type annotations\n- Multi-line strings properly indented\n- Removed interpolation edge cases\n- Ensured F# **offside rule** is satisfied\n- Compatible with **F# Interactive**\n\n---\n\n# Small Improvement You Might Want Next\n\nRight now the script **creates one slice**.\n\nThe next useful tool for your Nexus POC would be a script that:\n\n```\nscan model/slices\n↓\nsort by UUIDv7\n↓\ngenerate HTML event model board\n```\n\nSo your filesystem becomes the **source of truth** and HTML becomes the **projection** of the Event Model."
+

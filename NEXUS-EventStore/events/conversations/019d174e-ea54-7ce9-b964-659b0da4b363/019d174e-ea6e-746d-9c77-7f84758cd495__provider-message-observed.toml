@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea6e-746d-9c77-7f84758cd495"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-7372-835c-d7b21ebc9009"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T02:44:01.013021Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "801fde5ef254804241e7f44612fc12ac197250d383ad1b9949e9957ed6dccb53"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac6d-d5bb-7686-868e-d717203acc0f"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac6d-d5bb-7686-868e-d717203acc0f"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac6d-d5bb-7686-868e-d717203acc0f"
+role = "assistant"
+sequence_hint = 405
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-02T02:43:28.566206Z\",\"stop_timestamp\":\"2026-03-02T02:43:28.566206Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-02T02:43:28.570482Z\",\"stop_timestamp\":\"2026-03-02T02:43:29.176452Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Next item on the checklist is \\u0060Language-agnostic design \\u2014 one model, many implementations\\u0060.\",\"summaries\":[{\"summary\":\"Thinking about clarifying the user\\u0027s next request or task.\"},{\"summary\":\"Progressed through checklist toward language-agnostic design implementation.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Language-agnostic design — one model, many implementations`\n**Type:** Wiki\n\n```markdown\nA well-formed NEXUS design produces artifacts that \ndescribe what a system does, not how any particular \nlanguage implements it. The target language is a \nparameter passed to the rendering layer — not a \nconstraint baked into the design. This is not an \naspiration. It is a property of the methodology \nwhen applied correctly.\n\n## Why Designs Are Language-Agnostic\n\nThe core elements of an Event Model — Commands, \nEvents, Projections — are concepts, not code. A \ncommand is a function that takes input and produces \nan event. That description is true in F#, in \nJavaScript, in Haskell, in Kotlin, in any language \nwith functions. The concept does not belong to \nany language.\n\nA spec built on top of that model describes inputs, \noutputs, rules, and constraints at a semantic level. \n\"The quantity field must be a positive integer\" is \na constraint. How F# expresses that constraint \nthrough its type system is a rendering decision — \na correct one, and the one NEXUS currently makes — \nbut a decision made at render time, not design time.\n\nWhen design and implementation concerns are \nproperly separated, the design is language-agnostic \nby default. If a spec is so language-specific that \nit could only be implemented in one language, \ndesign and implementation concerns have leaked \ninto each other. The spec is incomplete as a \ndesign artifact.\n\n## The Rendering Model\n\nImplementation within NEXUS is rendering — the \ntranslation of an approved, language-agnostic \nspec into a specific target language following \nthe patterns and conventions of that language \nand NEXUS's prescribed approach within it.\n\nThe render target is a parameter:\n\n```\nApproved Spec + Target Language → Implementation\n```\n\nChanging the target language does not require \nredesigning. It requires re-rendering. The spec \nis unchanged. The rendering AI is given a \ndifferent target. The output is a correct \nimplementation in the new language.\n\n## NEXUS and F#\n\nNEXUS currently targets F# as its primary render \ntarget. This is a deliberate choice — F#'s type \nsystem, functional paradigm, and discriminated \nunions align directly with NEXUS principles in \nways that make the rendering both natural and \ncorrect.\n\nF# is the language in which:\n- Invalid states are made unrepresentable through \n  types and smart constructors\n- Event types are modeled as discriminated unions\n- Commands and projections are pure functions\n- Pattern matching over events is exhaustive and \n  compiler-checked\n\nThese properties are not incidental to NEXUS — \nthey are why F# was chosen. The rendering AI for \nNEXUS F# is trained and tuned to produce code \nthat takes full advantage of these properties.\n\nBut F# is the current render target. Not the \nonly possible one.\n\n## Multiple Implementations From One Design\n\nBecause the design is language-agnostic, the \nsame approved spec can be rendered into multiple \ntarget languages simultaneously. One design. \nMultiple correct implementations. Each faithful \nto the spec. Each idiomatic in its target language.\n\nThis has several practical implications:\n\n**Portability** — a system designed in NEXUS \nis not locked to F#. If circumstances change — \na team that knows JavaScript, a platform that \nrequires JVM languages — the design remains \nvalid. Only the render target changes.\n\n**Verification** — two implementations of the \nsame spec in different languages, both passing \nthe same acceptance criteria against the same \nexample data, provide strong mutual verification. \nIf they agree, the spec is correctly implemented. \nIf they disagree, one has a rendering error.\n\n**Education** — the same design rendered in \nmultiple languages shows exactly what is \nlanguage-specific and what is not. The concepts \nare visible in the design. The idioms are visible \nin the renderings. The comparison is instructive.\n\n## Reverse Engineering and Language Migration\n\nThe language-agnostic property extends to reverse \nengineering. An existing system in any language \ncan have its implicit design made explicit as a \nNEXUS Event Model. That model is then language-\nagnostic. It can be rendered into F# — or any \nother target — producing a new correct \nimplementation from the derived design.\n\nThis enables principled language migration: not \na line-by-line port that carries all the original \nlanguage's idioms and assumptions into the new \none, but a design-level extraction followed by \na clean rendering in the target language. The \nresult is idiomatic in the target language \nbecause it was rendered from a language-agnostic \ndesign, not translated from the source language.\n\n*See: NEXUS → Insights → Reverse engineering \nexisting software with Event Modeling.*\n\n## A Test of Design Quality\n\nLanguage-agnosticism is a useful test of whether \na spec is complete and correctly separated from \nits implementation. The test is simple:\n\nCould this spec be implemented correctly in a \nlanguage other than F#?\n\nIf yes — the design is properly separated. \nThe spec describes what; the rendering decides how.\n\nIf no — implementation concerns have leaked into \nthe design. The spec contains F#-specific \nassumptions that should be rendering decisions. \nThe design needs to be separated further.\n\nThis test can be applied during spec review \nwithout actually producing a second implementation. \nIt is a thought experiment that surfaces \nprematurely implementation-specific design \ndecisions before they become embedded.\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [Specs and the design-before-implementation discipline](https://talkyard.ivanthegeek.com/-91/specs-and-the-design-before-implementation-discipline)\n- [AI-assisted implementation](https://talkyard.ivanthegeek.com/-92/ai-assisted-implementation)\n- NEXUS → The rendering AI — training and tuning \n  a model for NEXUS F# output\n- NEXUS → Insights → Reverse engineering existing \n  software with Event Modeling\n```\n\n---\n\nNote: I used -85, -91, -92 for previous wikis — verify before posting. Create and let me know when done."
+

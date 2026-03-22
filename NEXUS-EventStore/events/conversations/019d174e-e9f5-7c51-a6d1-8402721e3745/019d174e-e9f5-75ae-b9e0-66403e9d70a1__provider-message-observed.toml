@@ -1,0 +1,129 @@
+schema_version = 1
+event_id = "019d174e-e9f5-75ae-b9e0-66403e9d70a1"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+conversation_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+message_id = "019d174e-e9f5-73db-bfda-b6a17c46ca07"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T17:26:43.453099Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "017a47a4cb8ca73b45d1af4ca4d7c1e3432299e77a9ba1499a579ba25ecffe8d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+message_native_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:02.092898Z\",\"stop_timestamp\":\"2025-11-17T17:26:03.023562Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants me to read a specific file: quick-start/mcp-stdio-investigation.md\\n\\nI should use the view tool to read this file. Let me check what\\u0027s in it.\",\"summaries\":[{\"summary\":\"Thinking about analyzing MCP stdio investigation documentation content.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "I'll read that investigation document for you."
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:03.660999Z\",\"stop_timestamp\":\"2025-11-17T17:26:04.237800Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"view\",\"input\":{\"path\":\"/home/claude/quick-start/mcp-stdio-investigation.md\",\"description\":\"Reading the MCP stdio investigation document\"},\"message\":\"Reading the MCP stdio investigation document\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":{\"type\":\"text\",\"text\":\"Reading the MCP stdio investigation document\"},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"view\",\"content\":[{\"type\":\"text\",\"text\":\"Path not found: /home/claude/quick-start/mcp-stdio-investigation.md\",\"uuid\":\"ea2872b6-3377-4206-b910-a1e17cff5e5c\"}],\"is_error\":true,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:09.612696Z\",\"stop_timestamp\":\"2025-11-17T17:26:11.212824Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The file isn\\u0027t in /home/claude/quick-start/. Let me try to find it. I should check if there\\u0027s a quick-start directory elsewhere, or search for the file.\\n\\nLet me first check what\\u0027s in /home/claude to see the directory structure.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:11.421554Z\",\"stop_timestamp\":\"2025-11-17T17:26:11.817737Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"view\",\"input\":{\"path\":\"/home/claude\",\"description\":\"Checking the home directory structure\"},\"message\":\"Checking the home directory structure\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":{\"type\":\"text\",\"text\":\"Checking the home directory structure\"},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"view\",\"content\":[{\"type\":\"text\",\"text\":\"Here are the files and directories up to 2 levels deep in /home/claude, excluding hidden items and node_modules:\\n3.0G\\t/home/claude\\n\",\"uuid\":\"7a893b80-496f-4002-8440-582014ff7b66\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":{\"type\":\"json_block\",\"json_block\":\"{\\u0022language\\u0022: \\u0022text\\u0022, \\u0022code\\u0022: \\u00223.0G\\\\t/home/claude\\\\n\\u0022, \\u0022filename\\u0022: \\u0022/home/claude\\u0022}\"}}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:18.284144Z\",\"stop_timestamp\":\"2025-11-17T17:26:19.455272Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The directory seems empty or the view didn\\u0027t show the contents properly. Let me search for the file using the Filesystem search tool.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:19.717401Z\",\"stop_timestamp\":\"2025-11-17T17:26:20.036612Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"Filesystem:search_files\",\"input\":{\"path\":\"/home/claude\",\"pattern\":\"mcp-stdio-investigation.md\"},\"message\":\"search_files\",\"integration_name\":\"Filesystem\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"Filesystem:search_files\",\"content\":[{\"type\":\"text\",\"text\":\"Error: Access denied - path outside allowed directories: /home/claude not in /home/linux\",\"uuid\":\"5979016c-e9b8-4897-8623-817a3b142b84\"}],\"is_error\":true,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":\"Filesystem\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:25.479138Z\",\"stop_timestamp\":\"2025-11-17T17:26:26.460427Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Ah, I see. The allowed directories are under /home/linux, not /home/claude. Let me check what directories I have access to first.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:26.653703Z\",\"stop_timestamp\":\"2025-11-17T17:26:26.653703Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"Filesystem:list_allowed_directories\",\"input\":{},\"message\":\"list_allowed_directories\",\"integration_name\":\"Filesystem\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"Filesystem:list_allowed_directories\",\"content\":[{\"type\":\"text\",\"text\":\"The user has chosen to disallow the tool call.\",\"uuid\":\"e390fee9-5545-45aa-b45e-b93ca42e22fc\"}],\"is_error\":true,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":\"Filesystem\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:37.286815Z\",\"stop_timestamp\":\"2025-11-17T17:26:38.163122Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user blocked that call. Let me try searching in /home/linux instead.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:38.793776Z\",\"stop_timestamp\":\"2025-11-17T17:26:39.343867Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"Filesystem:search_files\",\"input\":{\"path\":\"/home/linux\",\"pattern\":\"mcp-stdio-investigation.md\"},\"message\":\"search_files\",\"integration_name\":\"Filesystem\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2025-11-17T17:26:43.408730Z\",\"stop_timestamp\":\"2025-11-17T17:26:43.408730Z\",\"flags\":null,\"type\":\"text\",\"text\":\"\",\"citations\":[]}"
+

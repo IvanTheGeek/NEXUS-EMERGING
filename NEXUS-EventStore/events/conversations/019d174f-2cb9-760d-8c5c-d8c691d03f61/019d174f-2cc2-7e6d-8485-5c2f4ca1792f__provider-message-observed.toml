@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cc2-7e6d-8485-5c2f4ca1792f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cc2-72b7-ab50-caf839f2c78a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T20:11:40.3877511Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "a959dd42bc928c799d782f26e697bb0139ce7fa08c709949c2fed1703c2f868f"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "f37c93e7-6459-4863-bcf2-2b4586ac4b01"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "f37c93e7-6459-4863-bcf2-2b4586ac4b01"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "f37c93e7-6459-4863-bcf2-2b4586ac4b01"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 123
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — that’s exactly right, and you’re aligning very closely with how **entity[\"people\",\"Adam Dymitruk\"]** actually teaches Event Modeling.\n\nTime in Event Modeling is **not a separate construct**. It is expressed through the **timeline ordering of slices**.\n\nThe diagram itself is the timeline.\n\n---\n\n# 1. The Event Modeling timeline\n\nAdam’s diagrams always flow **left → right**.\n\n```text\nCommand → Event → View → Command → Event\n```\n\nEach slice represents **something happening at a moment in time**.\n\nSo the timeline is literally:\n\n```text\nSlice 1\nSlice 2\nSlice 3\nSlice 4\n```\n\nEach slice contains an example with concrete data.\n\nThat example data is extremely important.\n\n---\n\n# 2. Why he uses example data\n\nAdam calls this **walking a path through the system**.\n\nExample:\n\n```text\nCreateOrder(123)\n   ↓\nOrderPlaced(123)\n   ↓\nOrderStatusView(123, status=placed)\n   ↓\nShipOrder(123)\n   ↓\nOrderShipped(123)\n```\n\nYou are not modeling *all possibilities*.\n\nYou are modeling **one realistic journey**.\n\nThat makes the system understandable.\n\n---\n\n# 3. Parallel processes\n\nAs you mentioned, Adam says:\n\n> If things happen in parallel, pick an order.\n\nExample:\n\n```\nPaymentAuthorized\nInventoryReserved\n```\n\nEven if they occur independently, you still place them sequentially on the timeline so people can reason about them.\n\nLater you can annotate parallelism.\n\nBut discovery first focuses on:\n\n```text\na coherent narrative\n```\n\n---\n\n# 4. Why this matters for your Nexus Truth Graph\n\nThe **timeline slices are essentially edges in a graph**.\n\nEach slice describes a transformation.\n\nExample:\n\n```text\nIntent → Fact\nFact → Interpretation\nInterpretation → Intent\n```\n\nSo the timeline path is actually:\n\n```text\nAgent\n   ↓\nIntent\n   ↓\nFact\n   ↓\nInterpretation\n   ↓\nIntent\n```\n\nWhich is a **loop in the truth graph**.\n\nThe diagram simply shows **one traversal through the graph**.\n\n---\n\n# 5. Why this works well for your filesystem graph idea\n\nYour filesystem structure might look something like:\n\n```\n/truthgraph\n   /events\n   /views\n   /commands\n   /slices\n```\n\nBut the **timeline path** could be represented as something like:\n\n```\n01_place_order\n02_show_order_status\n03_ship_order\n04_show_shipping_queue\n```\n\nEach slice file describes:\n\n```\nintent\nfacts used\nfacts produced\nview derived\n```\n\nThat matches the Event Modeling philosophy very well.\n\n---\n\n# 6. For LaundryLog POC\n\nA minimal path might look like this:\n\n### Slice 1\n\n```text\nCommand\nCreateLaundryLoad\n```\n\n### Slice 2\n\n```text\nEvent\nLaundryLoadCreated\n```\n\n### Slice 3\n\n```text\nView\nLaundryLoadsAwaitingWash\n```\n\n### Slice 4\n\n```text\nCommand\nStartWashCycle\n```\n\n### Slice 5\n\n```text\nEvent\nWashCycleStarted\n```\n\nThis becomes your **first end-to-end story**.\n\nAdam strongly recommends starting exactly like that.\n\n---\n\n# 7. Why your focus is correct\n\nRight now the important things are:\n\n1. **One timeline**\n2. **One real path**\n3. **Example data**\n4. **Working system**\n\nNot:\n\n- parallelism\n- complex automation\n- edge cases\n- architecture perfection\n\nAdam repeatedly emphasizes this.\n\n---\n\n# 8. What you are actually building\n\nWhat you’re doing with Nexus + ATLAS + filesystem graph is essentially creating:\n\n```\nEvent Modeling\n+\nTruth Graph\n+\nExecutable specification\n```\n\nWhich is a **very interesting direction**.\n\nYour slices become both:\n\n```\ndocumentation\n+\nsystem behavior specification\n```\n\n---\n\n# 9. A good next step for the POC\n\nFor LaundryLog specifically, the first **complete path** might be:\n\n```\nCreateLoad\nLoadCreated\nLoadsAwaitingWashView\nStartWash\nWashStarted\nLoadsInWashView\nFinishWash\nWashCompleted\nLoadsAwaitingDryView\n```\n\nThat gives you a complete lifecycle.\n\nOnce that works in the filesystem graph, you can add:\n\n- projections\n- automation\n- UI triggers\n\n---\n\n✅ So your mental model is now aligned with Event Modeling:\n\n- Time = **slice ordering**\n- Diagram = **one narrative through the system**\n- Example data = **clarity mechanism**\n- Parallelism = **handled later**\n\n---\n\nIf you want, I can also help you design a **very simple filesystem slice format (TOML or DSL)** that would work well for your **LaundryLog + Nexus truth graph experiment**. That would likely accelerate your POC quite a bit."
+

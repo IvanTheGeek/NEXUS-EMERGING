@@ -19,11 +19,21 @@ The first code scaffold is intentionally small and centered on the canonical ing
   stable IDs, provenance, observed-history events, and a thin graph layer
 - `src/Nexus.EventStore/`
   TOML serialization and append-only file writers for canonical events and manifests
+- `src/Nexus.Importers/`
+  raw zip intake, provider adapters, event-store dedupe index, and import workflow orchestration
 - `src/Nexus.Cli/`
-  manual command-line entry points for smoke tests and later import workflows
+  manual command-line entry points for smoke tests and provider imports
 - `docs/v0-module-map.md`
   a short module and responsibility map for the first pass
 - `scripts/export_codex_sessions.fsx`
   copies local Codex session transcripts into the NEXUS object layer as raw source artifacts
 
-Importer workflow, provider parsing, and file writing come after the domain surface is agreed.
+Working commands now include:
+
+- `write-sample-event-store`
+- `import-provider-export`
+
+See:
+
+- `/docs/how-to/import-provider-export.md`
+- `/docs/how-to/export-codex-sessions.md`

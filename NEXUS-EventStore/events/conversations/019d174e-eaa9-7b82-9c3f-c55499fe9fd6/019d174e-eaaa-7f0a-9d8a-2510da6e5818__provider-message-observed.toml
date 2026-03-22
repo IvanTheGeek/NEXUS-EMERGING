@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-eaaa-7f0a-9d8a-2510da6e5818"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7aa9-822d-f2cbe54bca54"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T05:57:36.771995Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "b99e972eae00cce92728e2700001aec35a5f39f1542a8dfcc33a740d4895ff26"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf011-ed1b-746f-b3f3-d8ffb03cc0db"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf011-ed1b-746f-b3f3-d8ffb03cc0db"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf011-ed1b-746f-b3f3-d8ffb03cc0db"
+role = "assistant"
+sequence_hint = 80
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T05:57:22.519810Z\",\"stop_timestamp\":\"2026-03-15T05:57:23.220620Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants me to summarize Martin\\u0027s chapters on GWT scenarios from his Event Modeling book.\",\"summaries\":[{\"summary\":\"Thinking about summarizing chapter content with sample data illustrations.\"},{\"summary\":\"Prepared to synthesize Event Modeling\\u0027s GWT scenario chapter insights.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Martin's core points:\n\n**GWT is the real treasure of Event Modeling.** Business rules get defined directly in the model where behavior is described, not scattered across JIRA tickets and people's heads. Business stakeholders can write them themselves — they're that readable.\n\n**For Command Slices (State Changes)**, GWT follows: Given = prior events establishing state, When = the command, Then = resulting event OR error. The branching comes entirely from different Given states — \"given 3 items already in cart, when AddItem, then error\" vs \"given empty cart, when AddItem, then ItemAdded.\" No separate condition concept needed.\n\n**For View Slices (State Views)**, When is omitted entirely. It's just Given/Then — put the system in a state via events, verify the read model shows correct data. He emphasizes read models are purely conceptual data views, not implementation.\n\n**For Automations**, same Given/Then pattern as views — the processor triggers automatically so there's no explicit When. The automation reads from a view, issues a command, produces an event. He shows this as a View → Processor → Command → Event chain.\n\n**Key principles:** define as many scenarios as you need (\"don't save on them\"), use concrete example data, stack scenarios vertically below their slice, business rules are enforced at write time not read time (so no redundant checks), and the information completeness check forces you to trace data paths through the entire model.\n\nThis confirms our TOML design — `condition` should go. The handler's decision logic is expressed by having multiple GWT entries with different `given` clauses. The given events establish the state, and different states lead to different outcomes. Want me to update the file to drop `condition`?"
+

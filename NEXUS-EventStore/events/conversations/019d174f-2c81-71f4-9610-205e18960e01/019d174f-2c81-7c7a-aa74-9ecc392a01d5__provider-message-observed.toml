@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c81-7c7a-aa74-9ecc392a01d5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-7cec-8fec-81e2835edbe2"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T12:29:22.7056179Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "b56613becb2b11da228b754d5b29fdfe41aa26114e977467d0515b9904b8b002"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "c8cd7e07-52af-4d4a-a0ce-0e3849ce5c5a"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "c8cd7e07-52af-4d4a-a0ce-0e3849ce5c5a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "c8cd7e07-52af-4d4a-a0ce-0e3849ce5c5a"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 51
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect. We’ll do this **very mechanically** so you can follow it exactly from a blank Figma file. The goal is to structure the file so it mirrors your **event model → projection → UI states** thinking from Nexus.\n\nWe will build **three areas in the file**:\n\n1. **Events (the truth / spec)**\n2. **Projections (derived state)**\n3. **UI Screens (visual states)**\n\nThink of it like this:\n\n```\nEVENTS  →  PROJECTIONS  →  UI STATES\n(spec)     (derived)       (what user sees)\n```\n\n---\n\n# Step-by-Step From a Blank Figma File\n\n## Step 1 — Create the Canvas Sections\nPress **F** (Frame tool).\n\nCreate **three large frames side-by-side**.\n\nRename them exactly:\n\n```\n01 Events\n02 Projections\n03 UI Screens\n```\n\nYour canvas should now look like:\n\n```\n| 01 Events | 02 Projections | 03 UI Screens |\n```\n\nMake them **very large** so we have room.\n\nExample size:\n\n```\n3000 × 1500\n```\n\n---\n\n# Step 2 — Add the First Event\n\nClick inside **01 Events**.\n\nPress **R** (rectangle).\n\nCreate a rectangle roughly:\n\n```\n260 × 80\n```\n\nNow press **T** (text) and type:\n\n```\nLaundryLoadAdded\n```\n\nPlace the text on top of the rectangle.\n\nSelect both → press:\n\n```\nCtrl + Alt + G\n```\n\nRename the frame:\n\n```\nEvent: LaundryLoadAdded\n```\n\nYou just created your **first event object**.\n\nStructure should look like:\n\n```\nEvent: LaundryLoadAdded\n   Rectangle\n   Text: LaundryLoadAdded\n```\n\n---\n\n# Step 3 — Add More Events\n\nDuplicate the event.\n\nShortcut:\n\n```\nCtrl + D\n```\n\nCreate these events:\n\n```\nLaundryLoadAdded\nLaundryLoadStarted\nLaundryLoadFinished\nLaundryLoadRemoved\n```\n\nNow your **Events section** represents the **system spec**.\n\nThis aligns with what you said earlier:\n\n> Adam makes it very clear that the event model basically is the spec.\n\nExactly.\n\n---\n\n# Step 4 — Create a Projection\n\nMove to the **02 Projections** frame.\n\nPress **F** again to create a frame.\n\nRename it:\n\n```\nProjection: LaundryLog\n```\n\nSize roughly:\n\n```\n400 × 600\n```\n\nInside it add text:\n\n```\nLoads:\n• Load 1\n• Load 2\n• Load 3\n```\n\nThis frame represents the **derived state built from events**.\n\n---\n\n# Step 5 — Connect the Concept Visually\n\nPress **L** (line tool).\n\nDraw lines from events to the projection.\n\nExample:\n\n```\nLaundryLoadAdded  ──→ LaundryLog Projection\nLaundryLoadRemoved ──→ LaundryLog Projection\nLaundryLoadFinished ──→ LaundryLog Projection\n```\n\nThis visually shows:\n\n```\nevents → projection\n```\n\nWhich is exactly **event sourcing logic**.\n\n---\n\n# Step 6 — Build the First UI Screen\n\nMove to **03 UI Screens**.\n\nPress **F**.\n\nCreate a frame sized like a phone:\n\n```\n390 × 844\n```\n\nRename it:\n\n```\nScreen: LaundryLog\n```\n\nInside it add:\n\n**Title**\n\n```\nLaundry Log\n```\n\n**List placeholder**\n\n```\nLoad #1 – Washing\nLoad #2 – Drying\n```\n\n**Button**\n\nRectangle + text:\n\n```\nAdd Load\n```\n\nGroup them into:\n\n```\nAddLoadButton\n```\n\n---\n\n# Step 7 — Connect Projection → Screen\n\nDraw another line:\n\n```\nProjection: LaundryLog  ──→ Screen: LaundryLog\n```\n\nNow the file visually expresses the pipeline:\n\n```\nEvents → Projection → UI\n```\n\nWhich is **exactly your Nexus idea of projection fidelity**.\n\n---\n\n# What You Just Built\n\nYou created a **visual event architecture map** inside Figma.\n\n```\n[EVENT]\nLaundryLoadAdded\n        ↓\n[PROJECTION]\nLaundryLog\n        ↓\n[UI STATE]\nLaundryLog Screen\n```\n\nThis is extremely close to what **EMViewer would visualize**.\n\nYou’re basically designing **the system and the UI simultaneously**.\n\n---\n\n# The Next Powerful Step (I recommend this next)\n\nWe add **state variations of the screen**:\n\n```\nLaundryLog / Empty\nLaundryLog / Has Loads\nLaundryLog / Adding Load\nLaundryLog / Editing Load\n```\n\nThese become **UI projections of system states**.\n\nWhich is exactly your statement earlier:\n\n> the app is basically one page with different states.\n\nCorrect.\n\n---\n\nIf you'd like, I can also show you something **very powerful for Nexus**:\n\nA **Figma layout pattern that mirrors the Event Modeling timeline directly**.\n\nIt turns the file into a **visual EMViewer / system IDE**, which is extremely aligned with what you're building."
+

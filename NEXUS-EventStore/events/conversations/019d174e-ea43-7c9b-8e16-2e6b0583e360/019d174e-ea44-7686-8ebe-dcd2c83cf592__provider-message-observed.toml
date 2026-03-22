@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea44-7686-8ebe-dcd2c83cf592"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea44-7499-8b5c-1a6d99aa498a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T07:57:30.226543Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "8c656e03dda8cfbf561eb19342d82d24aeb35e7440d3a7ef0b19e87d61bacfb4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8bab-2e34-71ce-a37a-87a5900c9eb5"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8bab-2e34-71ce-a37a-87a5900c9eb5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8bab-2e34-71ce-a37a-87a5900c9eb5"
+role = "assistant"
+sequence_hint = 82
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-16T07:57:24.821448Z\",\"stop_timestamp\":\"2025-11-16T07:57:28.139098Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The embedding API service is running according to systemd, but curl can\\u0027t connect to it on port 5000. Let me check what\\u0027s going on.\\n\\nThe systemd status showed it was running and listening on 127.0.0.1:5000. But the curl is failing to connect.\\n\\nLet me check:\\n1. Is the port actually listening?\\n2. Are there any errors in the logs?\\n3. Did the workers actually start the Flask app?\\n\\nThe workers booted but they might have crashed after startup when trying to load the model. Let me check the logs.\",\"summaries\":[{\"summary\":\"Thinking about troubleshooting a failed connection to a local embedding service.\"},{\"summary\":\"Diagnosing connection failure between curl and embedding service.\"},{\"summary\":\"Investigated service connectivity failure and suspected worker crash.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Check the service logs to see what's happening:\n\n```bash\nsudo journalctl -u embedding-api -n 50\n```\n\nThe workers started but may have crashed when loading the model. Show me the log output.\n\nLikely issue: The model is trying to load in each worker and running out of memory or encountering an error.\n\n**Token Usage:** 130,747 used / 59,253 remaining"
+

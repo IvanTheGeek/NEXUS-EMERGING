@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-e9e9-75e7-972f-bef3c9a1ca54"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+conversation_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+message_id = "019d174e-e9e9-751c-aba7-cc45092fcdcf"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T19:20:09.54674Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "1372b007353ec6825755ed4416ea742d29006cf68ed53a86b85f1329197dbef9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7982-6271-7595-bd7f-f165af06e4ca"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+message_native_id = "019a7982-6271-7595-bd7f-f165af06e4ca"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7982-6271-7595-bd7f-f165af06e4ca"
+role = "assistant"
+sequence_hint = 6
+
+[[body.segments]]
+kind = "plain_text"
+text = " I'll explain what you need to **run** Transformers (inference), broken into practical tiers.\n\n## Hardware Requirements\n\n**GPU/Accelerator** (almost always needed)\n- **VRAM is the bottleneck** - model parameters must fit in memory\n- Rule of thumb: Need ~2x model size in VRAM (parameters + activations)\n  - 7B model: ~14-16GB VRAM minimum\n  - 13B model: ~26-30GB VRAM\n  - 70B model: ~140GB+ VRAM (multi-GPU)\n- **Consumer options**:\n  - RTX 4090: 24GB (can run 7B-13B models comfortably)\n  - RTX 3090: 24GB \n  - RTX 4060 Ti: 16GB (smaller models only)\n- **Enterprise**: A100 (40/80GB), H100 (80GB), AMD MI300\n\n**CPU-only** (possible but slow)\n- Works for smaller models (<3B parameters)\n- 10-100x slower than GPU\n- Needs lots of RAM (16GB+ minimum)\n- Practical for experimentation, not production\n\n**Apple Silicon**\n- M1/M2/M3 with unified memory works well\n- 16GB: small models (3-7B)\n- 32GB+: medium models (13B)\n- Metal acceleration via MLX or llama.cpp\n\n## Software Stack\n\n**Core Requirements**\n- Python 3.8+\n- PyTorch or JAX (deep learning frameworks)\n- CUDA toolkit (for NVIDIA GPUs)\n- Specific model library:\n  - `transformers` (HuggingFace - most common)\n  - `llama.cpp` (C++, more efficient)\n  - `vLLM` (optimized inference server)\n\n**Optimizations** (make it actually practical)\n- **Quantization**: Reduce precision (FP16, INT8, INT4)\n  - 4-bit quantized 7B model: ~4GB instead of 14GB\n  - Tools: GPTQ, AWQ, GGUF format\n- **Flash Attention**: Faster attention computation\n- **KV cache optimization**: Reuse computation for generation\n\n## Minimal Setup Examples\n\n**Option 1: HuggingFace Transformers** (easiest)\n```python\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    \"meta-llama/Llama-2-7b-hf\",\n    device_map=\"auto\",  # Automatic GPU allocation\n    torch_dtype=\"float16\"  # Half precision\n)\ntokenizer = AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-7b-hf\")\n```\n\n**Option 2: llama.cpp** (most efficient)\n- Runs quantized models\n- Works on CPU reasonably well\n- Lower memory usage\n- Used by: Ollama, LM Studio, etc.\n\n**Option 3: Ollama** (simplest for local use)\n```bash\nollama run llama2:7b\n```\n- Handles everything automatically\n- Good for experimentation\n\n## Practical Tiers\n\n**Tier 1: Experimentation** ($0-500)\n- Laptop with 16GB RAM, decent CPU\n- Run 3B models quantized on CPU\n- Or cloud (Colab, RunPod) for GPU access\n\n**Tier 2: Development** ($1500-3000)\n- Consumer GPU (RTX 4090, 24GB)\n- Run 7-13B models with quantization\n- Fine-tune smaller models\n\n**Tier 3: Production** ($5000+)\n- Multiple enterprise GPUs\n- Run 70B+ models\n- Serve multiple users efficiently\n\n**Tier 4: Training/Large Scale** ($$$$)\n- GPU clusters\n- Not needed just to run models\n\n## Bandwidth/Storage\n\n- **Model download**: 3-150GB depending on size\n- **Fast internet helpful** but one-time download\n- **Storage**: SSD recommended (model loading speed)\n\n## Cloud Alternatives\n\nDon't want to buy hardware?\n- **APIs**: OpenAI, Anthropic, etc. (easiest)\n- **Hosted inference**: HuggingFace Inference Endpoints, Replicate\n- **Rent GPUs**: RunPod, Vast.ai, Lambda Labs ($0.20-2/hour)\n\n## What You Likely Need\n\nFor **your context** (F# developer, exploring):\n- **Start**: Ollama on your current machine (works on CPU/modest GPU)\n- **Next step**: Cloud GPU rental when needed ($20-50/month for experiments)\n- **Eventually**: RTX 4090 if doing serious local development\n\nWant specifics on setting up a particular approach, or recommendations for your use case?"
+

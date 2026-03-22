@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c80-7fda-b55f-73e8753117d8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+conversation_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+message_id = "019d174f-2c80-7375-b84c-c51c63716f05"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-03T18:43:30.02072Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "413cbe55984b529410604eb4fbd736a6bd3bc8cd3b5348ac99d5ea8edf5996a7"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "f837295c-be50-47f2-856c-89cba82e2d20"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+message_native_id = "f837295c-be50-47f2-856c-89cba82e2d20"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "f837295c-be50-47f2-856c-89cba82e2d20"
+role = "assistant"
+model_name = "gpt-5-2"
+sequence_hint = 7
+
+[[body.segments]]
+kind = "plain_text"
+text = "Short answer: **Yes — it’s much more likely to “just work” on stock Pixel OS.**\n\nOn a stock Pixel (like a future **entity[\"product\",\"Pixel 10\",\"google smartphone\"]** running **entity[\"software\",\"Android\",\"google mobile operating system\"]**), Bluetooth mic routing is:\n\n- More aggressively auto-managed  \n- Tuned specifically for Pixel hardware  \n- Optimized for voice + Assistant use cases  \n\nGoogle heavily optimizes call profile (HFP) switching for:\n- Voice typing  \n- Assistant  \n- Recorder  \n- Driving scenarios  \n\nSo in most cases:\n- Connect earbuds  \n- Enable “Phone calls” in Bluetooth settings  \n- Start voice input  \n→ It switches to the earbud mic automatically  \n\n---\n\n## Why It’s More Predictable Than GrapheneOS\n\nWith **entity[\"software\",\"GrapheneOS\",\"android-based privacy os\"]**, routing is:\n- More conservative  \n- More privacy-controlled  \n- Less “magic auto-switching”  \n- Less tightly integrated with speech services  \n\nGrapheneOS is designed to **avoid implicit hardware state changes** unless explicitly requested by the app.\n\nStock Pixel OS, on the other hand, assumes:\n> “User probably wants headset mic if headset is connected.”\n\n---\n\n## Important Nuance\n\nEven on stock Android, an app can still fail to trigger the Bluetooth mic if:\n- It doesn’t request VOICE_COMMUNICATION or VOICE_RECOGNITION\n- It uses a raw MIC input source\n- Bluetooth profile is misconfigured\n\nBut overall:  \n📈 Success probability is significantly higher on stock Pixel.\n\n---\n\n## Practical Take\n\nIf your goal is:\n\n> Reliable, zero-friction voice capture while driving\n\nStock Pixel OS is:\n- More predictable  \n- More optimized for that specific workflow  \n- Less likely to require debugging  \n\nGrapheneOS = more control  \nStock Pixel = more convenience  \n\n---\n\nIf you want, we can zoom out a level:\n\nAre you optimizing for:\n- Reliability under motion?\n- Privacy first?\n- System-level voice capture as part of your “canonical system substrate” thinking?\n\nBecause this is actually a philosophical architecture tradeoff, not just a mic routing issue."
+

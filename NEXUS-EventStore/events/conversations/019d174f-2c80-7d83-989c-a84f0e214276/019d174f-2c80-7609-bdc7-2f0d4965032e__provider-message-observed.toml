@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c80-7609-bdc7-2f0d4965032e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+conversation_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+message_id = "019d174f-2c80-7ee5-b74e-3d0456a85513"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-03T21:02:33.530205Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "9246371e074d4c0ef6dc7af3cf34f30a0270b894de2ffe48c0457868d011fba2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "c5695939-033e-4b39-a91e-57dfd08ba3f6"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+message_native_id = "c5695939-033e-4b39-a91e-57dfd08ba3f6"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "c5695939-033e-4b39-a91e-57dfd08ba3f6"
+role = "assistant"
+model_name = "gpt-5-2"
+sequence_hint = 17
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — this tells us something important.\n\nIf your **entity[\"product\",\"Pixel 9\",\"google smartphone\"]** on stock **entity[\"software\",\"Android\",\"google mobile operating system\"]** is *not* using the earbud mic in ChatGPT voice mode, then this is almost certainly a **Bluetooth profile routing issue**, not a ChatGPT limitation.\n\nLet’s narrow it down cleanly.\n\n---\n\n# 🚨 Most Likely Cause\n\nYour earbuds are connected in:\n\n**Media Audio (A2DP)** mode only  \n❌ Not in **Phone Calls (HFP)** mode  \n\nWithout HFP enabled, Android will:\n- Play audio through earbuds\n- But keep the phone’s internal mic active\n\n---\n\n# ✅ Step 1 — Check This First\n\nGo to:\n\n**Settings → Connected devices → Your Earbuds**\n\nMake sure:\n- ✅ “Phone calls” is ON  \n- ✅ “Media audio” is ON  \n\nIf “Phone calls” is OFF, Android cannot use the earbud mic.\n\nThis is the #1 cause.\n\n---\n\n# ✅ Step 2 — Force HFP Mode\n\nIf “Phone calls” is already enabled:\n\n1. Disconnect earbuds\n2. Reboot phone\n3. Reconnect earbuds\n4. Start ChatGPT voice mode again\n\nSometimes Android stays stuck in media mode until a fresh pairing cycle.\n\n---\n\n# 🧪 Step 3 — Controlled Test\n\nTo confirm which mic is active:\n\n- Start voice mode\n- Put the phone on the passenger seat\n- Lean away from it\n- Speak softly directly into earbud mic\n\nIf transcription fails → still using phone mic  \nIf it works clearly → earbud mic active  \n\n---\n\n# ⚠️ Important Reality Check\n\nSome Apple earbuds (especially certain AirPods generations) prioritize:\n- Media mode for non-call apps\n- And only switch to HFP when a true “call” session is initiated\n\nChatGPT voice mode *should* request voice communication audio — but Android sometimes doesn’t treat it like a call.\n\n---\n\n# 🔧 If It Still Won’t Switch\n\nTwo options:\n\n### Option A — Trigger Call Context\nStart a phone call (even briefly), then switch to ChatGPT while earbuds are active.  \nIf it suddenly uses the earbud mic → routing confirmation.\n\n### Option B — Reset Bluetooth Pairing\nForget device → Re-pair from scratch.\n\n---\n\n# 🎯 Why This Matters For You\n\nYour workflow depends on:\nReliable earbud mic → clear transcription in a noisy cab → usable cognitive capture.\n\nIf routing isn’t stable, it breaks the whole system.\n\n---\n\nTell me:\n\nAre these:\n- Regular wired Apple earbuds?\n- AirPods (which generation)?\n- USB-C Apple earbuds?\n\nThat detail determines the next move."
+

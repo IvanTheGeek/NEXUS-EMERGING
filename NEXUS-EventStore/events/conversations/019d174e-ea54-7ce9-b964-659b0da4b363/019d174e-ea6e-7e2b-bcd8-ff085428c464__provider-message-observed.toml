@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea6e-7e2b-bcd8-ff085428c464"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-71a7-865a-0fcf3ed25295"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T02:20:05.557687Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "114278c86f56b8c272e5cdc79879efce8016d9555374bd7f78867dc341522dab"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac57-d945-7c4b-826f-04f627e3ebaf"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac57-d945-7c4b-826f-04f627e3ebaf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac57-d945-7c4b-826f-04f627e3ebaf"
+role = "assistant"
+sequence_hint = 399
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-02T02:19:27.451336Z\",\"stop_timestamp\":\"2026-03-02T02:19:27.451336Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-02T02:19:27.451336Z\",\"stop_timestamp\":\"2026-03-02T02:19:27.792357Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Next item on the checklist is \\u0060Tools and how they fit\\u0060.\",\"summaries\":[{\"summary\":\"Thinking about clarifying the user\\u0027s next request or task.\"},{\"summary\":\"Pivoted toward examining tools and their integration.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Tools and how they fit`\n**Type:** Wiki\n\n```markdown\nNEXUS is methodology, not tooling. The tools that \nsupport NEXUS are chosen because they align with \nthe methodology's principles — they can be replaced \nif better alternatives emerge. What cannot be \nreplaced are the principles they serve.\n\nThis wiki describes the current tool set and the \nrole each tool plays within NEXUS. For each tool \nthe question is not \"what is this tool\" but \"how \ndoes this tool fit into the methodology and what \ndoes it contribute.\"\n\n## Penpot — Design and Event Modeling\n\n**Role:** Visual source of truth for both Event \nModels and UI screens.\n\nPenpot is the tool where Event Models are drawn \nand UI screens are designed. It is open source \nand self-hostable — consistent with NEXUS values \nof owning your tools and your data.\n\nWithin NEXUS, Penpot serves two distinct purposes:\n\n**Event Model authoring** — the Event Model \ntimeline is drawn in Penpot. The left-to-right \ntemporal layout, the swim lanes, the slice \nconnections — all expressed as a visual artifact \nin Penpot. The model lives in Penpot; the link \nto it lives in LOGOS.\n\n**UI screen design and path documentation** — \nUI screens are designed in Penpot. Each path \nis documented as a Penpot prototype — a linear \nsequence of screens with one clickable action \nper screen and example data visible in the UI. \nFollowing the prototype is walking the path.\n\nPenpot exports SVG. The SVG output of a screen \ndesign can be consumed directly by the \napplication — making the Penpot design the \nactual UI, not a reference for a developer \nto recreate in code. This closes the \ndesign-to-implementation gap structurally.\n\n*See: NEXUS → Penpot as dual source of truth — \nEvent Model and UI.*\n\n## LOGOS — Knowledge and Communication\n\n**Role:** The knowledge base and communication \nhub where everything is connected and nothing \nis lost.\n\nLOGOS is where all design decisions, limitations, \nrequirements, specs, paths, and AI conversations \nlive. It is the connective tissue of NEXUS — \nevery artifact produced by the methodology has \na home in LOGOS and links to the other artifacts \nit connects to.\n\nLOGOS serves both human and AI audiences from \nthe same data. A human navigates it through \nthe forum interface. CORTEX consumes it through \nthe API. Both see the same knowledge base with \nequal fidelity.\n\nThe chat import pipeline brings AI conversations \ninto LOGOS — preserving the reasoning that \nhappened during design as permanent, \nreferenceable content linked to the decisions \nit produced.\n\n*See: LOGOS — Start Here.*\n\n## CORTEX — The Personal AI System\n\n**Role:** AI design collaborator shaped by \naccumulated knowledge.\n\nCORTEX is the AI system that knows this \nmethodology as you practice it, this system's \nhistory, and your preferences and constraints. \nIt is not installed — it is grown, through the \naccumulation of knowledge in LOGOS and the \ndeliberate shaping of its training and context.\n\nCORTEX is the design collaborator role in \nAI-assisted implementation. It participates \nin Event Modeling, path definition, and spec \nrefinement — producing suggestions informed \nby the full accumulated knowledge base rather \nthan generic patterns.\n\n*See: CORTEX — Start Here.*\n*See: NEXUS → AI-assisted implementation.*\n\n## F# — The Implementation Language\n\n**Role:** Primary render target for AI-assisted \ncode generation.\n\nF# is chosen as the implementation language \nbecause its properties align directly with \nNEXUS principles:\n\n- Type-driven design makes invalid states \n  unrepresentable — constraints specified in \n  specs become compiler-enforced types\n- Discriminated unions model event types \n  cleanly and exhaustively\n- Pure functions align naturally with commands \n  and projections as deterministic functions\n- The functional paradigm maps directly to \n  the event sourcing model\n\nF# is the render target, not a design \nconstraint. The Event Model and specs are \nlanguage-agnostic. F# is the language passed \nto the rendering AI. Other languages could \nbe targeted from the same designs.\n\n*See: NEXUS → Language-agnostic design — one \nmodel, many implementations.*\n\n## Talkyard — Current LOGOS Platform\n\n**Role:** The forum platform currently running \nLOGOS.\n\nTalkyard is the platform on which LOGOS \ncurrently runs. It provides the forum structure, \nwiki topics, category hierarchy, and API that \nLOGOS uses today.\n\nTalkyard is explicitly an interim platform. \nThe requirements being accumulated in LOGOS → \nRequirements describe a system Talkyard cannot \nfully satisfy — event-sourced storage, custom \ntopic types, arbitrary metadata, full edit \nhistory. LOGOS will eventually run on a \nplatform built to those requirements.\n\nTalkyard's limitations are documented in \nLOGOS → Talkyard Limitations. Each limitation \nis a permanent record of a constraint the \nnext platform must not have.\n\n*See: LOGOS → Talkyard Limitations.*\n*See: LOGOS → Requirements.*\n\n## The Rendering AI\n\n**Role:** Purpose-trained model for rendering \napproved NEXUS specs into idiomatic F#.\n\nThe rendering AI is distinct from CORTEX. \nWhere CORTEX is a broad design collaborator \nshaped by accumulated context, the rendering \nAI is a narrow, specific tool optimized for \none task: taking an approved spec and producing \ncorrect, idiomatic F# that follows NEXUS \npatterns and conventions.\n\nThis is a trainable, improvable target. The \ncorpus of spec-to-implementation pairs that \naccumulates over time becomes training data. \nThe renderer gets better as more specs are \nrendered.\n\n*See: NEXUS → AI-assisted implementation.*\n*See: NEXUS → The rendering AI — training \nand tuning a model for NEXUS F# output.*\n\n## Tool Selection Principles\n\nTools are chosen and kept based on alignment \nwith NEXUS principles:\n\n**Open source and self-hostable** — you own \nyour tools and your data. No vendor lock-in. \nNo dependency on a service that can change \npricing, terms, or availability.\n\n**API accessible** — every tool exposes its \ndata through an API with full fidelity. LOGOS \nand CORTEX can consume any tool's data \nprogrammatically.\n\n**Exportable** — full data export is a \nrequirement of any tool in the NEXUS ecosystem. \nThe export path must exist before the tool \nis adopted.\n\n**Replaceable** — no tool is irreplaceable. \nThe methodology is the constant. Tools are \nthe current best implementation of the \nmethodology's needs.\n\n## See Also\n\n- [NEXUS — Start Here](https://talkyard.ivanthegeek.com/-55/nexus-start-here-the-framework-at-the-center-of-everything)\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [AI-assisted implementation](https://talkyard.ivanthegeek.com/-92/ai-assisted-implementation)\n- [The knowledge accumulation principle](https://talkyard.ivanthegeek.com/-93/the-knowledge-accumulation-principle)\n- NEXUS → Penpot as dual source of truth — \n  Event Model and UI\n- LOGOS — Start Here\n- CORTEX — Start Here\n```\n\n---\n\nNote: I used -55, -85, -92, -93 for previous wikis — verify before posting. Create and let me know when done."
+

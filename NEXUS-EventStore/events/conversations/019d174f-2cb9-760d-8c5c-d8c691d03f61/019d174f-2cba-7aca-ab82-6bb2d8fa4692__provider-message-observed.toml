@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cba-7aca-ab82-6bb2d8fa4692"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cba-751d-868b-dda093370099"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T16:47:10.0753519Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "9b80c742a78dc60f9d9837ed2b6ae649a3e01e3239a939553d55cb92cb411d2b"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "b0fd8945-b2fe-4c5c-8290-ac1a7dc3e924"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "b0fd8945-b2fe-4c5c-8290-ac1a7dc3e924"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "b0fd8945-b2fe-4c5c-8290-ac1a7dc3e924"
+role = "assistant"
+model_name = "gpt-5-t-mini"
+sequence_hint = 80
+
+[[body.segments]]
+kind = "plain_text"
+text = "Short answer: yes — you can tighten and harmonize those primitives.  \nThe five words you’ve been using are fine as “thinking labels,” but they come from mixed traditions (commands from event modeling, events from event sourcing, interpretations/projections from CQRS, concepts from ontology, contexts from DDD). That mix works, but it’s useful to pick a small, internally-consistent vocabulary for the Nexus core — one that maps cleanly to other frameworks and to your file/DSL shapes.\n\nBelow I give (A) a recommended canonical set of primitives for **Nexus**, (B) alternate names from other traditions and a mapping table, (C) rationale + quick examples (video production), and (D) practical naming/DSL/file suggestions you can adopt immediately.\n\n# A — Recommended Nexus primitives (canonical)\nUse these as the **core ontology** for the truth graph and the DSL/runtime:\n\n1. **Agent** — the source of causation (human, system, scheduled process).  \n2. **Intent** — a recorded decision or command (what an agent *tries* to do).  \n3. **Fact** — an immutable atomic record of “what happened” (event).  \n4. **View** — derived/observed state produced by interpreting facts (projection).  \n5. **Concept** — domain types / vocabulary (the DNA: Load, Shot, Invoice).  \n6. **Context** — bounded semantic environment / ruleset where concepts and intents have specific meanings (bounded context).\n\nWhy this set?\n- **Agent** makes causality explicit (who/what initiated).  \n- **Intent** preserves the decision boundary (aligns with your “intent cell”).  \n- **Fact** is neutral, concise, philosophically clear (events-as-facts).  \n- **View** expresses interpretation without implying a storage mechanism.  \n- **Concept** and **Context** keep the domain DNA and scoping explicit.\n\n# B — Mapping table (your words ↔ alternatives ↔ DDD/ES/CogSci)\nUse this to translate across conversations and literature.\n\n| Your term | Nexus canonical | Other common names | Short rationale |\n|---|---:|---|---|\n| intent | **Intent** | Command, Request, Intention | Keep — it’s clear and maps to action sources. |\n| event | **Fact** | Event (ES), Record | “Fact” emphasizes immutable truth; avoids overloaded “event”. |\n| interpretation | **View** | Projection, Read Model | “View” focuses on derived/observable state (no write to history). |\n| concept | **Concept** | Entity type, Ontology node | Keep “Concept” or “Type” — it’s the DNA. |\n| context | **Context** | Bounded Context (DDD) | Keep; clarify as “Context (ruleset/namespace)”. |\n| command cell | **Intent Cell** | Command Handler | Use “Intent Cell” for Nexus DSL/runtime. |\n| projection cell | **View Cell** | Projection / Read Model | Use “View Cell”. |\n| event cell/node | **Fact Node** | Event Node | Use “Fact Node” in graph. |\n| agent (new) | **Agent** | Actor, Principal | Explicitly model who/what caused the Intent. |\n\n# C — Rationale + brief video-production example\nSmall canonical set reduces ambiguity and makes tools predictable.\n\nExample (video production) using canonical terms:\n\n- Agent: `director:jane`, `camera:ArriALEXA1`, `automation:cron/ingest`.\n- Intent: `StartTake` by `director:jane`.\n- Fact: `TakeRecorded{project:P1, scene:3, take:4, ts:2026-03-12T10:02Z}` (append-only).\n- View: `MediaLibraryIndex` (updates when `TakeRecorded` facts arrive).\n- Concept: `Project`, `Scene`, `Shot`, `Take`, `Asset`.\n- Context: `ProductionContext` vs `PostProductionContext` (same `TakeRecorded` fact may mean different things in each).\n\nThat maps directly to your biological model:\n- Intent Cell → produces Intents,\n- Fact Node → immutable record (bloodstream),\n- View Cell → perception / projections,\n- Concepts = DNA,\n- Contexts = organs.\n\n# D — Practical naming & DSL suggestions\nMake these conventions explicit so tools, compiler, and humans align.\n\n1. **Canonical nouns (singular, lower_snake_case)**  \n   - intent = `start_take`  \n   - fact = `take_recorded`  \n   - view = `media_library_index`  \n   - concept files = `concepts/take.toml`  \n   - context dirs = `contexts/production/`\n\n2. **Slice directories**  \n   - `slices/intent/start_take/` → `slice.toml` (Intent Cell metadata)  \n   - `slices/fact/take_recorded/` → `fact.toml` (schema + example)  \n   - `views/media_library_index/` → `view.toml` (listens_to facts)\n\n3. **DSL fields (minimal)**  \n   - Intent slice: `agent_roles`, `reads: []`, `requires: []`, `emits: fact_name`  \n   - Fact file: `schema`, `immutable: true`, `related_concepts: []`  \n   - View file: `listens_to: [fact_name]`, `updates: [view_target]`\n\n4. **Graph naming**  \n   - Graph nodes use canonical names: `intent:start_take`, `fact:take_recorded`, `view:media_library_index`.\n\n5. **Versioning**  \n   - Always version Intent/Fact/View definitions (e.g., `v1`, `v2`) rather than editing in place.\n\n# E — Pros / Cons of switching terms\n- **Using “Fact” vs “Event”**:  \n  + pro: philosophical clarity (immutable truth).  \n  − con: some readers expect “event”; you’ll need a translation layer in docs.\n- **Adding “Agent”**:  \n  + pro: makes causality explicit (useful for audits, provenance).  \n  − con: slightly higher DSL surface area.\n\n# F — My concise recommendation (what to adopt now)\n1. Adopt the canonical set: **Agent, Intent, Fact, View, Concept, Context**.  \n2. Use `Intent Cell` and `View Cell` as runtime slice types.  \n3. Represent facts as `fact:` nodes in the truth graph and call them “Facts” in docs, but provide an “Event ↔ Fact” glossary for newcomers.  \n4. Version everything; keep slice-as-dir pattern and the minimal DSL fields suggested above.  \n5. Add `agent` to the Intent metadata for provenance.\n\n---\n\nIf you want, I can:\n- convert one of your example slices (e.g., `AssignDriver` or `StartTake`) into the recommended DSL folder layout and files, or  \n- draft a one-page glossary/docs snippet that explains the canonical Nexus terms and how they map to DDD / ES / Event Modeling for your team.\n\nWhich would you prefer?"
+

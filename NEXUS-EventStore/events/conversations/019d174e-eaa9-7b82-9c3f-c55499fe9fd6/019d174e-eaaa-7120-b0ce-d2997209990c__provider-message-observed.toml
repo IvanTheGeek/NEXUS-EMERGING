@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-eaaa-7120-b0ce-d2997209990c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-76a9-89fe-354547c0bfa1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T15:16:02.883641Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "8fba63c37aef7a9fae892ec210eb685d51129562be65a6cb71eae4f19501837d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf211-5c6c-709a-b0a8-d65fdaa63e0e"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf211-5c6c-709a-b0a8-d65fdaa63e0e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf211-5c6c-709a-b0a8-d65fdaa63e0e"
+role = "assistant"
+sequence_hint = 136
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T15:15:55.009654Z\",\"stop_timestamp\":\"2026-03-15T15:15:57.823020Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Got it - the conventions are now clear:\\n\\n- Folder: \\u0060ID_SliceName/\\u0060 (sort by timeline order in filesystem)\\n- File: \\u0060SliceName_ID.toml\\u0060 (human reads name first when in the folder)\\n- Graph builder reads all files regardless of naming, builds internal structures, sorts and connects via GWT references\\n\\nLet me confirm I have the full pattern for future slices.\",\"summaries\":[{\"summary\":\"Thinking about file naming conventions and graph generation from sorted data structures.\"},{\"summary\":\"Crystallizing naming conventions and graph-building architecture.\"},{\"summary\":\"Crystallized naming conventions and graph architecture patterns.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Clear. The conventions:\n\n- **Folder**: `ID_SliceName/` — filesystem sorts in timeline order\n- **File**: `SliceName_ID.toml` — once inside, name matters more to the human\n- **Graph builder**: reads all `.toml` files, doesn't care about names, builds structures from content, sorts/connects via IDs and GWT references\n\nSo the ViewSlice filename should have been `CurrentLocation_019644a1-b1a0-7000-8000-000000000400.toml` not `ViewSlice_019644a1-b1a0-7000-8000-000000000200.toml`.\n\nAlso noticed the folder ID and slice ID don't match on that one — folder is `...000000000200` but the TOML inside has `id = \"...000000000400\"`. The 200 range was originally CheckSessionStatus. Want to renumber to keep it clean, or leave it since the graph builder doesn't care about folders?"
+

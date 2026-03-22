@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-e9e9-7c83-b04d-3ccd4acb6204"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+conversation_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+message_id = "019d174e-e9e9-7b27-960d-d9923ea7ee79"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T19:15:55.713065Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "fb2cf725dfcd622292b8c7cf55a31364379796be81c08fda8b9a91b0a8721a12"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a797e-7234-7462-8a07-aac6e7169ca2"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+message_native_id = "019a797e-7234-7462-8a07-aac6e7169ca2"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a797e-7234-7462-8a07-aac6e7169ca2"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "plain_text"
+text = " I'll cover alternatives to Transformer-based LLMs - both older architectures and newer approaches trying to address Transformer limitations.\n\n## Pre-Transformer Architectures\n\n**1. Recurrent Neural Networks (RNNs)**\n- Process text sequentially, maintaining hidden state\n- Struggle with long sequences (vanishing gradients)\n- Variants: LSTM, GRU improved this somewhat\n- Too slow for modern scale\n\n**2. Convolutional Neural Networks (CNNs)**\n- Apply filters to sliding windows of text\n- Fast but limited context window\n- Used in some early text classification\n\n## Modern Alternatives (Post-Transformer)\n\n**State Space Models (SSMs)**\n- **Mamba** (2023): Uses selective state spaces instead of attention\n- Processes sequences linearly (like RNNs) but efficiently\n- **Advantages**: O(n) complexity vs Transformer's O(n²), constant memory for inference\n- **Tradeoffs**: May struggle with precise recall tasks, still being proven at scale\n\n**Hybrid Architectures**\n- **RetNet** (Microsoft): Combines recurrence with parallelizable training\n- **RWKV**: RNN-like architecture that trains like Transformers\n- **Jamba** (AI21): Mixes Transformer layers with Mamba layers\n\n**Linear Attention Variants**\n- Various attempts to approximate attention with linear complexity\n- Examples: Performer, Linear Transformer, Linformer\n- Generally sacrifice some capability for speed\n\n## Completely Different Paradigms\n\n**Retrieval-Augmented Generation (RAG)**\n- Not a model architecture, but alternative approach\n- Smaller model + external knowledge retrieval\n- Complements rather than replaces LLMs\n\n**Neuro-Symbolic AI**\n- Combines neural networks with symbolic reasoning\n- Logic rules + learning\n- Better for tasks requiring exact reasoning\n\n**Memory Networks**\n- External memory modules with read/write operations\n- Can handle very long contexts differently than Transformers\n\n**Diffusion Models for Text**\n- Apply image diffusion concepts to language\n- Still experimental, not mainstream yet\n\n## Why Transformers Still Dominate\n\nDespite alternatives:\n- **Proven scaling laws**: Performance predictably improves with size\n- **Massive ecosystem**: Tools, training infrastructure, research\n- **Empirical success**: Still SOTA on most benchmarks\n- **Investment momentum**: Companies have optimized everything around them\n\n## Future Directions\n\nThe field is actively exploring:\n- **Efficient attention** mechanisms (Flash Attention, etc.)\n- **Mixture of Experts** (MoE): Activate subset of parameters per token\n- **Sparse models**: Not all parameters active all the time\n- **State space hybrids**: Combining best of Transformers and SSMs\n\n**Current reality**: For production LLMs at scale, Transformers (with efficiency improvements) remain the dominant choice. Alternatives like Mamba show promise for specific use cases (long context, lower memory) but haven't displaced Transformers yet.\n\nWant details on any specific alternative (like how Mamba works, or practical tradeoffs)?"
+

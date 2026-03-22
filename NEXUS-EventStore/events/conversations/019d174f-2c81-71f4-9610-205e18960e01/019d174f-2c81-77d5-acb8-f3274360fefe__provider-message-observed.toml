@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c81-77d5-acb8-f3274360fefe"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-7902-84c3-2ba723d08dce"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T12:01:21.6121668Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "dd4216b4c50d3c6c9c52fb29cd46e6111c22608092e3b3ae929bcdd2e58566e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "936db090-18c9-490c-a084-d803982d02ba"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "936db090-18c9-490c-a084-d803982d02ba"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "936db090-18c9-490c-a084-d803982d02ba"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 33
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good question — and the confusion is understandable.\n\nThe **entity[\"company\",\"Figma\",\"design software company\"] connector in ChatGPT** does **not** give me live browsing access to your workspace the way a human collaborator would expect. Its purpose is narrower.\n\nThink of connectors as **permissioned context bridges**, not full remote control.\n\n---\n\n## What the Figma Connector *Is For*\n\nWhen the connector works as intended, it allows ChatGPT to:\n\n1. **Pull structured design data**\n   - Frames\n   - Components\n   - Layer hierarchy\n   - Design tokens\n   - Comments\n\n2. **Explain designs**\n   - “What does this screen do?”\n   - “Explain this component hierarchy”\n\n3. **Help developers**\n   - Generate code from frames\n   - Describe layout and spacing\n   - Identify components and variants\n\n4. **Answer questions about a specific file**\n   - “What components are used on this screen?”\n   - “What text styles exist?”\n\n---\n\n## What It Does **NOT** Do\n\nEven with the connector:\n\n- I cannot freely browse your workspace\n- I cannot search for files by name\n- I cannot open arbitrary files automatically\n- I cannot modify your designs\n\nInstead, the system normally requires **you to reference a specific file or frame**, and then the connector passes the data into the conversation.\n\n---\n\n## Why It Feels Useless Right Now\n\nYou're running into a current limitation:\n\nMany ChatGPT connectors are **passive until the user explicitly attaches something from the connected service**.\n\nSo even though you connected Figma, **the file hasn’t been injected into this chat context yet**.\n\nThink of it like:\n\n```\nConnector = permission\nAttachment = actual data\n```\n\nRight now we only have the permission layer.\n\n---\n\n## What Should Normally Work\n\nIn some ChatGPT interfaces you can:\n\n- Click **Attach**\n- Choose **Figma**\n- Select the file/frame\n\nThen the design appears in the conversation.\n\nIf that happens, I can analyze it.\n\n---\n\n## For Your Nexus Experiment\n\nIronically, **the connector isn’t the most important thing anyway**.\n\nWhat you actually need to test is:\n\n```\nFigma\n   ↓\nStructured layers\n   ↓\nSVG export\n   ↓\nNexus projection\n```\n\nSo the most valuable artifact is **the SVG export**, not the live connector.\n\n---\n\n## The Bigger Insight\n\nYour idea is actually stronger if it **doesn't depend on the connector**.\n\nBecause long-term Nexus should work like:\n\n```\nPenpot / Figma / Anything\n        ↓\nSVG + naming conventions\n        ↓\nNexus runtime\n```\n\nTool independence.\n\n---\n\n## One Thing I’m Curious About\n\nWhen you created the **LaundryLog file in Figma**, did you start recreating the interface yet?\n\nOr is the file currently **empty / just a canvas**?\n\nBecause if you haven’t started yet, I can show you a **very specific way to structure the first frame that will make the Nexus experiment much easier.**"
+

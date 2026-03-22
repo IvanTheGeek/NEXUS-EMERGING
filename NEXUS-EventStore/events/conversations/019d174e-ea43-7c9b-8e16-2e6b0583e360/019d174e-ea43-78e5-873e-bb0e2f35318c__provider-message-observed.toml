@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea43-78e5-873e-bb0e2f35318c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea43-783c-a705-b62220b84766"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T07:12:57.729404Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "417b98b9668d09dc96e7c28701bad499f1ad9f0bcb9fa5558896899fca37e916"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8b82-5630-763b-89b9-ee6cc897932a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8b82-5630-763b-89b9-ee6cc897932a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8b82-5630-763b-89b9-ee6cc897932a"
+role = "assistant"
+sequence_hint = 48
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-16T07:12:51.423912Z\",\"stop_timestamp\":\"2025-11-16T07:12:55.349042Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is showing me disk space with \\u0060df -h\\u0060 and mentions \\u0022i am getting this error\\u0022 but I don\\u0027t see an error message in what they pasted. They just showed the disk space output.\\n\\nLooking at the output:\\n- /dev/vda1 has 25G total, 2.2G used, 22G available (10% use)\\n- Everything looks fine space-wise\\n\\nThey must have gotten an error when trying to run the pip install or the test command, but they didn\\u0027t paste the error. I should ask what error they got, since I can\\u0027t see it.\\n\\nAlso, I\\u0027m now in Concise Mode, so I need to be brief and direct.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "I don't see an error in what you pasted - just disk space output (which looks fine, 22G free). \n\nWhat error message did you get? Was it during `pip install sentence-transformers` or the Python test?\n\n**Token Usage:** 112,259 used / 77,741 remaining"
+

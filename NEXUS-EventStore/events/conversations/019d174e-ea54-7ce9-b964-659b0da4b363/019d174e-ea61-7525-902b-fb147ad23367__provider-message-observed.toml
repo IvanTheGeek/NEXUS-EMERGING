@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-ea61-7525-902b-fb147ad23367"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-7a0c-9304-981b4ad62a00"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T17:12:54.504003Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "44a9870c53b12a07ca0ea35225135568aee4aab3ca11316d2680f9683bd8376a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019caa63-3aff-7d9a-9f46-f52c092bacd3"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019caa63-3aff-7d9a-9f46-f52c092bacd3"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019caa63-3aff-7d9a-9f46-f52c092bacd3"
+role = "assistant"
+sequence_hint = 291
+
+[[body.segments]]
+kind = "plain_text"
+text = " Checklist additions noted:\n\n- [ ] Update `Wiki edit history is not accessible` limitation — broaden scope to cover all topic/post types, not just wikis. Add provenance note about the tag requirement refinement as a concrete example.\n- [ ] New LOGOS Requirement: `Full edit history visible on all content types — posts, wikis, problems, ideas, discussions`\n- [ ] New LOGOS Requirement: `Cross-referencing source conversations — internal links to imported chats, external links to Claude URLs`\n- [ ] New LOGOS Requirement: `Chat import as provenance infrastructure, not just archiving` — imports make AI reasoning referenceable from within LOGOS\n\n---\n\nNext item on the original list — item 3:\n\n**LOGOS → Requirements**\n**Title:** `Event-sourced editing with full revision history`\n**Type:** Problem\n**Status:** New\n\n```markdown\nEvery edit to any content in LOGOS — wiki posts, discussion posts, \nproblems, ideas, questions — is an immutable event. The full history \nof every piece of content is visible, diffable, and revertable by \nany user.\n\n## Why It's Needed\n\nTalkyard tracks revision numbers internally but exposes no history \nUI of any kind. Once a post is edited, the previous content is gone \nfrom the user's perspective. This applies to all content types — \nnot just wikis. The refinement of a requirement, the evolution of a \ndesign decision, the correction of a limitation description — none \nof it is traceable after the fact.\n\nThis was experienced directly: a requirement topic was refined from \na simpler model to a richer one during discussion. The reasoning \nbehind that refinement exists only in the AI conversation where it \nhappened — not in the topic itself. With edit history, the evolution \nwould be part of the record.\n\n## The Requirement\n\nEvery save of any post or topic is an immutable timestamped event \nwith author, timestamp, and full content snapshot. Nothing is \noverwritten. Current state is always a projection from the edit \nhistory. Any user can:\n\n- View the full edit history of any post\n- Compare any two revisions\n- See who changed what and when\n- Revert to any previous state\n\nThis applies uniformly across all content types — wiki, discussion, \nproblem, idea, question, and any custom type.\n\n## Acceptance\n\nA user edits a post. Another user opens the history view and sees \nboth the original and the edited version, with a diff, timestamp, \nand author. A third revision is made. All three are visible and \nindividually selectable. Revert to revision 1 restores that content \nas a new revision event — the revert itself is part of the history.\n\n## Sources\n\n- [LOGOS → Talkyard Limitations → Wiki edit history is not accessible](https://talkyard.ivanthegeek.com/-60/wiki-edit-history-is-not-accessible) (note: limitation title understates scope — affects all content types)\n```\n\n---\n\nCreate that and let me know when done."
+

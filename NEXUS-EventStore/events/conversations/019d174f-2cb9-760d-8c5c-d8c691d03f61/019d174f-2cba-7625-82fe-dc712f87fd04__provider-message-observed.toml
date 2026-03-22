@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cba-7625-82fe-dc712f87fd04"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cba-7a34-bb7c-7adcb7422278"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T12:28:30.607557Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "a519ced3a7887e020af2e47246d8034173f73593cad83aa91fb22b55b4f619a3"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ba7b6073-602f-477e-80d9-bae26f7d32e9"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "ba7b6073-602f-477e-80d9-bae26f7d32e9"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ba7b6073-602f-477e-80d9-bae26f7d32e9"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 36
+
+[[body.segments]]
+kind = "plain_text"
+text = "Treating a **slice as a directory instead of a single file** is a subtle change, but it unlocks a lot of architectural flexibility while keeping the DSL minimal.\n\nThe idea is:\n\n> A **slice is a folder containing the artifacts that define that behavior cell**.\n\nThis fits perfectly with the earlier idea that slices behave like **cells in an organism**.\n\n---\n\n# 1. Slice as a directory\n\nInstead of:\n\n```text\nslices/\n  assign_driver.toml\n```\n\nYou get:\n\n```text\nslices/\n  assign_driver/\n```\n\nInside the directory:\n\n```text\nslices/\n  assign_driver/\n      slice.toml\n      rules/\n      projections/\n      integrations/\n      policies/\n```\n\nThe slice folder becomes a **container for everything related to that behavior**.\n\n---\n\n# 2. Minimal slice definition file\n\nAt the root of the slice directory:\n\n```toml\n# slice.toml\n\ncommand = \"AssignDriver\"\nevent = \"LoadAssigned\"\n```\n\nThis remains the **minimal DSL**.\n\nEverything else becomes **optional extensions**.\n\n---\n\n# 3. Rules inside the slice\n\nRules can live in separate files.\n\n```text\nassign_driver/\n  rules/\n      load_exists.toml\n      driver_available.toml\n```\n\nExample rule:\n\n```toml\nrule = \"DriverAvailable\"\nreads = [\"DriverStatus\"]\n```\n\nThe graph compiler loads every rule under the slice.\n\n---\n\n# 4. Projections inside the slice\n\nProjections that react to the event can also live here.\n\n```text\nassign_driver/\n  projections/\n      dispatch_board.toml\n      driver_schedule.toml\n```\n\nExample:\n\n```toml\nprojection = \"DispatchBoard\"\nlistens_to = \"LoadAssigned\"\n```\n\nThis keeps **behavior + derived meaning together**.\n\n---\n\n# 5. Integrations inside the slice\n\nExternal integrations can also live in the slice.\n\nExample:\n\n```text\nassign_driver/\n  integrations/\n      notify_driver.toml\n```\n\n```toml\nintegration = \"NotifyDriverApp\"\nevent = \"LoadAssigned\"\n```\n\nThis expresses **system boundaries clearly**.\n\n---\n\n# 6. Policies inside the slice\n\nPolicies represent domain policies that may change.\n\n```text\nassign_driver/\n  policies/\n      driver_certification.toml\n```\n\nPolicies can evolve independently of the slice core.\n\n---\n\n# 7. Slice directories mirror biological cells\n\nNow the analogy becomes even stronger.\n\nA slice directory contains:\n\n| Cell component | Slice artifact |\n|---|---|\nmembrane | command |\nmetabolism | rules |\nsignal output | event |\ncommunication | integrations |\ninterpretation | projections |\n\nThe slice folder becomes a **behavioral microcosm**.\n\n---\n\n# 8. The graph compiler becomes recursive\n\nInstead of reading single files:\n\n```text\nload slice.toml\n```\n\nIt walks the directory:\n\n```text\nscan directory\nload slice.toml\nload rules/*\nload projections/*\nload integrations/*\n```\n\nEverything becomes part of the **truth graph**.\n\n---\n\n# 9. Evolution becomes easy\n\nIf you want to extend behavior, you add files.\n\nExample:\n\nVersion 1:\n\n```text\nassign_driver/\n  slice.toml\n```\n\nVersion 2:\n\n```text\nassign_driver/\n  slice.toml\n  rules/\n      driver_available.toml\n```\n\nVersion 3:\n\n```text\nassign_driver/\n  slice.toml\n  rules/\n      driver_available.toml\n      driver_certified.toml\n```\n\nYou **never rewrite the slice definition**.\n\nYou extend it.\n\nThis fits your **Immutable Evolution principle** perfectly.\n\n---\n\n# 10. Discoverability becomes excellent\n\nDevelopers can explore the domain by browsing folders.\n\nExample:\n\n```text\nslices/\n  book_load/\n  assign_driver/\n  confirm_pickup/\n  confirm_delivery/\n```\n\nEach directory tells a **story about domain behavior**.\n\n---\n\n# 11. This maps nicely to Git evolution\n\nUsing **entity[\"software\",\"Git\"]**, commits show how behavior evolved.\n\nExample history:\n\n```text\ncommit A\nadd assign_driver slice\n\ncommit B\nadd driver availability rule\n\ncommit C\nadd dispatch board projection\n```\n\nEach commit corresponds to **domain discoveries**.\n\n---\n\n# 12. It also makes tooling easier\n\nTools can operate on slices as units.\n\nExamples:\n\n- visualize slice chain\n- generate command APIs\n- trace event flow\n- generate event models\n\nBecause each slice has a **clear boundary**.\n\n---\n\n# 13. The repository becomes highly expressive\n\nInstead of code structure:\n\n```text\ncontrollers/\nservices/\nmodels/\n```\n\nYou get domain structure:\n\n```text\ntruth/\n  concepts/\n  slices/\n  projections/\n  interpretations/\n```\n\nThis mirrors the domain much more closely.\n\n---\n\n# 14. This is where your Truth Graph really shines\n\nThe compiler walks the repository:\n\n```text\nconcepts/*\nslices/*\nprojections/*\ninterpretations/*\n```\n\nand constructs the graph:\n\n```text\nCommand → Slice → Event\nEvent → Projection\nConcept → Relationship\n```\n\nThe entire domain becomes **graph-derived from the filesystem**.\n\n---\n\n# 15. This creates a fascinating property\n\nThe repository becomes a **living domain atlas**.\n\nSomeone exploring it can literally **walk the behavior of the system** by browsing directories.\n\nThis fits extremely well with the vision you've been forming around **Nexus as a system for organizing truth structures**.\n\n---\n\n✅ **The deeper insight**\n\nIf slices are directories:\n\n- slices become **cells**\n- directories become **tissues**\n- contexts become **organs**\n- the repository becomes **the organism**\n\nAnd the **truth graph is the nervous system connecting it all**.\n\n---\n\nIf you want, the next thing worth exploring is a concept that could make the **Nexus model dramatically more powerful**:\n\n**Event gravity** — why some events become central nodes that attract huge portions of the truth graph around them."
+

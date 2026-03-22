@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2ca2-7ad4-bead-e2f9aa9d55ab"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+conversation_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+message_id = "019d174f-2ca2-7360-9259-f088ab5b68d4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T12:02:39.742974Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "8e7aab0e4689e871b8b9261636cda26c83e3e3ac0d718e0961ec8e813bccbfaf"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "59c69737-e534-4a71-8331-4edada7830cd"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+message_native_id = "59c69737-e534-4a71-8331-4edada7830cd"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "59c69737-e534-4a71-8331-4edada7830cd"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "plain_text"
+text = "In **event-sourced / event-modeled systems**, the terms **projection**, **read model**, and **view** are closely related but come from slightly different traditions and emphasize different aspects of the pipeline.\n\nA helpful way to think about it is:\n\n```\nEvents → Projection → Read Model → View\n```\n\nThey’re not always separate in practice, but conceptually they describe **different layers of responsibility**.\n\n---\n\n# 1. Projection\n**Projection = the process that transforms events into state**\n\nA **projection** is **behavior** — code that listens to events and updates some representation.\n\nExample:\n\n```\nEvent: LaundryLoadLogged\nEvent: LaundryLoadCompleted\n```\n\nProjection logic:\n\n```\non LaundryLoadLogged\n    add load to \"active loads\"\n\non LaundryLoadCompleted\n    mark load completed\n```\n\nResult might be stored in:\n\n- a database table\n- in-memory structure\n- search index\n- cache\n- file\n\nKey characteristics:\n\n• **Consumes events**  \n• **Produces state**  \n• **Incremental**  \n• **Replayable**\n\nIf you replay the event stream, the projection rebuilds the same state.\n\nIn event modeling diagrams, the **pink bars** typically represent projections.\n\n---\n\n# 2. Read Model\n**Read model = the data structure produced by projections**\n\nA **read model** is **data optimized for queries**.\n\nExamples:\n\n```\nUserLaundryLoads\n----------------\nuserId\nloadId\nstatus\nstartedAt\ncompletedAt\n```\n\nor\n\n```\nLaundryStatistics\n----------------\nuserId\ntotalLoads\navgDuration\nlastLoadDate\n```\n\nKey characteristics:\n\n• optimized for reads  \n• denormalized  \n• disposable / rebuildable  \n• updated by projections\n\nSo:\n\n```\nEvents\n  ↓\nProjection logic\n  ↓\nRead model storage\n```\n\n---\n\n# 3. View\n**View = the representation presented to a consumer**\n\nThis term comes from **UI and database language**.\n\nA view might be:\n\n• an API response  \n• a UI page  \n• a database SQL view  \n• GraphQL response  \n• DTO returned to the client\n\nExample:\n\n```\nGET /laundry/active\n```\n\nReturns:\n\n```\n{\n  loads: [\n    { id: 1, machine: \"washer 2\", started: \"10:02\" }\n  ]\n}\n```\n\nThat response may come from the **read model**, but the **view shapes it for the consumer**.\n\n---\n\n# The practical difference\n\n| Term | What it is | Focus |\n|---|---|---|\nProjection | code/process | transforming events |\nRead Model | stored data | queryable state |\nView | presentation | consumer-facing format |\n\n---\n\n# Why people mix them up\n\nMany frameworks collapse them.\n\nExample:\n\n```\nEvent → Projection → DB table → API → UI\n```\n\nPeople might call the table:\n\n• read model  \n• projection  \n• view  \n\neven though technically they differ.\n\n---\n\n# In **Event Modeling (Adam Dymitruk style)**\n\nThe pink bars represent **projections**, meaning:\n\n> something reacting to an event and producing a queryable result.\n\nBut the artifact they produce is effectively a **read model**.\n\nSo the mapping is:\n\n```\nEvent Modeling Pink Bar\n     =\nProjection\n\nProjection output\n     =\nRead Model\n```\n\n---\n\n# Which term is best?\n\nFor **architecture clarity**:\n\n• **Projection** → best for describing behavior  \n• **Read Model** → best for describing stored query data  \n• **View** → best for describing API/UI responses\n\n---\n\n# In your Nexus / slice idea\n\nYou described slices like:\n\n```\nSlice 1 — Command\nUI → Command → Event\n\nSlice 2 — Projection\nUI < Projection < Event\n```\n\nIn this model:\n\n**Projection slice actually contains two things**\n\n```\nEvent\n  ↓\nProjection (logic)\n  ↓\nRead Model (data)\n  ↓\nView/API/UI\n```\n\nIf you keep those distinct, your architecture becomes very clean.\n\n---\n\n# A subtle but powerful insight\n\nA **single projection can produce many read models**.\n\nExample:\n\n```\nEvents\n  ↓\nProjection A → UserDashboardReadModel\nProjection B → LaundryStatistics\nProjection C → NotificationQueue\nProjection D → SearchIndex\n```\n\nThis is why event systems scale so well.\n\n---\n\n# My recommendation for your paradigm\n\nBased on your **slice architecture and event graph idea**, I would use:\n\n**Projection** → for behavior nodes  \n**Read Model** → for stored state nodes  \n**View** → only for UI/API layer\n\nSo your graph becomes very explicit.\n\n```\nEvent\n  ↓\nProjection\n  ↓\nRead Model\n  ↓\nView/UI\n```\n\n---\n\nIf you'd like, I can also show you something **very interesting that almost nobody talks about**:\n\n**Event models can actually be represented as a pure graph where:**\n\n• events  \n• commands  \n• projections  \n• read models  \n\nare **all nodes with typed edges**\n\nWhich fits **extremely well with your Nexus / slice replacement architecture**."
+

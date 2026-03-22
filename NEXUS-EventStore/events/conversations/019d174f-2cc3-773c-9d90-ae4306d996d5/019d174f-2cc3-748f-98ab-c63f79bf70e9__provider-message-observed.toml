@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cc3-748f-98ab-c63f79bf70e9"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+conversation_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+message_id = "019d174f-2cc3-792c-9ee4-93235e6f83c5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-13T19:15:32.1025249Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "52f5c405588a97b0079409046fd66c98520ba8d94e0ad1fdc042d9b790ba1f85"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "1538ba01-dc8b-444c-bebf-666bf9a417fc"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+message_native_id = "1538ba01-dc8b-444c-bebf-666bf9a417fc"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "1538ba01-dc8b-444c-bebf-666bf9a417fc"
+role = "assistant"
+model_name = "gpt-5-t-mini"
+sequence_hint = 66
+
+[[body.segments]]
+kind = "plain_text"
+text = "Nice — that cheatsheet quote is exactly on point and clarifies the top lane semantics. Good call to pin that down. Below I’ll summarize the mapping, propose a simple canonical lane order you can use in Atlas, show a compact markdown-column EM example that includes **Trigger**, and give F# + TOML examples (with `GwtRule list`) you asked for.  \n\nI’ll also call out a couple of UI/UX rules for Atlas (expand/collapse of hidden inputs, wireframe vs endpoint, etc.).\n\n---\n\n# Quick summary of the cheat-sheet bits (and how I map them)\n\n- **Trigger** = what starts a use case.  \n  Can be a human (UI), an automated process, or an external system (API/stripe/etc.). In diagrams this is the actor/signal that *initiates* a slice.  \n  (Reference: entity[\"organization\",\"Event Modeling\",\"eventmodeling.org site\"] and entity[\"people\",\"Adam Dymitruk\",\"event modeling educator\"]).\n\n- **Command** = the *intent* — the request to change system state. Enrich with parameters (payload).\n\n- **Event** = the fact produced by the command (a fact in Nexus).\n\n- **View** = an interpretation of facts for an agent.\n\n- **GWT** = the rule (the DNA) that lives under the Events row and specifies `GIVEN`/`WHEN`/`THEN`. Store it in the slice as a list of rules (`GwtRule list`) and render it in the diagram under the Events row.\n\n---\n\n# Suggested canonical lane order for Atlas (column = slice)\n\nUse this lane order (top → bottom). It keeps the EM-reading familiar and gives you the Trigger semantic explicitly:\n\n1. **Actor / Trigger** (who/what initiated this slice; could be “User”, “Stripe”, “Scheduler”, “Webhook / POST / /orders”)  \n2. **Context (UI / Processor / Endpoint)** — wireframe name or endpoint route or processor icon  \n3. **Command / View** — one cell shows either a Command (action) or a View (interpretation) depending on slice type  \n4. **Event** — the fact(s) emitted or consumed  \n5. **GWT** — `GIVEN` / `WHEN` / `THEN` rules (one or many)\n\nNotes:\n- Columns = slices (vertical).  \n- Events with identical names across columns represent the same Fact shared across slices.  \n- Views can be expanded to show the hidden input events (via a “+” inspector).\n\n---\n\n# Small Markdown (column) example — *Place Order* (with Trigger top row)\n\n```markdown\n| Lane / Slice       | Slice A (PlaceOrder command)           | Slice B (OrderSummary view)         |\n|--------------------|----------------------------------------|-------------------------------------|\n| Actor / Trigger    | **User** (click Checkout button)       | **User** (view Order Summary)       |\n| Context            | CheckoutScreen (wireframe)             | Order Summary Screen (wireframe)    |\n| Command / View     | **Command:** PlaceOrder(orderId, cart) | **View:** OrderSummaryView          |\n| Event              | **Event:** OrderPlaced                 | **Reads Event:** OrderPlaced        |\n| GWT (rules)        | GIVEN CartHasItems AND PaymentValid<br>WHEN PlaceOrder(orderId)<br>THEN OrderPlaced | GIVEN all Order events<br>WHEN OrderId = {id}<br>THEN OrderSummary = dataset X |\n```\n\nInterpretation:\n- Column A is a **command slice**: user triggers a command, handler emits `OrderPlaced`.\n- Column B is a **view slice**: projection reads `OrderPlaced` and other hidden facts to render the view.\n\n---\n\n# F# domain types (using DU + `GwtRule list`)\n\n```fsharp\ntype Agent = string\ntype Trigger = \n  | UI of string        // e.g. \"CheckoutScreen\"\n  | API of string       // e.g. \"POST /orders\"\n  | Automation of string // e.g. \"billing-scheduler\"\n\ntype Command = { Name: string; Params: (string * string) list }\ntype Event   = { Name: string; PayloadSchema: string option }\ntype View    = string\n\ntype GwtRule =\n    { Given: string list\n      When: string\n      Then: string list }\n\ntype ActionSlice =\n    { Id: string\n      Agent: Agent\n      Trigger: Trigger\n      Context: string\n      Command: Command\n      Emits: Event list\n      HandlerRef: string option\n      Rules: GwtRule list }\n\ntype PerceptionSlice =\n    { Id: string\n      Agent: Agent\n      Context: string\n      View: View\n      SourceEvents: Event list\n      ProjectorRef: string option\n      Rules: GwtRule list }\n\ntype Slice =\n    | Action of ActionSlice\n    | Perception of PerceptionSlice\n```\n\nNotes:\n- `Trigger` is explicit; you can record UI route or HTTP endpoint.\n- `Rules: GwtRule list` lets a slice have multiple GWT rules (common in complex projections).\n\n---\n\n# TOML example (Action slice + Perception slice)\n\n**Action slice (PlaceOrder):**\n```toml\ntype = \"action\"\nid = \"order.place\"\n\nagent = \"User\"\ntrigger = \"UI:CheckoutScreen\"\ncontext = \"CheckoutScreen\"\nhandler = \"placeOrderHandler\"\n\n[command]\nname = \"PlaceOrder\"\nparams = [\"orderId\",\"cartItems\"]\n\n[[emits]]\nname = \"OrderPlaced\"\n\n[[rules]]\ngiven = [\"CartHasItems\",\"PaymentValidated\"]\nwhen = \"PlaceOrder(orderId)\"\nthen = [\"OrderPlaced\"]\n```\n\n**Perception slice (OrderSummary):**\n```toml\ntype = \"perception\"\nid = \"order.summary.view\"\n\nagent = \"User\"\ncontext = \"OrderSummaryScreen\"\nview = \"OrderSummaryView\"\nprojector = \"orderSummaryProjector\"\n\n[[source_events]]\nname = \"OrderPlaced\"\nname = \"ItemAdded\"\nname = \"PaymentCaptured\"\n\n[[rules]]\ngiven = [\"order events\"]\nwhen = \"OrderId = {id}\"\nthen = [\"OrderSummary\"]\n```\n\n---\n\n# Atlas UX rules (practical choices)\n\n- **Show Trigger (Actor) visibly in the top lane.** Allow it to be a UI screenshot, an endpoint label (e.g., `POST /orders`), or a processor icon (`Stripe`).  \n- **Treat Command / View as a single middle lane.** The cell shows either a command (blue) or a view (green).  \n- **Keep GWT canonical in the slice model (`dna`) and render it under Events in diagrams.** Support multiple GWT rules per slice.  \n- **Hide detailed projection inputs in the compact view.** Reveal them in the slice inspector (click “+” or click the View cell to highlight upstream slices and facts).  \n- **Support actor-swimlane grouping.** Actors (User, Admin, Automation, External) map to swim lanes; triggers are the concrete activation instances.  \n- **When a View is active, highlight the upstream events & slices in the diagram.** This gives the “click to reveal inputs” UX you described.\n\n---\n\n# Final clarifying note\n\nYes — treat **Trigger** as the explicit top-lane meaning (it’s the concrete thing that starts the slice). Treat **Command** as Nexus **Intent** (the domain request/payload). Treat **Event** as the Fact. Treat **View** as the Interpretation. Keep `GwtRule list` on the slice so a single slice can have many GWT rules without losing the column/vertical model.\n\n---\n\nWant me to:\n- convert one of your real slices into this table + TOML/F# as a test, or\n- show a slightly more complex 3-column EM table (with an external processor like Stripe and an automation row)?"
+

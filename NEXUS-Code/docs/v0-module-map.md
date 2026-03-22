@@ -2,7 +2,7 @@
 
 This is the first F# shape for the canonical ingestion layer.
 
-The goal is to stabilize naming and module responsibilities before importer logic is added.
+The goal is to stabilize naming and module responsibilities while the first real importer workflow is being built.
 
 ## Project
 
@@ -10,6 +10,8 @@ The goal is to stabilize naming and module responsibilities before importer logi
   the initial domain-only project
 - `src/Nexus.EventStore/Nexus.EventStore.fsproj`
   event-store serialization and file writing on top of `Nexus.Domain`
+- `src/Nexus.Importers/Nexus.Importers.fsproj`
+  raw-intake, provider parsing, dedupe index loading, and import orchestration
 - `src/Nexus.Cli/Nexus.Cli.fsproj`
   manual CLI entry points that exercise the domain and event-store layers
 
@@ -29,8 +31,16 @@ The goal is to stabilize naming and module responsibilities before importer logi
   low-level TOML rendering helpers
 - `Nexus.EventStore/CanonicalStore.fs`
   canonical event, import manifest, and graph assertion serialization plus file layout rules
+- `Nexus.Importers/ImporterTypes.fs`
+  provider naming, window naming, parsed-record shapes, and import request/result types
+- `Nexus.Importers/EventStoreIndex.fs`
+  lightweight event-store scan used for duplicate and revision detection
+- `Nexus.Importers/Providers.fs`
+  provider-specific parsers/adapters for ChatGPT and Claude exports
+- `Nexus.Importers/ImportWorkflow.fs`
+  archive/extract/import pipeline that turns raw exports into canonical events
 - `Nexus.Cli/Program.fs`
-  manual commands such as writing sample canonical history into an event-store root
+  manual commands such as writing sample canonical history and importing provider exports
 
 ## Design Notes
 
@@ -39,4 +49,6 @@ The goal is to stabilize naming and module responsibilities before importer logi
 - semantic taxonomy IDs like `DomainId`, `BoundedContextId`, and `LensId` stay human-readable slugs
 - the graph layer is intentionally thin and derived-friendly
 - `Domain`, `BoundedContext`, and `Lens` are present as concepts without forcing a final ontology
-- provider adapters and source parsing are explicitly deferred to the next slice
+- provider adapters are isolated from the shared canonical event-writing core
+- dedupe is currently driven by provider object identity plus canonical content hash
+- the importer currently supports first real full-export imports for ChatGPT and Claude

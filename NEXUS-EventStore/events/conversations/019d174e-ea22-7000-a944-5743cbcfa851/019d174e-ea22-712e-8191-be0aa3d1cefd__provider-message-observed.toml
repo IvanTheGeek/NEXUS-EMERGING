@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea22-712e-8191-be0aa3d1cefd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea22-7000-a944-5743cbcfa851"
+conversation_id = "019d174e-ea22-7000-a944-5743cbcfa851"
+message_id = "019d174e-ea22-7207-b685-6fae5539b176"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T23:25:32.92567Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "6baa214de6899f9d86eb235c55fe074720b2a09a8a895f52d2b2183a413bd05b"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "14838f87-5d75-4d2d-b4f9-764f02a0a35a"
+conversation_native_id = "14838f87-5d75-4d2d-b4f9-764f02a0a35a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9423-2d43-71a8-b850-89b21fa96fcf"
+conversation_native_id = "14838f87-5d75-4d2d-b4f9-764f02a0a35a"
+message_native_id = "019a9423-2d43-71a8-b850-89b21fa96fcf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9423-2d43-71a8-b850-89b21fa96fcf"
+role = "assistant"
+sequence_hint = 18
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T23:25:26.485028Z\",\"stop_timestamp\":\"2025-11-17T23:25:28.536652Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking about the current token count for this chat. I can see from the system warnings that have been appearing after function calls:\\n\\nLast warning showed: \\u0022Token usage: 52622/190000; 137378 remaining\\u0022\\n\\nSo the current token count is 52,622 tokens used out of a 190,000 token budget, with 137,378 tokens remaining.\\n\\nI should give him this information clearly and directly, as per his preferences for being direct and efficient.\",\"summaries\":[{\"summary\":\"Thinking about token usage visibility in current conversation.\"},{\"summary\":\"Retrieving current token usage metrics from system data.\"},{\"summary\":\"Retrieved current token usage metrics.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "We're currently at 52,622 tokens used out of our 190,000 token budget, which leaves us with 137,378 tokens remaining. We're about 28% through the available context window.\n\nThis conversation has been fairly substantial because we've covered a lot of technical ground around the architecture, created two detailed documents for Jim and Sam, and explored nuanced topics like the safety and restriction implications of self-hosting. The token count reflects both our discussion and the content of those two markdown files that are now in the context.\n\nWe've still got plenty of room to continue working through implementation details, architectural decisions, or any other aspects of this project you want to explore."
+

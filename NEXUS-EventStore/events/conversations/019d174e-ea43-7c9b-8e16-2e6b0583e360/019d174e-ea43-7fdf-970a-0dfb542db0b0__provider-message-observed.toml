@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-ea43-7fdf-970a-0dfb542db0b0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea43-7377-a9cc-522d4b027017"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T07:52:34.350949Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "6db57a2dd25720097c3f9baacb6c16ed71ecd75eabca62af49f7f2c647ab996f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8ba6-c72a-73c2-9a61-d65943414dc8"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8ba6-c72a-73c2-9a61-d65943414dc8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8ba6-c72a-73c2-9a61-d65943414dc8"
+role = "human"
+sequence_hint = 77
+
+[[body.segments]]
+kind = "plain_text"
+text = "(embedding-env) ivan@mcp1:~$ # Activate the environment\nsource ~/embedding-env/bin/activate\n# Install Flask\npip install flask gunicorn\n# Create the embedding API service\ncat > ~/embedding_api.py << 'EOF'\nfrom flask import Flask, request, jsonify\nfrom sentence_transformers import SentenceTransformer\nimport logging\napp = Flask(__name__)\nlogging.basicConfig(level=logging.INFO)\n# Load model once at startup\nprint(\"Loading embedding model...\")\nmodel = SentenceTransformer('all-MiniLM-L6-v2')\nprint(\"Model loaded!\")\n@app.route('/embed', methods=['POST'])\ndef embed():\n    data = request.get_json()\n    if not data or 'text' not in data:\n        return jsonify({'error': 'Missing text field'}), 400\n    \n    text = data['text']\n    embedding = model.encode(text).tolist()\n    \n    return jsonify({\n        'embedding': embedding,\n        'dimension': len(embedding)\n    })\n@app.route('/health', methods=['GET'])\ndef health():\n    return jsonify({'status': 'ok', 'model': 'all-MiniLM-L6-v2'})\nif __name__ == '__main__':\n    app.run(host='127.0.0.1', port=5000)\nEOF\n# Create systemd service to run it automatically\nsudo tee /etc/systemd/system/embedding-api.service > /dev/null << EOF\n[Unit]\nDescription=Embedding API Service\nAfter=network.target\n  -d '{\"text\": \"test embedding\"}'son\" \\d \\icorn -w 2 -b 127.0.0.1:5000 embedding_api:app\nCollecting flask\n  Downloading flask-3.1.2-py3-none-any.whl.metadata (3.2 kB)\nCollecting gunicorn\n  Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)\nCollecting blinker>=1.9.0 (from flask)\n  Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)\nCollecting click>=8.1.3 (from flask)\n  Downloading click-8.3.1-py3-none-any.whl.metadata (2.6 kB)\nCollecting itsdangerous>=2.2.0 (from flask)\n  Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)\nRequirement already satisfied: jinja2>=3.1.2 in ./embedding-env/lib/python3.13/site-packages (from flask) (3.1.6)\nRequirement already satisfied: markupsafe>=2.1.1 in ./embedding-env/lib/python3.13/site-packages (from flask) (3.0.3)\nCollecting werkzeug>=3.1.0 (from flask)\n  Downloading werkzeug-3.1.3-py3-none-any.whl.metadata (3.7 kB)\nRequirement already satisfied: packaging in ./embedding-env/lib/python3.13/site-packages (from gunicorn) (25.0)\nDownloading flask-3.1.2-py3-none-any.whl (103 kB)\nDownloading gunicorn-23.0.0-py3-none-any.whl (85 kB)\nDownloading blinker-1.9.0-py3-none-any.whl (8.5 kB)\nDownloading click-8.3.1-py3-none-any.whl (108 kB)\nDownloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)\nDownloading werkzeug-3.1.3-py3-none-any.whl (224 kB)\nInstalling collected packages: werkzeug, itsdangerous, gunicorn, click, blinker, flask\nSuccessfully installed blinker-1.9.0 click-8.3.1 flask-3.1.2 gunicorn-23.0.0 itsdangerous-2.2.0 werkzeug-3.1.3\n[sudo] password for ivan: \nCreated symlink '/etc/systemd/system/multi-user.target.wants/embedding-api.service' → '/etc/systemd/system/embedding-api.service'.\n● embedding-api.service - Embedding API Service\n     Loaded: loaded (/etc/systemd/system/embedding-api.service; enabled; preset: enabled)\n     Active: active (running) since Sun 2025-11-16 07:50:59 UTC; 936ms ago\n Invocation: 05a5750b5e6c48c79f964d1b6a9d9a1a\n   Main PID: 2226 (gunicorn)\n      Tasks: 3 (limit: 1131)\n     Memory: 49.3M (peak: 49.6M)\n        CPU: 424ms\n     CGroup: /system.slice/embedding-api.service\n             ├─2226 /home/ivan/embedding-env/bin/python3 /home/ivan/embedding-env/bin/gunicorn -w 2 -b 127.0.0.1:5000 embedding_api:app\n             ├─2264 /home/ivan/embedding-env/bin/python3 /home/ivan/embedding-env/bin/gunicorn -w 2 -b 127.0.0.1:5000 embedding_api:app\n             └─2267 /home/ivan/embedding-env/bin/python3 /home/ivan/embedding-env/bin/gunicorn -w 2 -b 127.0.0.1:5000 embedding_api:app\nNov 16 07:50:59 mcp1 systemd[1]: Started embedding-api.service - Embedding API Service.\nNov 16 07:50:59 mcp1 gunicorn[2226]: [2025-11-16 07:50:59 +0000] [2226] [INFO] Starting gunicorn 23.0.0\nNov 16 07:50:59 mcp1 gunicorn[2226]: [2025-11-16 07:50:59 +0000] [2226] [INFO] Listening at: http://127.0.0.1:5000 (2226)\nNov 16 07:50:59 mcp1 gunicorn[2226]: [2025-11-16 07:50:59 +0000] [2226] [INFO] Using worker: sync\nNov 16 07:50:59 mcp1 gunicorn[2264]: [2025-11-16 07:50:59 +0000] [2264] [INFO] Booting worker with pid: 2264\nNov 16 07:50:59 mcp1 gunicorn[2267]: [2025-11-16 07:50:59 +0000] [2267] [INFO] Booting worker with pid: 2267"
+

@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea90-7a22-8e6d-3f3394105eef"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a63-904d-ef30a501e160"
+conversation_id = "019d174e-ea90-7a63-904d-ef30a501e160"
+message_id = "019d174e-ea90-769a-a576-cc574197974d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T23:50:50.786947Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "e6964a048ecf8212ca10f7673bc12a71124e3b49d5bdffdf068b620f5817e71d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "df4b47e6-4f89-477c-90d5-399e21cebb08"
+conversation_native_id = "df4b47e6-4f89-477c-90d5-399e21cebb08"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ccfdc-2610-7897-8e98-2204992c742e"
+conversation_native_id = "df4b47e6-4f89-477c-90d5-399e21cebb08"
+message_native_id = "019ccfdc-2610-7897-8e98-2204992c742e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ccfdc-2610-7897-8e98-2204992c742e"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-08T23:50:38.770495Z\",\"stop_timestamp\":\"2026-03-08T23:50:38.770495Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-08T23:50:38.796202Z\",\"stop_timestamp\":\"2026-03-08T23:50:45.531153Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Let me generate the Mermaid diagram following the prompt instructions with the provided data.\\n\\nThe slices are:\\n1. Record Laundry Expense - Command (\\u2192 \\u2192 \\u2192)\\n2. View Expense History - Projection (\\u2190 \\u2190 \\u2190)\\n3. Modify Laundry Expense - Command (\\u2192 \\u2192 \\u2192)\\n4. View Updated Expense History - Projection (\\u2190 \\u2190 \\u2190)\\n5. Remove Laundry Expense - Command (\\u2192 \\u2192 \\u2192)\\n6. View Final Expense History - Projection (\\u2190 \\u2190 \\u2190)\\n\\nLet me construct the Mermaid diagram.\\n\\n\\nNow I\\u0027m setting up unique node identifiers for each slice using a consistent pattern, then mapping out the UI interactions, commands, and events that flow through the system for recording, viewing, editing, and removing expenses.\",\"summaries\":[{\"summary\":\"Thinking about generating a mermaid diagram from event model data.\"},{\"summary\":\"Orchestrating Mermaid diagram from event model data.\"},{\"summary\":\"Architected event-driven diagram with command and projection slices.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "```mermaid\nflowchart TB\n\nclassDef ui fill:#dddddd,stroke:#888,stroke-width:1px,rx:6,ry:6\nclassDef command fill:#cfe8ff,stroke:#6aa9ff,stroke-width:1px,rx:6,ry:6\nclassDef projection fill:#d8f5d0,stroke:#7bc96f,stroke-width:1px,rx:6,ry:6\nclassDef event fill:#ffe6cc,stroke:#f0a35e,stroke-width:1px,rx:6,ry:6\n\nsubgraph S1[\"Record Laundry Expense\"]\n  direction LR\n  S1_UI[\"Tap Expense\"]:::ui --> S1_CMD[\"LogLaundryExpense\"]:::command --> S1_EVT[\"LaundryExpenseLogged\"]:::event\nend\nstyle S1 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\n\nS1 ~~~ S2\n\nsubgraph S2[\"View Expense History\"]\n  direction RL\n  S2_EVT[\"LaundryExpenseLogged\"]:::event --> S2_PRJ[\"ExpenseHistoryProjection\"]:::projection --> S2_UI[\"View History\"]:::ui\nend\nstyle S2 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n\nS2 ~~~ S3\n\nsubgraph S3[\"Modify Laundry Expense\"]\n  direction LR\n  S3_UI[\"Tap Edit Expense\"]:::ui --> S3_CMD[\"EditLaundryExpense\"]:::command --> S3_EVT[\"LaundryExpenseEdited\"]:::event\nend\nstyle S3 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\n\nS3 ~~~ S4\n\nsubgraph S4[\"View Updated Expense History\"]\n  direction RL\n  S4_EVT[\"LaundryExpenseEdited\"]:::event --> S4_PRJ[\"ExpenseHistoryProjection\"]:::projection --> S4_UI[\"View Updated History\"]:::ui\nend\nstyle S4 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n\nS4 ~~~ S5\n\nsubgraph S5[\"Remove Laundry Expense\"]\n  direction LR\n  S5_UI[\"Tap Delete Expense\"]:::ui --> S5_CMD[\"DeleteLaundryExpense\"]:::command --> S5_EVT[\"LaundryExpenseDeleted\"]:::event\nend\nstyle S5 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\n\nS5 ~~~ S6\n\nsubgraph S6[\"View Final Expense History\"]\n  direction RL\n  S6_EVT[\"LaundryExpenseDeleted\"]:::event --> S6_PRJ[\"ExpenseHistoryProjection\"]:::projection --> S6_UI[\"View Final History\"]:::ui\nend\nstyle S6 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n```"
+

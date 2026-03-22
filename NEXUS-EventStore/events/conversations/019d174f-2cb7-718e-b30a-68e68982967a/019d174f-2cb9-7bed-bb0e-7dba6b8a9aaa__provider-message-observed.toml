@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cb9-7bed-bb0e-7dba6b8a9aaa"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb7-718e-b30a-68e68982967a"
+conversation_id = "019d174f-2cb7-718e-b30a-68e68982967a"
+message_id = "019d174f-2cb9-7b3d-a549-8786bad7a66b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-11T12:35:17.482876Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "ea6f54d91489feaa50e0cb3ffc993f91ae7c0ca9ac4e954828128fba3fac8e4b"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+conversation_native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "5c982083-1de0-4f53-93b7-5346a6d1ebe7"
+conversation_native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+message_native_id = "5c982083-1de0-4f53-93b7-5346a6d1ebe7"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "5c982083-1de0-4f53-93b7-5346a6d1ebe7"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 192
+
+[[body.segments]]
+kind = "plain_text"
+text = "This next distinction — **domain rules vs process rules** — is extremely relevant to event modeling and to what you're building with Nexus, because it explains **where rules live in the behavior of the system**.\n\nMany systems mix these together, but they actually describe **two different kinds of logic**.\n\n---\n\n# The Core Difference\n\nYou can summarize it like this:\n\n```\nDomain rules  → truths about entities and state\nProcess rules → rules about sequences and workflows\n```\n\nDomain rules protect **what must be true**.\n\nProcess rules guide **what happens next**.\n\n---\n\n# Domain Rules\n\nDomain rules describe the **state of the world**.\n\nThey apply regardless of the workflow.\n\nExamples:\n\n```\nAn order total must equal the sum of its items.\nA refund cannot exceed the payment amount.\nInventory cannot be negative.\nA user must have a valid email address.\n```\n\nThese rules apply **no matter how the system got there**.\n\nThey protect the **integrity of the domain objects**.\n\n---\n\n# Example\n\nConsider an order.\n\nDomain rule:\n\n```\norderTotal = sum(orderItems)\n```\n\nEven if the order is edited, refunded, or recalculated, that rule must always hold.\n\nThis rule belongs to the **order entity**, not to a process.\n\n---\n\n# Process Rules\n\nProcess rules describe **how events unfold over time**.\n\nThey define the **allowed sequences of events**.\n\nExamples:\n\n```\nPayment must occur before shipping.\nLaundry must be washed before folding.\nUser must register before logging in.\n```\n\nThese rules describe **flow**.\n\nThey belong to the **process of the system**, not to a single entity.\n\n---\n\n# Example\n\nConsider an online order flow.\n\nEvents:\n\n```\nOrderPlaced\nPaymentReceived\nOrderShipped\n```\n\nProcess rule:\n\n```\nPaymentReceived must occur before OrderShipped\n```\n\nThis rule governs the **sequence of events**.\n\n---\n\n# Why This Matters in Event Modeling\n\nEvent modeling is very good at revealing **process rules**.\n\nThe timeline of events makes the workflow visible:\n\n```\nOrderPlaced\n ↓\nPaymentAuthorized\n ↓\nOrderPacked\n ↓\nOrderShipped\n```\n\nYou can immediately see process constraints.\n\n---\n\n# Where Domain Rules Appear\n\nDomain rules often live **inside aggregates or entities**.\n\nExample order rules:\n\n```\norderTotal >= 0\norderItems cannot be empty\nrefundTotal <= paymentTotal\n```\n\nThese rules don't care about the process timeline.\n\nThey protect **object correctness**.\n\n---\n\n# Combining Both\n\nA system needs both kinds of rules.\n\nExample order system:\n\nDomain rules:\n\n```\nrefundTotal <= paymentTotal\ninventory >= 0\n```\n\nProcess rules:\n\n```\nPaymentReceived before OrderShipped\nOrderPlaced before PaymentReceived\n```\n\nTogether they define the system.\n\n---\n\n# In Nexus Terms\n\nYour **truth graph** could contain both layers.\n\nExample:\n\n```\nEvent: OrderShipped\n```\n\nDomain rules:\n\n```\norder exists\norder items valid\n```\n\nProcess rules:\n\n```\nPaymentReceived must occur first\nOrderPacked must occur first\n```\n\nThe event is allowed only when both are satisfied.\n\n---\n\n# Where Paths Become Useful Again\n\nYour **path concept** reveals both types of violations.\n\nExample path:\n\n```\nOrderPlaced\nOrderShipped\n```\n\nProcess rule violation:\n\n```\nPaymentReceived missing\n```\n\nAnother path:\n\n```\nOrderPlaced\nPaymentReceived\nRefundIssued $200\n```\n\nDomain rule violation:\n\n```\nRefund > payment\n```\n\nPaths are essentially **behavioral tests**.\n\n---\n\n# Another Way to Visualize It\n\nThink of domain rules as **physics** and process rules as **traffic laws**.\n\nDomain rules:\n\n```\nObjects must obey the laws of the domain.\n```\n\nProcess rules:\n\n```\nEvents must follow allowed sequences.\n```\n\nBoth shape behavior, but in different ways.\n\n---\n\n# Why This Is Powerful for Nexus\n\nIf your truth graph contains:\n\n```\nevents\ndomain rules\nprocess rules\npolicies\nconstraints\npaths\n```\n\nYou essentially have a **complete behavioral specification** of the system.\n\nWhich means:\n\n- implementations become replaceable\n- AI can analyze the model\n- paths can verify correctness\n- security can verify behavior\n\nThis aligns extremely well with your idea that:\n\n```\nThe model is the system.\nThe code is just one expression of it.\n```\n\n---\n\n# One Insight That Will Click With Event Modeling\n\nAdam often emphasizes **behavior over structure**.\n\nProcess rules describe **behavior over time**.\n\nDomain rules describe **truth about state**.\n\nEvent modeling captures both:\n\n```\nevents → behavior\nstate → domain truth\n```\n\nWhich is why security experts and architects often find event models easier to reason about.\n\n---\n\nIf you'd like, there's one more concept right next to this that will likely connect strongly with your Nexus thinking and the **Truth Graph** idea:\n\n**state vs behavior vs knowledge** — which turns out to map almost perfectly to the layers you're already building (events, paths, models, lineage)."
+

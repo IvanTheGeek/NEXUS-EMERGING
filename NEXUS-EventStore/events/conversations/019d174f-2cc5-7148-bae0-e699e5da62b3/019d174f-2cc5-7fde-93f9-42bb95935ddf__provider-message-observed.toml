@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cc5-7fde-93f9-42bb95935ddf"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+conversation_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+message_id = "019d174f-2cc5-7118-9df1-483fae5cae48"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-16T21:32:03.836667Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "479694768049395f92b9858ae357d80facff02edc6ad3e7cca004616a35226d8"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "3c4be693-28c7-446b-95ee-f2d4079084ed"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+message_native_id = "3c4be693-28c7-446b-95ee-f2d4079084ed"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "3c4be693-28c7-446b-95ee-f2d4079084ed"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 38
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — **usually**, but there’s an important nuance in how entity[\"software\",\"Git\"] handles this.\n\nShort answer:\n\n> **Deleting a branch does NOT delete the commits immediately.**  \n> The history is still there **as long as something still references those commits**.\n\nBut eventually Git may remove them if they become unreachable.\n\nLet’s walk through it.\n\n---\n\n# 1. What Deleting a Branch Actually Does\n\nA branch is just a **pointer to a commit**.\n\nExample before deletion:\n\n```\nA → B → C\n         ↑\n       feature\n```\n\nDeleting the branch:\n\n```\ngit branch -d feature\n```\n\nResult:\n\n```\nA → B → C\n```\n\nCommit `C` still exists — the **pointer is gone**, but the commit object remains in the repository.\n\n---\n\n# 2. When Commits Become “Unreachable”\n\nNow suppose the commit isn’t referenced anywhere else.\n\nBefore deletion:\n\n```\nmain:     A → B\nfeature:       ↘ C → D\n```\n\nAfter deleting `feature`:\n\n```\nmain: A → B\n\nC → D   (no branch points here)\n```\n\nCommits `C` and `D` still exist in the repository, but they are now **unreachable**.\n\nGit calls these **dangling commits**.\n\n---\n\n# 3. Git Keeps Them for a While\n\nGit intentionally keeps unreachable commits for safety.\n\nYou can still find them using:\n\n```\ngit reflog\n```\n\nor\n\n```\ngit fsck --lost-found\n```\n\nSo even after deleting the branch, you can recover those commits for a period of time.\n\n---\n\n# 4. Garbage Collection Eventually Removes Them\n\nGit runs a cleanup process called **garbage collection**.\n\nCommand:\n\n```\ngit gc\n```\n\nDuring this process:\n\n- unreachable commits older than a threshold\n- that are not referenced by reflog\n\nmay be deleted.\n\nTypical default:\n\n```\n~30 to 90 days\n```\n\nSo history **can disappear eventually** if nothing references it.\n\n---\n\n# 5. If a Commit Is Merged, It Is Safe Forever\n\nIf your branch was merged:\n\nBefore deletion:\n\n```\nA → B → C → D\n         ↑\n      feature\n```\n\nAfter deleting `feature`:\n\n```\nA → B → C → D\n            ↑\n          main\n```\n\nCommits `C` and `D` are still reachable from `main`, so they will **never be deleted**.\n\n---\n\n# 6. Why This Matters for Your System Modeling Idea\n\nIf you are using Git to store your **system graph evolution**, you want commits to stay reachable.\n\nCommon ways to ensure this:\n\n### Keep tags\n\n```\ngit tag system-v2\n```\n\nTags permanently reference commits.\n\n---\n\n### Keep architecture branches\n\nExample:\n\n```\narchitecture/payment-redesign\n```\n\n---\n\n### Store commit references in the model\n\nYour runtime events might contain:\n\n```\nmodelCommit = 9ac41d2\n```\n\nThat commit becomes important and should remain reachable.\n\n---\n\n# 7. The Key Insight\n\nGit’s model is:\n\n```\ncommits are permanent objects\nbranches are movable labels\n```\n\nDeleting a branch removes the **label**, not the **history**.\n\nHistory disappears only if:\n\n```\nno references exist\nAND\ngarbage collection runs\n```\n\n---\n\n# 8. Why This Fits Your Immutable Evolution Idea\n\nYour concept:\n\n```\nsystems evolve through replacement\n```\n\nGit mirrors this:\n\n```\nnew commit = new version\nold commits remain\n```\n\nBranches allow multiple **possible futures** of the system graph.\n\n---\n\n✅ **Simple summary**\n\nDeleting a branch:\n\n```\nremoves pointer\n```\n\nbut:\n\n```\ncommits remain temporarily\n```\n\nand if referenced by:\n\n- another branch\n- a tag\n- reflog\n\nthey remain **permanently accessible**.\n\n---\n\n💡 One subtle thing that becomes interesting for your **NEXUS / ATLAS modeling idea**:\n\nGit’s **reflog** is actually a hidden timeline of branch movements — which means it stores **another layer of history beyond the commit graph**. That can be surprisingly powerful if you're treating Git as the evolution engine for system models."
+

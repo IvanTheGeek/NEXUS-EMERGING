@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea05-73f3-8cdd-e69824ecea79"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9fa-7144-81a0-bfb9ec4b9f1e"
+conversation_id = "019d174e-e9fa-7144-81a0-bfb9ec4b9f1e"
+message_id = "019d174e-ea05-769d-bd02-c7fb0aeeab62"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-15T05:51:36.794283Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "2375b8abddee94ce5f2b89d5e7f59f6eeae641191511316587a656a2738019d4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "6b2cda15-ff22-4d61-b1ea-21a3e55057a7"
+conversation_native_id = "6b2cda15-ff22-4d61-b1ea-21a3e55057a7"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8611-107b-74fb-9713-ed2672c65baa"
+conversation_native_id = "6b2cda15-ff22-4d61-b1ea-21a3e55057a7"
+message_native_id = "019a8611-107b-74fb-9713-ed2672c65baa"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8611-107b-74fb-9713-ed2672c65baa"
+role = "assistant"
+sequence_hint = 44
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-15T05:51:00.683219Z\",\"stop_timestamp\":\"2025-11-15T05:51:02.731084Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to change the event storage format from JSONL to YAML or a YAML/Markdown hybrid. This makes sense for several reasons:\\n\\n1. YAML is more human-readable than JSON\\n2. A YAML/Markdown hybrid would allow for both structured data and narrative context\\n3. Aligns with documentation-first approaches\\n4. More git-friendly with better diffs\\n5. Could embed explanatory markdown around the events\\n\\nLet me update the relevant sections of the plan to reflect this change.\",\"summaries\":[{\"summary\":\"Thinking about formatting event data in JSONL rather than YAML.\"},{\"summary\":\"Weighing readability benefits of YAML hybrid format.\"},{\"summary\":\"Pivoted storage format toward human-readable structured documentation.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Updated section:\n\n## Phase 1: Foundation & Model Validation\n\n### 1.2: Event Sourcing Infrastructure\n\n**Event schema design:**\n```fsharp\ntype ConversationEvent =\n    | PromptSubmitted of {| Timestamp: DateTimeOffset; Prompt: string; Model: string; User: string |}\n    | ResponseGenerated of {| Timestamp: DateTimeOffset; Response: string; Model: string; PromptId: Guid |}\n    | UserFeedback of {| Timestamp: DateTimeOffset; Rating: int; PreferredResponse: string option; EventId: Guid |}\n    | KnowledgeExtracted of {| Timestamp: DateTimeOffset; Extract: string; Category: string; Confidence: float |}\n    | RagEntryCreated of {| Timestamp: DateTimeOffset; Content: string; EmbeddingId: Guid; Metadata: Map<string,string> |}\n    | LoraTrainingQueued of {| Timestamp: DateTimeOffset; Reason: string; DatasetSize: int |}\n```\n\n**Storage implementation:**\n- Events written to `/events/YYYY/MM/conversation_{date}.yaml`\n- YAML/Markdown hybrid format for readability and context\n- Immutable, append-only\n- Git-trackable for Junie guidelines compliance\n- Excellent diff viewing in git\n\n**Event file format example:**\n```yaml\n# Conversation Log: 2025-11-15\n# Context: Working on FnMCP error handling patterns\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440000\nevent_type: PromptSubmitted\ntimestamp: 2025-11-15T14:32:15Z\ndata:\n  user: IvanTheGeek\n  model: llama3.1:8b\n  prompt: |\n    How should I structure error handling in my FnMCP server?\n    I want to follow railway-oriented programming patterns.\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440001\nevent_type: ResponseGenerated\ntimestamp: 2025-11-15T14:32:18Z\ndata:\n  model: llama3.1:8b\n  prompt_id: 550e8400-e29b-41d4-a716-446655440000\n  latency_ms: 2847\n  response: |\n    For railway-oriented programming in your FnMCP server, structure errors as:\n    \n    1. Define discriminated union for error types\n    2. Use Result<'T, 'Error> return types\n    3. Compose operations with bind/map\n    \n    [detailed response content...]\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440002\nevent_type: UserFeedback\ntimestamp: 2025-11-15T14:35:22Z\ndata:\n  event_id: 550e8400-e29b-41d4-a716-446655440001\n  rating: 5\n  preferred_response: llama\n  notes: |\n    Excellent response. Exactly what I needed.\n    The code examples were clear and followed F# conventions.\n\n---\n# Context shift: Now discussing vector databases\n\nevent_id: 550e8400-e29b-41d4-a716-446655440003\nevent_type: PromptSubmitted\ntimestamp: 2025-11-15T15:10:05Z\ndata:\n  user: IvanTheGeek\n  model: claude-sonnet-4.5\n  prompt: |\n    Explain vector databases and how they differ from traditional databases\n```\n\n**F# serialization:**\n```fsharp\nmodule EventSerialization =\n    open YamlDotNet.Serialization\n    open System.IO\n    \n    let private serializer = \n        SerializerBuilder()\n            .WithIndentedSequences()\n            .Build()\n    \n    let serializeEvent (event: ConversationEvent) : string =\n        let yaml = serializer.Serialize(event)\n        $\"---\\n{yaml}\\n\"\n    \n    let appendEvent (filePath: string) (event: ConversationEvent) : Async<unit> =\n        async {\n            let yaml = serializeEvent event\n            do! File.AppendAllTextAsync(filePath, yaml) |> Async.AwaitTask\n        }\n    \n    let readEvents (filePath: string) : Async<ConversationEvent list> =\n        async {\n            let! content = File.ReadAllTextAsync(filePath) |> Async.AwaitTask\n            let documents = \n                content.Split(\"---\", StringSplitOptions.RemoveEmptyEntries)\n                |> Array.filter (fun s -> not (s.Trim().StartsWith(\"#\")))\n            \n            let deserializer = DeserializerBuilder().Build()\n            \n            return \n                documents\n                |> Array.map (deserializer.Deserialize<ConversationEvent>)\n                |> Array.toList\n        }\n```\n\n**Benefits of YAML/Markdown hybrid:**\n- Human-readable without tooling\n- Markdown comments provide narrative context\n- Section headers organize related events\n- Git diffs are meaningful (show actual content changes, not JSON punctuation)\n- Can add explanatory notes inline without affecting parsing\n- Easy to grep/search with standard text tools\n- Compatible with static site generators if you want to publish event logs\n\n**Example with richer context:**\n```yaml\n# Conversation Log: 2025-11-15\n# Session: Deep dive into RAG architecture\n# Goal: Finalize vector database choice for FnMCP learning system\n# Previous context: Yesterday discussed LoRA vs QLoRA tradeoffs\n\n## Morning Session: Vector Database Exploration\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440000\nevent_type: PromptSubmitted\ntimestamp: 2025-11-15T09:15:00Z\ndata:\n  user: IvanTheGeek\n  model: claude-sonnet-4.5\n  context: |\n    Continuing from yesterday's discussion about the three-tier learning system.\n    Need to make concrete decision on vector DB.\n  prompt: |\n    Give me a high level view of a vector database. This is a new concept to me.\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440001\nevent_type: ResponseGenerated\ntimestamp: 2025-11-15T09:15:34Z\ndata:\n  model: claude-sonnet-4.5\n  prompt_id: 550e8400-e29b-41d4-a716-446655440000\n  rag_context_used: false\n  response: |\n    A vector database solves a fundamentally different problem than the \n    traditional databases you're familiar with...\n    \n    [full response]\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440002\nevent_type: KnowledgeExtracted\ntimestamp: 2025-11-15T09:16:00Z\ndata:\n  source_event: 550e8400-e29b-41d4-a716-446655440001\n  category: vector-databases\n  subcategory: fundamentals\n  confidence: 0.95\n  extract: |\n    Vector databases enable semantic search by converting text into \n    mathematical vectors. Similar meanings = nearby vectors in \n    high-dimensional space.\n  tags:\n    - rag\n    - embeddings\n    - semantic-search\n  importance: high\n  \n---\n## Afternoon Session: PostgreSQL vs SQLite Decision\n\n# Decision made: Starting with SQLite + sqlite-vec\n# Rationale: Simpler deployment, single file, adequate for personal use\n# Migration path: Can move to PostgreSQL if scale demands it\n\n---\nevent_id: 550e8400-e29b-41d4-a716-446655440003\nevent_type: DecisionRecorded\ntimestamp: 2025-11-15T15:30:00Z\ndata:\n  decision: use_sqlite_with_vec\n  alternatives_considered:\n    - PostgreSQL + pgvector\n    - LanceDB\n    - Qdrant\n  rationale: |\n    SQLite provides:\n    - Single file simplicity\n    - System.Data.SQLite for .NET\n    - Both FTS5 and vector search\n    - No server management\n    \n    Trade-offs accepted:\n    - Lower performance ceiling than dedicated vector DB\n    - Less optimal at >100K vectors\n    - Can migrate later if needed\n  confidence: 0.8\n  review_date: 2025-12-15\n```\n\nThis format allows:\n1. **Inline documentation** of decisions and context\n2. **Session grouping** with markdown headers\n3. **Narrative flow** explaining why events occurred\n4. **Human browsing** without special tools\n5. **Machine parsing** ignoring markdown comments\n6. **Git-friendly diffs** showing semantic changes"
+

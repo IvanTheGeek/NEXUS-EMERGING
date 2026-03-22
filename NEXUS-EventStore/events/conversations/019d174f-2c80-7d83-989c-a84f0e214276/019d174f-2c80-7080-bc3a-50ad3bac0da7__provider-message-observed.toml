@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c80-7080-bc3a-50ad3bac0da7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+conversation_id = "019d174f-2c80-7d83-989c-a84f0e214276"
+message_id = "019d174f-2c80-7455-8ca4-77253e544303"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-03T21:00:23.9169809Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "13464a67bdeed99e171061d3d21a42bda5878df324ef2a01f3dfa72ac5180332"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "747881d9-f2d9-4b36-b48c-7990444eb06e"
+conversation_native_id = "69a72a60-4bdc-8326-887e-f40d3df21370"
+message_native_id = "747881d9-f2d9-4b36-b48c-7990444eb06e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "747881d9-f2d9-4b36-b48c-7990444eb06e"
+role = "assistant"
+model_name = "gpt-5-2"
+sequence_hint = 15
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — this tells us something important.\n\nIf you’re on a **entity[\"product\",\"Pixel 9 Pro XL\",\"google smartphone\"]** running stock **entity[\"software\",\"Android\",\"google mobile operating system\"]** and Notely is **not** using the earbud mic, then this is almost certainly an **app audio-source issue**, not a Pixel issue.\n\nThis means:\n- Your phone is fine.\n- Your earbuds are fine.\n- The app likely isn’t requesting the correct Bluetooth audio profile.\n\n---\n\n# Why This Happens\n\nBluetooth has two relevant modes:\n\n| Mode | Used For | Mic Available? |\n|------|----------|---------------|\n| A2DP | Music/media | ❌ No |\n| HFP (Headset Profile) | Calls | ✅ Yes |\n\nFor the earbud mic to activate, the app must trigger **HFP** by requesting:\n\n- `VOICE_RECOGNITION`\nor\n- `VOICE_COMMUNICATION`\n\nIf Notely is using:\n- `MIC`\nor\n- `CAMCORDER`\n\nAndroid will stay in media mode → phone mic stays active.\n\nMany lightweight note apps make this mistake.\n\n---\n\n# Quick Diagnostics\n\n### 1️⃣ Check Bluetooth Profile\nGo to:\nSettings → Connected devices → Your earbuds\n\nMake sure:\n- ✅ “Phone calls” is enabled\n- ✅ “Media audio” is enabled\n\nIf “Phone calls” is off, the mic will never switch.\n\n---\n\n### 2️⃣ Force Call Mode Test\n\nWhile earbuds are connected:\n\n- Start a phone call (can even call voicemail)\n- End the call\n- Immediately open Notely and start recording\n\nIf the mic suddenly switches to earbuds, that confirms:\n→ The app isn’t properly requesting HFP.\n\n---\n\n### 3️⃣ Compare With ChatGPT Voice\n\nOpen ChatGPT voice mode.\n\nIf it **does** use the earbud mic:\n- The system routing works.\n- Notely is the weak link.\n\nIf ChatGPT also fails:\n- Then we look deeper at Bluetooth routing.\n\n---\n\n# Important Insight\n\nThis is not a Pixel vs GrapheneOS issue anymore.\n\nIt’s:\n> “Does the app request the correct audio source?”\n\nStock Pixels are very good at auto-switching — but they still rely on the app asking correctly.\n\n---\n\n# Likely Conclusion\n\nNotely probably:\n- Uses generic mic input\n- Was designed for quick dictation\n- Doesn’t explicitly trigger voice communication profile\n\nWhich means:\n- It works\n- But not in a driving + Bluetooth mic scenario\n\n---\n\nIf you want, tell me:\n\n- Exact earbuds model (AirPods 2? 3? Pro?)\n- Does ChatGPT voice use the earbud mic?\n- Does a regular phone call use the earbud mic clearly?\n\nWe’ll isolate this cleanly.\n\nThis is solvable — and once solved, you’ve unlocked mobile cognition in a truck cab."
+

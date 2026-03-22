@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2ca0-7402-9e32-c4ea45cacc2b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca0-75d3-9497-c66c25acbc78"
+conversation_id = "019d174f-2ca0-75d3-9497-c66c25acbc78"
+message_id = "019d174f-2ca0-7dee-812d-270af8933b92"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T22:51:10.5814499Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "16ec85bca9fcb83851289fb38f9a0c789bc042ff37f988db1f0130d0b2597338"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69adaaf8-9290-832b-be28-554727119481"
+conversation_native_id = "69adaaf8-9290-832b-be28-554727119481"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "8e8d015a-eebe-4bc1-a4d3-861a63b05f00"
+conversation_native_id = "69adaaf8-9290-832b-be28-554727119481"
+message_native_id = "8e8d015a-eebe-4bc1-a4d3-861a63b05f00"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "8e8d015a-eebe-4bc1-a4d3-861a63b05f00"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 104
+
+[[body.segments]]
+kind = "plain_text"
+text = "You're very close — the AI actually followed most instructions correctly. The **one thing it got wrong** is the **arrow direction in projection slices**.\n\nYour architectural rule is:\n\n```\nCommand Slice\nUI → Command → Event\n\nProjection Slice\nUI ← Projection ← Event\n```\n\nBut the generated code did this instead:\n\n```\nUI → Projection → Event\n```\n\nEven though it used `direction RL`, the **edges were still written in the wrong direction**. fileciteturn1file0\n\nThat’s why the diagram visually appears reversed.\n\n---\n\n# The Fix\n\nIn projection slices, the **edges must be written from Event → Projection → UI**.\n\nSo instead of:\n\n```mermaid\nUI2 --> PROJ2 --> EVT2\n```\n\nit must be:\n\n```mermaid\nEVT2 --> PROJ2 --> UI2\n```\n\n---\n\n# Correct Projection Slice Pattern\n\nYour projection slices should look like this:\n\n```mermaid\nsubgraph S2[\"View Expense History\"]\n  direction RL\n  EVT2[\"LaundryExpenseLogged\"]:::event --> PROJ2[\"ExpenseHistoryProjection\"]:::projection --> UI2[\"View Expense History\"]:::ui\nend\n```\n\nThis produces:\n\n```\nLaundryExpenseLogged → Projection → UI\n```\n\nbut because the layout direction is `RL`, it **renders visually as**\n\n```\nEvent → Projection → UI\n```\n\nwhich matches your model:\n\n```\nUI < Projection < Event\n```\n\n---\n\n# Corrected Full Example (first two slices)\n\n```mermaid\nflowchart TB\n\nsubgraph S1[\"Record Laundry Expense\"]\n  direction LR\n  UI1[\"Record Laundry Expense\"]:::ui --> CMD1[\"LogLaundryExpense\"]:::command --> EVT1[\"LaundryExpenseLogged\"]:::event\nend\n\nsubgraph S2[\"View Expense History\"]\n  direction RL\n  EVT2[\"LaundryExpenseLogged\"]:::event --> PROJ2[\"ExpenseHistoryProjection\"]:::projection --> UI2[\"View Expense History\"]:::ui\nend\n\nS1 ~~~ S2\n\nclassDef ui fill:#dddddd,stroke:#888,stroke-width:1px,rx:6,ry:6\nclassDef command fill:#cfe8ff,stroke:#6aa9ff,stroke-width:1px,rx:6,ry:6\nclassDef projection fill:#d8f5d0,stroke:#7bc96f,stroke-width:1px,rx:6,ry:6\nclassDef event fill:#ffe6cc,stroke:#f0a35e,stroke-width:1px,rx:6,ry:6\n\nstyle S1 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\nstyle S2 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n```\n\n---\n\n# Why this mistake happens with AI\n\nMost LLMs assume:\n\n```\nUI → Logic → Result\n```\n\nThey don't realize **projection slices reverse the dependency direction**.\n\nEvent modeling is unusual because projections are **read models derived from events**, so the dependency is reversed.\n\nThis pattern comes from **Event Modeling** as described by  \nentity[\"people\",\"Adam Dymitruk\",\"event modeling advocate\"].\n\n---\n\n# If you want, I can also give you a **much more reliable prompt**\n\nThe previous prompt still leaves room for the AI to make this mistake.  \nI can give you a **stronger prompt that forces the correct projection arrows every time**.\n\nIt usually fixes this problem completely."
+

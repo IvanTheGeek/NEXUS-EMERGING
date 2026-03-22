@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cb9-7cc3-a1d6-26682fa96201"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+conversation_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+message_id = "019d174f-2cb9-7790-ab56-900beca63c0b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T21:14:22.5588409Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "c83175256974c733f24af8b83baaadbdcd1516134a843c5b5274a5b5cbae0450"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "3729de94-7ce0-4ebf-b9a8-9335ffc6d467"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+message_native_id = "3729de94-7ce0-4ebf-b9a8-9335ffc6d467"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "3729de94-7ce0-4ebf-b9a8-9335ffc6d467"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 37
+
+[[body.segments]]
+kind = "plain_text"
+text = "If **events are the canonical nodes** and you want **one event per file**, a clean approach is:\n\n- filename contains **UUIDv7 + slug**\n- file contains the **event definition**\n- references to commands / projections can be optional metadata\n- everything is **TOML only**\n\nUsing your rule:\n\n```\n<uuidv7>_<event-slug>.toml\n```\n\nBelow are example event files for **LaundryExpenseLogged**.\n\n---\n\n# 1. Minimal Event File\n\nThis is the **smallest useful event definition**.\n\n```\n018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1_laundry-expense-logged.toml\n```\n\n```toml\nid = \"018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1\"\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\nversion = 1\n```\n\nSimple, stable, and easy to parse.\n\n---\n\n# 2. Event With Domain Metadata\n\nYou may want to include **domain context**.\n\n```\n018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1_laundry-expense-logged.toml\n```\n\n```toml\nid = \"018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\nversion = 1\n\ndomain = \"laundrylog\"\naggregate = \"laundry-expense\"\n\ndescription = \"A laundry expense was recorded for a wash or dry cycle.\"\n```\n\n---\n\n# 3. Event With Schema (useful for later)\n\nYou may want to define **event payload fields**.\n\n```\n018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1_laundry-expense-logged.toml\n```\n\n```toml\nid = \"018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\nversion = 1\n\ndomain = \"laundrylog\"\naggregate = \"laundry-expense\"\n\ndescription = \"A laundry expense was recorded.\"\n\n[payload]\n\n[payload.machine_id]\ntype = \"string\"\n\n[payload.amount]\ntype = \"decimal\"\n\n[payload.currency]\ntype = \"string\"\n\n[payload.timestamp]\ntype = \"datetime\"\n```\n\n---\n\n# 4. Event With Graph References\n\nIf you want to start expressing **behavior relationships**, you can add references.\n\n```\n018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1_laundry-expense-logged.toml\n```\n\n```toml\nid = \"018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\nversion = 1\n\ndomain = \"laundrylog\"\naggregate = \"laundry-expense\"\n\ndescription = \"A laundry expense was recorded.\"\n\n[emitted_by]\ncommand = \"LogLaundryExpense\"\n\n[projections]\nviews = [\n  \"LaundryExpenseHistory\",\n  \"LaundryMonthlySummary\"\n]\n```\n\n---\n\n# 5. Event Referencing Knowledge (Optional Nexus Link)\n\nIf you later want to connect the event to knowledge nodes discussed in **entity[\"software\",\"Talkyard\",\"discussion platform\"]**:\n\n```toml\nid = \"018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\nversion = 1\n\ndomain = \"laundrylog\"\n\ndescription = \"A laundry expense was recorded.\"\n\nknowledge = [\n  \"EVT-0001\",\n  \"DISC-0007\"\n]\n```\n\n---\n\n# 6. Example Directory Layout\n\n```\nmodel/\n  events/\n\n    018f9c52-7e2b-7c0e-a3a2-93a7e4e3f1c1_laundry-expense-logged.toml\n\n    018f9c53-12a0-7c1b-bc4c-22c2d95f4a01_laundry-session-started.toml\n\n    018f9c54-9fa3-7c12-a1d9-8c4f3d4b2e12_laundry-session-completed.toml\n```\n\nSorting by filename also sorts by **time**, because UUIDv7 is **monotonic**.\n\n---\n\n# 7. Parsing Becomes Very Simple\n\nYour compiler only needs to:\n\n```\nscan events directory\nread toml\nregister node\nbuild graph relationships\n```\n\nThe event file is the **canonical node definition**.\n\n---\n\n✅ If you'd like, I can also show a **very clean way to structure commands, projections, and slices in the filesystem so they naturally reference these event files**, which makes the whole model compile into a graph with almost no extra code."
+

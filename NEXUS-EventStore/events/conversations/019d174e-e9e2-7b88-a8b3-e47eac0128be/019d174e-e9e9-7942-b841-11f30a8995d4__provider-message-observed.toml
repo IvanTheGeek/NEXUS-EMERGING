@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-e9e9-7942-b841-11f30a8995d4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+conversation_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+message_id = "019d174e-e9e9-741c-af2a-a607eda860ed"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T20:55:24.592769Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "2c79a3cc3b2e28b58e97d2679eefbfd343f677fe7f5726ff6dd7bbcd21e1379d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a79d9-987c-7045-9583-e94de31838e0"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+message_native_id = "019a79d9-987c-7045-9583-e94de31838e0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a79d9-987c-7045-9583-e94de31838e0"
+role = "assistant"
+sequence_hint = 22
+
+[[body.segments]]
+kind = "plain_text"
+text = "\n\n## How LoRA Works in Practice\n\n**The Math (Simplified)**\n\nIn transformers, there are attention layers that do computations like:\n```\nOutput = WeightMatrix × Input\n```\n\nWhere `WeightMatrix` is huge (like 4096 × 4096 = 16 million numbers)\n\nLoRA freezes `WeightMatrix` and adds:\n```\nOutput = (WeightMatrix + A × B) × Input\n```\n\nWhere:\n- `A` is small (4096 × 8 = 32,768 numbers)\n- `B` is small (8 × 4096 = 32,768 numbers)\n- Together: 65,536 numbers instead of 16 million\n\nThat \"8\" in the middle is called the **rank** - it controls how expressive your adapters are. Higher rank = more learning capacity but also more parameters to train.\n\n**Why This Works**\n\nThe insight from linear algebra: most changes you need to make to a big matrix can be approximated by multiplying two smaller matrices together. It's like how you can represent many 2D shapes by combining simple transformations.\n\n## LoRA for Your Nexus Use Case\n\n**Step 1: Collect Training Data**\n```fsharp\n// From Nexus event logs\nlet trainingExamples = [\n    { Input = \"Create a TechnicalDecision event for switching to LoRA fine-tuning\"\n      Output = \"\"\"{\"tool\": \"create_event\", \"type\": \"TechnicalDecision\", ...}\"\"\" }\n    \n    { Input = \"What F# pattern should I use for async event processing?\"\n      Output = \"Use async computation expressions with Result<'T, 'E>...\" }\n    \n    // ... hundreds more examples\n]\n```\n\n**Step 2: Run LoRA Training**\n```bash\n# Using Axolotl or similar tool\npython train.py \\\n    --base_model \"microsoft/Phi-3-mini-4k-instruct\" \\\n    --data \"nexus_examples.jsonl\" \\\n    --lora_r 16 \\              # Rank (8-64 typical)\n    --lora_alpha 32 \\          # Scaling factor\n    --target_modules \"q_proj,v_proj\" \\  # Which layers to adapt\n    --epochs 3 \\\n    --learning_rate 2e-4\n```\n\n**What Happens During Training:**\n1. Base Phi-3 stays frozen (all 3.8B parameters untouched)\n2. Small A and B matrices get initialized randomly\n3. Training examples flow through\n4. Only A and B get updated to minimize errors\n5. After training, you have adapter files (~50MB) instead of a full model (7GB)\n\n**Step 3: Use the Adapted Model**\n```fsharp\n// Load base model + your LoRA adapters\nlet nexusPhi3 = \n    loadModel \"microsoft/Phi-3-mini-4k-instruct\"\n    |> addLoRAAdapters \"nexus-adapters-v1.safetensors\"\n\n// Now it knows your patterns!\nlet response = nexusPhi3.Complete \"Create CrossProjectIdea event...\"\n```\n\n## Key Benefits for Nexus\n\n**Memory Efficiency**\n- Training: ~8GB VRAM instead of 32GB+\n- Can train on consumer GPU (RTX 4090)\n- Multiple adapters share same base model\n\n**Speed**\n- Trains in 2-4 hours instead of days\n- Less data needed (100-1000 examples vs millions)\n\n**Flexibility**\n- Keep multiple LoRA adapters for different purposes:\n  - `nexus-events.safetensors` - event creation patterns\n  - `nexus-fsharp.safetensors` - F# coding style\n  - `nexus-decisions.safetensors` - technical decision guidance\n- Swap them out or combine them\n\n**No Catastrophic Forgetting**\n- Base model unchanged = keeps general knowledge\n- Adapters add specialized knowledge on top\n- Can always go back to base model\n\n## Cost Comparison\n\n**Full Fine-tuning:**\n- GPU: H100 or multiple A100s ($3-10/hour)\n- Time: 12-48 hours\n- Cost: $500-5000 per training run\n\n**LoRA Fine-tuning:**\n- GPU: Single RTX 4090 or A100 ($0.50-2/hour)\n- Time: 2-4 hours\n- Cost: $5-50 per training run\n\nFor your weekly/monthly Nexus improvements, LoRA makes iterative learning actually affordable.\n\n## The Catch\n\n**LoRA isn't magic** - it works because:\n- You're building on existing knowledge (Phi-3 already knows F#)\n- You're teaching *refinements*, not entirely new capabilities\n- Your domain (Nexus event patterns) is related to what the model knows\n\nIf you tried to teach it a completely new language or entirely novel concepts, LoRA would struggle. But for your use case (improving F# code patterns, event structures, tool usage) it's perfect.\n\nDoes this clarify how LoRA would fit into your self-learning Nexus architecture? The key insight is: you accumulate examples → run cheap LoRA training → get specialized model improvements without the cost/complexity of full retraining."
+

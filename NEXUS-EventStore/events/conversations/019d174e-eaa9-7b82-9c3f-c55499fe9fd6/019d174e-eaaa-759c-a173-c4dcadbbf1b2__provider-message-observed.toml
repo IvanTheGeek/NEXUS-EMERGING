@@ -1,0 +1,73 @@
+schema_version = 1
+event_id = "019d174e-eaaa-759c-a173-c4dcadbbf1b2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7a46-afe6-70d54816ec16"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T07:18:19.915132Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "8d756d03e610f10107b7566f7376ac78215c917bb0e7b649411b01f450827727"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+role = "assistant"
+sequence_hint = 100
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T07:18:10.844225Z\",\"stop_timestamp\":\"2026-03-15T07:18:12.181006Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Now I understand the separation. The model folder contains slice definitions and their artifacts (screens, etc.). Events are runtime data that live separately. Clean separation of schema/model from data.\\n\\nLet me propose a directory structure.\",\"summaries\":[{\"summary\":\"Thinking about organizing model slice definitions, assets, and event data structures.\"},{\"summary\":\"Clarified architectural separation between model definitions and runtime event data.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Clean separation — model is the schema, events are the data.\n\n```\ntruth-graph/\n  laundrylog/\n    model/\n      OpenApp_019644a1.../\n        019644a1..._C_OpenApp.toml\n        app-splash-screen.png\n      CheckSessionStatus_019644a1.../\n        019644a1..._V_CheckSessionStatus.toml\n        session-status-screen.png\n      RecordExpense_019644a1.../\n        019644a1..._C_RecordExpense.toml\n        expense-entry-screen.png\n    events/\n      (runtime event data - separate concern)\n```\n\nEach slice gets a folder named `SliceName_SliceId/` containing the TOML definition and any artifacts (screens, diagrams, notes) related to that slice."
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T07:18:15.328960Z\",\"stop_timestamp\":\"2026-03-15T07:18:16.772667Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_01GZqxF9tPtFSyjaNSsb3JUg\",\"name\":\"ask_user_input_v0\",\"input\":{\"questions\":[{\"type\":\"single_select\",\"options\":[\"SliceName_SliceId (readable first)\",\"SliceId_SliceName (sortable by time first)\",\"Just SliceName (ID is inside the TOML already)\"],\"question\":\"Folder naming for slice folders?\"}]},\"message\":\"Generating ask_user_input_v0...\",\"integration_name\":\"Dynamic Widget\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_01GZqxF9tPtFSyjaNSsb3JUg\",\"name\":\"ask_user_input_v0\",\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\u0022questions\\u0022: [\\n    {\\n      \\u0022type\\u0022: \\u0022single_select\\u0022,\\n      \\u0022options\\u0022: [\\n        \\u0022SliceName_SliceId (readable first)\\u0022,\\n        \\u0022SliceId_SliceName (sortable by time first)\\u0022,\\n        \\u0022Just SliceName (ID is inside the TOML already)\\u0022\\n      ],\\n      \\u0022question\\u0022: \\u0022Folder naming for slice folders?\\u0022\\n    }\\n  ]\\n}\",\"uuid\":\"6da91002-2320-455c-8c1f-b16eab83fc7b\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Generated ask_user_input_v0 widget\",\"integration_name\":\"Dynamic Widget\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T07:18:19.600373Z\",\"stop_timestamp\":\"2026-03-15T07:18:19.833837Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Waiting for user response on folder naming.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-15T07:18:19.833837Z\",\"stop_timestamp\":\"2026-03-15T07:18:19.833837Z\",\"flags\":null,\"type\":\"text\",\"text\":\"\",\"citations\":[]}"
+

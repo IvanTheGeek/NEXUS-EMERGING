@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea81-7047-b137-0666bb5f8dfc"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea81-7e79-975a-9dbfb91a98d5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-12-01T17:55:45.174407Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "a609e73096fd039f46656b7ff14eeddf8dd61e43e2ca67703f6168506b61a5d2"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019adb0d-9e61-7614-aedd-6789da7cdf4b"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019adb0d-9e61-7614-aedd-6789da7cdf4b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019adb0d-9e61-7614-aedd-6789da7cdf4b"
+role = "assistant"
+sequence_hint = 120
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-12-01T17:55:00.687015Z\",\"stop_timestamp\":\"2025-12-01T17:55:02.555674Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to define the first path (Happy Path) using manual location entry instead of GPS. They\\u0027ve given me a real location:\\n\\nLove\\u0027s Travel Stop #801\\n1525 E 8th Ave, Cordele, GA 31015\\n\\nLet me define this path with concrete sample data.\",\"summaries\":[{\"summary\":\"Thinking about establishing a manual location reference point for route planning.\"},{\"summary\":\"Pivoted to manual location entry and prepared concrete sample data.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "---\n\n## Path 1: Happy Path - Manual Location, Single Washer Entry\n\n**Sample Data:**\n- Location: `Love's Travel Stop #801, Cordele, GA`\n- Machine: Washer\n- Quantity: 1\n- Price: $3.75\n- Payment: Card\n\n---\n\n**Screen Sequence:**\n\n```\nScreen 1.1: New Session\n┌─────────────────────────────────────────┐\n│                                         │\n│       Where are you doing               │\n│           laundry today?                │\n│                                         │\n│  ┌─────────────────────────────────┐   │\n│  │     [📍 Use GPS Location]       │   │\n│  └─────────────────────────────────┘   │\n│                                         │\n│  ┌─────────────────────────────────┐   │\n│  │     |                           │   │  ← cursor here\n│  └─────────────────────────────────┘   │\n│                                         │\n└─────────────────────────────────────────┘\n\n→ User taps text field\n```\n\n```\nScreen 1.2: Typing Location\n┌─────────────────────────────────────────┐\n│                                         │\n│       Where are you doing               │\n│           laundry today?                │\n│                                         │\n│  ┌─────────────────────────────────┐   │\n│  │ Love's Travel Stop #801, Cord|  │   │\n│  └─────────────────────────────────┘   │\n│                                         │\n│  ┌─────────────────────────────────┐   │\n│  │     [Start Session]             │   │\n│  └─────────────────────────────────┘   │\n│                                         │\n└─────────────────────────────────────────┘\n\n→ User taps \"Start Session\"\n```\n\n```\nScreen 1.3: Entry Form (fresh)\n┌─────────────────────────────────────────┐\n│ LaundryLog                          🧺  │\n├─────────────────────────────────────────┤\n│                                         │\n│  [Washer]    [Dryer]    [Supplies]     │\n│                                         │\n│            QUANTITY                     │\n│      (−)       1        (+)            │\n│                                         │\n│            UNIT PRICE                   │\n│     [−.25]  $ 3.75     [+.25]          │\n│   [$3.75] [$4.00] [$3.50]              │\n│                                         │\n│   Entry Total              $3.75        │\n│                                         │\n│  [Cash]    [Points]                     │\n│  [Card]    [App]                        │\n│                                         │\n│  [📍 Location ✗] [🌊 Type ✗] [💳 Pay ✗] │\n│                                         │\n├─────────────────────────────────────────┤\n│  📍 Love's Travel Stop #801, Cordele    │\n│  Session Total                  $0.00   │\n└─────────────────────────────────────────┘\n\n→ User taps \"Washer\"\n```\n\n```\nScreen 1.4: Washer Selected\n┌─────────────────────────────────────────┐\n│ LaundryLog                          🧺  │\n├─────────────────────────────────────────┤\n│                                         │\n│  [WASHER✓]   [Dryer]    [Supplies]     │\n│                                         │\n│  ... (rest same, validation updates)    │\n│                                         │\n│  [📍 Location ✓] [🌊 Type ✓] [💳 Pay ✗] │\n│                                         │\n└─────────────────────────────────────────┘\n\n→ User taps \"Card\"\n```\n\n```\nScreen 1.5: Ready to Submit\n┌─────────────────────────────────────────┐\n│                                         │\n│  [WASHER✓]   [Dryer]    [Supplies]     │\n│                                         │\n│            QUANTITY                     │\n│      (−)       1        (+)            │\n│                                         │\n│            UNIT PRICE                   │\n│     [−.25]  $ 3.75     [+.25]          │\n│                                         │\n│   Entry Total              $3.75        │\n│                                         │\n│  [Cash]    [Points]                     │\n│  [CARD✓]  [App]                        │\n│                                         │\n│        [LOG ENTRY]                      │\n│                                         │\n├─────────────────────────────────────────┤\n│  📍 Love's Travel Stop #801, Cordele    │\n│  Session Total                  $0.00   │\n└─────────────────────────────────────────┘\n\n→ User taps \"Log Entry\"\n```\n\n```\nScreen 1.6: Entry Logged\n┌─────────────────────────────────────────┐\n│ LaundryLog                          🧺  │\n├─────────────────────────────────────────┤\n│                                         │\n│  [Washer]    [Dryer]    [Supplies]     │  ← Reset\n│                                         │\n│      (−)       1        (+)            │  ← Reset\n│                                         │\n│     [−.25]  $ 3.75     [+.25]          │  ← Kept\n│                                         │\n│  [Cash]    [Points]                     │\n│  [CARD✓]  [App]                        │  ← Kept\n│                                         │\n│  [📍 Location ✓] [🌊 Type ✗] [💳 Pay ✓] │\n│                                         │\n├─────────────────────────────────────────┤\n│  📍 Love's Travel Stop #801, Cordele    │\n│  Session Total                  $3.75   │\n├─────────────────────────────────────────┤\n│  TODAY'S ENTRIES                        │\n│  ┌───────────────────────────────────┐ │\n│  │ $3.75                    10:32 AM │ │\n│  │ 1 Washer @ $3.75 • Card           │ │\n│  └───────────────────────────────────┘ │\n└─────────────────────────────────────────┘\n\n→ END PATH\n```\n\n---\n\n## Questions Before Building\n\n1. **Screen 1.2** - Should \"Start Session\" appear only after typing? Or always visible but disabled until location entered?\n\n2. **Default price** - Is $3.75 the right default for a fresh session (no history yet)? Or blank until user enters?\n\n3. **Location validation** - Any minimum length? Or any non-empty string is valid?"
+

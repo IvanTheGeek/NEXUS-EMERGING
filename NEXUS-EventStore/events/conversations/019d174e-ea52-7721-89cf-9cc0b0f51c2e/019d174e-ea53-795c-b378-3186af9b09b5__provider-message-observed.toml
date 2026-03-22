@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea53-795c-b378-3186af9b09b5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea52-7721-89cf-9cc0b0f51c2e"
+conversation_id = "019d174e-ea52-7721-89cf-9cc0b0f51c2e"
+message_id = "019d174e-ea53-7fdc-a2e6-489c4cd311e3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-19T15:44:16.45468Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "88f54c9d4f7b2c9b66e223cb8e85aef2562729b4fc1e6b0429512909b154b337"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+conversation_native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9cc9-5cee-7119-a9ac-730a3e258276"
+conversation_native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+message_native_id = "019a9cc9-5cee-7119-a9ac-730a3e258276"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9cc9-5cee-7119-a9ac-730a3e258276"
+role = "assistant"
+sequence_hint = 18
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-19T15:43:56.326078Z\",\"stop_timestamp\":\"2025-11-19T15:43:58.132252Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking a fundamental question about what a token is in the context of language models. This is important for understanding performance metrics I\\u0027ve been citing.\\n\\nI should be direct and clear - tokens are neither exactly words nor letters, but somewhere in between. I should give practical examples to make this concrete.\",\"summaries\":[{\"summary\":\"Thinking about defining tokens in linguistic and computational contexts.\"},{\"summary\":\"Clarifying tokens as neither words nor letters.\"},{\"summary\":\"Clarifying tokens as neither words nor letters.\"},{\"summary\":\"Deliberated token definition between words and characters.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Tokens are subword chunks** - neither full words nor single letters.\n\n## Practical Examples\n\n**Short common words = 1 token:**\n- \"the\" = 1 token\n- \"is\" = 1 token\n- \"cat\" = 1 token\n\n**Longer/uncommon words = multiple tokens:**\n- \"understand\" = 2 tokens (\"under\" + \"stand\")\n- \"methodology\" = 3-4 tokens\n- \"FnMarina\" = 2-3 tokens (uncommon word)\n\n**Technical/domain terms:**\n- \"EventSourcing\" = 2-3 tokens\n- \"IvanTheGeek\" = 3-4 tokens\n- \"Nexus\" = 1 token (common word)\n\n## Rough Conversion\n\n**English text average:**\n- 1 token ≈ 0.75 words\n- 1 token ≈ 4 characters\n- 100 tokens ≈ 75 words ≈ 1-2 paragraphs\n\n**Your use case (structured events):**\n```yaml\nevent_type: DecisionCaptured  # ~5 tokens\ntimestamp: 2025-11-19T...     # ~8 tokens\ndescription: \"Created...\"     # ~10-15 tokens per sentence\n```\nA typical Nexus event might be 50-200 tokens.\n\n## Why It Matters for Performance\n\nWhen I said \"50 tokens/sec\" on RTX 3070:\n- That's ~37 words/second\n- ~150 characters/second\n- A short paragraph in 2-3 seconds\n\n**Your decision logging context:**\n- User submits event capture form\n- Model generates 100-200 token response (validation, suggestions, cross-references)\n- Takes 2-4 seconds on desktop GPU\n- Perfectly acceptable latency\n\n## Token Counting Impact\n\n**Context window (Phi-3-mini: 4K tokens):**\n- ≈ 3,000 words\n- ≈ 6-8 pages single-spaced text\n- Enough for: current event + last 20-50 past events + conversation\n\nThis is why you need RAG or summarization for long event histories - can't fit entire project history in context.\n\nDoes this change your thinking on model sizing or response expectations?"
+

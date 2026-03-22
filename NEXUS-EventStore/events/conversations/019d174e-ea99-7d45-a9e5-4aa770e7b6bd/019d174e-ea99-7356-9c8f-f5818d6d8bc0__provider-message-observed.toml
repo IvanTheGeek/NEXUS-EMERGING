@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea99-7356-9c8f-f5818d6d8bc0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+conversation_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+message_id = "019d174e-ea99-7191-bf1c-dd1177428c66"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-14T15:47:20.022609Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "4ddecee52f6ae669be74dc525aab55e6a0b75cb2707e6f034a0fe1e80a59fd7f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ced07-58e2-7e50-b883-6f8e80f952aa"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+message_native_id = "019ced07-58e2-7e50-b883-6f8e80f952aa"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ced07-58e2-7e50-b883-6f8e80f952aa"
+role = "assistant"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-14T15:46:50.237391Z\",\"stop_timestamp\":\"2026-03-14T15:46:50.237391Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-14T15:46:50.283140Z\",\"stop_timestamp\":\"2026-03-14T15:47:02.176473Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Two terms to add: goal and session. Let me think about these carefully.\\n\\n**Goal** \\u2014 sits between Motivation and Intent. Motivation is persistent and fundamental, Intent is situational and proximate. Goal is the intermediate \\u2014 a specific, defined outcome you\\u0027re working toward, which may span multiple sessions and generate multiple Intents.\\n\\n- Motivation: \\u0022I don\\u0027t want to lose money I\\u0027m owed\\u0022\\n- Goal: \\u0022Document all laundry expenses for Q1\\u0022\\n- Intent: \\u0022Record this specific wash cycle right now\\u0022\\n\\n**Session** \\u2014 interesting one because it has meaning at multiple levels:\\n- Technical: a bounded period of interaction with a system (HTTP session, user session)\\n\\n\\n- Domain: in LaundryLog specifically, a LaundrySession is a domain construct\\n- Human: a period of focused activity toward a goal\\n\\nSession is fundamentally a temporal boundary \\u2014 it has a start, an end, and a contained scope of activity. It\\u0027s the \\u0022active window\\u0022 in which Context lives. A Session creates or defines a Context, serving as the temporal container for it.\\n\\nSo the hierarchy looks like: Motivation (persistent, deep) \\u2192 Goal (defined outcome, medium-term) \\u2192 Intent (situational, proximate) \\u2192 Action \\u2192 Event. And Session sits as a bounded temporal container that holds the activity within it.\\n\\nWhat\\u0027s interesting is that Session operates on multiple levels simultaneously \\u2014 it\\u0027s a temporal construct marking a bounded window, a scope construct defining what\\u0027s currently in play, and also a concrete domain construct specific to LaundryLog. It can span multiple Intents, occurs within a Context, and multiple Sessions can serve the same Goal. So it\\u0027s not just an abstraction in the hierarchy, but also a real construct in the system itself.\",\"summaries\":[{\"summary\":\"Thinking about adding goal and session elements to a system or application.\"},{\"summary\":\"Positioning goal between motivation and intent.\"},{\"summary\":\"Positioned goal and session within conceptual hierarchy.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Goal** — a defined, specific outcome you're working toward. The bridge between Motivation and Intent. Where Motivation is persistent and fundamental, and Intent is situational and immediate, Goal is the committed target that spans multiple sessions and generates multiple Intents over time.\n\n- *Examples:* \"Document all laundry expenses for Q1\" is a Goal. Motivation is \"protect my tax deductions.\" Today's Intent is \"record this dryer cycle.\" The Goal sits between and connects them.\n- *Key distinction:* Motivation doesn't complete — it's a persistent condition. Goals do complete (or fail). Intent is fleeting — it lives for one action. Goals are durable enough to survive interruption, context switches, and multiple sessions.\n- *Relation:* A Motivation generates Goals. A Goal generates Intents across multiple sessions. This is where roadmaps, plans, and progress tracking live.\n\n---\n\n**Session** — a bounded period of focused activity with a defined start, scope, and end. Session is temporal — it creates the active window within which Context, Intent, and Actions occur.\n\n- *Examples:* A laundry run at a truck stop (LaundryLog domain session). A design working session on an event model. An HTTP user session. A Claude conversation. A shift.\n- *Key trait:* Session has duality — it exists at both the **human activity** level and the **technical system** level, and these often align by design. LaundryLog's `LaundrySession` construct is a deliberate mapping of the human session onto the domain model.\n- *Relation to Context:* Context is *where and what* — the situational circumstances. Session is *when and for how long* — the temporal container. A Context can outlast many Sessions. A Session always activates within a Context.\n- *Relation to Goal:* A Goal spans many Sessions. A Session advances a Goal partially. When a Session ends, the Goal persists.\n\n---\n\n## Updated Human Causal Chain\n\n```\nCAUSAL CHAINS\n─────────────────────────────────────────\nHuman:     Motivation → Goal → Intent → Action → Event\n                         ↑ spans Sessions\nMechanical:                    Trigger → Action → Event\n```\n\n---\n\n## Session in the Abstraction Stack\n\nSession doesn't sit *inside* the abstraction stack cleanly — it's more of a **temporal scope** that cuts across it. A Session is always within a Context, but it's the active time-bounded slice of that Context.\n\n```\nContext        where and what (situational circumstances)\n  Session      when and how long (temporal container)\n    Intent     specific goal driving the current action\n```\n\n---\n\n## Full Map\n\n```\nABSTRACTION STACK\n─────────────────────────────────────────\nParadigm       unconscious foundational worldview\n  Domain       territory of knowledge and practice\n    Layer      stacked level of concern (in domain or system)\n    System     bounded, designed arrangement of components\n      Model    composed representation built from constructs\n        Context     situational circumstances (where/what)\n          Session   temporal container (when/how long)\n            Construct  named unit you reason with\n\nAGENCY DIMENSION\n─────────────────────────────────────────\nRole         defined function within a system\nActor        entity exercising agency\n  Agent      autonomous Actor with goals and a principal\n\nHUMAN CAUSAL CHAIN\n─────────────────────────────────────────\nMotivation   persistent underlying force\n  Goal       defined outcome spanning multiple sessions\n    Intent   specific goal driving a particular action\n      Action     discrete unit of doing\n        Event    recorded proof an action completed\n\nMECHANICAL CAUSAL CHAIN\n─────────────────────────────────────────\nTrigger    condition or signal that initiates\n  Action   discrete unit of doing\n    Event  recorded proof an action completed\n\nSTRUCTURAL RULES\n─────────────────────────────────────────\nConstraint   limits valid states or actions (pre-condition)\nInvariant    condition that must always hold (perpetual integrity)\n\nANALYTICAL TOOLS\n─────────────────────────────────────────\nLens         deliberate analytical filter\nAssumption   unstated belief underlying any of the above\n\nLANGUAGE\n─────────────────────────────────────────\nVocabulary   committed set of constructs for a domain/system\nInterface    defined crossing point between systems/layers/actors\n\nCOMMUNICATION CHAIN\n─────────────────────────────────────────\nPerspective  how you see from where you stand\nFraming      how you package what you see\nAudience     who receives it\n```\n\n---\n\nThe most useful thing this addition revealed: **Goal** was the missing link that explains why Motivation doesn't directly produce Intent. Without Goal, the chain felt like it was skipping a level. With it, you have a complete hierarchy from deep persistent drive all the way down to a single recorded event."
+
