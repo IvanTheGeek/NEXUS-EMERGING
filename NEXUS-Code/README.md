@@ -9,3 +9,14 @@ Near-term focus:
 - importer pipeline
 - TOML serialization
 - manual CLI workflow
+
+## v0 Shape
+
+The first code scaffold is intentionally small and centered on the canonical ingestion layer.
+
+- `src/Nexus.Domain/`
+  stable IDs, provenance, observed-history events, and a thin graph layer
+- `docs/v0-module-map.md`
+  a short module and responsibility map for the first pass
+
+Importer workflow, provider parsing, and file writing come after the domain surface is agreed.
