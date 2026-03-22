@@ -11,3 +11,4 @@ Use it for:
 Current guides:
 
 - `export-codex-sessions.md`
+- `git-auth-for-codex.md`
