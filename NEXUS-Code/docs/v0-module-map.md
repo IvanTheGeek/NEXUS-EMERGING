@@ -11,7 +11,7 @@ The goal is to stabilize naming and module responsibilities before importer logi
 
 ## Modules
 
-- `Ids.fs`
+- `IDs.fs`
   canonical identifiers and broad classification IDs
 - `Time.fs`
   timestamp wrappers for occurred, observed, and imported times
