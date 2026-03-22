@@ -10,6 +10,8 @@ The goal is to stabilize naming and module responsibilities before importer logi
   the initial domain-only project
 - `src/Nexus.EventStore/Nexus.EventStore.fsproj`
   event-store serialization and file writing on top of `Nexus.Domain`
+- `src/Nexus.Cli/Nexus.Cli.fsproj`
+  manual CLI entry points that exercise the domain and event-store layers
 
 ## Modules
 
@@ -27,6 +29,8 @@ The goal is to stabilize naming and module responsibilities before importer logi
   low-level TOML rendering helpers
 - `Nexus.EventStore/CanonicalStore.fs`
   canonical event, import manifest, and graph assertion serialization plus file layout rules
+- `Nexus.Cli/Program.fs`
+  manual commands such as writing sample canonical history into an event-store root
 
 ## Design Notes
 

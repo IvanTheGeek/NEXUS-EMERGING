@@ -12,3 +12,4 @@ Current guides:
 
 - `export-codex-sessions.md`
 - `git-auth-for-codex.md`
+- `write-sample-event-store.md`
