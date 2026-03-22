@@ -32,8 +32,10 @@ Working commands now include:
 
 - `write-sample-event-store`
 - `import-provider-export`
+- `rebuild-conversation-projections`
 
 See:
 
 - `/docs/how-to/import-provider-export.md`
+- `/docs/how-to/rebuild-conversation-projections.md`
 - `/docs/how-to/export-codex-sessions.md`

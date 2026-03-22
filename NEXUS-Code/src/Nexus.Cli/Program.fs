@@ -12,6 +12,7 @@ module Program =
     type Command =
         | WriteSampleEventStore of eventStoreRoot: string
         | ImportProviderExport of request: ImportRequest
+        | RebuildConversationProjections of eventStoreRoot: string
 
     let private repoRoot =
         Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "..", "..", ".."))
@@ -34,6 +35,8 @@ module Program =
         printfn "Commands:"
         printfn "  write-sample-event-store    Write a small sample canonical history bundle"
         printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
+        printfn "  rebuild-conversation-projections"
+        printfn "                              Rebuild conversation projections from canonical events"
         printfn ""
         printfn "Options for write-sample-event-store:"
         printfn "  --event-store-root <path>   Override the event-store root"
@@ -43,6 +46,9 @@ module Program =
         printfn "  --zip <path>                Path to the provider export zip"
         printfn "  --window <kind>             Import window; defaults to full"
         printfn "  --objects-root <path>       Override the objects root"
+        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for rebuild-conversation-projections:"
         printfn "  --event-store-root <path>   Override the event-store root"
 
     let private parseWriteSampleEventStore (args: string list) =
@@ -105,6 +111,19 @@ module Program =
 
         loop None None (Some Full) defaultObjectsRoot defaultEventStoreRoot args
 
+    let private parseRebuildConversationProjections (args: string list) =
+        let rec loop eventStoreRoot remaining =
+            match remaining with
+            | [] -> Ok (RebuildConversationProjections eventStoreRoot)
+            | "--event-store-root" :: value :: rest ->
+                loop value rest
+            | option :: _ ->
+                eprintfn "Unknown option for rebuild-conversation-projections: %s" option
+                usage ()
+                Error 1
+
+        loop defaultEventStoreRoot args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -118,6 +137,8 @@ module Program =
             parseWriteSampleEventStore rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
+        | "rebuild-conversation-projections" :: rest ->
+            parseRebuildConversationProjections rest
         | command :: _ ->
             eprintfn "Unknown command: %s" command
             usage ()
@@ -382,6 +403,18 @@ module Program =
 
         0
 
+    let private rebuildConversationProjections eventStoreRoot =
+        let projectionPaths = ConversationProjections.rebuild eventStoreRoot
+        printfn "Conversation projections rebuilt."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Projection files written: %d" projectionPaths.Length
+
+        projectionPaths
+        |> List.truncate 5
+        |> List.iter (printfn "    %s")
+
+        0
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
@@ -389,5 +422,7 @@ module Program =
             writeSampleEventStore eventStoreRoot
         | Ok (ImportProviderExport request) ->
             importProviderExport request
+        | Ok (RebuildConversationProjections eventStoreRoot) ->
+            rebuildConversationProjections eventStoreRoot
         | Error exitCode ->
             exitCode

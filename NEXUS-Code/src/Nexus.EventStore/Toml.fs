@@ -10,8 +10,31 @@ module internal Toml =
 
     let create () = ResizeArray<string>()
 
+    let private sanitizeString (value: string) =
+        let builder = StringBuilder(value.Length)
+        let mutable index = 0
+
+        while index < value.Length do
+            let current = value[index]
+
+            if Char.IsHighSurrogate(current) then
+                if index + 1 < value.Length && Char.IsLowSurrogate(value[index + 1]) then
+                    builder.Append(current).Append(value[index + 1]) |> ignore
+                    index <- index + 2
+                else
+                    builder.Append('\uFFFD') |> ignore
+                    index <- index + 1
+            elif Char.IsLowSurrogate(current) then
+                builder.Append('\uFFFD') |> ignore
+                index <- index + 1
+            else
+                builder.Append(current) |> ignore
+                index <- index + 1
+
+        builder.ToString()
+
     let private escapeString (value: string) =
-        value
+        (sanitizeString value)
             .Replace("\\", "\\\\")
             .Replace("\"", "\\\"")
             .Replace("\r", "\\r")

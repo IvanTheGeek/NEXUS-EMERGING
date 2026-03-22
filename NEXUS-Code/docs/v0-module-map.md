@@ -29,8 +29,12 @@ The goal is to stabilize naming and module responsibilities while the first real
   a thin graph-compatible layer for nodes, edges, values, and assertions
 - `Nexus.EventStore/Toml.fs`
   low-level TOML rendering helpers
+- `Nexus.EventStore/TomlDocument.fs`
+  lightweight TOML reader for scanning canonical event files
 - `Nexus.EventStore/CanonicalStore.fs`
   canonical event, import manifest, and graph assertion serialization plus file layout rules
+- `Nexus.EventStore/ConversationProjections.fs`
+  rebuildable read-model generation for conversation projections
 - `Nexus.Importers/ImporterTypes.fs`
   provider naming, window naming, parsed-record shapes, and import request/result types
 - `Nexus.Importers/EventStoreIndex.fs`
@@ -52,3 +56,4 @@ The goal is to stabilize naming and module responsibilities while the first real
 - provider adapters are isolated from the shared canonical event-writing core
 - dedupe is currently driven by provider object identity plus canonical content hash
 - the importer currently supports first real full-export imports for ChatGPT and Claude
+- conversation projections are rebuildable from canonical history and do not carry source-of-truth authority
