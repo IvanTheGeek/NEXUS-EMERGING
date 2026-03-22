@@ -17,6 +17,8 @@ The first code scaffold is intentionally small and centered on the canonical ing
 
 - `src/Nexus.Domain/`
   stable IDs, provenance, observed-history events, and a thin graph layer
+- `src/Nexus.EventStore/`
+  TOML serialization and append-only file writers for canonical events and manifests
 - `docs/v0-module-map.md`
   a short module and responsibility map for the first pass
 - `scripts/export_codex_sessions.fsx`
