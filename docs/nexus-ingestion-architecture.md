@@ -71,6 +71,31 @@ Initial event kinds:
 - `ArtifactPayloadCaptured`
 - `ImportCompleted`
 
+## What `Canonical` Means Here
+
+`Canonical` in this repository is bounded-context-specific.
+
+In the current `Ingestion` and `CanonicalHistory` bounded contexts, `canonical` means:
+
+- the NEXUS-preferred normalized form for observed acquisition history
+- one consistent shape across provider-specific inputs like ChatGPT, Claude, and later other sources
+- append-only and provenance-preserving
+- designed for dedupe, replay, projection, and reinterpretation later
+
+It does not mean:
+
+- the raw provider format
+- the final graph model for all of NEXUS
+- universal truth independent of domain, bounded context, or lens
+
+So the current canonical layer should be understood as:
+
+- canonical for ingestion
+- canonical for append-only observed history
+- not yet canonical for the whole NEXUS graph substrate or later domain semantics
+
+That distinction matters because the same preserved raw source may later produce richer or different graph assertions as the NEXUS model evolves, without invalidating the canonical ingestion history that was recorded earlier.
+
 ## Artifact Strategy
 
 The provider export is not guaranteed to contain every referenced artifact.
