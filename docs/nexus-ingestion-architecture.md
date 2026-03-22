@@ -32,18 +32,22 @@ These are the types worth stabilizing early because they are about identity, pro
 
 - `ProviderKind`
 - `SourceAcquisitionKind`
-- `ImportId`
-- `CanonicalEventId`
-- `ConversationId`
-- `MessageId`
-- `ArtifactId`
-- `TurnId` as optional
+- `ImportId` as UUIDv7
+- `CanonicalEventId` as UUIDv7
+- `ConversationId` as UUIDv7
+- `MessageId` as UUIDv7
+- `ArtifactId` as UUIDv7
+- `TurnId` as optional UUIDv7
 - `ProviderRef`
 - `RawObjectRef`
 - `ContentHash`
 - `OccurredAt`
 - `ObservedAt`
 - `ImportedAt`
+
+Semantic taxonomy identifiers are intentionally different:
+
+- `DomainId`, `BoundedContextId`, and `LensId` should be human-readable slugs unless there is a later reason to make them opaque
 
 ## Canonical History Layer
 

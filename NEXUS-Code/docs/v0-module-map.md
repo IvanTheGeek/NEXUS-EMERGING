@@ -25,6 +25,8 @@ The goal is to stabilize naming and module responsibilities before importer logi
 ## Design Notes
 
 - the canonical history layer uses `Observed` language
+- internal event, import, conversation, message, artifact, node, edge, and fact IDs default to UUIDv7
+- semantic taxonomy IDs like `DomainId`, `BoundedContextId`, and `LensId` stay human-readable slugs
 - the graph layer is intentionally thin and derived-friendly
 - `Domain`, `BoundedContext`, and `Lens` are present as concepts without forcing a final ontology
 - provider adapters and importer workflow are explicitly deferred to the next slice
