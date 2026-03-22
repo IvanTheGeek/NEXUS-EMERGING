@@ -9,6 +9,7 @@ Near-term focus:
 - importer pipeline
 - TOML serialization
 - manual CLI workflow
+- raw-session preservation tools for local AI work logs
 
 ## v0 Shape
 
@@ -18,5 +19,7 @@ The first code scaffold is intentionally small and centered on the canonical ing
   stable IDs, provenance, observed-history events, and a thin graph layer
 - `docs/v0-module-map.md`
   a short module and responsibility map for the first pass
+- `scripts/export_codex_sessions.fsx`
+  copies local Codex session transcripts into the NEXUS object layer as raw source artifacts
 
 Importer workflow, provider parsing, and file writing come after the domain surface is agreed.
