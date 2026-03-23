@@ -34,6 +34,7 @@ Working commands now include:
 - `import-provider-export`
 - `import-codex-sessions`
 - `capture-artifact-payload`
+- `rebuild-graph-assertions`
 - `rebuild-artifact-projections`
 - `report-unresolved-artifacts`
 - `rebuild-conversation-projections`
@@ -52,6 +53,7 @@ See:
 - `/docs/how-to/import-codex-sessions.md`
 - `/docs/how-to/rebuild-artifact-projections.md`
 - `/docs/how-to/rebuild-conversation-projections.md`
+- `/docs/how-to/rebuild-graph-assertions.md`
 - `/docs/how-to/report-unresolved-artifacts.md`
 - `/docs/how-to/export-codex-sessions.md`
 - `/docs/how-to/run-tests.md`

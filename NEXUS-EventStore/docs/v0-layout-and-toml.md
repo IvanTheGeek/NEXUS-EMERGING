@@ -32,6 +32,10 @@ Reason:
 - globally unique without coordination
 - good fit for append-only event files
 
+Exception:
+
+- rebuildable graph artifacts may use deterministic stable IDs for `node_id` and `fact_id` so repeated rebuilds remain diff-friendly
+
 Semantic taxonomy identifiers are different:
 
 - `domain_id`

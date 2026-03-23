@@ -41,6 +41,8 @@ The goal is to stabilize naming and module responsibilities while the first real
   rebuildable read-model generation for artifact projections and hydration status
 - `Nexus.EventStore/ArtifactProjectionReports.fs`
   read-side loading and unresolved-artifact reporting over artifact projections
+- `Nexus.EventStore/GraphAssertions.fs`
+  rebuildable derivation of the first thin graph assertion layer over canonical history
 - `Nexus.Importers/ImporterTypes.fs`
   provider naming, window naming, parsed-record shapes, and import request/result types
 - `Nexus.Importers/EventStoreIndex.fs`
@@ -67,7 +69,8 @@ The goal is to stabilize naming and module responsibilities while the first real
 ## Design Notes
 
 - the canonical history layer uses `Observed` language
-- internal event, import, conversation, message, artifact, node, edge, and fact IDs default to UUIDv7
+- internal event, import, conversation, message, and artifact IDs default to UUIDv7
+- derived graph node and fact IDs may use deterministic stable IDs when rebuildability matters more than append-time creation order
 - semantic taxonomy IDs like `DomainId`, `BoundedContextId`, and `LensId` stay human-readable slugs
 - the graph layer is intentionally thin and derived-friendly
 - `Domain`, `BoundedContext`, and `Lens` are present as concepts without forcing a final ontology

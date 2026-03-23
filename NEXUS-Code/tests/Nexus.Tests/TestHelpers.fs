@@ -66,6 +66,17 @@ module TestHelpers =
     let readToml path =
         File.ReadAllText(path) |> TomlDocument.parse
 
+    let tomlDocumentsUnder rootPath relativePath =
+        let basePath = Path.Combine(rootPath, relativePath)
+
+        if Directory.Exists(basePath) then
+            Directory.EnumerateFiles(basePath, "*.toml", SearchOption.AllDirectories)
+            |> Seq.sort
+            |> Seq.map (fun path -> path, readToml path)
+            |> Seq.toList
+        else
+            []
+
     let runProcess workingDirectory executable arguments =
         let startInfo = ProcessStartInfo()
         startInfo.FileName <- executable

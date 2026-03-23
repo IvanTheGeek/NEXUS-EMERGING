@@ -9,6 +9,7 @@ module Program =
             "nexus"
             [ ProviderAdapterTests.tests
               WorkflowTests.tests
+              GraphAssertionTests.tests
               PropertyTests.tests
               SnapshotTests.tests
               CliHelpTests.tests ]

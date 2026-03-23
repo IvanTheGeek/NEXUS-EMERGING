@@ -23,6 +23,7 @@ module Program =
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
+        | RebuildGraphAssertions of eventStoreRoot: string
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
@@ -159,6 +160,21 @@ module Program =
                   Notes =
                     [ "Projection files are rebuildable views, not source truth."
                       "Detailed guide: docs/how-to/rebuild-artifact-projections.md" ] }
+        | "rebuild-graph-assertions" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild the first thin graph-assertion layer from canonical history."
+                  Usage =
+                    [ sprintf "%s rebuild-graph-assertions" cliInvocation
+                      sprintf "%s rebuild-graph-assertions --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-graph-assertions" cliInvocation ]
+                  Notes =
+                    [ "Graph assertions are derived and rebuildable, not the canonical source of truth."
+                      "This first pass derives node-kind, relationship, and attribute assertions from canonical history."
+                      "Detailed guide: docs/how-to/rebuild-graph-assertions.md" ] }
         | "report-unresolved-artifacts" ->
             Some
                 { Name = name
@@ -197,6 +213,7 @@ module Program =
           "import-provider-export"
           "import-codex-sessions"
           "capture-artifact-payload"
+          "rebuild-graph-assertions"
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
           "rebuild-conversation-projections" ]
@@ -473,6 +490,22 @@ module Program =
 
             loop defaultEventStoreRoot args
 
+    let private parseRebuildGraphAssertions (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-graph-assertions"))
+        else
+            let rec loop eventStoreRoot remaining =
+                match remaining with
+                | [] -> Ok (RebuildGraphAssertions eventStoreRoot)
+                | "--event-store-root" :: value :: rest ->
+                    loop value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-graph-assertions: %s" option
+                    printCommandHelp "rebuild-graph-assertions"
+                    Error 1
+
+            loop defaultEventStoreRoot args
+
     let private parseReportUnresolvedArtifacts (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-unresolved-artifacts"))
@@ -524,6 +557,8 @@ module Program =
             parseImportCodexSessions rest
         | "capture-artifact-payload" :: rest ->
             parseCaptureArtifactPayload rest
+        | "rebuild-graph-assertions" :: rest ->
+            parseRebuildGraphAssertions rest
         | "rebuild-artifact-projections" :: rest ->
             parseRebuildArtifactProjections rest
         | "report-unresolved-artifacts" :: rest ->
@@ -877,6 +912,18 @@ module Program =
 
         0
 
+    let private rebuildGraphAssertions eventStoreRoot =
+        let assertionPaths = GraphAssertions.rebuild eventStoreRoot
+        printfn "Graph assertions rebuilt."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Assertion files written: %d" assertionPaths.Length
+
+        assertionPaths
+        |> List.truncate 5
+        |> List.iter (printfn "    %s")
+
+        0
+
     let private reportUnresolvedArtifacts eventStoreRoot provider limit =
         let report = ArtifactProjectionReports.buildUnresolvedReport eventStoreRoot provider limit
 
@@ -946,6 +993,8 @@ module Program =
             importCodexSessions request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
+        | Ok (RebuildGraphAssertions eventStoreRoot) ->
+            rebuildGraphAssertions eventStoreRoot
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->

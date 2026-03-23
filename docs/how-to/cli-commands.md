@@ -67,6 +67,12 @@ The CLI supports both:
 - Use it before reporting unresolved artifacts if projection files are stale.
 - Details: `docs/how-to/rebuild-artifact-projections.md`
 
+`rebuild-graph-assertions`
+
+- Rebuilds the first thin graph-assertion layer from canonical history.
+- Use it when you want a derived graph substrate over the canonical event store.
+- Details: `docs/how-to/rebuild-graph-assertions.md`
+
 `report-unresolved-artifacts`
 
 - Summarizes artifact references whose payloads are still unresolved.
@@ -80,7 +86,8 @@ Provider import:
 1. Run `import-provider-export`.
 2. Run `rebuild-conversation-projections`.
 3. Run `rebuild-artifact-projections`.
-4. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+4. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
+5. Run `report-unresolved-artifacts` if you want to identify missing payloads.
 
 Codex session import:
 
@@ -110,5 +117,6 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/capture-artifact-payload.md`
 - `docs/how-to/rebuild-conversation-projections.md`
 - `docs/how-to/rebuild-artifact-projections.md`
+- `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/run-tests.md`
