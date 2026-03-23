@@ -4,6 +4,8 @@ open System
 open System.Collections.Generic
 open System.Globalization
 open System.IO
+open System.Text.Json
+open System.Text.Json.Nodes
 
 [<RequireQualifiedAccess>]
 module ConversationProjections =
@@ -42,6 +44,12 @@ module ConversationProjections =
             match DateTimeOffset.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal) with
             | true, parsedValue -> Some parsedValue
             | _ -> None)
+
+    let private tryParseJsonNode (value: string) =
+        try
+            JsonNode.Parse(value) |> Some
+        with _ ->
+            None
 
     let private truncate limit (value: string) =
         if String.IsNullOrWhiteSpace(value) then
@@ -107,12 +115,188 @@ module ConversationProjections =
         state.FirstOccurredAt <- setEarlier state.FirstOccurredAt occurredAt
         state.LastOccurredAt <- setLater state.LastOccurredAt occurredAt
 
+    let private tryJsonStringProperty propertyName (node: JsonNode) =
+        match node with
+        | :? JsonObject as jsonObject ->
+            let mutable value = Unchecked.defaultof<JsonNode>
+
+            if jsonObject.TryGetPropertyValue(propertyName, &value) && not (isNull value) then
+                match value with
+                | :? JsonValue as jsonValue ->
+                    match jsonValue.TryGetValue<string>() with
+                    | true, parsedValue when not (String.IsNullOrWhiteSpace(parsedValue)) -> Some parsedValue
+                    | _ -> None
+                | _ -> None
+            else
+                None
+        | _ -> None
+
+    let private compactJsonForPreview (node: JsonNode) =
+        node.ToJsonString(JsonSerializerOptions(WriteIndented = false))
+
+    let private isProviderWrapperJson (text: string) =
+        match tryParseJsonNode text with
+        | Some (:? JsonObject as jsonObject) ->
+            let hasProperty name =
+                let mutable value = Unchecked.defaultof<JsonNode>
+                jsonObject.TryGetPropertyValue(name, &value) && not (isNull value)
+
+            hasProperty "type"
+            && [ "start_timestamp"; "stop_timestamp"; "flags"; "citations"; "tool_use_id"; "display_content" ]
+               |> List.exists hasProperty
+        | _ -> false
+
+    let rec private parseJsonSegmentPreview kind (text: string) =
+        let fromStringifiedJson candidate =
+            candidate
+            |> tryParseJsonNode
+            |> Option.bind (fun parsedNode -> parseJsonSegmentPreview kind (compactJsonForPreview parsedNode))
+
+        let parseContentItems (node: JsonNode) =
+            match node with
+            | :? JsonArray as jsonArray ->
+                jsonArray
+                |> Seq.choose (fun item ->
+                    [ tryJsonStringProperty "text" item
+                      tryJsonStringProperty "summary" item
+                      tryJsonStringProperty "message" item ]
+                    |> List.tryPick id)
+                |> Seq.toList
+            | _ -> []
+
+        match tryParseJsonNode text with
+        | None -> None
+        | Some jsonNode ->
+            let objectValues =
+                [ tryJsonStringProperty "text" jsonNode
+                  tryJsonStringProperty "prompt" jsonNode
+                  tryJsonStringProperty "message" jsonNode
+                  tryJsonStringProperty "thinking" jsonNode
+                  tryJsonStringProperty "summary" jsonNode
+                  tryJsonStringProperty "name" jsonNode ]
+                |> List.choose id
+
+            let summaryValues =
+                match jsonNode with
+                | :? JsonObject as jsonObject ->
+                    let mutable summariesNode = Unchecked.defaultof<JsonNode>
+
+                    if jsonObject.TryGetPropertyValue("summaries", &summariesNode) && not (isNull summariesNode) then
+                        parseContentItems summariesNode
+                    else
+                        []
+                | _ -> []
+
+            let contentValues =
+                match jsonNode with
+                | :? JsonObject as jsonObject ->
+                    let mutable contentNode = Unchecked.defaultof<JsonNode>
+
+                    if jsonObject.TryGetPropertyValue("content", &contentNode) && not (isNull contentNode) then
+                        parseContentItems contentNode
+                    else
+                        []
+                | _ -> []
+
+            let displayValues =
+                match jsonNode with
+                | :? JsonObject as jsonObject ->
+                    let mutable displayNode = Unchecked.defaultof<JsonNode>
+
+                    if jsonObject.TryGetPropertyValue("display_content", &displayNode) && not (isNull displayNode) then
+                        [ tryJsonStringProperty "text" displayNode ] |> List.choose id
+                    else
+                        []
+                | _ -> []
+
+            let candidates = objectValues @ summaryValues @ contentValues @ displayValues
+
+            candidates
+            |> List.tryPick (fun candidate ->
+                let trimmed = candidate.Trim()
+
+                if String.IsNullOrWhiteSpace(trimmed) then
+                    None
+                elif trimmed = "\"\"" then
+                    None
+                elif (trimmed.StartsWith("{", StringComparison.Ordinal) || trimmed.StartsWith("[", StringComparison.Ordinal))
+                     && kind <> "plain_text"
+                     && kind <> "markdown"
+                     && kind <> "quote"
+                     && kind <> "code" then
+                    fromStringifiedJson trimmed
+                else
+                    Some trimmed)
+
+    let private normalizeSegmentText kind (text: string) =
+        let trimmed = text.Trim()
+        let looksLikeJson =
+            trimmed.StartsWith("{", StringComparison.Ordinal) || trimmed.StartsWith("[", StringComparison.Ordinal)
+
+        if String.IsNullOrWhiteSpace(trimmed) || trimmed = "\"\"" || trimmed = "null" then
+            None
+        else
+            match kind with
+            | "plain_text"
+            | "markdown"
+            | "quote"
+            | "code" ->
+                if looksLikeJson then
+                    match parseJsonSegmentPreview kind trimmed with
+                    | Some preview -> Some preview
+                    | None when isProviderWrapperJson trimmed -> None
+                    | None -> Some trimmed
+                else
+                    Some trimmed
+            | "thinking"
+            | "reasoning"
+            | "tool_use"
+            | "tool_result"
+            | "multimodal"
+            | "unknown"
+            | "token_budget" -> parseJsonSegmentPreview kind trimmed
+            | _ when trimmed.StartsWith("{", StringComparison.Ordinal) || trimmed.StartsWith("[", StringComparison.Ordinal) ->
+                parseJsonSegmentPreview kind trimmed
+            | _ -> Some trimmed
+
     let private messageExcerpt document =
-        TomlDocument.tableArray "body.segments" document
-        |> List.choose (fun table ->
-            match table.TryGetValue("text") with
-            | true, value when not (String.IsNullOrWhiteSpace(value)) -> Some value
-            | _ -> None)
+        let segments =
+            TomlDocument.tableArray "body.segments" document
+            |> List.choose (fun table ->
+                match table.TryGetValue("kind"), table.TryGetValue("text") with
+                | (true, kind), (true, value) ->
+                    normalizeSegmentText kind value
+                    |> Option.map (fun normalizedText -> kind, normalizedText)
+                | _ -> None)
+
+        let preferredKinds =
+            [ "plain_text"; "markdown"; "quote"; "code" ]
+
+        let fallbackKinds =
+            [ "multimodal"; "tool_result"; "tool_use" ]
+
+        let reasoningKinds =
+            [ "thinking"; "reasoning" ]
+
+        let collect kinds =
+            segments
+            |> List.choose (fun (kind, text) ->
+                if kinds |> List.contains kind then Some text else None)
+
+        let excerptTexts =
+            let preferred = collect preferredKinds
+
+            if not preferred.IsEmpty then
+                preferred
+            else
+                let fallback = collect fallbackKinds
+
+                if not fallback.IsEmpty then
+                    fallback
+                else
+                    collect reasoningKinds
+
+        excerptTexts
         |> String.concat "\n"
         |> truncate 160
 

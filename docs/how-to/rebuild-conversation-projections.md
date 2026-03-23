@@ -44,3 +44,4 @@ Each projection currently includes:
 - Projections are rebuildable derived views.
 - The rebuild deletes and rewrites the existing conversation projection folder.
 - If canonical event history changes, run this again to refresh the read side.
+- Message excerpts prefer human-visible text and only fall back to tool or reasoning content when no visible reply text is available.
