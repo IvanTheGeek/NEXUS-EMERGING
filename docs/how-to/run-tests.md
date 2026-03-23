@@ -17,9 +17,21 @@ dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj
 - manual artifact hydration duplicate detection
 - Codex session import behavior
 - conversation and artifact projection rebuild checks
+- snapshot verification for canonical event TOML and import manifest TOML
+
+## Snapshot Tests
+
+The test project now includes Verify-based snapshot tests under:
+
+`/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/snapshots`
+
+Committed `.verified.toml` files are the approved expected output.
+
+When a serializer change is intentional, rerun the tests and inspect the generated `.received.*` files. If the new output is correct, promote that content into the matching `.verified.*` file and rerun the suite.
 
 ## Notes
 
 - the fixtures are intentionally tiny and curated
 - these are regression tests for importer behavior, not full end-to-end coverage of your real exports
-- this is the first layer of automated checks; property tests and snapshot-style output tests can be added next
+- the snapshot tests are aimed at wire-format stability for generated artifacts
+- property tests can still be added later for stronger invariant coverage
