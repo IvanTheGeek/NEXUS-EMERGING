@@ -952,7 +952,11 @@ module Program =
         0
 
     let private rebuildGraphAssertions eventStoreRoot =
-        let assertionPaths = GraphAssertions.rebuild eventStoreRoot
+        let assertionPaths =
+            GraphAssertions.rebuildWithStatus
+                (fun message -> printfn "  %s" message)
+                eventStoreRoot
+
         printfn "Graph assertions rebuilt."
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Assertion files written: %d" assertionPaths.Length

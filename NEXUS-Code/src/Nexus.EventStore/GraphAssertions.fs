@@ -10,6 +10,11 @@ open Nexus.Kernel
 
 [<RequireQualifiedAccess>]
 module GraphAssertions =
+    /// <summary>
+    /// Emits human-readable rebuild progress.
+    /// </summary>
+    type StatusReporter = string -> unit
+
     type private EventDocument =
         { EventId: CanonicalEventId
           EventKind: string
@@ -462,33 +467,91 @@ module GraphAssertions =
         eventDocument.MessageId |> Option.iter (addMessageAssertions assertions eventDocument)
         eventDocument.ArtifactId |> Option.iter (addArtifactAssertions assertions eventDocument)
 
+    let private progressInterval totalCount =
+        if totalCount <= 0 then
+            1
+        else
+            max 1 (min 500 (totalCount / 20))
+
+    let private rebuildCore (status: StatusReporter) rootPath =
+        let absoluteRoot = Path.GetFullPath(rootPath)
+        let assertions = Dictionary<string, GraphAssertion>(StringComparer.Ordinal)
+        let eventsRoot = Path.Combine(absoluteRoot, "events")
+        let assertionsRoot = Path.Combine(absoluteRoot, "graph", "assertions")
+        let stopwatch = Diagnostics.Stopwatch.StartNew()
+
+        let eventPaths =
+            if Directory.Exists(eventsRoot) then
+                Directory.EnumerateFiles(eventsRoot, "*.toml", SearchOption.AllDirectories)
+                |> Seq.sort
+                |> Seq.toArray
+            else
+                [||]
+
+        status $"Scanning {eventPaths.Length} canonical event files from {eventsRoot}"
+
+        let scanInterval = progressInterval eventPaths.Length
+
+        eventPaths
+        |> Array.iteri (fun index path ->
+            path
+            |> parseEventDocument
+            |> processEvent assertions
+
+            let processedCount = index + 1
+
+            if processedCount = eventPaths.Length || processedCount % scanInterval = 0 then
+                status
+                    $"Scanned {processedCount}/{eventPaths.Length} event files. Current graph assertions: {assertions.Count}")
+
+        status $"Derivation complete after {stopwatch.Elapsed}. Distinct graph assertions: {assertions.Count}"
+
+        if Directory.Exists(assertionsRoot) then
+            status $"Removing previous graph assertion output at {assertionsRoot}"
+            Directory.Delete(assertionsRoot, true)
+
+        Directory.CreateDirectory(assertionsRoot) |> ignore
+
+        let orderedAssertions =
+            assertions.Values
+            |> Seq.sortBy (fun assertion -> FactId.format assertion.FactId)
+            |> Seq.toArray
+
+        status $"Writing {orderedAssertions.Length} graph assertion files to {assertionsRoot}"
+
+        let writeInterval = progressInterval orderedAssertions.Length
+        let writtenPaths = ResizeArray<string>(orderedAssertions.Length)
+
+        orderedAssertions
+        |> Array.iteri (fun index assertion ->
+            writtenPaths.Add(CanonicalStore.writeGraphAssertion absoluteRoot assertion)
+
+            let writtenCount = index + 1
+
+            if writtenCount = orderedAssertions.Length || writtenCount % writeInterval = 0 then
+                status $"Wrote {writtenCount}/{orderedAssertions.Length} graph assertion files.")
+
+        status $"Graph assertion rebuild completed in {stopwatch.Elapsed}"
+
+        writtenPaths |> Seq.toList
+
     /// <summary>
-    /// Rebuilds graph assertions from canonical history.
+    /// Rebuilds graph assertions from canonical history while emitting progress updates.
     /// </summary>
+    /// <param name="status">Receives human-readable progress messages as the rebuild advances.</param>
     /// <param name="rootPath">The root of the event-store workspace to rebuild into.</param>
     /// <returns>The relative paths of all written graph assertion files.</returns>
     /// <remarks>
     /// Graph assertions are derived from canonical history and are intended to be rebuildable.
     /// Full conceptual notes: docs/nexus-core-conceptual-layers.md
     /// </remarks>
+    let rebuildWithStatus status rootPath =
+        rebuildCore status rootPath
+
+    /// <summary>
+    /// Rebuilds graph assertions from canonical history.
+    /// </summary>
+    /// <param name="rootPath">The root of the event-store workspace to rebuild into.</param>
+    /// <returns>The relative paths of all written graph assertion files.</returns>
     let rebuild rootPath =
-        let absoluteRoot = Path.GetFullPath(rootPath)
-        let assertions = Dictionary<string, GraphAssertion>(StringComparer.Ordinal)
-        let eventsRoot = Path.Combine(absoluteRoot, "events")
-        let assertionsRoot = Path.Combine(absoluteRoot, "graph", "assertions")
-
-        if Directory.Exists(eventsRoot) then
-            Directory.EnumerateFiles(eventsRoot, "*.toml", SearchOption.AllDirectories)
-            |> Seq.sort
-            |> Seq.map parseEventDocument
-            |> Seq.iter (processEvent assertions)
-
-        if Directory.Exists(assertionsRoot) then
-            Directory.Delete(assertionsRoot, true)
-
-        Directory.CreateDirectory(assertionsRoot) |> ignore
-
-        assertions.Values
-        |> Seq.sortBy (fun assertion -> FactId.format assertion.FactId)
-        |> Seq.map (CanonicalStore.writeGraphAssertion absoluteRoot)
-        |> Seq.toList
+        rebuildCore ignore rootPath
