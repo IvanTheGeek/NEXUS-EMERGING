@@ -9,7 +9,16 @@ open Nexus.EventStore
 open Nexus.Importers
 
 module Program =
+    type CommandHelp =
+        { Name: string
+          Summary: string
+          Usage: string list
+          Options: (string * string) list
+          Examples: string list
+          Notes: string list }
+
     type Command =
+        | ShowHelp of commandName: string option
         | WriteSampleEventStore of eventStoreRoot: string
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
@@ -30,287 +39,465 @@ module Program =
     let private defaultCodexSnapshotRoot =
         Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
 
+    let private cliInvocation =
+        "dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj --"
+
     let private sha256ForText (value: string) =
         let bytes = Encoding.UTF8.GetBytes(value)
         let hash = SHA256.HashData(bytes)
         Convert.ToHexString(hash).ToLowerInvariant()
 
+    let private containsHelpSwitch args =
+        args
+        |> List.exists (fun value -> value = "--help" || value = "-h")
+
+    let private printRows (rows: (string * string) list) =
+        match rows with
+        | [] -> ()
+        | _ ->
+            let width =
+                rows
+                |> List.map (fun (label, _) -> label.Length)
+                |> List.max
+
+            rows
+            |> List.iter (fun (label, description) ->
+                printfn "  %-*s  %s" width label description)
+
+    let private commandHelp name =
+        match name with
+        | "write-sample-event-store" ->
+            Some
+                { Name = name
+                  Summary = "Write a small sample canonical history bundle for event-store smoke testing."
+                  Usage =
+                    [ sprintf "%s write-sample-event-store" cliInvocation
+                      sprintf "%s write-sample-event-store --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>",
+                      sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s write-sample-event-store" cliInvocation
+                      sprintf "%s write-sample-event-store --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Notes =
+                    [ "Useful for validating TOML output, stream layout, and projection rebuilds without touching real imports."
+                      "Detailed guide: docs/how-to/write-sample-event-store.md" ] }
+        | "import-provider-export" ->
+            Some
+                { Name = name
+                  Summary = "Archive a ChatGPT or Claude export zip, parse provider records, and append canonical observed history."
+                  Usage =
+                    [ sprintf "%s import-provider-export --provider <chatgpt|claude> --zip <path>" cliInvocation
+                      sprintf "%s import-provider-export --provider claude --zip RawDataExports/claude-export.zip --window full" cliInvocation ]
+                  Options =
+                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter."
+                      "--zip <path>", "Required. Path to the provider export zip to archive and import."
+                      "--window <kind>", "Import window label. Defaults to full."
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s import-provider-export --provider claude --zip RawDataExports/claude-export.zip" cliInvocation
+                      sprintf "%s import-provider-export --provider chatgpt --zip RawDataExports/chatgpt-export.zip --window full" cliInvocation ]
+                  Notes =
+                    [ "Overlapping imports are deduped by provider identity and canonical content hash."
+                      "Parser-version changes append reparse observations instead of fake provider revisions."
+                      "Detailed guide: docs/how-to/import-provider-export.md" ] }
+        | "import-codex-sessions" ->
+            Some
+                { Name = name
+                  Summary = "Import preserved Codex session snapshots into canonical observed history."
+                  Usage =
+                    [ sprintf "%s import-codex-sessions" cliInvocation
+                      sprintf "%s import-codex-sessions --snapshot-root NEXUS-Objects/providers/codex/latest" cliInvocation ]
+                  Options =
+                    [ "--snapshot-root <path>", sprintf "Override the preserved Codex snapshot root. Defaults to %s." defaultCodexSnapshotRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s import-codex-sessions" cliInvocation
+                      sprintf "%s import-codex-sessions --snapshot-root NEXUS-Objects/providers/codex/archive/2026-03-22T16-03-56Z" cliInvocation ]
+                  Notes =
+                    [ "Run the raw export script first if the latest Codex snapshot has not been staged yet."
+                      "Detailed guide: docs/how-to/import-codex-sessions.md" ] }
+        | "capture-artifact-payload" ->
+            Some
+                { Name = name
+                  Summary = "Manually hydrate an artifact payload, archive it in NEXUS-Objects, and append ArtifactPayloadCaptured when new."
+                  Usage =
+                    [ sprintf "%s capture-artifact-payload --artifact-id <uuid> --file <path>" cliInvocation
+                      sprintf "%s capture-artifact-payload --provider claude --provider-conversation-id <id> --provider-message-id <id> --file <path>" cliInvocation ]
+                  Options =
+                    [ "--file <path>", "Required. Path to the local artifact payload."
+                      "--artifact-id <uuid>", "Hydrate a known internal artifact ID directly."
+                      "--provider <chatgpt|claude>", "Provider for provider-key lookup when not using --artifact-id."
+                      "--provider-conversation-id <id>", "Provider conversation ID for provider-key lookup."
+                      "--provider-message-id <id>", "Provider message ID for provider-key lookup."
+                      "--provider-artifact-id <id>", "Provider artifact ID when the export referenced one."
+                      "--file-name <name>", "File-name fallback when provider artifact ID is absent."
+                      "--media-type <type>", "Override or supply the media type recorded with the capture."
+                      "--notes <text>", "Optional operator notes for the capture event."
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s capture-artifact-payload --artifact-id 019d174f-2c81-71e3-9cec-527f951cd6cf --file recovered/spec.pdf" cliInvocation
+                      sprintf "%s capture-artifact-payload --provider claude --provider-conversation-id conv_123 --provider-message-id msg_456 --file recovered/spec.pdf --file-name spec.pdf" cliInvocation ]
+                  Notes =
+                    [ "Choose either --artifact-id or provider/message lookup options, not both."
+                      "Repeated capture of the same payload is skipped by content hash."
+                      "Detailed guide: docs/how-to/capture-artifact-payload.md" ] }
+        | "rebuild-artifact-projections" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild the artifact read model from canonical artifact events."
+                  Usage =
+                    [ sprintf "%s rebuild-artifact-projections" cliInvocation
+                      sprintf "%s rebuild-artifact-projections --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-artifact-projections" cliInvocation ]
+                  Notes =
+                    [ "Projection files are rebuildable views, not source truth."
+                      "Detailed guide: docs/how-to/rebuild-artifact-projections.md" ] }
+        | "report-unresolved-artifacts" ->
+            Some
+                { Name = name
+                  Summary = "Summarize artifact references whose payloads have not yet been captured."
+                  Usage =
+                    [ sprintf "%s report-unresolved-artifacts" cliInvocation
+                      sprintf "%s report-unresolved-artifacts --provider claude --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--provider <chatgpt|claude>", "Limit the report to a single provider."
+                      "--limit <n>", "Limit detailed items. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-unresolved-artifacts" cliInvocation
+                      sprintf "%s report-unresolved-artifacts --provider chatgpt --limit 25" cliInvocation ]
+                  Notes =
+                    [ "This report reads artifact projections, so rebuild them after new imports if needed."
+                      "Detailed guide: docs/how-to/report-unresolved-artifacts.md" ] }
+        | "rebuild-conversation-projections" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild the conversation read model from canonical conversation events."
+                  Usage =
+                    [ sprintf "%s rebuild-conversation-projections" cliInvocation
+                      sprintf "%s rebuild-conversation-projections --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-conversation-projections" cliInvocation ]
+                  Notes =
+                    [ "Projection files are rebuildable views that summarize conversation streams for quick inspection."
+                      "Detailed guide: docs/how-to/rebuild-conversation-projections.md" ] }
+        | _ -> None
+
+    let private availableCommands () =
+        [ "write-sample-event-store"
+          "import-provider-export"
+          "import-codex-sessions"
+          "capture-artifact-payload"
+          "rebuild-artifact-projections"
+          "report-unresolved-artifacts"
+          "rebuild-conversation-projections" ]
+        |> List.choose (fun name ->
+            commandHelp name
+            |> Option.map (fun help -> help.Name, help.Summary))
+
+    let private printCommandHelp name =
+        match commandHelp name with
+        | None ->
+            eprintfn "Unknown command: %s" name
+            printfn ""
+            printfn "Use one of these command names:"
+            printRows (availableCommands ())
+        | Some help ->
+            printfn "Command: %s" help.Name
+            printfn ""
+            printfn "%s" help.Summary
+
+            if not help.Usage.IsEmpty then
+                printfn ""
+                printfn "Usage:"
+                help.Usage |> List.iter (printfn "  %s")
+
+            if not help.Options.IsEmpty then
+                printfn ""
+                printfn "Options:"
+                printRows help.Options
+
+            if not help.Examples.IsEmpty then
+                printfn ""
+                printfn "Examples:"
+                help.Examples |> List.iter (printfn "  %s")
+
+            if not help.Notes.IsEmpty then
+                printfn ""
+                printfn "Notes:"
+                help.Notes |> List.iter (printfn "  - %s")
+
     let private usage () =
+        printfn "NEXUS CLI"
+        printfn ""
         printfn "Usage:"
-        printfn "  dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- <command> [options]"
+        printfn "  %s <command> [options]" cliInvocation
+        printfn "  %s help <command>" cliInvocation
         printfn ""
         printfn "Commands:"
-        printfn "  write-sample-event-store    Write a small sample canonical history bundle"
-        printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
-        printfn "  import-codex-sessions      Import preserved Codex session JSONL snapshots"
-        printfn "  capture-artifact-payload   Archive a manually added artifact file and append ArtifactPayloadCaptured"
-        printfn "  rebuild-artifact-projections"
-        printfn "                              Rebuild artifact projections from canonical artifact events"
-        printfn "  report-unresolved-artifacts"
-        printfn "                              Summarize unresolved artifact payloads from artifact projections"
-        printfn "  rebuild-conversation-projections"
-        printfn "                              Rebuild conversation projections from canonical events"
+        printRows (availableCommands ())
         printfn ""
-        printfn "Options for write-sample-event-store:"
-        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn "Repository defaults:"
+        printRows
+            [ "event store", defaultEventStoreRoot
+              "objects", defaultObjectsRoot
+              "codex snapshots", defaultCodexSnapshotRoot ]
         printfn ""
-        printfn "Options for import-provider-export:"
-        printfn "  --provider <chatgpt|claude> Provider adapter to use"
-        printfn "  --zip <path>                Path to the provider export zip"
-        printfn "  --window <kind>             Import window; defaults to full"
-        printfn "  --objects-root <path>       Override the objects root"
-        printfn "  --event-store-root <path>   Override the event-store root"
-        printfn ""
-        printfn "Options for import-codex-sessions:"
-        printfn "  --snapshot-root <path>      Override the preserved Codex snapshot root"
-        printfn "  --objects-root <path>       Override the objects root"
-        printfn "  --event-store-root <path>   Override the event-store root"
-        printfn ""
-        printfn "Options for capture-artifact-payload:"
-        printfn "  --file <path>                        Path to the local artifact payload"
-        printfn "  --artifact-id <uuid>                 Existing internal artifact ID to hydrate"
-        printfn "  --provider <chatgpt|claude>          Provider for provider-key lookup"
-        printfn "  --provider-conversation-id <id>      Provider conversation ID"
-        printfn "  --provider-message-id <id>           Provider message ID"
-        printfn "  --provider-artifact-id <id>          Provider artifact ID when known"
-        printfn "  --file-name <name>                   File-name fallback when provider artifact ID is absent"
-        printfn "  --media-type <type>                  Override or supply media type"
-        printfn "  --notes <text>                       Optional operator notes"
-        printfn "  --objects-root <path>                Override the objects root"
-        printfn "  --event-store-root <path>            Override the event-store root"
-        printfn ""
-        printfn "Options for rebuild-conversation-projections:"
-        printfn "  --event-store-root <path>   Override the event-store root"
-        printfn ""
-        printfn "Options for rebuild-artifact-projections:"
-        printfn "  --event-store-root <path>   Override the event-store root"
-        printfn ""
-        printfn "Options for report-unresolved-artifacts:"
-        printfn "  --event-store-root <path>   Override the event-store root"
-        printfn "  --provider <chatgpt|claude> Filter to a single provider"
-        printfn "  --limit <n>                 Limit detailed items; defaults to 20"
+        printfn "Help:"
+        printfn "  Use --help, -h, or help <command> for command-specific guidance."
+        printfn "  See docs/how-to/cli-commands.md for the human-facing command guide."
 
     let private parseWriteSampleEventStore (args: string list) =
-        let rec loop currentRoot remaining =
-            match remaining with
-            | [] -> Ok (WriteSampleEventStore currentRoot)
-            | "--event-store-root" :: value :: rest -> loop value rest
-            | option :: _ ->
-                eprintfn "Unknown option for write-sample-event-store: %s" option
-                usage ()
-                Error 1
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "write-sample-event-store"))
+        else
+            let rec loop currentRoot remaining =
+                match remaining with
+                | [] -> Ok (WriteSampleEventStore currentRoot)
+                | "--event-store-root" :: value :: rest -> loop value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for write-sample-event-store: %s" option
+                    printCommandHelp "write-sample-event-store"
+                    Error 1
 
-        loop defaultEventStoreRoot args
+            loop defaultEventStoreRoot args
 
     let private parseImportProviderExport (args: string list) =
-        let rec loop provider zipPath window objectsRoot eventStoreRoot remaining =
-            match remaining with
-            | [] ->
-                match provider, zipPath with
-                | Some providerKind, Some sourceZipPath ->
-                    Ok
-                        (ImportProviderExport
-                            { Provider = providerKind
-                              SourceZipPath = sourceZipPath
-                              Window = window
-                              ObjectsRoot = objectsRoot
-                              EventStoreRoot = eventStoreRoot })
-                | None, _ ->
-                    eprintfn "Missing required option for import-provider-export: --provider"
-                    usage ()
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "import-provider-export"))
+        else
+            let rec loop provider zipPath window objectsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    match provider, zipPath with
+                    | Some providerKind, Some sourceZipPath ->
+                        Ok
+                            (ImportProviderExport
+                                { Provider = providerKind
+                                  SourceZipPath = sourceZipPath
+                                  Window = window
+                                  ObjectsRoot = objectsRoot
+                                  EventStoreRoot = eventStoreRoot })
+                    | None, _ ->
+                        eprintfn "Missing required option for import-provider-export: --provider"
+                        printCommandHelp "import-provider-export"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option for import-provider-export: --zip"
+                        printCommandHelp "import-provider-export"
+                        Error 1
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some providerKind -> loop (Some providerKind) zipPath window objectsRoot eventStoreRoot rest
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "import-provider-export"
+                        Error 1
+                | "--zip" :: value :: rest ->
+                    loop provider (Some value) window objectsRoot eventStoreRoot rest
+                | "--window" :: value :: rest ->
+                    match ImportWindowNaming.tryParse value with
+                    | Some parsedWindow -> loop provider zipPath (Some parsedWindow) objectsRoot eventStoreRoot rest
+                    | None ->
+                        eprintfn "Unsupported window: %s" value
+                        printCommandHelp "import-provider-export"
+                        Error 1
+                | "--objects-root" :: value :: rest ->
+                    loop provider zipPath window value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop provider zipPath window objectsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for import-provider-export: %s" option
+                    printCommandHelp "import-provider-export"
                     Error 1
-                | _, None ->
-                    eprintfn "Missing required option for import-provider-export: --zip"
-                    usage ()
-                    Error 1
-            | "--provider" :: value :: rest ->
-                match ProviderNaming.tryParse value with
-                | Some providerKind -> loop (Some providerKind) zipPath window objectsRoot eventStoreRoot rest
-                | None ->
-                    eprintfn "Unsupported provider: %s" value
-                    usage ()
-                    Error 1
-            | "--zip" :: value :: rest ->
-                loop provider (Some value) window objectsRoot eventStoreRoot rest
-            | "--window" :: value :: rest ->
-                match ImportWindowNaming.tryParse value with
-                | Some parsedWindow -> loop provider zipPath (Some parsedWindow) objectsRoot eventStoreRoot rest
-                | None ->
-                    eprintfn "Unsupported window: %s" value
-                    usage ()
-                    Error 1
-            | "--objects-root" :: value :: rest ->
-                loop provider zipPath window value eventStoreRoot rest
-            | "--event-store-root" :: value :: rest ->
-                loop provider zipPath window objectsRoot value rest
-            | option :: _ ->
-                eprintfn "Unknown option for import-provider-export: %s" option
-                usage ()
-                Error 1
 
-        loop None None (Some Full) defaultObjectsRoot defaultEventStoreRoot args
+            loop None None (Some Full) defaultObjectsRoot defaultEventStoreRoot args
 
     let private parseCaptureArtifactPayload (args: string list) =
-        let rec loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot remaining =
-            match remaining with
-            | [] ->
-                match sourceFilePath with
-                | None ->
-                    eprintfn "Missing required option for capture-artifact-payload: --file"
-                    usage ()
-                    Error 1
-                | Some filePath ->
-                    let target =
-                        match artifactId, provider, conversationNativeId, messageNativeId with
-                        | Some internalArtifactId, None, None, None ->
-                            Ok (ExistingArtifactId internalArtifactId)
-                        | Some _, _, _, _ ->
-                            eprintfn "Use either --artifact-id or provider/message lookup options, not both."
-                            usage ()
-                            Error 1
-                        | None, Some providerKind, Some conversationId, Some messageId ->
-                            Ok
-                                (ProviderArtifactReference(
-                                    providerKind,
-                                    conversationId,
-                                    messageId,
-                                    providerArtifactId,
-                                    fileName))
-                        | None, Some _, _, _ ->
-                            eprintfn "Provider lookup requires --provider-conversation-id and --provider-message-id."
-                            usage ()
-                            Error 1
-                        | None, None, _, _ ->
-                            eprintfn "Missing target for capture-artifact-payload. Use --artifact-id or provider/message lookup options."
-                            usage ()
-                            Error 1
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "capture-artifact-payload"))
+        else
+            let rec loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    match sourceFilePath with
+                    | None ->
+                        eprintfn "Missing required option for capture-artifact-payload: --file"
+                        printCommandHelp "capture-artifact-payload"
+                        Error 1
+                    | Some filePath ->
+                        let target =
+                            match artifactId, provider, conversationNativeId, messageNativeId with
+                            | Some internalArtifactId, None, None, None ->
+                                Ok (ExistingArtifactId internalArtifactId)
+                            | Some _, _, _, _ ->
+                                eprintfn "Use either --artifact-id or provider/message lookup options, not both."
+                                printCommandHelp "capture-artifact-payload"
+                                Error 1
+                            | None, Some providerKind, Some conversationId, Some messageId ->
+                                Ok
+                                    (ProviderArtifactReference(
+                                        providerKind,
+                                        conversationId,
+                                        messageId,
+                                        providerArtifactId,
+                                        fileName))
+                            | None, Some _, _, _ ->
+                                eprintfn "Provider lookup requires --provider-conversation-id and --provider-message-id."
+                                printCommandHelp "capture-artifact-payload"
+                                Error 1
+                            | None, None, _, _ ->
+                                eprintfn "Missing target for capture-artifact-payload. Use --artifact-id or provider/message lookup options."
+                                printCommandHelp "capture-artifact-payload"
+                                Error 1
 
-                    target
-                    |> Result.map (fun resolvedTarget ->
-                        CaptureArtifactPayload
-                            { Target = resolvedTarget
-                              SourceFilePath = filePath
-                              ObjectsRoot = objectsRoot
-                              EventStoreRoot = eventStoreRoot
-                              MediaType = mediaType
-                              Notes = notes })
-            | "--artifact-id" :: value :: rest ->
-                loop
-                    (Some (ArtifactId.parse value))
-                    provider
-                    conversationNativeId
-                    messageNativeId
-                    providerArtifactId
-                    fileName
-                    sourceFilePath
-                    mediaType
-                    notes
-                    objectsRoot
-                    eventStoreRoot
-                    rest
-            | "--provider" :: value :: rest ->
-                match ProviderNaming.tryParse value with
-                | Some providerKind ->
-                    loop artifactId (Some providerKind) conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
-                | None ->
-                    eprintfn "Unsupported provider: %s" value
-                    usage ()
+                        target
+                        |> Result.map (fun resolvedTarget ->
+                            CaptureArtifactPayload
+                                { Target = resolvedTarget
+                                  SourceFilePath = filePath
+                                  ObjectsRoot = objectsRoot
+                                  EventStoreRoot = eventStoreRoot
+                                  MediaType = mediaType
+                                  Notes = notes })
+                | "--artifact-id" :: value :: rest ->
+                    loop
+                        (Some (ArtifactId.parse value))
+                        provider
+                        conversationNativeId
+                        messageNativeId
+                        providerArtifactId
+                        fileName
+                        sourceFilePath
+                        mediaType
+                        notes
+                        objectsRoot
+                        eventStoreRoot
+                        rest
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some providerKind ->
+                        loop artifactId (Some providerKind) conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "capture-artifact-payload"
+                        Error 1
+                | "--provider-conversation-id" :: value :: rest ->
+                    loop artifactId provider (Some value) messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                | "--provider-message-id" :: value :: rest ->
+                    loop artifactId provider conversationNativeId (Some value) providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                | "--provider-artifact-id" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId (Some value) fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                | "--file-name" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId (Some value) sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                | "--file" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName (Some value) mediaType notes objectsRoot eventStoreRoot rest
+                | "--media-type" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath (Some value) notes objectsRoot eventStoreRoot rest
+                | "--notes" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType (Some value) objectsRoot eventStoreRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for capture-artifact-payload: %s" option
+                    printCommandHelp "capture-artifact-payload"
                     Error 1
-            | "--provider-conversation-id" :: value :: rest ->
-                loop artifactId provider (Some value) messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
-            | "--provider-message-id" :: value :: rest ->
-                loop artifactId provider conversationNativeId (Some value) providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
-            | "--provider-artifact-id" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId (Some value) fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
-            | "--file-name" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId (Some value) sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
-            | "--file" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName (Some value) mediaType notes objectsRoot eventStoreRoot rest
-            | "--media-type" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath (Some value) notes objectsRoot eventStoreRoot rest
-            | "--notes" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType (Some value) objectsRoot eventStoreRoot rest
-            | "--objects-root" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes value eventStoreRoot rest
-            | "--event-store-root" :: value :: rest ->
-                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot value rest
-            | option :: _ ->
-                eprintfn "Unknown option for capture-artifact-payload: %s" option
-                usage ()
-                Error 1
 
-        loop None None None None None None None None None defaultObjectsRoot defaultEventStoreRoot args
+            loop None None None None None None None None None defaultObjectsRoot defaultEventStoreRoot args
 
     let private parseImportCodexSessions (args: string list) =
-        let rec loop snapshotRoot objectsRoot eventStoreRoot remaining =
-            match remaining with
-            | [] ->
-                Ok
-                    (ImportCodexSessions
-                        { SnapshotRoot = snapshotRoot
-                          ObjectsRoot = objectsRoot
-                          EventStoreRoot = eventStoreRoot })
-            | "--snapshot-root" :: value :: rest ->
-                loop value objectsRoot eventStoreRoot rest
-            | "--objects-root" :: value :: rest ->
-                loop snapshotRoot value eventStoreRoot rest
-            | "--event-store-root" :: value :: rest ->
-                loop snapshotRoot objectsRoot value rest
-            | option :: _ ->
-                eprintfn "Unknown option for import-codex-sessions: %s" option
-                usage ()
-                Error 1
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "import-codex-sessions"))
+        else
+            let rec loop snapshotRoot objectsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    Ok
+                        (ImportCodexSessions
+                            { SnapshotRoot = snapshotRoot
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot })
+                | "--snapshot-root" :: value :: rest ->
+                    loop value objectsRoot eventStoreRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop snapshotRoot value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop snapshotRoot objectsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for import-codex-sessions: %s" option
+                    printCommandHelp "import-codex-sessions"
+                    Error 1
 
-        loop defaultCodexSnapshotRoot defaultObjectsRoot defaultEventStoreRoot args
+            loop defaultCodexSnapshotRoot defaultObjectsRoot defaultEventStoreRoot args
 
     let private parseRebuildConversationProjections (args: string list) =
-        let rec loop eventStoreRoot remaining =
-            match remaining with
-            | [] -> Ok (RebuildConversationProjections eventStoreRoot)
-            | "--event-store-root" :: value :: rest ->
-                loop value rest
-            | option :: _ ->
-                eprintfn "Unknown option for rebuild-conversation-projections: %s" option
-                usage ()
-                Error 1
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-conversation-projections"))
+        else
+            let rec loop eventStoreRoot remaining =
+                match remaining with
+                | [] -> Ok (RebuildConversationProjections eventStoreRoot)
+                | "--event-store-root" :: value :: rest ->
+                    loop value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-conversation-projections: %s" option
+                    printCommandHelp "rebuild-conversation-projections"
+                    Error 1
 
-        loop defaultEventStoreRoot args
+            loop defaultEventStoreRoot args
 
     let private parseRebuildArtifactProjections (args: string list) =
-        let rec loop eventStoreRoot remaining =
-            match remaining with
-            | [] -> Ok (RebuildArtifactProjections eventStoreRoot)
-            | "--event-store-root" :: value :: rest ->
-                loop value rest
-            | option :: _ ->
-                eprintfn "Unknown option for rebuild-artifact-projections: %s" option
-                usage ()
-                Error 1
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-artifact-projections"))
+        else
+            let rec loop eventStoreRoot remaining =
+                match remaining with
+                | [] -> Ok (RebuildArtifactProjections eventStoreRoot)
+                | "--event-store-root" :: value :: rest ->
+                    loop value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-artifact-projections: %s" option
+                    printCommandHelp "rebuild-artifact-projections"
+                    Error 1
 
-        loop defaultEventStoreRoot args
+            loop defaultEventStoreRoot args
 
     let private parseReportUnresolvedArtifacts (args: string list) =
-        let rec loop eventStoreRoot provider limit remaining =
-            match remaining with
-            | [] -> Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit))
-            | "--event-store-root" :: value :: rest ->
-                loop value provider limit rest
-            | "--provider" :: value :: rest ->
-                loop eventStoreRoot (Some (value.Trim().ToLowerInvariant())) limit rest
-            | "--limit" :: value :: rest ->
-                match Int32.TryParse(value) with
-                | true, parsedValue when parsedValue > 0 ->
-                    loop eventStoreRoot provider parsedValue rest
-                | _ ->
-                    eprintfn "Invalid limit: %s" value
-                    usage ()
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-unresolved-artifacts"))
+        else
+            let rec loop eventStoreRoot provider limit remaining =
+                match remaining with
+                | [] -> Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit))
+                | "--event-store-root" :: value :: rest ->
+                    loop value provider limit rest
+                | "--provider" :: value :: rest ->
+                    loop eventStoreRoot (Some (value.Trim().ToLowerInvariant())) limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot provider parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-unresolved-artifacts"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-unresolved-artifacts: %s" option
+                    printCommandHelp "report-unresolved-artifacts"
                     Error 1
-            | option :: _ ->
-                eprintfn "Unknown option for report-unresolved-artifacts: %s" option
-                usage ()
-                Error 1
 
-        loop defaultEventStoreRoot None 20 args
+            loop defaultEventStoreRoot None 20 args
 
     let private parseCommand args =
         match args with
@@ -319,8 +506,16 @@ module Program =
             Error 1
         | [ "--help" ]
         | [ "-h" ] ->
-            usage ()
-            Error 0
+            Ok (ShowHelp None)
+        | [ "help" ] ->
+            Ok (ShowHelp None)
+        | [ "help"; commandName ] ->
+            match commandHelp commandName with
+            | Some _ -> Ok (ShowHelp (Some commandName))
+            | None ->
+                eprintfn "Unknown command: %s" commandName
+                usage ()
+                Error 1
         | "write-sample-event-store" :: rest ->
             parseWriteSampleEventStore rest
         | "import-provider-export" :: rest ->
@@ -737,6 +932,12 @@ module Program =
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
+        | Ok (ShowHelp None) ->
+            usage ()
+            0
+        | Ok (ShowHelp (Some commandName)) ->
+            printCommandHelp commandName
+            0
         | Ok (WriteSampleEventStore eventStoreRoot) ->
             writeSampleEventStore eventStoreRoot
         | Ok (ImportProviderExport request) ->

@@ -39,8 +39,14 @@ Working commands now include:
 - `rebuild-conversation-projections`
 - `dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`
 
+Use built-in CLI help for quick guidance:
+
+- `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- --help`
+- `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- help <command>`
+
 See:
 
+- `/docs/how-to/cli-commands.md`
 - `/docs/how-to/capture-artifact-payload.md`
 - `/docs/how-to/import-provider-export.md`
 - `/docs/how-to/import-codex-sessions.md`

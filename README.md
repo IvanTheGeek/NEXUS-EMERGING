@@ -38,6 +38,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
 - `docs/how-to/`
+- `docs/how-to/cli-commands.md`
 - `docs/decisions/`
 
 Repository docs are the primary onboarding surface. Prefer:
