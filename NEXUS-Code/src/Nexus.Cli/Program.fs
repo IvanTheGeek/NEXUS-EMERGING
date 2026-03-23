@@ -14,6 +14,7 @@ module Program =
         | ImportProviderExport of request: ImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildArtifactProjections of eventStoreRoot: string
+        | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
 
     let private repoRoot =
@@ -40,6 +41,8 @@ module Program =
         printfn "  capture-artifact-payload   Archive a manually added artifact file and append ArtifactPayloadCaptured"
         printfn "  rebuild-artifact-projections"
         printfn "                              Rebuild artifact projections from canonical artifact events"
+        printfn "  report-unresolved-artifacts"
+        printfn "                              Summarize unresolved artifact payloads from artifact projections"
         printfn "  rebuild-conversation-projections"
         printfn "                              Rebuild conversation projections from canonical events"
         printfn ""
@@ -71,6 +74,11 @@ module Program =
         printfn ""
         printfn "Options for rebuild-artifact-projections:"
         printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for report-unresolved-artifacts:"
+        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn "  --provider <chatgpt|claude> Filter to a single provider"
+        printfn "  --limit <n>                 Limit detailed items; defaults to 20"
 
     let private parseWriteSampleEventStore (args: string list) =
         let rec loop currentRoot remaining =
@@ -249,6 +257,29 @@ module Program =
 
         loop defaultEventStoreRoot args
 
+    let private parseReportUnresolvedArtifacts (args: string list) =
+        let rec loop eventStoreRoot provider limit remaining =
+            match remaining with
+            | [] -> Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit))
+            | "--event-store-root" :: value :: rest ->
+                loop value provider limit rest
+            | "--provider" :: value :: rest ->
+                loop eventStoreRoot (Some (value.Trim().ToLowerInvariant())) limit rest
+            | "--limit" :: value :: rest ->
+                match Int32.TryParse(value) with
+                | true, parsedValue when parsedValue > 0 ->
+                    loop eventStoreRoot provider parsedValue rest
+                | _ ->
+                    eprintfn "Invalid limit: %s" value
+                    usage ()
+                    Error 1
+            | option :: _ ->
+                eprintfn "Unknown option for report-unresolved-artifacts: %s" option
+                usage ()
+                Error 1
+
+        loop defaultEventStoreRoot None 20 args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -266,6 +297,8 @@ module Program =
             parseCaptureArtifactPayload rest
         | "rebuild-artifact-projections" :: rest ->
             parseRebuildArtifactProjections rest
+        | "report-unresolved-artifacts" :: rest ->
+            parseReportUnresolvedArtifacts rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | command :: _ ->
@@ -589,6 +622,58 @@ module Program =
 
         0
 
+    let private reportUnresolvedArtifacts eventStoreRoot provider limit =
+        let report = ArtifactProjectionReports.buildUnresolvedReport eventStoreRoot provider limit
+
+        printfn "Unresolved artifact report."
+        printfn "  Event store root: %s" eventStoreRoot
+
+        match provider with
+        | Some providerValue -> printfn "  Provider filter: %s" providerValue
+        | None -> ()
+
+        printfn "  Total artifacts: %d" report.TotalArtifacts
+        printfn "  Payload captured: %d" report.CapturedArtifacts
+        printfn "  Unresolved artifacts: %d" report.UnresolvedArtifacts
+
+        if not report.ProviderCounts.IsEmpty then
+            printfn "  Unresolved by provider:"
+
+            report.ProviderCounts
+            |> List.iter (fun (providerValue, count) ->
+                printfn "    %s: %d" providerValue count)
+
+        if not report.Items.IsEmpty then
+            printfn "  Showing up to %d unresolved artifacts:" report.Items.Length
+
+            report.Items
+            |> List.iter (fun item ->
+                let providerLabel =
+                    match item.Providers with
+                    | head :: _ -> head
+                    | [] -> "unknown"
+
+                let fileLabel = item.FileName |> Option.defaultValue "<no file name>"
+                let providerArtifactLabel =
+                    match item.ProviderArtifactIds with
+                    | head :: _ -> head
+                    | [] -> "<no provider artifact id>"
+
+                printfn "    %s | %s | %s" item.ArtifactId providerLabel fileLabel
+                printfn "      provider_artifact_id: %s" providerArtifactLabel
+
+                item.ConversationId
+                |> Option.iter (printfn "      conversation_id: %s")
+
+                item.MessageId
+                |> Option.iter (printfn "      message_id: %s")
+
+                item.LastObservedAt
+                |> Option.iter (fun timestamp -> printfn "      last_observed_at: %s" (timestamp.ToUniversalTime().ToString("O")))
+                )
+
+        0
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
@@ -600,6 +685,8 @@ module Program =
             captureArtifactPayload request
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
+        | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
+            reportUnresolvedArtifacts eventStoreRoot provider limit
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Error exitCode ->

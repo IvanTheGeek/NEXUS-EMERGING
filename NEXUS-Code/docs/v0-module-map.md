@@ -37,6 +37,8 @@ The goal is to stabilize naming and module responsibilities while the first real
   rebuildable read-model generation for conversation projections
 - `Nexus.EventStore/ArtifactProjections.fs`
   rebuildable read-model generation for artifact projections and hydration status
+- `Nexus.EventStore/ArtifactProjectionReports.fs`
+  read-side loading and unresolved-artifact reporting over artifact projections
 - `Nexus.Importers/ImporterTypes.fs`
   provider naming, window naming, parsed-record shapes, and import request/result types
 - `Nexus.Importers/EventStoreIndex.fs`
@@ -48,7 +50,7 @@ The goal is to stabilize naming and module responsibilities while the first real
 - `Nexus.Importers/ManualArtifactWorkflow.fs`
   manual artifact hydration workflow for appending `ArtifactPayloadCaptured` events
 - `Nexus.Cli/Program.fs`
-  manual commands such as writing sample canonical history, importing provider exports, and capturing artifact payloads
+  manual commands such as writing sample canonical history, importing provider exports, capturing artifact payloads, and reporting unresolved artifacts
 
 ## Design Notes
 

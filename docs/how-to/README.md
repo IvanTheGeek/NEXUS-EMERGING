@@ -16,4 +16,5 @@ Current guides:
 - `import-provider-export.md`
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
+- `report-unresolved-artifacts.md`
 - `write-sample-event-store.md`
