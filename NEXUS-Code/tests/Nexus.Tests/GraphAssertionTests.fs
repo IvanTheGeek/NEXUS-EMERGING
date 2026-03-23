@@ -87,6 +87,16 @@ module GraphAssertionTests =
                           |> TomlDocument.tryScalar "artifact_id"
                           |> Option.defaultWith (fun () -> failwith "Expected artifact_id.")
 
+                      let importCompletedDocument =
+                          TestHelpers.tomlDocumentsUnder eventStoreRoot (Path.Combine("events", "imports"))
+                          |> List.map snd
+                          |> List.find (fun document -> TomlDocument.tryScalar "event_kind" document = Some "import_completed")
+
+                      let importId =
+                          importCompletedDocument
+                          |> TomlDocument.tryScalar "import_id"
+                          |> Option.defaultWith (fun () -> failwith "Expected import_id.")
+
                       Expect.isSome
                           (tryFindNodeRefAssertion "belongs_to_conversation" messageId conversationId assertionDocuments)
                           "Expected a message-to-conversation assertion."
@@ -112,4 +122,8 @@ module GraphAssertionTests =
                            |> List.tryFind (fun (_, document) ->
                                TomlDocument.tryScalar "predicate" document = Some "has_slug"
                                && TomlDocument.tryTableValue "object" "value" document = Some "ingestion"))
-                          "Expected the ingestion domain slug assertion.")) ]
+                          "Expected the ingestion domain slug assertion."
+
+                      Expect.isNone
+                          (tryFindNodeRefAssertion "observed_during_import" importId importId assertionDocuments)
+                          "Did not expect an import node to point to itself through observed_during_import.")) ]

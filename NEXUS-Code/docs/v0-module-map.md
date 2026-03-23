@@ -51,6 +51,8 @@ The goal is to stabilize naming and module responsibilities while the first real
   read-side loading and unresolved-artifact reporting over artifact projections
 - `Nexus.EventStore/GraphAssertions.fs`
   rebuildable derivation of the first thin graph assertion layer over canonical history
+- `Nexus.EventStore/GraphvizDot.fs`
+  external Graphviz DOT export over derived graph assertions for visualization outside NEXUS
 - `Nexus.Importers/ImporterTypes.fs`
   provider naming, window naming, parsed-record shapes, and import request/result types
 - `Nexus.Importers/EventStoreIndex.fs`

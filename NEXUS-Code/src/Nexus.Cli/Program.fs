@@ -24,6 +24,7 @@ module Program =
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string
+        | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
@@ -175,6 +176,23 @@ module Program =
                     [ "Graph assertions are derived and rebuildable, not the canonical source of truth."
                       "This first pass derives node-kind, relationship, and attribute assertions from canonical history."
                       "Detailed guide: docs/how-to/rebuild-graph-assertions.md" ] }
+        | "export-graphviz-dot" ->
+            Some
+                { Name = name
+                  Summary = "Export the derived graph assertions as a Graphviz DOT file for external visualization."
+                  Usage =
+                    [ sprintf "%s export-graphviz-dot" cliInvocation
+                      sprintf "%s export-graphviz-dot --event-store-root /tmp/nexus-event-store --output /tmp/nexus-graph.dot" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--output <path>", "Optional DOT output path. Defaults to <event-store-root>/graph/exports/nexus-graph.dot." ]
+                  Examples =
+                    [ sprintf "%s export-graphviz-dot" cliInvocation
+                      sprintf "%s export-graphviz-dot --output /tmp/nexus-graph.dot" cliInvocation ]
+                  Notes =
+                    [ "Run rebuild-graph-assertions first when the derived graph may be stale."
+                      "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
+                      "Detailed guide: docs/how-to/export-graphviz-dot.md" ] }
         | "report-unresolved-artifacts" ->
             Some
                 { Name = name
@@ -214,6 +232,7 @@ module Program =
           "import-codex-sessions"
           "capture-artifact-payload"
           "rebuild-graph-assertions"
+          "export-graphviz-dot"
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
           "rebuild-conversation-projections" ]
@@ -506,6 +525,24 @@ module Program =
 
             loop defaultEventStoreRoot args
 
+    let private parseExportGraphvizDot (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "export-graphviz-dot"))
+        else
+            let rec loop eventStoreRoot outputPath remaining =
+                match remaining with
+                | [] -> Ok (ExportGraphvizDot(eventStoreRoot, outputPath))
+                | "--event-store-root" :: value :: rest ->
+                    loop value outputPath rest
+                | "--output" :: value :: rest ->
+                    loop eventStoreRoot (Some value) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for export-graphviz-dot: %s" option
+                    printCommandHelp "export-graphviz-dot"
+                    Error 1
+
+            loop defaultEventStoreRoot None args
+
     let private parseReportUnresolvedArtifacts (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-unresolved-artifacts"))
@@ -559,6 +596,8 @@ module Program =
             parseCaptureArtifactPayload rest
         | "rebuild-graph-assertions" :: rest ->
             parseRebuildGraphAssertions rest
+        | "export-graphviz-dot" :: rest ->
+            parseExportGraphvizDot rest
         | "rebuild-artifact-projections" :: rest ->
             parseRebuildArtifactProjections rest
         | "report-unresolved-artifacts" :: rest ->
@@ -924,6 +963,16 @@ module Program =
 
         0
 
+    let private exportGraphvizDot eventStoreRoot outputPath =
+        let result = GraphvizDot.export eventStoreRoot outputPath
+        printfn "Graphviz DOT exported."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Output path: %s" result.OutputPath
+        printfn "  Assertions read: %d" result.AssertionCount
+        printfn "  Nodes written: %d" result.NodeCount
+        printfn "  Edges written: %d" result.EdgeCount
+        0
+
     let private reportUnresolvedArtifacts eventStoreRoot provider limit =
         let report = ArtifactProjectionReports.buildUnresolvedReport eventStoreRoot provider limit
 
@@ -995,6 +1044,8 @@ module Program =
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions eventStoreRoot) ->
             rebuildGraphAssertions eventStoreRoot
+        | Ok (ExportGraphvizDot(eventStoreRoot, outputPath)) ->
+            exportGraphvizDot eventStoreRoot outputPath
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->

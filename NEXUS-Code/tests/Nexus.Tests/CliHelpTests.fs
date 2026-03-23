@@ -32,6 +32,15 @@ module CliHelpTests =
                   Expect.equal helpCommandResult.StandardError "" "Did not expect stderr from help import-provider-export."
                   Expect.equal switchResult.StandardError "" "Did not expect stderr from import-provider-export --help.")
 
+              testCase "Graphviz help exposes the external graph export workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "export-graphviz-dot" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help export-graphviz-dot to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: export-graphviz-dot" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--output <path>" "Expected custom output guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help export-graphviz-dot.")
+
               testCase "Unknown help target fails clearly" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "not-a-real-command" ]
 

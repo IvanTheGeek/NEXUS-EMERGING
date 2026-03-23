@@ -73,6 +73,12 @@ The CLI supports both:
 - Use it when you want a derived graph substrate over the canonical event store.
 - Details: `docs/how-to/rebuild-graph-assertions.md`
 
+`export-graphviz-dot`
+
+- Exports the derived graph assertions as a Graphviz DOT file.
+- Use it when you want an external visual lens over the graph to spot structure, clusters, and relationships.
+- Details: `docs/how-to/export-graphviz-dot.md`
+
 `report-unresolved-artifacts`
 
 - Summarizes artifact references whose payloads are still unresolved.
@@ -87,7 +93,8 @@ Provider import:
 2. Run `rebuild-conversation-projections`.
 3. Run `rebuild-artifact-projections`.
 4. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
-5. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+5. Run `export-graphviz-dot` if you want an external graph view.
+6. Run `report-unresolved-artifacts` if you want to identify missing payloads.
 
 Codex session import:
 
@@ -118,5 +125,6 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/rebuild-conversation-projections.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
+- `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/run-tests.md`

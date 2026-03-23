@@ -355,7 +355,9 @@ module GraphAssertions =
         eventDocument.ImportId
         |> Option.iter (fun importNode ->
             addAssertion assertions (assertion importNode (OtherEdge "has_node_kind") (stringLiteral "import_node") None None provenance)
-            addAssertion assertions (assertion nodeId ObservedDuringImport (NodeRef importNode) eventDocument.DomainId eventDocument.BoundedContextId provenance))
+
+            if nodeId <> importNode then
+                addAssertion assertions (assertion nodeId ObservedDuringImport (NodeRef importNode) eventDocument.DomainId eventDocument.BoundedContextId provenance))
 
         eventDocument.DomainId
         |> Option.iter (fun domainId ->

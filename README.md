@@ -63,6 +63,7 @@ Already established:
 - A first working CLI importer exists for ChatGPT and Claude full-export zips.
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
+- A first external graph export exists through Graphviz DOT output over derived graph assertions.
 
 Not yet established:
 

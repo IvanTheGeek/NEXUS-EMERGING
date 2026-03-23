@@ -11,6 +11,7 @@ module Program =
               ProviderAdapterTests.tests
               WorkflowTests.tests
               GraphAssertionTests.tests
+              GraphvizDotTests.tests
               PropertyTests.tests
               SnapshotTests.tests
               CliHelpTests.tests ]
