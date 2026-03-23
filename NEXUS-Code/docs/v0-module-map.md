@@ -43,8 +43,10 @@ The goal is to stabilize naming and module responsibilities while the first real
   provider-specific parsers/adapters for ChatGPT and Claude exports
 - `Nexus.Importers/ImportWorkflow.fs`
   archive/extract/import pipeline that turns raw exports into canonical events
+- `Nexus.Importers/ManualArtifactWorkflow.fs`
+  manual artifact hydration workflow for appending `ArtifactPayloadCaptured` events
 - `Nexus.Cli/Program.fs`
-  manual commands such as writing sample canonical history and importing provider exports
+  manual commands such as writing sample canonical history, importing provider exports, and capturing artifact payloads
 
 ## Design Notes
 

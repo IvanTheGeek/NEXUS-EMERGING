@@ -91,7 +91,7 @@ module ImportWorkflow =
             let childName = Path.GetFileName(childDirectory)
             copyDirectory childDirectory (Path.Combine(destinationDirectory, childName))
 
-    let private archiveRawImport request =
+    let private archiveRawImport (request: ImportRequest) =
         let sourceZipPath = Path.GetFullPath(request.SourceZipPath)
 
         if not (File.Exists(sourceZipPath)) then
@@ -278,7 +278,7 @@ module ImportWorkflow =
           RevisionsObserved = revisions
           ReparseObservationsAppended = reparses }
 
-    let run request =
+    let run (request: ImportRequest) =
         let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
         let eventStoreRoot = Path.GetFullPath(request.EventStoreRoot)
 

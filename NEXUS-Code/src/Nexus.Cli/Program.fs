@@ -12,6 +12,7 @@ module Program =
     type Command =
         | WriteSampleEventStore of eventStoreRoot: string
         | ImportProviderExport of request: ImportRequest
+        | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildConversationProjections of eventStoreRoot: string
 
     let private repoRoot =
@@ -35,6 +36,7 @@ module Program =
         printfn "Commands:"
         printfn "  write-sample-event-store    Write a small sample canonical history bundle"
         printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
+        printfn "  capture-artifact-payload   Archive a manually added artifact file and append ArtifactPayloadCaptured"
         printfn "  rebuild-conversation-projections"
         printfn "                              Rebuild conversation projections from canonical events"
         printfn ""
@@ -47,6 +49,19 @@ module Program =
         printfn "  --window <kind>             Import window; defaults to full"
         printfn "  --objects-root <path>       Override the objects root"
         printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for capture-artifact-payload:"
+        printfn "  --file <path>                        Path to the local artifact payload"
+        printfn "  --artifact-id <uuid>                 Existing internal artifact ID to hydrate"
+        printfn "  --provider <chatgpt|claude>          Provider for provider-key lookup"
+        printfn "  --provider-conversation-id <id>      Provider conversation ID"
+        printfn "  --provider-message-id <id>           Provider message ID"
+        printfn "  --provider-artifact-id <id>          Provider artifact ID when known"
+        printfn "  --file-name <name>                   File-name fallback when provider artifact ID is absent"
+        printfn "  --media-type <type>                  Override or supply media type"
+        printfn "  --notes <text>                       Optional operator notes"
+        printfn "  --objects-root <path>                Override the objects root"
+        printfn "  --event-store-root <path>            Override the event-store root"
         printfn ""
         printfn "Options for rebuild-conversation-projections:"
         printfn "  --event-store-root <path>   Override the event-store root"
@@ -111,6 +126,97 @@ module Program =
 
         loop None None (Some Full) defaultObjectsRoot defaultEventStoreRoot args
 
+    let private parseCaptureArtifactPayload (args: string list) =
+        let rec loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot remaining =
+            match remaining with
+            | [] ->
+                match sourceFilePath with
+                | None ->
+                    eprintfn "Missing required option for capture-artifact-payload: --file"
+                    usage ()
+                    Error 1
+                | Some filePath ->
+                    let target =
+                        match artifactId, provider, conversationNativeId, messageNativeId with
+                        | Some internalArtifactId, None, None, None ->
+                            Ok (ExistingArtifactId internalArtifactId)
+                        | Some _, _, _, _ ->
+                            eprintfn "Use either --artifact-id or provider/message lookup options, not both."
+                            usage ()
+                            Error 1
+                        | None, Some providerKind, Some conversationId, Some messageId ->
+                            Ok
+                                (ProviderArtifactReference(
+                                    providerKind,
+                                    conversationId,
+                                    messageId,
+                                    providerArtifactId,
+                                    fileName))
+                        | None, Some _, _, _ ->
+                            eprintfn "Provider lookup requires --provider-conversation-id and --provider-message-id."
+                            usage ()
+                            Error 1
+                        | None, None, _, _ ->
+                            eprintfn "Missing target for capture-artifact-payload. Use --artifact-id or provider/message lookup options."
+                            usage ()
+                            Error 1
+
+                    target
+                    |> Result.map (fun resolvedTarget ->
+                        CaptureArtifactPayload
+                            { Target = resolvedTarget
+                              SourceFilePath = filePath
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot
+                              MediaType = mediaType
+                              Notes = notes })
+            | "--artifact-id" :: value :: rest ->
+                loop
+                    (Some (ArtifactId.parse value))
+                    provider
+                    conversationNativeId
+                    messageNativeId
+                    providerArtifactId
+                    fileName
+                    sourceFilePath
+                    mediaType
+                    notes
+                    objectsRoot
+                    eventStoreRoot
+                    rest
+            | "--provider" :: value :: rest ->
+                match ProviderNaming.tryParse value with
+                | Some providerKind ->
+                    loop artifactId (Some providerKind) conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+                | None ->
+                    eprintfn "Unsupported provider: %s" value
+                    usage ()
+                    Error 1
+            | "--provider-conversation-id" :: value :: rest ->
+                loop artifactId provider (Some value) messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+            | "--provider-message-id" :: value :: rest ->
+                loop artifactId provider conversationNativeId (Some value) providerArtifactId fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+            | "--provider-artifact-id" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId (Some value) fileName sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+            | "--file-name" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId (Some value) sourceFilePath mediaType notes objectsRoot eventStoreRoot rest
+            | "--file" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName (Some value) mediaType notes objectsRoot eventStoreRoot rest
+            | "--media-type" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath (Some value) notes objectsRoot eventStoreRoot rest
+            | "--notes" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType (Some value) objectsRoot eventStoreRoot rest
+            | "--objects-root" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes value eventStoreRoot rest
+            | "--event-store-root" :: value :: rest ->
+                loop artifactId provider conversationNativeId messageNativeId providerArtifactId fileName sourceFilePath mediaType notes objectsRoot value rest
+            | option :: _ ->
+                eprintfn "Unknown option for capture-artifact-payload: %s" option
+                usage ()
+                Error 1
+
+        loop None None None None None None None None None defaultObjectsRoot defaultEventStoreRoot args
+
     let private parseRebuildConversationProjections (args: string list) =
         let rec loop eventStoreRoot remaining =
             match remaining with
@@ -137,6 +243,8 @@ module Program =
             parseWriteSampleEventStore rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
+        | "capture-artifact-payload" :: rest ->
+            parseCaptureArtifactPayload rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | command :: _ ->
@@ -407,6 +515,35 @@ module Program =
 
         0
 
+    let private captureArtifactPayload request =
+        let result = ManualArtifactWorkflow.run request
+
+        if result.DuplicateSkipped then
+            printfn "Artifact payload already known."
+            printfn "  Artifact ID: %s" (ArtifactId.format result.ArtifactId)
+            printfn "  Byte count: %d" result.ByteCount
+            printfn "  Content hash: %s:%s" result.ContentHash.Algorithm result.ContentHash.Value
+        else
+            printfn "Artifact payload captured."
+            printfn "  Artifact ID: %s" (ArtifactId.format result.ArtifactId)
+
+            match result.Provider with
+            | Some provider -> printfn "  Provider: %s" (ProviderNaming.slug provider)
+            | None -> ()
+
+            match result.ArchivedRelativePath with
+            | Some relativePath -> printfn "  Archived file: %s" relativePath
+            | None -> ()
+
+            match result.EventPath with
+            | Some relativePath -> printfn "  Event written: %s" relativePath
+            | None -> ()
+
+            printfn "  Byte count: %d" result.ByteCount
+            printfn "  Content hash: %s:%s" result.ContentHash.Algorithm result.ContentHash.Value
+
+        0
+
     let private rebuildConversationProjections eventStoreRoot =
         let projectionPaths = ConversationProjections.rebuild eventStoreRoot
         printfn "Conversation projections rebuilt."
@@ -426,6 +563,8 @@ module Program =
             writeSampleEventStore eventStoreRoot
         | Ok (ImportProviderExport request) ->
             importProviderExport request
+        | Ok (CaptureArtifactPayload request) ->
+            captureArtifactPayload request
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Error exitCode ->

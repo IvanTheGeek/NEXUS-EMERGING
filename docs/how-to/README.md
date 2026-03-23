@@ -10,6 +10,7 @@ Use it for:
 
 Current guides:
 
+- `capture-artifact-payload.md`
 - `export-codex-sessions.md`
 - `git-auth-for-codex.md`
 - `import-provider-export.md`

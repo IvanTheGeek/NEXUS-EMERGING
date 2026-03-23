@@ -11,11 +11,24 @@ type ExistingMessageState =
       ConversationId: ConversationId option
       ContentHashesByNormalizationVersion: Dictionary<string, ContentHash option> }
 
+type ExistingArtifactState =
+    { ArtifactId: ArtifactId
+      mutable ConversationId: ConversationId option
+      mutable MessageId: MessageId option
+      mutable Provider: ProviderKind option
+      mutable ConversationNativeId: string option
+      mutable MessageNativeId: string option
+      mutable ProviderArtifactId: string option
+      mutable FileName: string option
+      mutable MediaType: string option
+      CapturedContentHashKeys: HashSet<string> }
+
 type ExistingEventStoreIndex =
     { ConversationsByProviderKey: Dictionary<string, ConversationId>
       MessagesByProviderKey: Dictionary<string, ExistingMessageState>
       ArtifactsByProviderKey: Dictionary<string, ArtifactId>
-      ArtifactsByFallbackKey: Dictionary<string, ArtifactId> }
+      ArtifactsByFallbackKey: Dictionary<string, ArtifactId>
+      ArtifactsById: Dictionary<ArtifactId, ExistingArtifactState> }
 
 [<RequireQualifiedAccess>]
 module EventStoreIndex =
@@ -23,7 +36,8 @@ module EventStoreIndex =
         { ConversationsByProviderKey = Dictionary(StringComparer.Ordinal)
           MessagesByProviderKey = Dictionary(StringComparer.Ordinal)
           ArtifactsByProviderKey = Dictionary(StringComparer.Ordinal)
-          ArtifactsByFallbackKey = Dictionary(StringComparer.Ordinal) }
+          ArtifactsByFallbackKey = Dictionary(StringComparer.Ordinal)
+          ArtifactsById = Dictionary() }
 
     let private tryScalar key (document: TomlDocument) =
         TomlDocument.tryScalar key document
@@ -77,6 +91,33 @@ module EventStoreIndex =
         { MessageId = messageId
           ConversationId = conversationId
           ContentHashesByNormalizationVersion = hashes }
+
+    let private contentHashKey (contentHash: ContentHash) =
+        $"{contentHash.Algorithm}:{contentHash.Value}"
+
+    let private prefer existingValue newValue =
+        match existingValue, newValue with
+        | Some _, _ -> existingValue
+        | None, _ -> newValue
+
+    let private getOrAddArtifactState (index: ExistingEventStoreIndex) artifactId =
+        match index.ArtifactsById.TryGetValue(artifactId) with
+        | true, state -> state
+        | false, _ ->
+            let state =
+                { ArtifactId = artifactId
+                  ConversationId = None
+                  MessageId = None
+                  Provider = None
+                  ConversationNativeId = None
+                  MessageNativeId = None
+                  ProviderArtifactId = None
+                  FileName = None
+                  MediaType = None
+                  CapturedContentHashKeys = HashSet<string>(StringComparer.Ordinal) }
+
+            index.ArtifactsById[artifactId] <- state
+            state
 
     let private addConversationIndex (index: ExistingEventStoreIndex) (document: TomlDocument) =
         match tryScalar "conversation_id" document, tryProviderRefByKind "conversation_object" document with
@@ -156,6 +197,52 @@ module EventStoreIndex =
             let artifactId = ArtifactId.parse artifactIdValue
             let providerArtifactRef = tryProviderRefByKind "artifact_object" document
             let messageRef = tryProviderRefByKind "message_object" document
+            let providerRef = providerArtifactRef |> Option.orElse messageRef
+            let state = getOrAddArtifactState index artifactId
+
+            state.ConversationId <-
+                prefer
+                    state.ConversationId
+                    (tryScalar "conversation_id" document |> Option.map ConversationId.parse)
+
+            state.MessageId <-
+                prefer
+                    state.MessageId
+                    (tryScalar "message_id" document |> Option.map MessageId.parse)
+
+            state.Provider <-
+                prefer
+                    state.Provider
+                    (providerRef |> Option.bind (fun value -> value.Provider |> Option.bind ProviderNaming.tryParse))
+
+            state.ConversationNativeId <-
+                prefer
+                    state.ConversationNativeId
+                    (providerArtifactRef
+                     |> Option.bind (fun artifactRef -> artifactRef.ConversationNativeId)
+                     |> Option.orElse (messageRef |> Option.bind (fun value -> value.ConversationNativeId)))
+
+            state.MessageNativeId <-
+                prefer
+                    state.MessageNativeId
+                    (providerArtifactRef
+                     |> Option.bind (fun artifactRef -> artifactRef.MessageNativeId |> Option.orElse artifactRef.NativeId)
+                     |> Option.orElse
+                        (messageRef
+                         |> Option.bind (fun value -> value.MessageNativeId |> Option.orElse value.NativeId)))
+
+            state.ProviderArtifactId <-
+                prefer
+                    state.ProviderArtifactId
+                    (providerArtifactRef
+                     |> Option.bind (fun artifactRef -> artifactRef.ArtifactNativeId |> Option.orElse artifactRef.NativeId)
+                     |> Option.orElse (tryTableValue "body" "provider_artifact_id" document))
+
+            state.FileName <- prefer state.FileName (tryTableValue "body" "file_name" document)
+            state.MediaType <- prefer state.MediaType (tryTableValue "body" "media_type" document)
+
+            tryContentHash "content_hash" document
+            |> Option.iter (contentHashKey >> state.CapturedContentHashKeys.Add >> ignore)
 
             match providerArtifactRef, messageRef with
             | Some artifactRef, Some messageRef ->
@@ -184,6 +271,28 @@ module EventStoreIndex =
                 | _ -> ()
             | _ -> ()
         | None -> ()
+
+    let tryFindArtifactState artifactId (index: ExistingEventStoreIndex) =
+        match index.ArtifactsById.TryGetValue(artifactId) with
+        | true, state -> Some state
+        | false, _ -> None
+
+    let tryResolveArtifactId provider conversationNativeId messageNativeId providerArtifactId fileName (index: ExistingEventStoreIndex) =
+        let tryFind (dictionary: Dictionary<string, ArtifactId>) key =
+            match dictionary.TryGetValue(key) with
+            | true, artifactId -> Some artifactId
+            | false, _ -> None
+
+        providerArtifactId
+        |> Option.map (ProviderKey.artifact provider conversationNativeId messageNativeId)
+        |> Option.bind (tryFind index.ArtifactsByProviderKey)
+        |> Option.orElseWith (fun () ->
+            fileName
+            |> Option.map (ProviderKey.artifactFallback provider conversationNativeId messageNativeId)
+            |> Option.bind (tryFind index.ArtifactsByFallbackKey))
+
+    let hasCapturedContentHash contentHash (state: ExistingArtifactState) =
+        state.CapturedContentHashKeys.Contains(contentHashKey contentHash)
 
     let load (eventStoreRoot: string) =
         let index = empty ()

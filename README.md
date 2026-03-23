@@ -51,6 +51,7 @@ Already established:
 - Raw artifacts must be preserved.
 - Canonical history should prefer `Observed` language at the ingestion layer.
 - A first working CLI importer exists for ChatGPT and Claude full-export zips.
+- A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 
 Not yet established:

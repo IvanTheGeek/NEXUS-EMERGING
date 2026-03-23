@@ -32,10 +32,12 @@ Working commands now include:
 
 - `write-sample-event-store`
 - `import-provider-export`
+- `capture-artifact-payload`
 - `rebuild-conversation-projections`
 
 See:
 
+- `/docs/how-to/capture-artifact-payload.md`
 - `/docs/how-to/import-provider-export.md`
 - `/docs/how-to/rebuild-conversation-projections.md`
 - `/docs/how-to/export-codex-sessions.md`

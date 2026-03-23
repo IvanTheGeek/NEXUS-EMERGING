@@ -4,6 +4,10 @@
 
 A file or binary-like object related to a conversation or message. An artifact may be present in a provider export, referenced without payload, or added later through manual capture.
 
+## Artifact Hydration
+
+The act of attaching a payload to an already known artifact reference by appending an `ArtifactPayloadCaptured` event. Hydration does not rewrite the earlier `ArtifactReferenced` history.
+
 ## Bounded Context
 
 A semantic boundary that defines vocabulary, rules, and responsibility for a part of the system.

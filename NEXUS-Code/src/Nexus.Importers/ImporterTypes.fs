@@ -115,6 +115,32 @@ type ImportResult =
       ManifestRelativePath: string
       Counts: ImportCounts }
 
+type ManualArtifactCaptureTarget =
+    | ExistingArtifactId of ArtifactId
+    | ProviderArtifactReference of
+        provider: ProviderKind *
+        conversationNativeId: string *
+        messageNativeId: string *
+        providerArtifactId: string option *
+        fileName: string option
+
+type ManualArtifactCaptureRequest =
+    { Target: ManualArtifactCaptureTarget
+      SourceFilePath: string
+      ObjectsRoot: string
+      EventStoreRoot: string
+      MediaType: string option
+      Notes: string option }
+
+type ManualArtifactCaptureResult =
+    { ArtifactId: ArtifactId
+      Provider: ProviderKind option
+      ArchivedRelativePath: string option
+      EventPath: string option
+      DuplicateSkipped: bool
+      ByteCount: int64
+      ContentHash: ContentHash }
+
 [<RequireQualifiedAccess>]
 module ProviderKey =
     let private normalize (value: string) = value.Trim()
