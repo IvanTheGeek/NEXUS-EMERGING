@@ -599,6 +599,20 @@ module ProviderAdapters =
             [ "Parsed ChatGPT export conversations.json"
               "Only message text and attachment references are normalized in v0." ] }
 
+    /// <summary>
+    /// Parses a provider-specific <c>conversations.json</c> payload into the shared canonical intermediate shape.
+    /// </summary>
+    /// <param name="provider">The provider whose export format should be parsed.</param>
+    /// <param name="window">The import window semantics associated with the raw source.</param>
+    /// <param name="sourceFileName">The original provider artifact file name.</param>
+    /// <param name="sourceByteCount">The byte length of the root provider artifact.</param>
+    /// <param name="extractedEntries">The number of raw files extracted from the source artifact.</param>
+    /// <param name="extractedNames">The lower-cased file names extracted from the source artifact.</param>
+    /// <param name="conversationsJsonPath">The absolute path to the extracted <c>conversations.json</c> file.</param>
+    /// <returns>A provider-neutral parse result ready for canonical event writing.</returns>
+    /// <remarks>
+    /// Full ingestion notes: docs/nexus-ingestion-architecture.md
+    /// </remarks>
     let parse provider window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath =
         match provider with
         | Claude ->

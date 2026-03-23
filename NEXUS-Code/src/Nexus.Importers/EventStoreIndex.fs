@@ -6,11 +6,17 @@ open System.IO
 open Nexus.Domain
 open Nexus.EventStore
 
+/// <summary>
+/// Cached event-store state for a canonical message across one or more normalization versions.
+/// </summary>
 type ExistingMessageState =
     { MessageId: MessageId
       ConversationId: ConversationId option
       ContentHashesByNormalizationVersion: Dictionary<string, ContentHash option> }
 
+/// <summary>
+/// Cached event-store state for an artifact reference and any later captured payloads.
+/// </summary>
 type ExistingArtifactState =
     { ArtifactId: ArtifactId
       mutable ConversationId: ConversationId option
@@ -23,6 +29,9 @@ type ExistingArtifactState =
       mutable MediaType: string option
       CapturedContentHashKeys: HashSet<string> }
 
+/// <summary>
+/// The in-memory dedupe and reconciliation index derived from canonical event files.
+/// </summary>
 type ExistingEventStoreIndex =
     { ConversationsByProviderKey: Dictionary<string, ConversationId>
       MessagesByProviderKey: Dictionary<string, ExistingMessageState>
@@ -30,8 +39,17 @@ type ExistingEventStoreIndex =
       ArtifactsByFallbackKey: Dictionary<string, ArtifactId>
       ArtifactsById: Dictionary<ArtifactId, ExistingArtifactState> }
 
+/// <summary>
+/// Loads and queries the in-memory dedupe index used by import and hydration workflows.
+/// </summary>
+/// <remarks>
+/// This index is derived from canonical event history and can always be rebuilt from disk.
+/// </remarks>
 [<RequireQualifiedAccess>]
 module EventStoreIndex =
+    /// <summary>
+    /// Creates an empty event-store index.
+    /// </summary>
     let empty () =
         { ConversationsByProviderKey = Dictionary(StringComparer.Ordinal)
           MessagesByProviderKey = Dictionary(StringComparer.Ordinal)
@@ -180,6 +198,9 @@ module EventStoreIndex =
             | _ -> ()
         | _ -> ()
 
+    /// <summary>
+    /// Returns the observed content hash for a message under a specific normalization version, if known.
+    /// </summary>
     let tryGetObservedContentHash normalizationVersion state =
         let key = NormalizationNaming.value normalizationVersion
 
@@ -187,6 +208,9 @@ module EventStoreIndex =
         | true, contentHash -> Some contentHash
         | false, _ -> None
 
+    /// <summary>
+    /// Records the latest observed content hash for a message under a specific normalization version.
+    /// </summary>
     let setObservedContentHash normalizationVersion contentHash state =
         let key = NormalizationNaming.value normalizationVersion
         updateMessageStateHash key contentHash state
@@ -272,11 +296,20 @@ module EventStoreIndex =
             | _ -> ()
         | None -> ()
 
+    /// <summary>
+    /// Looks up cached artifact state by canonical artifact identifier.
+    /// </summary>
     let tryFindArtifactState artifactId (index: ExistingEventStoreIndex) =
         match index.ArtifactsById.TryGetValue(artifactId) with
         | true, state -> Some state
         | false, _ -> None
 
+    /// <summary>
+    /// Resolves an artifact identifier from provider-native keys, with filename fallback when needed.
+    /// </summary>
+    /// <remarks>
+    /// This powers manual artifact hydration against previously imported artifact references.
+    /// </remarks>
     let tryResolveArtifactId provider conversationNativeId messageNativeId providerArtifactId fileName (index: ExistingEventStoreIndex) =
         let tryFind (dictionary: Dictionary<string, ArtifactId>) key =
             match dictionary.TryGetValue(key) with
@@ -291,9 +324,17 @@ module EventStoreIndex =
             |> Option.map (ProviderKey.artifactFallback provider conversationNativeId messageNativeId)
             |> Option.bind (tryFind index.ArtifactsByFallbackKey))
 
+    /// <summary>
+    /// Returns whether an artifact state has already observed the supplied captured payload hash.
+    /// </summary>
     let hasCapturedContentHash contentHash (state: ExistingArtifactState) =
         state.CapturedContentHashKeys.Contains(contentHashKey contentHash)
 
+    /// <summary>
+    /// Loads the dedupe index by scanning canonical event files from disk.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <returns>A rebuilt in-memory index of conversations, messages, and artifacts.</returns>
     let load (eventStoreRoot: string) =
         let index = empty ()
         let eventsRoot = Path.Combine(eventStoreRoot, "events")

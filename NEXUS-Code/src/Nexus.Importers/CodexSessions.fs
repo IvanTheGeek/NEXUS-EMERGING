@@ -10,6 +10,9 @@ open Nexus.EventStore
 
 [<RequireQualifiedAccess>]
 module CodexSessions =
+    /// <summary>
+    /// The parsed shape of a preserved Codex raw-session snapshot.
+    /// </summary>
     type ParsedSnapshot =
         { RootArtifact: RawObjectRef
           SourceFileName: string
@@ -273,6 +276,16 @@ module CodexSessions =
             |> Seq.toList
           RawObjects = [ transcriptRawObject ] }
 
+    /// <summary>
+    /// Parses a preserved Codex raw-session snapshot into the shared conversation/message shape.
+    /// </summary>
+    /// <param name="objectsRoot">The object-layer root used to compute stable raw-object references.</param>
+    /// <param name="snapshotRoot">The preserved Codex snapshot directory to read.</param>
+    /// <returns>A parsed snapshot ready for canonical event import.</returns>
+    /// <remarks>
+    /// Only <c>user_message</c> and <c>agent_message</c> records are canonicalized in the current version.
+    /// Full workflow notes: docs/how-to/import-codex-sessions.md
+    /// </remarks>
     let parse objectsRoot snapshotRoot =
         let snapshotAbsolutePath = Path.GetFullPath(snapshotRoot)
 
