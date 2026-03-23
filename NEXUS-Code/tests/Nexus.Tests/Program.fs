@@ -9,5 +9,6 @@ module Program =
             "nexus"
             [ ProviderAdapterTests.tests
               WorkflowTests.tests
+              PropertyTests.tests
               SnapshotTests.tests ]
         |> runTestsWithCLIArgs [] argv

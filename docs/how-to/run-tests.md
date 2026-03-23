@@ -14,6 +14,7 @@ dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj
 
 - provider adapter parsing for small ChatGPT and Claude fixtures
 - duplicate-import behavior for provider exports
+- property-based invariant checks for duplicate imports, reparses, and manual artifact hydration
 - manual artifact hydration duplicate detection
 - Codex session import behavior
 - conversation and artifact projection rebuild checks
@@ -33,5 +34,6 @@ When a serializer change is intentional, rerun the tests and inspect the generat
 
 - the fixtures are intentionally tiny and curated
 - these are regression tests for importer behavior, not full end-to-end coverage of your real exports
+- the property tests focus on stable importer invariants rather than raw parser exhaustiveness
 - the snapshot tests are aimed at wire-format stability for generated artifacts
 - property tests can still be added later for stronger invariant coverage
