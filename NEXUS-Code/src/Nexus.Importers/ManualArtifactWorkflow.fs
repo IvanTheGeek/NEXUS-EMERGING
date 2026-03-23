@@ -150,6 +150,15 @@ module ManualArtifactWorkflow =
                   ByteCount = Some byteCount
                   CaptureNotes = notes } }
 
+    /// <summary>
+    /// Hydrates an already-known artifact reference with a manually supplied payload file.
+    /// </summary>
+    /// <param name="request">The target artifact reference, source file, and output roots for the capture.</param>
+    /// <returns>A summary describing whether a new payload event was appended or skipped as a duplicate.</returns>
+    /// <remarks>
+    /// This workflow is append-only and idempotent by content hash.
+    /// Full workflow notes: docs/how-to/capture-artifact-payload.md
+    /// </remarks>
     let run (request: ManualArtifactCaptureRequest) =
         let sourceFilePath = Path.GetFullPath(request.SourceFilePath)
 

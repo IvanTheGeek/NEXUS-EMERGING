@@ -4,15 +4,27 @@ open System
 open System.IO
 open Nexus.Domain
 
+/// <summary>
+/// The canonical stream families used for append-only event-store layout.
+/// </summary>
 type StreamKind =
     | ConversationStream
     | ArtifactStream
     | ImportStream
 
+/// <summary>
+/// Identifies a specific stream inside the canonical event store.
+/// </summary>
 type StreamRef =
     { Kind: StreamKind
       StreamId: string }
 
+/// <summary>
+/// Serializes canonical history and graph artifacts to TOML and writes them into the event-store layout.
+/// </summary>
+/// <remarks>
+/// Full layout notes: NEXUS-EventStore/docs/v0-layout-and-toml.md
+/// </remarks>
 module CanonicalStore =
     let private normalizePath (path: string) =
         path.Replace('\\', '/')
@@ -321,6 +333,9 @@ module CanonicalStore =
             appendBlank builder
             appendImportCounts builder "body.counts" value.Counts
 
+    /// <summary>
+    /// Serializes a canonical event into its persisted TOML form.
+    /// </summary>
     let serializeCanonicalEvent (event: CanonicalEvent) =
         let builder = create ()
         let streamRef = streamRefForEvent event
@@ -328,6 +343,9 @@ module CanonicalStore =
         appendBody builder event.Body
         render builder
 
+    /// <summary>
+    /// Serializes an import manifest into its persisted TOML form.
+    /// </summary>
     let serializeImportManifest (manifest: ImportManifest) =
         let builder = create ()
 
@@ -353,6 +371,9 @@ module CanonicalStore =
         appendImportCounts builder "counts" manifest.Counts
         render builder
 
+    /// <summary>
+    /// Serializes a graph assertion into its persisted TOML form.
+    /// </summary>
     let serializeGraphAssertion (assertion: GraphAssertion) =
         let builder = create ()
 
@@ -399,6 +420,9 @@ module CanonicalStore =
         appendRawObjects builder assertion.Provenance.RawObjects
         render builder
 
+    /// <summary>
+    /// Computes the canonical relative path for an event based on its stream kind and event identifier.
+    /// </summary>
     let canonicalEventRelativePath (event: CanonicalEvent) =
         let streamRef = streamRefForEvent event
         let eventFile = $"{CanonicalEventId.format event.Envelope.EventId}__{fileEventKindValue event.Body}.toml"
@@ -411,12 +435,21 @@ module CanonicalStore =
 
         Path.Combine(directory, eventFile) |> normalizePath
 
+    /// <summary>
+    /// Computes the canonical relative path for an import manifest.
+    /// </summary>
     let importManifestRelativePath (manifest: ImportManifest) =
         Path.Combine("imports", $"{ImportId.format manifest.ImportId}.toml") |> normalizePath
 
+    /// <summary>
+    /// Computes the canonical relative path for a graph assertion file.
+    /// </summary>
     let graphAssertionRelativePath (assertion: GraphAssertion) =
         Path.Combine("graph", "assertions", $"{FactId.format assertion.FactId}.toml") |> normalizePath
 
+    /// <summary>
+    /// Writes one canonical event to the event store and returns its relative path.
+    /// </summary>
     let writeCanonicalEvent (rootPath: string) (event: CanonicalEvent) =
         let relativePath = canonicalEventRelativePath event
         let destinationPath = Path.Combine(rootPath, relativePath)
@@ -424,9 +457,15 @@ module CanonicalStore =
         File.WriteAllText(destinationPath, serializeCanonicalEvent event)
         relativePath
 
+    /// <summary>
+    /// Writes a batch of canonical events and returns their relative paths in order.
+    /// </summary>
     let writeCanonicalEvents (rootPath: string) (events: CanonicalEvent list) =
         events |> List.map (writeCanonicalEvent rootPath)
 
+    /// <summary>
+    /// Writes an import manifest and returns its relative path.
+    /// </summary>
     let writeImportManifest (rootPath: string) (manifest: ImportManifest) =
         let relativePath = importManifestRelativePath manifest
         let destinationPath = Path.Combine(rootPath, relativePath)
@@ -434,6 +473,9 @@ module CanonicalStore =
         File.WriteAllText(destinationPath, serializeImportManifest manifest)
         relativePath
 
+    /// <summary>
+    /// Writes a graph assertion file and returns its relative path.
+    /// </summary>
     let writeGraphAssertion (rootPath: string) (assertion: GraphAssertion) =
         let relativePath = graphAssertionRelativePath assertion
         let destinationPath = Path.Combine(rootPath, relativePath)

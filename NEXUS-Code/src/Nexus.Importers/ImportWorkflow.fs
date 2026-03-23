@@ -281,6 +281,15 @@ module ImportWorkflow =
           RevisionsObserved = revisions
           ReparseObservationsAppended = reparses }
 
+    /// <summary>
+    /// Imports a provider export zip into the object layer and canonical event store.
+    /// </summary>
+    /// <param name="request">Locations and provider metadata for the import run.</param>
+    /// <returns>A summary of archived raw artifacts, appended events, and import counts.</returns>
+    /// <remarks>
+    /// Preserves raw input, appends canonical history, and distinguishes duplicates from reparses.
+    /// Full workflow notes: docs/how-to/import-provider-export.md
+    /// </remarks>
     let run (request: ImportRequest) =
         let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
         let eventStoreRoot = Path.GetFullPath(request.EventStoreRoot)

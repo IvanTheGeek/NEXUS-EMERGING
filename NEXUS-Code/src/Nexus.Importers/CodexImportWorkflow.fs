@@ -110,6 +110,15 @@ module CodexImportWorkflow =
     let private setMessageState index providerKey state =
         index.MessagesByProviderKey[providerKey] <- state
 
+    /// <summary>
+    /// Imports a preserved Codex local-session snapshot into canonical history.
+    /// </summary>
+    /// <param name="request">The snapshot location and destination roots for the import run.</param>
+    /// <returns>A summary of appended events, manifest location, and observed counts.</returns>
+    /// <remarks>
+    /// Uses the Codex-specific normalization version and local-session acquisition kind.
+    /// Full workflow notes: docs/how-to/import-codex-sessions.md
+    /// </remarks>
     let run (request: CodexSessionImportRequest) =
         let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
         let snapshotRoot = Path.GetFullPath(request.SnapshotRoot)
