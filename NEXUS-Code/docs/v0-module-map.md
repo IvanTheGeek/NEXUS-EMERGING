@@ -14,6 +14,8 @@ The goal is to stabilize naming and module responsibilities while the first real
   raw-intake, provider parsing, dedupe index loading, and import orchestration
 - `src/Nexus.Cli/Nexus.Cli.fsproj`
   manual CLI entry points that exercise the domain and event-store layers
+- `tests/Nexus.Tests/Nexus.Tests.fsproj`
+  first automated regression suite for provider parsing and importer workflows
 
 ## Modules
 
@@ -55,6 +57,12 @@ The goal is to stabilize naming and module responsibilities while the first real
   manual artifact hydration workflow for appending `ArtifactPayloadCaptured` events
 - `Nexus.Cli/Program.fs`
   manual commands such as writing sample canonical history, importing provider exports, capturing artifact payloads, and reporting unresolved artifacts
+- `Nexus.Tests/TestHelpers.fs`
+  temp-directory, fixture, zip, and TOML helpers used by automated tests
+- `Nexus.Tests/ProviderAdapterTests.fs`
+  parser-focused regression tests for curated ChatGPT and Claude fixtures
+- `Nexus.Tests/WorkflowTests.fs`
+  importer, artifact hydration, Codex import, and projection rebuild regression tests
 
 ## Design Notes
 

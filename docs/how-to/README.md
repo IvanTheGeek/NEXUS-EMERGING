@@ -18,4 +18,5 @@ Current guides:
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
 - `report-unresolved-artifacts.md`
+- `run-tests.md`
 - `write-sample-event-store.md`

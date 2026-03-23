@@ -37,6 +37,7 @@ Working commands now include:
 - `rebuild-artifact-projections`
 - `report-unresolved-artifacts`
 - `rebuild-conversation-projections`
+- `dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`
 
 See:
 
@@ -47,3 +48,4 @@ See:
 - `/docs/how-to/rebuild-conversation-projections.md`
 - `/docs/how-to/report-unresolved-artifacts.md`
 - `/docs/how-to/export-codex-sessions.md`
+- `/docs/how-to/run-tests.md`

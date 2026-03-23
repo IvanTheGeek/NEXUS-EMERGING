@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nexus.Domain\Nexus.Domain.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.EventStore\Nexus.EventStore.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.Importers\Nexus.Importers.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="TestHelpers.fs" />
+    <Compile Include="ProviderAdapterTests.fs" />
+    <Compile Include="WorkflowTests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>
