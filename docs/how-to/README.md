@@ -14,5 +14,6 @@ Current guides:
 - `export-codex-sessions.md`
 - `git-auth-for-codex.md`
 - `import-provider-export.md`
+- `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
 - `write-sample-event-store.md`

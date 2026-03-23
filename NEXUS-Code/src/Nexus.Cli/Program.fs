@@ -13,6 +13,7 @@ module Program =
         | WriteSampleEventStore of eventStoreRoot: string
         | ImportProviderExport of request: ImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
+        | RebuildArtifactProjections of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
 
     let private repoRoot =
@@ -37,6 +38,8 @@ module Program =
         printfn "  write-sample-event-store    Write a small sample canonical history bundle"
         printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
         printfn "  capture-artifact-payload   Archive a manually added artifact file and append ArtifactPayloadCaptured"
+        printfn "  rebuild-artifact-projections"
+        printfn "                              Rebuild artifact projections from canonical artifact events"
         printfn "  rebuild-conversation-projections"
         printfn "                              Rebuild conversation projections from canonical events"
         printfn ""
@@ -64,6 +67,9 @@ module Program =
         printfn "  --event-store-root <path>            Override the event-store root"
         printfn ""
         printfn "Options for rebuild-conversation-projections:"
+        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for rebuild-artifact-projections:"
         printfn "  --event-store-root <path>   Override the event-store root"
 
     let private parseWriteSampleEventStore (args: string list) =
@@ -230,6 +236,19 @@ module Program =
 
         loop defaultEventStoreRoot args
 
+    let private parseRebuildArtifactProjections (args: string list) =
+        let rec loop eventStoreRoot remaining =
+            match remaining with
+            | [] -> Ok (RebuildArtifactProjections eventStoreRoot)
+            | "--event-store-root" :: value :: rest ->
+                loop value rest
+            | option :: _ ->
+                eprintfn "Unknown option for rebuild-artifact-projections: %s" option
+                usage ()
+                Error 1
+
+        loop defaultEventStoreRoot args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -245,6 +264,8 @@ module Program =
             parseImportProviderExport rest
         | "capture-artifact-payload" :: rest ->
             parseCaptureArtifactPayload rest
+        | "rebuild-artifact-projections" :: rest ->
+            parseRebuildArtifactProjections rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | command :: _ ->
@@ -556,6 +577,18 @@ module Program =
 
         0
 
+    let private rebuildArtifactProjections eventStoreRoot =
+        let projectionPaths = ArtifactProjections.rebuild eventStoreRoot
+        printfn "Artifact projections rebuilt."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Projection files written: %d" projectionPaths.Length
+
+        projectionPaths
+        |> List.truncate 5
+        |> List.iter (printfn "    %s")
+
+        0
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
@@ -565,6 +598,8 @@ module Program =
             importProviderExport request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
+        | Ok (RebuildArtifactProjections eventStoreRoot) ->
+            rebuildArtifactProjections eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Error exitCode ->
