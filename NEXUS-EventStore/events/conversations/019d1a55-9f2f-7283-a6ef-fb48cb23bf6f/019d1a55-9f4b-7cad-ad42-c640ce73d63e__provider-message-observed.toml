@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1a55-9f4b-7cad-ad42-c640ce73d63e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d1a55-9f4b-7ed7-a15b-a84efd72f318"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T14:41:44.094Z"
+observed_at = "2026-03-23T10:55:08.8647828Z"
+imported_at = "2026-03-23T10:55:08.8647828Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d1a55-9240-7798-b8fe-9b60775d8c57"
+
+[content_hash]
+algorithm = "sha256"
+value = "9b23813d78146f26e888e0d5aeaa8f0a1acb17d9b29202bdfe6b96dd80a0309a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000254-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000254-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000254-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 40
+
+[[body.segments]]
+kind = "plain_text"
+text = "That lands very cleanly with the direction we’ve been shaping.\n\nI’d phrase it like this: NEXUS is not “many separate models,” it is one underlying reality with many valid lenses over it. The graph is the substrate, and lenses are how different people or concerns localize meaning without requiring a different truth underneath. A developer, a UX person, a business stakeholder, and you as system designer may all be looking at the same underlying nodes, relationships, and claims, but through different naming, grouping, and emphasis.\n\nThe important design consequence is this: we should not force those lenses into the base ingestion layer too early. For now, the foundation should stay in three parts:\n\n- observed history\n  what was actually acquired from ChatGPT, Claude, manual artifact adds, later APIs\n- graph assertions\n  the normalized nodes/edges/claims we derive from that history\n- lenses\n  contextual views that rename, group, filter, and present the graph differently for different purposes\n\nThat gives you a very strong rule of thumb: the event store records evidence, the graph layer expresses interpreted structure, and the lens layer expresses perspective.\n\nI’d also make one subtle distinction explicit, because I think it will save us pain later: “everything is graph” does not mean “everything must be physically stored in graph form first.” For v0, the append-only event history is still the right foundation. Then we derive graph structure from it. That keeps provenance solid and lets the graph model mature without losing source truth.\n\nIf we carry this forward, I think the next architectural addition is a thin concept of `Lens` or `Context`, but only as a design concept for now, not as a heavy implementation commitment. Something like:\n\n- `GraphAssertion`\n  a claim about nodes/edges with provenance\n- `LensId`\n  a named perspective\n- `LensProjection`\n  rules for how a lens aliases or emphasizes graph structure\n- `VocabularyAlias`\n  how one lens says “customer” where another says “account holder” or “actor”\n\nThat feels very aligned with DDD, Event Modeling, and Scott Wlaschin’s style: keep the core honest, keep the language intentional, and let different bounded meanings exist without pretending there is only one universal vocabulary.\n\nThe next thing I’d suggest is that I write a short “NEXUS core conceptual layers” note that adds this graph-plus-lenses idea to the architecture we already drafted."
+

@@ -27,6 +27,7 @@ module CanonicalStore =
         function
         | ChatGpt -> "chatgpt"
         | Claude -> "claude"
+        | Codex -> "codex"
         | OtherProvider value -> value
 
     let private providerObjectKindValue =
@@ -43,6 +44,7 @@ module CanonicalStore =
     let private sourceAcquisitionValue =
         function
         | ExportZip -> "export_zip"
+        | LocalSessionExport -> "local_session_export"
         | ManualArtifactAdd -> "manual_artifact_add"
         | ApiCapture -> "api_capture"
         | BrowserCapture -> "browser_capture"
@@ -59,6 +61,8 @@ module CanonicalStore =
         function
         | ProviderExportZip -> "provider_export_zip"
         | ExtractedSnapshot -> "extracted_snapshot"
+        | SessionIndex -> "session_index"
+        | SessionTranscript -> "session_transcript"
         | AttachmentPayload -> "attachment_payload"
         | AudioPayload -> "audio_payload"
         | ManualArtifact -> "manual_artifact"

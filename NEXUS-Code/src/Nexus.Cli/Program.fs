@@ -12,6 +12,7 @@ module Program =
     type Command =
         | WriteSampleEventStore of eventStoreRoot: string
         | ImportProviderExport of request: ImportRequest
+        | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
@@ -26,6 +27,9 @@ module Program =
     let private defaultObjectsRoot =
         Path.Combine(repoRoot, "NEXUS-Objects")
 
+    let private defaultCodexSnapshotRoot =
+        Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
+
     let private sha256ForText (value: string) =
         let bytes = Encoding.UTF8.GetBytes(value)
         let hash = SHA256.HashData(bytes)
@@ -38,6 +42,7 @@ module Program =
         printfn "Commands:"
         printfn "  write-sample-event-store    Write a small sample canonical history bundle"
         printfn "  import-provider-export     Archive a provider export zip and write canonical observed history"
+        printfn "  import-codex-sessions      Import preserved Codex session JSONL snapshots"
         printfn "  capture-artifact-payload   Archive a manually added artifact file and append ArtifactPayloadCaptured"
         printfn "  rebuild-artifact-projections"
         printfn "                              Rebuild artifact projections from canonical artifact events"
@@ -53,6 +58,11 @@ module Program =
         printfn "  --provider <chatgpt|claude> Provider adapter to use"
         printfn "  --zip <path>                Path to the provider export zip"
         printfn "  --window <kind>             Import window; defaults to full"
+        printfn "  --objects-root <path>       Override the objects root"
+        printfn "  --event-store-root <path>   Override the event-store root"
+        printfn ""
+        printfn "Options for import-codex-sessions:"
+        printfn "  --snapshot-root <path>      Override the preserved Codex snapshot root"
         printfn "  --objects-root <path>       Override the objects root"
         printfn "  --event-store-root <path>   Override the event-store root"
         printfn ""
@@ -231,6 +241,28 @@ module Program =
 
         loop None None None None None None None None None defaultObjectsRoot defaultEventStoreRoot args
 
+    let private parseImportCodexSessions (args: string list) =
+        let rec loop snapshotRoot objectsRoot eventStoreRoot remaining =
+            match remaining with
+            | [] ->
+                Ok
+                    (ImportCodexSessions
+                        { SnapshotRoot = snapshotRoot
+                          ObjectsRoot = objectsRoot
+                          EventStoreRoot = eventStoreRoot })
+            | "--snapshot-root" :: value :: rest ->
+                loop value objectsRoot eventStoreRoot rest
+            | "--objects-root" :: value :: rest ->
+                loop snapshotRoot value eventStoreRoot rest
+            | "--event-store-root" :: value :: rest ->
+                loop snapshotRoot objectsRoot value rest
+            | option :: _ ->
+                eprintfn "Unknown option for import-codex-sessions: %s" option
+                usage ()
+                Error 1
+
+        loop defaultCodexSnapshotRoot defaultObjectsRoot defaultEventStoreRoot args
+
     let private parseRebuildConversationProjections (args: string list) =
         let rec loop eventStoreRoot remaining =
             match remaining with
@@ -293,6 +325,8 @@ module Program =
             parseWriteSampleEventStore rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
+        | "import-codex-sessions" :: rest ->
+            parseImportCodexSessions rest
         | "capture-artifact-payload" :: rest ->
             parseCaptureArtifactPayload rest
         | "rebuild-artifact-projections" :: rest ->
@@ -569,6 +603,32 @@ module Program =
 
         0
 
+    let private importCodexSessions request =
+        let result = CodexImportWorkflow.run request
+
+        printfn "Codex sessions imported."
+        printfn "  Provider: codex"
+        printfn "  Import ID: %s" (ImportId.format result.ImportId)
+        printfn "  Snapshot root: %s" result.SnapshotRoot
+        printfn "  Root artifact: %s" result.RootArtifactRelativePath
+        printfn "  Event manifest: %s" result.ManifestRelativePath
+        printfn "  Events written: %d" result.EventPaths.Length
+        printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
+        printfn "  Messages seen: %d" result.Counts.MessagesSeen
+        printfn "  New events appended: %d" result.Counts.NewEventsAppended
+        printfn "  Duplicates skipped: %d" result.Counts.DuplicatesSkipped
+        printfn "  Revisions observed: %d" result.Counts.RevisionsObserved
+        printfn "  Reparse observations appended: %d" result.Counts.ReparseObservationsAppended
+
+        if not result.EventPaths.IsEmpty then
+            printfn "  First event files:"
+
+            result.EventPaths
+            |> List.truncate 5
+            |> List.iter (printfn "    %s")
+
+        0
+
     let private captureArtifactPayload request =
         let result = ManualArtifactWorkflow.run request
 
@@ -681,6 +741,8 @@ module Program =
             writeSampleEventStore eventStoreRoot
         | Ok (ImportProviderExport request) ->
             importProviderExport request
+        | Ok (ImportCodexSessions request) ->
+            importCodexSessions request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
         | Ok (RebuildArtifactProjections eventStoreRoot) ->

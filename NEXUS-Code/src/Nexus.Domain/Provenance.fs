@@ -20,6 +20,7 @@ module NormalizationVersion =
 
 type SourceAcquisitionKind =
     | ExportZip
+    | LocalSessionExport
     | ManualArtifactAdd
     | ApiCapture
     | BrowserCapture
@@ -38,6 +39,8 @@ type ContentHash =
 type RawObjectKind =
     | ProviderExportZip
     | ExtractedSnapshot
+    | SessionIndex
+    | SessionTranscript
     | AttachmentPayload
     | AudioPayload
     | ManualArtifact

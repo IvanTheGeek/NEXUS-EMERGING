@@ -209,6 +209,9 @@ module ImportWorkflow =
           intake.ConversationSnapshot ]
         |> List.choose id
 
+    let private envelopeRawObjectsForConversation intake (conversation: ParsedConversation) =
+        (rawObjectsForEnvelope intake) @ conversation.RawObjects
+
     let private baseEnvelope intake importId eventId =
         { EventId = eventId
           ConversationId = None
@@ -347,6 +350,7 @@ module ImportWorkflow =
                 tryGetOrAddConversationId index request.Provider conversation.ProviderConversationId
 
             let conversationRef = conversationProviderRef request.Provider conversation.ProviderConversationId
+            let envelopeRawObjects = envelopeRawObjectsForConversation intake conversation
 
             if conversationAlreadyKnown then
                 duplicatesSkipped <- duplicatesSkipped + 1
@@ -357,7 +361,8 @@ module ImportWorkflow =
                         { baseEnvelope intake importId (CanonicalEventId.create ()) with
                             ConversationId = Some conversationId
                             OccurredAt = conversation.OccurredAt |> Option.map occurredAt
-                            ProviderRefs = [ conversationRef ] }
+                            ProviderRefs = [ conversationRef ]
+                            RawObjects = envelopeRawObjects }
                       Body =
                         ProviderConversationObserved
                             { ConversationId = conversationId
@@ -388,7 +393,8 @@ module ImportWorkflow =
                                     MessageId = Some existingMessage.MessageId
                                     OccurredAt = message.OccurredAt |> Option.map occurredAt
                                     ContentHash = Some messageContentHash
-                                    ProviderRefs = [ conversationRef; messageRef ] }
+                                    ProviderRefs = [ conversationRef; messageRef ]
+                                    RawObjects = envelopeRawObjects }
                               Body =
                                 ProviderMessageRevisionObserved
                                     { MessageId = existingMessage.MessageId
@@ -408,7 +414,8 @@ module ImportWorkflow =
                                     MessageId = Some existingMessage.MessageId
                                     OccurredAt = message.OccurredAt |> Option.map occurredAt
                                     ContentHash = Some messageContentHash
-                                    ProviderRefs = [ conversationRef; messageRef ] }
+                                    ProviderRefs = [ conversationRef; messageRef ]
+                                    RawObjects = envelopeRawObjects }
                               Body =
                                 ProviderMessageObserved
                                     { MessageId = existingMessage.MessageId
@@ -441,7 +448,8 @@ module ImportWorkflow =
                                 MessageId = Some messageId
                                 OccurredAt = message.OccurredAt |> Option.map occurredAt
                                 ContentHash = Some messageContentHash
-                                ProviderRefs = [ conversationRef; messageRef ] }
+                                ProviderRefs = [ conversationRef; messageRef ]
+                                RawObjects = envelopeRawObjects }
                           Body =
                             ProviderMessageObserved
                                 { MessageId = messageId
@@ -488,7 +496,8 @@ module ImportWorkflow =
                                     ConversationId = Some conversationId
                                     MessageId = Some messageId
                                     ArtifactId = Some artifactId
-                                    ProviderRefs = providerRefs }
+                                    ProviderRefs = providerRefs
+                                    RawObjects = envelopeRawObjects }
                               Body =
                                 ArtifactReferenced
                                     { ArtifactId = artifactId

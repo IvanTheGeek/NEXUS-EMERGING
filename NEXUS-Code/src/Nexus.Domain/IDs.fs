@@ -111,6 +111,7 @@ module FactId =
 type ProviderKind =
     | ChatGpt
     | Claude
+    | Codex
     | OtherProvider of string
 
 type ProviderObjectKind =

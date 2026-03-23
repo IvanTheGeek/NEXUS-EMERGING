@@ -13,6 +13,7 @@ Current guides:
 - `capture-artifact-payload.md`
 - `export-codex-sessions.md`
 - `git-auth-for-codex.md`
+- `import-codex-sessions.md`
 - `import-provider-export.md`
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`

@@ -47,6 +47,10 @@ The goal is to stabilize naming and module responsibilities while the first real
   provider-specific parsers/adapters for ChatGPT and Claude exports
 - `Nexus.Importers/ImportWorkflow.fs`
   archive/extract/import pipeline that turns raw exports into canonical events
+- `Nexus.Importers/CodexSessions.fs`
+  parser for preserved Codex session JSONL snapshots
+- `Nexus.Importers/CodexImportWorkflow.fs`
+  canonical import workflow for local Codex session exports
 - `Nexus.Importers/ManualArtifactWorkflow.fs`
   manual artifact hydration workflow for appending `ArtifactPayloadCaptured` events
 - `Nexus.Cli/Program.fs`
@@ -62,5 +66,6 @@ The goal is to stabilize naming and module responsibilities while the first real
 - provider adapters are isolated from the shared canonical event-writing core
 - dedupe is currently driven by provider object identity plus canonical content hash
 - the importer currently supports first real full-export imports for ChatGPT and Claude
+- preserved Codex session JSONL snapshots can be imported through a separate local-session workflow
 - conversation projections are rebuildable from canonical history and do not carry source-of-truth authority
 - artifact projections are rebuildable from canonical artifact streams and make unresolved versus hydrated payload state easy to inspect

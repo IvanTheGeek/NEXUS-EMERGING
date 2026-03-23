@@ -62,6 +62,7 @@ Manifest example:
 ## Notes
 
 - This is raw preservation, not canonical import.
+- After exporting, use `import-codex-sessions` to append Codex conversations into the canonical event store.
 - The local session JSONL files contain the actual turn history, including your prompts and Codex responses.
 - Runtime app logs are not the same thing and are not what this exporter is preserving.
 

@@ -9,6 +9,7 @@ module ProviderNaming =
         function
         | ChatGpt -> "chatgpt"
         | Claude -> "claude"
+        | Codex -> "codex"
         | OtherProvider value -> value.Trim().ToLowerInvariant()
 
     let tryParse (value: string) =
@@ -17,6 +18,7 @@ module ProviderNaming =
         | "chat-gpt"
         | "chat_gpt" -> Some ChatGpt
         | "claude" -> Some Claude
+        | "codex" -> Some Codex
         | _ -> None
 
 [<RequireQualifiedAccess>]
@@ -60,7 +62,11 @@ module ImportWindowNaming =
 module NormalizationNaming =
     let legacyDefault = NormalizationVersion.create "provider-export-v0"
 
-    let current = NormalizationVersion.create "provider-export-v1"
+    let providerExportsCurrent = NormalizationVersion.create "provider-export-v1"
+
+    let codexSessionsCurrent = NormalizationVersion.create "codex-sessions-v1"
+
+    let current = providerExportsCurrent
 
     let value normalizationVersion =
         NormalizationVersion.value normalizationVersion
@@ -87,7 +93,8 @@ type ParsedConversation =
       IsArchived: bool option
       OccurredAt: DateTimeOffset option
       MessageCountHint: int option
-      Messages: ParsedMessage list }
+      Messages: ParsedMessage list
+      RawObjects: RawObjectRef list }
 
 type ParsedImport =
     { Provider: ProviderKind
@@ -111,6 +118,19 @@ type ImportResult =
       ArchivedZipRelativePath: string
       LatestZipRelativePath: string
       ExtractedConversationRelativePath: string option
+      EventPaths: string list
+      ManifestRelativePath: string
+      Counts: ImportCounts }
+
+type CodexSessionImportRequest =
+    { SnapshotRoot: string
+      ObjectsRoot: string
+      EventStoreRoot: string }
+
+type CodexSessionImportResult =
+    { ImportId: ImportId
+      SnapshotRoot: string
+      RootArtifactRelativePath: string
       EventPaths: string list
       ManifestRelativePath: string
       Counts: ImportCounts }

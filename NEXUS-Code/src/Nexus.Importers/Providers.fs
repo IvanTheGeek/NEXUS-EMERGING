@@ -339,7 +339,8 @@ module ProviderAdapters =
                   IsArchived = None
                   OccurredAt = Json.tryProperty "created_at" conversationNode |> Option.bind Json.tryDateTimeOffset
                   MessageCountHint = Some messages.Length
-                  Messages = messages }
+                  Messages = messages
+                  RawObjects = [] }
 
     let private parseClaude (window: ImportWindowKind option) (sourceFileName: string) (sourceByteCount: int64) extractedEntries extractedNames (conversationsJsonPath: string) =
         let rootNode = JsonNode.Parse(File.ReadAllText(conversationsJsonPath))
@@ -577,7 +578,8 @@ module ProviderAdapters =
                   IsArchived = Json.tryProperty "is_archived" conversationNode |> Option.bind Json.tryBool
                   OccurredAt = Json.tryProperty "create_time" conversationNode |> tryUnixSecondsDateTime
                   MessageCountHint = Some messages.Length
-                  Messages = messages }
+                  Messages = messages
+                  RawObjects = [] }
 
     let private parseChatGpt (window: ImportWindowKind option) (sourceFileName: string) (sourceByteCount: int64) extractedEntries extractedNames (conversationsJsonPath: string) =
         let rootNode = JsonNode.Parse(File.ReadAllText(conversationsJsonPath))
@@ -603,5 +605,7 @@ module ProviderAdapters =
             parseClaude window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath
         | ChatGpt ->
             parseChatGpt window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath
+        | Codex ->
+            invalidArg "provider" "Codex sessions are imported through CodexImportWorkflow, not the export-zip adapter."
         | OtherProvider value ->
             invalidArg "provider" $"Unsupported provider adapter: {value}"
