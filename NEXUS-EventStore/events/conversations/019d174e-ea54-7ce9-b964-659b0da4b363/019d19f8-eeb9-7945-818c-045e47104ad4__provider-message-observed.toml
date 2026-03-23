@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-7945-818c-045e47104ad4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-76f2-919f-fed7f7627a52"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T01:03:13.47255Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "09e27184cf202065a730ae4035d9335539a1be78ccf67b31bdaf582be903a4d5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac11-be0b-7fc6-a508-0e8b8b141b8d"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac11-be0b-7fc6-a508-0e8b8b141b8d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac11-be0b-7fc6-a508-0e8b8b141b8d"
+role = "assistant"
+sequence_hint = 377
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Swim lanes — actor boundaries and system boundaries`\n**Type:** Wiki\n\n```markdown\nSwim lanes are horizontal lanes within a layer of the \nEvent Model timeline that separate different actors or \nsystems. They appear in two layers and mean different \nthings in each.\n\n## Swim Lanes at the UI/IO Layer\n\nAt the UI/IO boundary layer, swim lanes separate \nactors and personas — the different kinds of things \nthat can initiate commands or receive projections.\n\nCommon lanes at this layer:\n\n- **Generic user** — the standard human interacting \n  with the system through its primary interface\n- **Admin** — a privileged user with access to \n  capabilities unavailable to generic users\n- **REST API consumer** — an external system or \n  developer accessing the system programmatically\n- **External processor** — an automated system \n  or service that interacts with the boundary\n- **Scheduled process** — a time-triggered \n  automation that issues commands or receives \n  projections on a schedule\n- **AI agent** — an AI system acting as an actor \n  at the boundary, issuing commands or consuming \n  projections\n\nThe lane a slice occupies at the UI/IO layer \ndefines who can participate in that slice. A \ncommand slice in the admin lane is only \ntriggerable by an admin. A projection slice in \nthe API consumer lane is only consumed by API \nconsumers. The lane makes access and participation \nexplicit in the model rather than implicit in \nimplementation.\n\n**Why this matters**\n\nWithout swim lanes, the model shows what the system \ndoes but not who can do it. Two interactions that \nlook identical in structure may have completely \ndifferent access requirements. Swim lanes make \nthose requirements visible at design time — before \nimplementation — where they are cheap to reason \nabout and easy to change.\n\n## Swim Lanes at the Event Layer\n\nAt the event layer, swim lanes separate systems \nwithin your controlled domain. When a model spans \nmultiple systems you own or build, each system \ngets a lane showing which events it owns and \nproduces.\n\nThese are internal boundaries — all systems in \nthese lanes are within your domain, systems you \ncontrol, build, or govern. The lane is not an \nexternal boundary. It is an ownership boundary \nwithin your own architecture.\n\nCommon reasons for event layer swim lanes:\n\n- **Microservices** — each service owns specific \n  event types. The lane shows which service \n  produces which events.\n- **Bounded contexts** — in Domain Driven Design \n  terms, different bounded contexts produce \n  different events. The lane shows context \n  ownership.\n- **Separate deployable systems** — systems that \n  are built and deployed independently but \n  participate in the same overall model.\n\n**Why this matters**\n\nWhen a model spans multiple systems, knowing which \nsystem owns which events is essential for \nimplementation planning. A command slice that \ncrosses system boundaries — a command in one \nsystem producing an event owned by another — is \na design decision with significant implications. \nSwim lanes make those crossings visible.\n\n## The Distinction\n\nThe key distinction to maintain:\n\n| Layer | Swim lane separates | Nature of boundary |\n|-------|--------------------|--------------------|\n| UI/IO | Actors and personas | Access and participation |\n| Event | Systems and services | Ownership and deployment |\n\nA swim lane at the UI/IO layer answers: who can \ndo this?\n\nA swim lane at the event layer answers: which \nsystem owns this?\n\nConflating the two leads to models that are harder \nto read and reason about. Keep the distinction \nexplicit.\n\n## When to Add Swim Lanes\n\nSwim lanes add clarity when the model has genuine \ndistinctions to express. They add noise when \napplied uniformly without meaningful distinction.\n\nAdd UI/IO swim lanes when:\n- Different actors have meaningfully different \n  access to slices\n- The model spans human and automated actors\n- API access is a distinct concern from UI access\n\nAdd event layer swim lanes when:\n- The model spans multiple systems you own\n- Ownership of events is a meaningful design \n  concern\n- Deployment boundaries matter to the design\n\nA simple model with one actor type and one system \ndoes not need swim lanes. A complex model spanning \nmultiple actor types and multiple systems needs \nthem to remain readable.\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [The UI/IO boundary layer](https://talkyard.ivanthegeek.com/-87/the-ui-io-boundary-layer)\n- [Slice patterns — the two fundamentals and how they compose](https://talkyard.ivanthegeek.com/-88/slice-patterns-the-two-fundamentals-and-how-they-compose)\n- NEXUS → Paths as first-class artifacts\n```\n\n---\n\nNote: I used -85, -87, -88 for previous wikis — verify before posting. Create and let me know when done."
+

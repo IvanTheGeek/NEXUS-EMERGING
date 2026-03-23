@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-7a15-a0cf-797738cab773"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-7cf2-b2c3-eab707a84fb3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T00:52:48.650142Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "2ce05f09d68088eeab523bf8f01b27e878f1702327dfae0e6f7d4ccb680f72d3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac08-1ff4-77ea-9a8a-40f3a6bd8b17"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac08-1ff4-77ea-9a8a-40f3a6bd8b17"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac08-1ff4-77ea-9a8a-40f3a6bd8b17"
+role = "assistant"
+sequence_hint = 373
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `The UI/IO boundary layer`\n**Type:** Wiki\n\n```markdown\nThe UI/IO boundary layer is the outermost layer of an \nEvent Model. It is where external signals originate \nand where projections are consumed. It is the boundary \nbetween the system and everything outside it.\n\n## What This Layer Actually Is\n\nColloquially this layer is called \"UI\" or \"screens.\" \nThese terms are common and accepted but they understate \nwhat this layer represents. Any actor or signal can \noccupy this layer:\n\n- A human clicking a button or filling a form\n- A command line entry\n- A POST to a REST API\n- A message from an external system or processor\n- A scheduled or automated process\n- An AI agent issuing an instruction\n- Any IO boundary between the system and the outside \n  world\n\nThe layer is not the interface. It is the boundary. \nThe distinction matters because it determines what \nbelongs here — not just human-facing screens, but \nevery point where something external communicates \nwith the system or receives communication from it.\n\n## The IO Perspective\n\nNEXUS treats this layer explicitly as the IO boundary \nof the system. This is a deliberate extension of Adam \nDymetrik's Event Modeling methodology.\n\nIn conventional Event Modeling the top layer is \nprimarily understood as the user interface — screens, \ninteractions, the human experience. NEXUS broadens \nthis to include all external communication: inbound \nsignals that trigger commands and outbound projections \nthat inform external consumers.\n\nThis has a specific implication for external events. \nRather than distinguishing internal and external events \nat the event layer, NEXUS places the external boundary \nhere. External signals — from other systems, third-party \nservices, external processors — enter through this \nboundary layer, trigger commands, and those commands \nproduce internal events. The event layer remains clean \nand fully owned. There are no external events in a \nNEXUS system — only external signals that cross the \nboundary and become internal commands.\n\n## What Happens at This Layer\n\nTwo things happen at the UI/IO boundary:\n\n**Initiation** — something external decides to act. \nA human makes a decision. A process reaches a \ntrigger condition. An external system sends a \nsignal. That decision or signal becomes a command \ndirected at the system. The boundary layer is where \nthe decision happens — not inside the system, but \nat its edge.\n\n**Reception** — a projection produces derived state \nand that state is consumed at the boundary. A human \nreads a screen. An API consumer receives a response. \nAn external processor receives an updated state. \nThe boundary layer is where projections land and \nbecome useful.\n\n## Relationship to Commands and Projections\n\nThe boundary layer connects to the triad in a \nspecific direction:\n\n- **Boundary → Command** — initiation flows inward. \n  Something at the boundary triggers a command that \n  enters the system.\n- **Projection → Boundary** — reception flows \n  outward. A projection produces state that crosses \n  the boundary to a consumer.\n\nThe boundary layer does not produce events directly. \nIt produces commands. Commands produce events. This \nindirection is intentional — it keeps the event layer \nclean and ensures every fact recorded in the system \npassed through a command that could validate, \ntransform, and own it.\n\n## Swim Lanes at the UI/IO Layer\n\nSwim lanes at this layer separate different actors \nand personas horizontally. Each lane represents a \ndifferent kind of thing that can initiate commands \nor receive projections:\n\n- Generic user\n- Admin or privileged user\n- REST API consumer\n- External processor or service\n- Scheduled or automated process\n- AI agent\n\nSwim lanes make it explicit which actors participate \nin which slices of the model. A command slice in the \nadmin lane is only triggerable by an admin. A \nprojection slice in the API lane is only consumed \nby API consumers. The lane is the actor's row in \nthe timeline.\n\n*See: Swim lanes — actor boundaries and system \nboundaries.*\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [The Command / Event / Projection triad](https://talkyard.ivanthegeek.com/-86/the-command-event-projection-triad)\n- NEXUS → Slice patterns — the two fundamentals \n  and how they compose\n- NEXUS → Swim lanes — actor boundaries and system \n  boundaries\n```\n\n---\n\nNote: I used -85 for Event Modeling and -86 for the triad — verify both before posting. Create and let me know when done."
+

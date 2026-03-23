@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-7984-a4c0-d91de66e1bea"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-75f2-aaba-fa045211ad18"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T17:25:15.417742Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b98d604f93ced4f5d5d1287ae14ead40a785c22bd6719f7c47725c7b393612be"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019caa6e-7c78-7955-86a3-be103c1afbe6"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019caa6e-7c78-7955-86a3-be103c1afbe6"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019caa6e-7c78-7955-86a3-be103c1afbe6"
+role = "assistant"
+sequence_hint = 297
+
+[[body.segments]]
+kind = "plain_text"
+text = "**LOGOS → Requirements**\n**Title:** `Event-sourced storage as the foundation — current state is always a projection`\n**Type:** Problem\n**Status:** New\n\n```markdown\nLOGOS must be built on an event-sourced storage model at the \nfoundation. This is an architectural requirement, not a feature. \nEvery capability that makes LOGOS meaningfully different from a \nconventional forum — time travel, full history, audit, revert, \nAI training corpus integrity, import provenance — is a natural \nconsequence of this foundation. Without it, those capabilities \nare bolted on at best.\n\n## Why It's Needed\n\nConventional forum software stores current state. When something \nchanges, the previous state is overwritten. History, if available \nat all, is a secondary concern implemented as an afterthought. \nTalkyard is a clear example — revision numbers are tracked \ninternally but history is not accessible, because history was \nnever the primary model.\n\nLOGOS treats knowledge accumulation as a first-class design \nrequirement. That requires a storage model where accumulation is \nthe default behavior, not an add-on.\n\n## The Requirement\n\nEvery action in LOGOS is an immutable timestamped event appended \nto an event log. Nothing is overwritten. Nothing is deleted — \nonly superseded by subsequent events. Current state of any entity \n— a topic, a post, a category, a user's understanding — is always \nderived by projecting forward from the events that shaped it.\n\nThis means:\n\n- **Time travel** is possible — reconstruct state at any point \n  in history\n- **Audit** is complete — every change has an author, timestamp, \n  and reason\n- **Revert** is safe — restoring previous state is a new event, \n  not a destructive operation\n- **Import** preserves provenance — imported conversations carry \n  their original event timestamps and remain traceable to their \n  source\n- **AI training corpus** is honest — the corpus reflects actual \n  history, not a sanitized current snapshot\n\n## The GIT Analogy\n\nGIT manages code this way. Every commit is an immutable event. \nCurrent state is the result of applying all commits in sequence. \nYou can check out any commit and see the full state of the \ncodebase at that moment. Branches, merges, and reverts are all \nevents — nothing is lost.\n\nLOGOS applies this model to knowledge rather than code. The \ncommit history of a requirement topic is as important as the \ncurrent state of it. The sequence of understanding matters, \nnot just the destination.\n\n## Relationship to Other Requirements\n\nThis is the foundation requirement. The following are capabilities \nthat fall out of it naturally:\n\n- Event-sourced editing with full revision history\n- Full edit history visible on all content types\n- Chat import as provenance infrastructure\n- AI training corpus integrity\n\n## Acceptance\n\nAll user actions — creating, editing, moving, tagging, importing \n— produce immutable events in the event log. No action overwrites \na previous state. Current state of any entity can be derived by \nreplaying its events from any point in time. The event log is \nexportable in full.\n\n## Sources\n\n- [LOGOS → Requirements → Event-sourced editing with full revision history](https://talkyard.ivanthegeek.com/-73/event-sourced-editing-with-full-revision-history) (capability that depends on this foundation)\n- [LOGOS → Talkyard Limitations → Wiki edit history is not accessible](https://talkyard.ivanthegeek.com/-60/wiki-edit-history-is-not-accessible) (concrete example of what's missing without this foundation)\n```\n\n---\n\nNote: I used the URL for the revision history topic from earlier in the session. If that's not the correct URL double check it before posting. Create that and let me know when done."
+

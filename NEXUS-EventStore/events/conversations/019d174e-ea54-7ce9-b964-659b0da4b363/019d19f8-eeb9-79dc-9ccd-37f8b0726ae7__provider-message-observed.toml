@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-79dc-9ccd-37f8b0726ae7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea6e-7acb-a74f-5082d52158c4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T02:36:18.164301Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "e264630dc83a95cfc7292dd1bd29883033ccfcb472799eff4870eb1fd7560cde"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cac66-d41d-77c9-b914-c91f6a5c6dae"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cac66-d41d-77c9-b914-c91f6a5c6dae"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cac66-d41d-77c9-b914-c91f6a5c6dae"
+role = "assistant"
+sequence_hint = 403
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS category (top level)**\n**Title:** `Penpot as dual source of truth — Event Model and UI`\n**Type:** Wiki\n\n```markdown\nPenpot serves two distinct roles in NEXUS, and \nunderstanding both is essential to understanding \nwhy it was chosen and what it enables. In both \nroles, Penpot is not a reference artifact — it \nis the authoritative source of truth.\n\n## Role One — Event Model Authoring\n\nThe Event Model is always a timeline. Penpot is \nwhere that timeline is drawn.\n\nThe left-to-right temporal layout, the swim lanes \nseparating actors and systems, the command and \nevent and projection elements, the slice \nconnections — all of it expressed as a visual \nartifact in Penpot. The model is not a diagram \nof the system. It is the design of the system. \nThe diagram and the design are the same thing.\n\nThe Event Model lives in Penpot. The link to it \nlives in LOGOS. The conversations that shaped it \nlive in LOGOS alongside that link. The Penpot \nfile is authoritative — if the Penpot model and \nany other description of the system disagree, \nthe Penpot model is correct.\n\n## Role Two — UI Screen Design and Path Documentation\n\nUI screens are designed in Penpot. Each screen \nis a design artifact representing exactly what \nthe UI looks like at a specific point in a \nspecific path.\n\nEach path is documented as a Penpot prototype — \na linear sequence of screens connected by \nprototype links, with one clickable action per \nscreen. The one action this path takes at this \nstep. The example data visible in the UI as it \nwould appear with real values.\n\nFollowing the prototype is walking the path. \nThe prototype is simultaneously:\n\n- The visual specification of what the UI looks \n  like\n- The behavioral specification of what happens \n  at each step\n- The example data carrier — real values visible \n  in each screen\n- The test case — the path itself as a scenario\n\n## Closing the Design-to-Implementation Gap\n\nThe conventional design-to-development process \nhas a structural gap. A designer creates screens \nin a design tool. A developer looks at those \nscreens and recreates them in code. Two sources \nof truth exist from that moment — the design \nand the implementation. They begin drifting \nimmediately. Every UI change requires updating \nboth. The design is aspirational. The code is \nwhat actually runs.\n\nPenpot exports SVG. SVG is a first-class format \nfor web applications. The Penpot screen design \ncan be the actual UI consumed by the application \n— the SVG output used directly rather than \nrecreated by a developer.\n\nWhen this is the case:\n\n- There is one source of truth — the Penpot file\n- Design changes propagate to the UI directly\n- The developer wires behavior to the design \n  rather than recreating the design in code\n- The gap between design and implementation \n  structurally cannot exist\n\nThe design is not aspirational. It is \nauthoritative. What Penpot shows is what \nthe application renders.\n\n## The Combined Picture\n\nPenpot holds both sources of truth simultaneously:\n\n**Event Model** — the behavioral source of truth. \nWhat the system does. What commands exist, what \nevents they produce, what projections consume \nthem, how actors interact with the boundary. \nThe complete behavioral design of the system.\n\n**UI screens** — the visual source of truth. \nWhat the system looks like. The exact appearance \nof every screen at every point in every path, \nwith example data showing real values.\n\nBoth live in the same tool. Both are authoritative. \nNeither is documentation after the fact.\n\nCombined with AI implementation this produces a \ncomplete picture: the human designs behavior \nin the Event Model and appearance in Penpot \nscreens. AI wires the two together — binding \nSVG elements to commands and projections from \nthe model. The human designs. AI implements \nthe connection.\n\n## Why Penpot Specifically\n\nPenpot is open source and self-hostable. This \nis not incidental — it is a requirement of any \ntool in the NEXUS ecosystem. You own your \ndesigns. No vendor can change pricing, revoke \naccess, or alter export formats in ways that \nbreak the pipeline.\n\nPenpot's SVG export is clean and standard. \nThe export path from design to application \nis not dependent on proprietary formats or \nvendor-specific tooling.\n\nPenpot supports prototyping natively — the \nmechanism used for path documentation. Screens \nare connected by prototype links that represent \nthe one action this path takes at this step. \nThe prototype capability is not an add-on — \nit is core to how Penpot works.\n\n## See Also\n\n- [Event Modeling as the design foundation](https://talkyard.ivanthegeek.com/-85/event-modeling-as-the-design-foundation)\n- [Paths as first-class artifacts](https://talkyard.ivanthegeek.com/-90/paths-as-first-class-artifacts)\n- [AI-assisted implementation](https://talkyard.ivanthegeek.com/-92/ai-assisted-implementation)\n- NEXUS → Tools and how they fit\n- NEXUS → Insights → Penpot SVG as live UI — \n  closing the design-to-implementation gap\n```\n\n---\n\nNote: I used -85, -90, -92 for previous wikis — verify before posting. Create and let me know when done."
+

@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eecd-798e-9f76-945565d69ae7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+conversation_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+message_id = "019d174e-ea90-79cc-9332-2ee590d5a30e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T03:19:18.360061Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "3e138dc7ba7dacacfdc70d7118b3ab82fed38c2eadc15a54a66b2a0aaf4623b6"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfef4-5b6b-7c9c-b4fa-71e636d731cf"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+message_native_id = "019cfef4-5b6b-7c9c-b4fa-71e636d731cf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfef4-5b6b-7c9c-b4fa-71e636d731cf"
+role = "assistant"
+sequence_hint = 8
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is saying that using Forgejo LFS is trying to force Forgejo to do too much - it's not the right tool for binary/attachment storage. He's right - Forgejo/git is for text/structured data, and a proper object store (like MinIO) is the better fit for attachments. Let me confirm his instinct and keep it simple."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Agreed. Forgejo is a git host — keep it doing that one thing well.\n\nMinIO on your homelab is the obvious fit. Attachments go there, event records just store the object key/URL. Clean separation, each tool doing its job."
+

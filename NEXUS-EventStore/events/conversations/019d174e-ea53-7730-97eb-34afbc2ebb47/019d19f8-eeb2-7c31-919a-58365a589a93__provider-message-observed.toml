@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-7c31-919a-58365a589a93"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-71fb-9779-d7edaa3673f8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:27:36.3779Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "16d8c8bf017c8ef398769d0d7f59db72c1ab6c92a2effd1288d5422d68d3a2b5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a926d-a0f3-76e0-9912-3886b9b68b26"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a926d-a0f3-76e0-9912-3886b9b68b26"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a926d-a0f3-76e0-9912-3886b9b68b26"
+role = "assistant"
+sequence_hint = 54
+
+[[body.segments]]
+kind = "reasoning"
+text = "The health check works perfectly! The SSE endpoint is returning a 405 (Method Not Allowed) because `curl -I` sends a HEAD request, but SSE endpoints only accept GET. Let me test with GET instead to see if the auth is working."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect! Health check works! Let's test SSE with GET to see auth:\n\n```bash\n# Test SSE with GET (should require Bearer token)\ncurl https://mcp.nexus.ivanthegeek.com/sse/events\n\n# Should return \"Unauthorized\" message\n```\n\nShow me the output. Then we'll generate an API key to test full functionality.\n\n---\n\n**Token Usage:**\n- Last response: ~89 tokens\n- Session total: 79,893 tokens used\n- Remaining: 110,107 tokens (57.9% available)"
+

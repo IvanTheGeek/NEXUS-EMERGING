@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-713d-8414-cea8725c76ab"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-79dd-b5a4-971ce1dbcfdf"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:38:51.599709Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "6c92a7b1164ebebc6d33f0a11fd6dbf6a1b76c46672a9da5df82c234f44fb111"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9277-efa7-747d-a951-54d99b04c436"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a9277-efa7-747d-a951-54d99b04c436"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9277-efa7-747d-a951-54d99b04c436"
+role = "assistant"
+sequence_hint = 76
+
+[[body.segments]]
+kind = "reasoning"
+text = "The binary location is wrong. Let me check where the binary actually is. From earlier in the conversation, I saw it was in /home/linux/RiderProjects/FnMCP.IvanTheGeek/bin/publish_single/nexus, not in the FnMCP.Nexus directory.\n\nLet me find the correct path."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Let me find the binary:\n\n```bash\nfind /home/linux -name \"nexus\" -type f -executable 2>/dev/null | grep -v \".git\"\n```\n\nRun this to find where the binary actually is. Then we'll generate the API key.\n\n---\n\n**Token Usage:**\n- Last response: ~59 tokens\n- Session total: 81,652 tokens used\n- Remaining: 108,348 tokens (57.0% available)"
+

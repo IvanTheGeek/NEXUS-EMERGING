@@ -66,6 +66,39 @@ module ProviderAdapters =
         let compactJson (node: JsonNode) =
             if isNull node then String.Empty else node.ToJsonString(jsonOptions)
 
+        let tryPropertyPath (path: string list) (node: JsonNode) =
+            (Some node, path)
+            ||> List.fold (fun currentNode pathPart ->
+                currentNode |> Option.bind (tryProperty pathPart))
+
+        let tryStringProperty (name: string) (node: JsonNode) =
+            tryProperty name node |> Option.bind tryString
+
+    let private tryParseJsonNodeFromText (value: string) =
+        try
+            JsonNode.Parse(value) |> Some
+        with _ ->
+            None
+
+    let private normalizeTextCandidate (value: string) =
+        let normalized = value.Trim()
+
+        if String.IsNullOrWhiteSpace(normalized) || normalized = "\"\"" || normalized = "null" then
+            None
+        else
+            Some normalized
+
+    let private firstNonBlank (values: string option list) =
+        values |> List.tryPick (Option.bind normalizeTextCandidate)
+
+    let private joinNonBlank (values: string list) =
+        values
+        |> List.choose normalizeTextCandidate
+        |> List.distinct
+        |> function
+            | [] -> None
+            | cleaned -> cleaned |> String.concat "\n" |> Some
+
     let private messageRoleFromText (value: string) =
         match value.Trim().ToLowerInvariant() with
         | "human"
@@ -78,12 +111,25 @@ module ProviderAdapters =
     let private messageSegmentKindFromText (value: string) =
         match value.Trim().ToLowerInvariant() with
         | "text" -> PlainText
+        | "text/markdown" -> Markdown
         | "markdown" -> Markdown
         | "quote" -> Quote
+        | "tether_quote" -> Quote
         | "code" -> Code
+        | "code_block" -> Code
+        | "json_block" -> Code
+        | "execution_output" -> Code
+        | "thinking"
         | "reasoning" -> Reasoning
+        | "thoughts"
+        | "reasoning_recap" -> Reasoning
         | "tool_use" -> ToolUse
         | "tool_result" -> ToolResult
+        | "multimodal_text"
+        | "image_asset_pointer"
+        | "audio_asset_pointer"
+        | "audio_transcription"
+        | "real_time_user_audio_video_asset_pointer"
         | "multimodal" -> Multimodal
         | other -> UnknownSegment other
 
@@ -126,6 +172,60 @@ module ProviderAdapters =
         | Some _ -> PayloadMissing
         | None -> PayloadUnknown
 
+    let private claudeArrayTexts propertyName candidateProperties (node: JsonNode) =
+        Json.tryProperty propertyName node
+        |> Option.bind Json.tryArray
+        |> Option.map (fun values ->
+            values
+            |> Seq.choose (fun value ->
+                candidateProperties
+                |> List.tryPick (fun propertyName -> Json.tryStringProperty propertyName value |> Option.bind normalizeTextCandidate))
+            |> Seq.toList)
+        |> Option.defaultValue []
+
+    let private extractClaudeSegmentText segmentType (contentNode: JsonNode) =
+        let textFields =
+            [ "text"; "thinking"; "message"; "content"; "value"; "summary"; "subtitle"; "title" ]
+            |> List.map (fun propertyName -> Json.tryStringProperty propertyName contentNode)
+
+        let displayText =
+            Json.tryPropertyPath [ "display_content"; "text" ] contentNode
+            |> Option.bind Json.tryString
+
+        let summaryTexts = claudeArrayTexts "summaries" [ "summary"; "text" ] contentNode
+        let contentTexts = claudeArrayTexts "content" [ "text"; "summary"; "title"; "subtitle" ] contentNode
+        let richContentTexts = claudeArrayTexts "items" [ "title"; "subtitle"; "text" ] contentNode
+
+        match segmentType |> Option.map (fun (value: string) -> value.Trim().ToLowerInvariant()) with
+        | Some "text" ->
+            firstNonBlank textFields
+        | Some "thinking" ->
+            firstNonBlank [ Json.tryStringProperty "thinking" contentNode; joinNonBlank summaryTexts ]
+        | Some "tool_use" ->
+            firstNonBlank
+                [ Json.tryStringProperty "message" contentNode
+                  displayText
+                  Json.tryStringProperty "name" contentNode |> Option.map (fun name -> $"Tool used: {name}") ]
+        | Some "tool_result" ->
+            firstNonBlank
+                [ joinNonBlank contentTexts
+                  displayText
+                  Json.tryStringProperty "message" contentNode ]
+        | Some "code_block"
+        | Some "json_block"
+        | Some "table"
+        | Some "rich_content"
+        | Some "rich_link"
+        | Some "local_resource" ->
+            firstNonBlank [ firstNonBlank textFields; joinNonBlank contentTexts; joinNonBlank richContentTexts ]
+        | Some "generic_metadata"
+        | Some "webpage_metadata"
+        | Some "knowledge"
+        | Some "web_search_citation"
+        | Some "token_budget" -> None
+        | _ ->
+            firstNonBlank [ firstNonBlank textFields; displayText; joinNonBlank contentTexts; joinNonBlank summaryTexts; joinNonBlank richContentTexts ]
+
     let private parseClaudeSegments (messageNode: JsonNode) =
         let segmentsFromContent =
             Json.tryProperty "content" messageNode
@@ -133,26 +233,20 @@ module ProviderAdapters =
             |> Option.map (fun contentArray ->
                 contentArray
                 |> Seq.choose (fun contentNode ->
-                    let segmentKind =
+                    let rawType =
                         Json.tryProperty "type" contentNode
                         |> Option.bind Json.tryString
+
+                    let segmentKind =
+                        rawType
                         |> Option.map messageSegmentKindFromText
                         |> Option.defaultValue PlainText
 
-                    let explicitText =
-                        [ "text"; "input"; "content"; "value" ]
-                        |> List.tryPick (fun propertyName ->
-                            Json.tryProperty propertyName contentNode |> Option.bind Json.tryString)
-
-                    match explicitText with
-                    | Some text when not (String.IsNullOrWhiteSpace(text)) ->
+                    match extractClaudeSegmentText rawType contentNode with
+                    | Some text ->
                         Some
                             { Kind = segmentKind
                               Text = text }
-                    | _ when Json.compactJson contentNode |> String.IsNullOrWhiteSpace |> not ->
-                        Some
-                            { Kind = segmentKind
-                              Text = Json.compactJson contentNode }
                     | _ -> None)
                 |> Seq.toList)
             |> Option.defaultValue []
@@ -160,7 +254,7 @@ module ProviderAdapters =
         if segmentsFromContent.IsEmpty then
             Json.tryProperty "text" messageNode
             |> Option.bind Json.tryString
-            |> Option.filter (fun text -> not (String.IsNullOrWhiteSpace(text)))
+            |> Option.bind normalizeTextCandidate
             |> Option.map (fun text ->
                 [ { Kind = PlainText
                     Text = text } ])
@@ -267,6 +361,81 @@ module ProviderAdapters =
 
     let private parseChatGptSegments (messageNode: JsonNode) =
         let contentNode = Json.tryProperty "content" messageNode
+        let contentType =
+            contentNode
+            |> Option.bind (Json.tryProperty "content_type")
+            |> Option.bind Json.tryString
+
+        let rec extractChatGptTextFromNode contentType (node: JsonNode) =
+            let directText =
+                [ Json.tryStringProperty "text" node
+                  Json.tryStringProperty "content" node
+                  Json.tryStringProperty "result" node
+                  Json.tryStringProperty "prompt" node
+                  Json.tryStringProperty "caption" node
+                  Json.tryStringProperty "title" node
+                  Json.tryStringProperty "alt" node ]
+                |> firstNonBlank
+
+            let thoughtTexts =
+                Json.tryProperty "thoughts" node
+                |> Option.bind Json.tryArray
+                |> Option.map (fun thoughts ->
+                    thoughts
+                    |> Seq.choose (fun thought ->
+                        [ Json.tryStringProperty "summary" thought
+                          Json.tryStringProperty "content" thought ]
+                        |> List.tryPick (Option.bind normalizeTextCandidate))
+                    |> Seq.toList)
+                |> Option.defaultValue []
+
+            match contentType |> Option.map (fun (value: string) -> value.Trim().ToLowerInvariant()) with
+            | Some "thoughts" ->
+                joinNonBlank thoughtTexts |> Option.orElse directText
+            | Some "reasoning_recap" ->
+                firstNonBlank [ directText; Json.tryStringProperty "content" node ]
+            | Some "audio_transcription" ->
+                directText
+            | Some "image_asset_pointer"
+            | Some "audio_asset_pointer"
+            | Some "real_time_user_audio_video_asset_pointer" -> None
+            | _ ->
+                directText
+
+        let parseChatGptPart (part: JsonNode) =
+            match Json.tryString part with
+            | Some value ->
+                match normalizeTextCandidate value with
+                | Some text ->
+                    Some
+                        { Kind = PlainText
+                          Text = text }
+                | None ->
+                    tryParseJsonNodeFromText value
+                    |> Option.bind (fun parsedNode ->
+                        let parsedContentType = Json.tryStringProperty "content_type" parsedNode
+
+                        extractChatGptTextFromNode parsedContentType parsedNode
+                        |> Option.map (fun text ->
+                            let segmentKind =
+                                parsedContentType
+                                |> Option.map messageSegmentKindFromText
+                                |> Option.defaultValue Multimodal
+
+                            { Kind = segmentKind
+                              Text = text }))
+            | None ->
+                let partContentType = Json.tryStringProperty "content_type" part
+
+                extractChatGptTextFromNode partContentType part
+                |> Option.map (fun text ->
+                    let segmentKind =
+                        partContentType
+                        |> Option.map messageSegmentKindFromText
+                        |> Option.defaultValue Multimodal
+
+                    { Kind = segmentKind
+                      Text = text })
 
         let partsSegments =
             contentNode
@@ -274,38 +443,34 @@ module ProviderAdapters =
             |> Option.bind Json.tryArray
             |> Option.map (fun parts ->
                 parts
-                |> Seq.choose (fun part ->
-                    match Json.tryString part with
-                    | Some value when not (String.IsNullOrWhiteSpace(value)) ->
-                        Some
-                            { Kind = PlainText
-                              Text = value }
-                    | _ ->
-                        let raw = Json.compactJson part
-
-                        if String.IsNullOrWhiteSpace(raw) || raw = "null" then
-                            None
-                        else
-                            Some
-                                { Kind = Multimodal
-                                  Text = raw })
+                |> Seq.choose parseChatGptPart
                 |> Seq.toList)
             |> Option.defaultValue []
 
         if not partsSegments.IsEmpty then
             partsSegments
         else
-            let fallbackText =
-                [ contentNode |> Option.bind (Json.tryProperty "text")
-                  contentNode |> Option.bind (Json.tryProperty "result")
-                  Json.tryProperty "text" messageNode ]
-                |> List.tryPick id
-                |> Option.bind Json.tryString
+            let fallbackSegment =
+                contentNode
+                |> Option.bind (fun node ->
+                    extractChatGptTextFromNode contentType node
+                    |> Option.map (fun text ->
+                        { Kind =
+                            contentType
+                            |> Option.map messageSegmentKindFromText
+                            |> Option.defaultValue PlainText
+                          Text = text }))
+                |> Option.orElseWith (fun () ->
+                    Json.tryProperty "text" messageNode
+                    |> Option.bind Json.tryString
+                    |> Option.bind normalizeTextCandidate
+                    |> Option.map (fun text ->
+                        { Kind = PlainText
+                          Text = text }))
 
-            match fallbackText with
-            | Some value when not (String.IsNullOrWhiteSpace(value)) ->
-                [ { Kind = PlainText
-                    Text = value } ]
+            match fallbackSegment with
+            | Some segment ->
+                [ segment ]
             | _ -> []
 
     let private parseChatGptArtifacts extractedNames (messageNode: JsonNode) =

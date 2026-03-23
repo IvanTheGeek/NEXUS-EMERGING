@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7140-8c9b-d8de39d01c6d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eab7-7778-89b3-17c93958d1de"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T06:13:42.397589Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "ab8ad0483206d73c8d38698e5a7ff4b991172314296b9f06d6263c62942d81e4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfa6d-89fd-7496-a4d2-4112245ced21"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cfa6d-89fd-7496-a4d2-4112245ced21"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfa6d-89fd-7496-a4d2-4112245ced21"
+role = "assistant"
+sequence_hint = 178
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is making a great point about separating the high-volume event data from the relatively static model/spec files. Let me think through this clearly."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Separate repos is the killer argument. The model changes occasionally — maybe daily during active development. Events could be thousands per hour in production. Mixing them means git history is flooded with event commits, making model change history unreadable.\n\nSeparate `events/` folder wins:\n\n```\ntruth-graph/\n  laundrylog/\n    atlas/\n      business.emd/\n        SetLocation_019.../\n          SetLocation_019....toml\n        LogExpense_019.../\n          LogExpense_019....toml\n    forge/\n      ...\n    paxus/\n      ...\n    events/                              # separate concern, could be separate repo\n      LocationSet/\n        019...7a.event.toml\n        019...7b.event.toml\n        019...7c.event.toml\n      LaundryExpenseLogged/\n        019...8a.event.toml\n        019...8b.event.toml\n      AppOpened/\n        019...6a.event.toml\n```\n\nEvents organized by type (folder = stream), instances as UUIDv7-named files within. The stream is the folder, time-ordering comes from the UUIDv7 filenames.\n\nBenefits:\n- **Separate repos**: `laundrylog-model` and `laundrylog-events`, different velocity, different retention policies\n- **Model git history stays clean**: only spec changes, easy to review, bisect, blame\n- **Events can be archived/pruned independently**: old events can be moved to cold storage without touching the model\n- **Different backup strategies**: model is small/precious, events are large/appendable\n- **Schema validation**: graph builder reads `[[event]]` fields from model, validates event files against it\n\nThe graph builder just needs to know where both roots are. Point it at the model path and the events path, it connects them through event type names."
+

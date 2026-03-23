@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb3-7a46-a6ae-b3b1ef28dc2e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea56-7184-875a-5017b0ab2ca5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T19:55:18.642869Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "272d6ed889d27fc79867819101a519d14816652f57ca0a6b982d677d75371fe3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca5d1-adfb-76d4-a3ae-6d5f6396df5a"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca5d1-adfb-76d4-a3ae-6d5f6396df5a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca5d1-adfb-76d4-a3ae-6d5f6396df5a"
+role = "assistant"
+sequence_hint = 166
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good thinking on both counts.\n\n**Talkyard's tag system for organization within THE FABRIC:**\n\nSince you can't go deeper than one subcategory level, tags become the organizational layer *within* a category. In THE FABRIC you could tag topics with:\n\n- `import-pipeline` — anything related to chat import\n- `structure` — forum organization decisions\n- `talkyard-api` — API integration topics\n- `knowledge-base` — curation and retrieval topics\n- `ai-integration` — connection to PRIVATE AI\n\nTags in Talkyard are flat and universal across the forum, but filtering by tag within a category effectively creates virtual subcategories. The limitation is they aren't as visually obvious as real subcategories.\n\n**For your own forum — documenting this limitation:**\n\nThe core architectural decision your forum needs to make is **unlimited nesting depth** for categories. This is a first-class requirement, not an afterthought. Talkyard chose simplicity over depth. Your forum should explicitly support:\n\n```\nCategory\n  └── Subcategory\n        └── Sub-subcategory\n              └── (as deep as needed)\n```\n\nWith tags as an *additional* organizational dimension, not a workaround for missing depth.\n\nShould I create a wiki post capturing this as a known Talkyard limitation and a requirement for your custom forum? That fits perfectly in THE FABRIC under a `talkyard-limitations` tag."
+

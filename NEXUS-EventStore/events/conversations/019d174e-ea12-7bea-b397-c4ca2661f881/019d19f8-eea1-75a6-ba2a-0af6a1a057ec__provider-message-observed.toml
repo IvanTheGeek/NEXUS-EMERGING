@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-eea1-75a6-ba2a-0af6a1a057ec"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+conversation_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+message_id = "019d174e-ea12-74ac-a6b0-c9e7e4ffea34"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T14:05:53.179811Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "fda7a35c5a35e2be1fba3ed2e265cdae69ea3edcd4e88cd50cddcafc863c855d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7861-aa54-742d-967b-55463e56cc20"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+message_native_id = "019a7861-aa54-742d-967b-55463e56cc20"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7861-aa54-742d-967b-55463e56cc20"
+role = "assistant"
+sequence_hint = 38
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user has completed Phase 6 and is asking me to \"enhance nexus\" - this is the command that triggers automatic extraction and updates. According to the user's preferences and memory, \"enhance nexus\" triggers automatic extraction and updates.\n\nLet me capture the key learnings and decisions from this conversation:\n\n1. Token bar calculation recurring issue - fixed by adding formula to bootstrap files\n2. Bootstrap pattern now requires token calculation as standard component\n3. User preferences updated with token calculation\n4. Both nexus-bootstrap.md and perdiem-bootstrap.md created with token sections\n5. Documentation guides updated to include token calculation requirement\n6. Phase 6 completed - rename to FnMCP.Nexus and bootstrap files implemented\n\nI should create multiple events capturing different aspects:\n- The token calculation fix (comprehensive solution)\n- Bootstrap pattern update (framework insight)\n- Phase 6 completion (session state)\n- Any other learnings\n\nLet me use the enhance_nexus tool to create these events."
+
+[[body.segments]]
+kind = "tool_use"
+text = "enhance_nexus"
+
+[[body.segments]]
+kind = "tool_result"
+text = "✓ Enhanced Nexus: Created 5 events, regenerated 1 projections: timeline"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Good, I've enhanced the nexus with 5 comprehensive events capturing:\n1. Session state for Phase 6 completion\n2. Framework insight on token calculation root cause\n3. Methodology insight on bootstrap pattern evolution\n4. Framework insight on multi-project pattern validation\n5. Design note on offline checklist pattern\n\nNow I should provide a brief summary to the user confirming what was captured."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Nexus enhanced.** Created 5 events capturing:\n\n1. **Phase 6 Complete** - SessionState documenting bootstrap implementation and MCP rename\n2. **Token Calculation Root Cause** - Comprehensive analysis of why issue recurred and dual coverage solution\n3. **Bootstrap Pattern Standard** - Token calculation now required component in all bootstrap files\n4. **Multi-Project Pattern Validated** - PerDiem separation successful, architecture proven\n5. **Offline Checklist Pattern** - New workflow for external tool procedures\n\n**Phase 6 Status:** ✓ Complete\n\n**Next:** Phase 7 (SessionState projections) or LaundryLog F# implementation, whichever you prefer.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [████████░░░░░░░░░░░░] 82,070 / 190,000 tokens (43.2%)\n\nAllocation:\n├─ System Prompts: ~30,000 tokens (15.8%)\n├─ Project Knowledge: ~510 tokens (0.3%)\n├─ Conversation: ~48,510 tokens (25.5%)\n│  ├─ Your messages: ~1,570 tokens\n│  ├─ My responses: ~19,100 tokens\n│  └─ Tool calls: ~27,840 tokens\n└─ This Response: ~3,050 tokens (1.6%)\n\nRemaining: 107,930 tokens (56.8%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

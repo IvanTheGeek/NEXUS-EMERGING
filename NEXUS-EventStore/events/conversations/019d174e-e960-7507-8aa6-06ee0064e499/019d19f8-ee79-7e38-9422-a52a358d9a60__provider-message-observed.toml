@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee79-7e38-9422-a52a358d9a60"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e960-7507-8aa6-06ee0064e499"
+conversation_id = "019d174e-e960-7507-8aa6-06ee0064e499"
+message_id = "019d174e-e994-7a7b-98c3-16160f153d1e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T17:02:28.569723Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7c53f7d1a908249f9ba03917f7836013ad0728640df8cddc0584a6acb3fbc61b"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "bb96fb46-e42e-4bde-a885-4b59d5290fc0"
+conversation_native_id = "bb96fb46-e42e-4bde-a885-4b59d5290fc0"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cce66-6b4b-7b4b-aba6-b7877c032943"
+conversation_native_id = "bb96fb46-e42e-4bde-a885-4b59d5290fc0"
+message_native_id = "019cce66-6b4b-7b4b-aba6-b7877c032943"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cce66-6b4b-7b4b-aba6-b7877c032943"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants a rendered Mermaid diagram, not just the code. I should create an artifact with the Mermaid diagram so it renders visually."
+
+[[body.segments]]
+kind = "plain_text"
+text = "```mermaid\nsequenceDiagram\n    participant U as User\n    participant A as App\n    participant DB as Database\n\n    U->>A: Submit request\n    A->>DB: Query data\n    DB-->>A: Return results\n    A-->>U: Display response\n```\n\nThis is a `.mermaid` file type that should render inline. If it's still showing as code, your client may not support Mermaid rendering. Want me to try an HTML artifact instead?"
+

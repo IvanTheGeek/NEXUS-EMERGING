@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eec4-7165-b962-88bb37a10726"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea81-765c-b664-9a1915058248"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-12-01T15:54:29.147293Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c82d9aac33769969f00d5f1fffe6f46b9c49d7a4102c7184ff921d640af2ceae"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ada9e-e67a-77ee-b66d-97c8285043b2"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019ada9e-e67a-77ee-b66d-97c8285043b2"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ada9e-e67a-77ee-b66d-97c8285043b2"
+role = "assistant"
+sequence_hint = 110
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is describing a multi-fidelity Event Model system. Let me capture this correctly:\n\nThe Event Model is ONE complete timeline with ALL events at ALL fidelities. But the EMViewer filters what you see based on:\n1. Your role/interest\n2. The level of detail you need\n\nSo it's not multiple Event Models - it's one comprehensive model with visibility layers.\n\nThis is brilliant because:\n- Everyone works from the same source of truth\n- Different stakeholders see what matters to them\n- Nothing is hidden, just filtered\n- Can \"zoom in\" to any level of detail\n\nLet me think about fidelities:\n\n**Executive/Business** - Happy path, business outcomes\n- \"Order Placed\" → \"Order Shipped\" → \"Order Delivered\"\n- No UI details, no technical implementation\n\n**UX/Design** - Screen states, user interactions\n- Includes: ScreenLoaded, ButtonClicked, FormValidated, ScreenTransitioned\n- Shows the visual journey\n\n**Domain** - Business logic, rules\n- Includes: PriceCalculated, InventoryChecked, DiscountApplied\n- The \"what\" of business rules\n\n**Technical** - Implementation details\n- Includes: CacheInvalidated, MessageQueued, DatabaseWritten\n- The \"how\" of implementation\n\n**Operations** - Monitoring, debugging\n- Includes: RequestReceived, ResponseSent, ErrorOccurred\n- The \"health\" of the system\n\nAnd each path can be viewed at any fidelity! So:\n- Executive sees: \"User logs laundry expense\"\n- UX sees: \"User taps Location → enters text → taps Machine Type → selects Washer → ...\"\n- Technical sees: \"LocationInputFocused → TextEntered → ValidationTriggered → ...\"\n\nThe timeline is the same, just different visibility.\n\nThis is similar to code folding in an IDE - you can collapse/expand sections based on what you need to see.\n\nLet me capture this understanding."
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is a powerful concept. Let me capture it:\n\n---\n\n## One Timeline, Multiple Lenses\n\n**The Event Model is COMPLETE** - every event at every fidelity, one long timeline.\n\n**EMViewer applies filters** - shows only what the current user/role needs.\n\n```\nFull Timeline: ──●──●──●──●──●──●──●──●──●──●──●──●──●──●──●──●──●──●──\n                 │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\nExecutive:      ──●────────────●────────────────●───────────────────●──\n                  ↑            ↑                ↑                   ↑\n               OrderStarted  Submitted      Processed           Complete\n\nUX:             ──●──●──●──●──●──●────────────●──●──●───────────────●──\n                  ↑  ↑  ↑  ↑  ↑  ↑            ↑  ↑  ↑               ↑\n               Screens, clicks, inputs    Feedback animations    Done\n\nTechnical:      ──●────●────●────●──●──●──●──●────●──●──●──●──●─────●──\n                  ↑    ↑    ↑    ↑  ↑  ↑  ↑  ↑    ↑  ↑  ↑  ↑  ↑     ↑\n               Cache, DB, Queue, API calls, retries, commits    Ack\n```\n\n---\n\n## Fidelity = Visibility Tag\n\nEach event in the model has fidelity tags:\n\n```fsharp\ntype Fidelity =\n    | Executive    // Business outcomes\n    | Domain       // Business rules/logic  \n    | UX           // Screens, interactions\n    | Technical    // Implementation details\n    | Operations   // Monitoring, debugging\n\ntype Event = {\n    Name: string\n    Timestamp: DateTimeOffset\n    Data: obj\n    Fidelities: Fidelity Set  // Can belong to multiple!\n}\n```\n\nAn event like `OrderSubmitted` might be tagged `[Executive; Domain; UX]` - visible to all three.\n\nAn event like `CacheInvalidated` might be tagged `[Technical; Operations]` only.\n\n---\n\n## Use Cases\n\n| Role | Sees | Purpose |\n|------|------|---------|\n| Executive | Business milestones | \"Does this meet our needs?\" |\n| Product | Domain + UX | \"Is the flow right?\" |\n| Designer | UX details | \"Are the interactions correct?\" |\n| New Hire | Domain at their level | \"How do I do my job?\" |\n| Developer | Technical + Domain | \"How do I build this?\" |\n| DevOps | Operations + Technical | \"How do I monitor this?\" |\n\n---\n\n## EMViewer Controls\n\n```\n┌─────────────────────────────────────────────┐\n│  Path: [Happy Path ▼]                       │\n│                                             │\n│  Fidelity: ☑ Executive                      │\n│            ☑ Domain                         │\n│            ☐ UX                             │\n│            ☐ Technical                      │\n│            ☐ Operations                     │\n│                                             │\n│  [▶ Play Path]  [⏸ Pause]  [◀ ▶ Step]      │\n└─────────────────────────────────────────────┘\n```\n\n---\n\n## For LaundryLog\n\nBefore defining events, we should identify which fidelities we need. I'm thinking:\n\n- **Executive**: LaundryExpenseLogged, SessionCompleted\n- **Domain**: LocationSet, MachineTypeSelected, PaymentMethodSelected, PriceCalculated\n- **UX**: ScreenLoaded, ButtonTapped, InputFocused, ValidationShown\n- **Technical**: (later - LocalStorageWritten, SyncAttempted, etc.)\n\nDoes this match your vision? And shall we start mapping the LaundryLog events with their fidelity tags?"
+

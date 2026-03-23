@@ -1,0 +1,90 @@
+schema_version = 1
+event_id = "019d19f8-eeb4-76b0-ba11-721364b868fb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea56-76c4-aa21-cf20b4740afd"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T20:48:34.959858Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "d6c0a37dacdf27050f04d40f5bd042755aa2683c1cea0f39bdb2110d75a61f2c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca600-dc76-70e0-90be-b203ccfe866d"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca600-dc76-70e0-90be-b203ccfe866d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca600-dc76-70e0-90be-b203ccfe866d"
+role = "assistant"
+sequence_hint = 188
+
+[[body.segments]]
+kind = "plain_text"
+text = "Let me draft everything as markdown files."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Talkyard Limitations topic body - the opening post"
+
+[[body.segments]]
+kind = "tool_result"
+text = "File created successfully: /mnt/user-data/outputs/talkyard-limitations-topic-body.md"
+
+[[body.segments]]
+kind = "tool_use"
+text = "Individual limitation posts - one per limitation"
+
+[[body.segments]]
+kind = "tool_result"
+text = "File created successfully: /mnt/user-data/outputs/talkyard-limitations-posts.md"
+
+[[body.segments]]
+kind = "tool_use"
+text = "LOOM Requirements wiki - seed document"
+
+[[body.segments]]
+kind = "tool_result"
+text = "File created successfully: /mnt/user-data/outputs/loom-requirements-wiki.md"
+
+[[body.segments]]
+kind = "tool_use"
+text = "Presenting file(s)..."
+
+[[body.segments]]
+kind = "tool_result"
+text = "Presented 3 files"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Here's your placement guide:\n\n**1. Talkyard Limitations Topic**\n- Location: `THE FABRIC → Structure & Organization`\n- Title: `Talkyard Limitations — Observed Facts`\n- Type: Discussion (not wiki — the topic body and each reply are immutable records)\n- Body: paste `talkyard-limitations-topic-body.md`\n- Then add each limitation from `talkyard-limitations-posts.md` as a separate reply, one per limitation — Posts 1 through 5 in order\n- Do NOT convert to wiki — these are facts, not living documents\n\n**2. LOOM Requirements Wiki**\n- Location: `THE FABRIC → Structure & Organization`\n- Title: `LOOM Requirements`\n- Type: Wiki — this is the living document\n- Body: paste `loom-requirements-wiki.md`\n- Pin it alongside the limitations topic\n\n**3. After posting** — go back and add a cross-link in the old `Talkyard Limitations & Custom Forum Requirements` wiki pointing to these new topics, then consider retiring or deleting that old post since it's been superseded by this better structure.\n\nAlso worth creating a LOOM subcategory under DEVELOPMENT now that it has a name — that's where the event model will eventually live."
+

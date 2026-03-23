@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3271-7b33-a178-04b09235dbfd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd5-73fd-8d08-4ce77cf3c3ab"
+conversation_id = "019d174f-2cd5-73fd-8d08-4ce77cf3c3ab"
+message_id = "019d174f-2cd6-78fa-91f3-dbe2473801a7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T14:02:59.1206769Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "b1c8ccfac4ddac92750e63a140936baddc2c67fcbc6ab910f7fea8f594a02b89"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bbfda6-ded8-8328-bd72-921fa7ea6dae"
+conversation_native_id = "69bbfda6-ded8-8328-bd72-921fa7ea6dae"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "cf0cfe34-f5f2-4297-bb43-d66cc43a1ab2"
+conversation_native_id = "69bbfda6-ded8-8328-bd72-921fa7ea6dae"
+message_native_id = "cf0cfe34-f5f2-4297-bb43-d66cc43a1ab2"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "cf0cfe34-f5f2-4297-bb43-d66cc43a1ab2"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 45
+
+[[body.segments]]
+kind = "plain_text"
+text = "Use this as your reusable prompt:\n\n```text\nArchive this chat to GitHub.\n\nRepository: IvanTheGeek/LOGOS-ChatGPT\nBranch: chat\nFormat: TOML\n\nCreate a new file for this archive.\nUse a timestamp-based file path.\n\nInclude only metadata that is actually available in the current chat context.\nDo not invent or guess metadata.\n\nInclude:\n- timestamp\n- repository\n- branch\n- source = \"ChatGPT\"\n- archive_mode = \"manual\"\n- user-provided title\n- user-provided tags\n- summary of the chat\n- limitations section\n- all chat turns currently available in context, in order\n\nFor metadata that is not actually available, explicitly mark it as unavailable in the file:\n- official_chat_id\n- official_chat_title\n- exact_api_payload\n- exact_token_usage\n- hidden_chain_of_thought\n\nUse this TOML structure:\n\n[meta]\ntimestamp = \"<timestamp>\"\nrepository = \"IvanTheGeek/LOGOS-ChatGPT\"\nbranch = \"chat\"\nsource = \"ChatGPT\"\narchive_mode = \"manual\"\ntitle = \"<title>\"\ntags = [\"<tag1>\", \"<tag2>\"]\n\n[availability]\nofficial_chat_id = false\nofficial_chat_title = false\nexact_api_payload = false\nexact_token_usage = false\nhidden_chain_of_thought = false\n\n[summary]\ntext = \"<summary>\"\n\n[limitations]\ntext = \"<what this archive does and does not include>\"\n\n[[turns]]\nrole = \"user\"\ncontent = \"\"\"...\"\"\"\n\n[[turns]]\nrole = \"assistant\"\ncontent = \"\"\"...\"\"\"\n\nTitle: <put title here>\nTags: [<put tags here>]\n```\n\nAnd here is a shorter everyday version:\n\n```text\nArchive this chat to GitHub in IvanTheGeek/LOGOS-ChatGPT on branch chat as a new TOML file.\n\nTitle: <title>\nTags: [<tag1>, <tag2>]\n\nInclude all chat turns currently available in context in order, plus summary, limitations, and only metadata that is actually available. Mark unavailable metadata explicitly as false.\n```\n\nOne refinement I would make for you: add your own manual chat title every time. That gives you something stable and searchable even though the official ChatGPT chat title is not reliably exposed."
+

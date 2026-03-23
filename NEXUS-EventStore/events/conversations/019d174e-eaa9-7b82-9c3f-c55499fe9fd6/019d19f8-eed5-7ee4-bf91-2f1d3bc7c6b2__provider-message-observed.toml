@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7ee4-bf91-2f1d3bc7c6b2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7b31-bf6f-fe013575cc95"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T13:57:41.131913Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "74c963066b97ddfe830d9c74b81faa7967c408eaecb00c481162ad17b26eb3e9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf1c9-a561-7941-8d0b-12a48bcf01b0"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf1c9-a561-7941-8d0b-12a48bcf01b0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf1c9-a561-7941-8d0b-12a48bcf01b0"
+role = "assistant"
+sequence_hint = 124
+
+[[body.segments]]
+kind = "reasoning"
+text = "So the walking skeleton approach - keep it high level. First-time user, only AppOpened in the system. The ViewSlice needs to check what state we're in based on that single event.\n\nThe view would be something like: Given AppOpened, Then show the app is ready and needs location/first expense. Simple."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Right — walking skeleton. First-time user, only AppOpened exists.\n\n**ViewSlice: CheckExpenseHistory**\n\nGiven AppOpened, projector looks for any LaundryExpenseLogged events. Finds none. View tells the app: no previous expenses, need location.\n\n```\nGiven: [AppOpened]\nThen: ExpenseHistory (empty - no prior expenses found)\n```\n\nAt this level, the business person reads: \"App was opened, we checked for previous expenses, there aren't any.\"\n\nThat's the simplest possible ViewSlice — one event in, one view out showing empty state. The 3-hour rule doesn't even come into play yet because there's nothing to check against.\n\nDoes that capture the walking skeleton level, or even simpler?"
+

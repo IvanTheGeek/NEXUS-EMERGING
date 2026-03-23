@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323f-7e60-ba35-6b7032313b98"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb3-76db-a0a7-34287a4d743f"
+conversation_id = "019d174f-2cb3-76db-a0a7-34287a4d743f"
+message_id = "019d174f-2cb7-74e1-b0bb-3726daad252e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T04:22:07.1452069Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "d89a11013a38f0d7ae6f721d98c775089722eab639b38677ca2cce4f023e22b1"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+conversation_native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "4ee32789-e047-4a30-be89-bc40f84b33fa"
+conversation_native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+message_native_id = "4ee32789-e047-4a30-be89-bc40f84b33fa"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "4ee32789-e047-4a30-be89-bc40f84b33fa"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 333
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is a really good question because it touches the **core mechanics of how Git actually works** — and understanding this will help a lot when you think about **model evolution in Atlas/Nexus**.\n\nLet’s walk through it carefully using your **LaundryLog model** example.\n\n---\n\n# 1. Initial Situation\n\nYou have a repository with the working model.\n\n```text\nmain\n  A --- B --- C\n```\n\nWhere:\n\n- **A** = initial model  \n- **B** = improvements  \n- **C** = released version  \n\nSomeone branches to add a feature.\n\n```text\nmain\n  A --- B --- C\n\nfeature/add-notifications\n              \\\n               D --- E\n```\n\nTheir work happens on the **feature branch**.\n\n---\n\n# 2. Meanwhile the Main Model Advances\n\nYou continue developing the official model and release another version.\n\n```text\nmain\n  A --- B --- C --- F --- G\n\nfeature/add-notifications\n              \\\n               D --- E\n```\n\nNow the feature branch is **behind main**.\n\nThis is very normal.\n\n---\n\n# 3. They Want the Newest Model\n\nNow the developer wants:\n\n- the newest model (`G`)\n- **plus their feature**\n\nThere are two main ways to do this in Git.\n\n---\n\n# 4. Option 1 — Merge (Most Common)\n\nThey merge `main` into their feature branch.\n\n```bash\ngit checkout feature/add-notifications\ngit merge main\n```\n\nResult:\n\n```text\nmain\n  A --- B --- C --- F --- G\n              \\           \\\n               D --- E ---- M\n```\n\n`M` is a **merge commit**.\n\nThe branch now contains:\n\n- the new main model\n- their feature work\n\nIf files conflict, Git asks them to resolve conflicts.\n\n---\n\n# 5. Option 2 — Rebase (Cleaner History)\n\nInstead they can **rebase** their branch onto the new main.\n\n```bash\ngit checkout feature/add-notifications\ngit rebase main\n```\n\nGit takes their commits `D` and `E` and **replays them on top of G**.\n\nResult:\n\n```text\nmain\n  A --- B --- C --- F --- G\n\nfeature/add-notifications\n                       \\\n                        D' --- E'\n```\n\nNotice:\n\n- `D'` and `E'` are **new commits**\n- same changes, different history\n\nThis produces a **cleaner linear history**.\n\n---\n\n# 6. What Happens to Their Feature\n\nNow their branch contains:\n\n```text\nlatest main\n+ their feature\n```\n\nEventually they might merge it back into main.\n\n```bash\ngit checkout main\ngit merge feature/add-notifications\n```\n\nResult:\n\n```text\nmain\n  A --- B --- C --- F --- G --- H\n                                 \\\n                                  D' --- E'\n```\n\nOr if rebased first, Git may do a **fast-forward merge**.\n\n---\n\n# 7. What Happens in Your Atlas Scenario\n\nYour scenario becomes:\n\n```text\nLaundryLog Model\n   main\n\nUser Fork / Feature Branch\n   custom feature\n```\n\nWhen the main model evolves, they can:\n\n**Merge upstream**\n\n```bash\ngit merge upstream/main\n```\n\nor\n\n**Rebase**\n\n```bash\ngit rebase upstream/main\n```\n\nThis keeps them aligned with the latest official model.\n\n---\n\n# 8. Conflicts Are the Key Issue\n\nThe main challenge happens when both branches modify the same part of the model.\n\nExample:\n\nMain changes:\n\n```toml\ncycle_timeout = 45\n```\n\nFeature branch changes:\n\n```toml\ncycle_timeout = 60\n```\n\nGit cannot decide automatically.\n\nIt will show a **merge conflict** and ask the developer to choose.\n\n---\n\n# 9. Why This Matters for Atlas\n\nIn a **file-based model system**, Git becomes the **model evolution engine**.\n\nThe model files might represent:\n\n- slices\n- projections\n- commands\n- invariants\n\nGit manages how those changes combine.\n\nThis is actually a powerful approach because Git is already very good at **versioned graph evolution**.\n\n---\n\n# 10. The Big Insight for Nexus\n\nGit history itself is a **graph of evolution**.\n\nCommits form a DAG (directed acyclic graph).\n\nExample:\n\n```text\nA\n├─ B\n│  └─ C\n└─ D\n```\n\nWhich mirrors the kind of **temporal knowledge graph** you've been describing.\n\n---\n\n# 11. What Developers Actually Do Most Often\n\nIn real workflows, the most common pattern is:\n\n```bash\ngit fetch\ngit rebase origin/main\n```\n\nThat keeps their work **on top of the latest version**.\n\n---\n\n# 12. Your Example Final State\n\nIn your scenario, the developer ends up with:\n\n```text\nLatest LaundryLog model\n+\ntheir custom extension\n```\n\nAnd they can build a **custom artifact** with Forge.\n\nExactly like you described earlier.\n\n---\n\n✅ **So the key idea is this:**\n\n```text\nGit doesn't overwrite branches.\nIt moves them forward by merging or replaying commits.\n```\n\nTheir feature simply becomes **another branch of model evolution**.\n\n---\n\nIf you'd like, the next thing to explore (and it's *very relevant to Atlas*) is something most people don't realize:\n\n**Git itself is basically a temporal graph database**, and understanding that changes how you might design model storage and evolution."
+

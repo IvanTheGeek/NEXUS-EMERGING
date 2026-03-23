@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3269-7793-8dff-9a92b8a726f3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+conversation_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+message_id = "019d174f-2cc6-7abd-be72-8c66b1417d57"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T01:53:53.2504739Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "b8f3c0bd084ecf12695c9826b66a9e4cb39b830f77cda9c32c1f7944f151a5e6"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "471d0a39-026f-47ba-96c3-305dfd1e0b95"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+message_native_id = "471d0a39-026f-47ba-96c3-305dfd1e0b95"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "471d0a39-026f-47ba-96c3-305dfd1e0b95"
+role = "assistant"
+model_name = "gpt-5-mini"
+sequence_hint = 99
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect — let’s map out the **full Nexus Core Graph** in F# types, integrating everything we’ve discussed: nodes, events, projections, transformers, triggers, and signals. This gives you a **type-safe, self-documenting foundation** for the system.  \n\n---\n\n```fsharp\n// -----------------------------------\n// 1. Basic Nodes\n// -----------------------------------\ntype NodeId = string\n\n/// Represents a general graph node (fact, command, projection, etc.)\ntype Node =\n    { Id: NodeId\n      Label: string\n      Properties: Map<string, string> }\n\n// -----------------------------------\n// 2. Events and Projections\n// -----------------------------------\n\n/// Immutable fact representing something that happened\ntype Event =\n    { Node: Node\n      Timestamp: System.DateTime }\n\n/// Derived state / projection for UI, reporting, etc.\ntype Projection =\n    { Node: Node\n      UpdatedAt: System.DateTime }\n\n// -----------------------------------\n// 3. Commands\n// -----------------------------------\n\n/// User or system intent\ntype Command =\n    { Node: Node\n      IssuedAt: System.DateTime }\n\n// -----------------------------------\n// 4. Transformers\n// -----------------------------------\n\n/// Functional mapping from nodes/events to new nodes/events\ntype Transformer =\n    | CommandHandler of id:string * (Command -> Event list)\n    | Projector of id:string * (Event -> Projection list)\n\n// -----------------------------------\n// 5. Triggers\n// -----------------------------------\n\n/// Edge that activates a transformer based on an event\ntype Trigger =\n    { EventNodeId: NodeId\n      TransformerId: string\n      Condition: Event -> bool }  // Optional condition\n\n// -----------------------------------\n// 6. Signals\n// -----------------------------------\n\n/// Carries event data to downstream transformers\ntype Signal =\n    { SourceNodeId: NodeId\n      Payload: Event\n      TargetTransformerIds: string list }\n\n// -----------------------------------\n// 7. Graph Container\n// -----------------------------------\n\n/// Represents the in-memory Nexus Core Graph\ntype NexusGraph =\n    { Nodes: Map<NodeId, Node>\n      Events: Map<NodeId, Event>\n      Projections: Map<NodeId, Projection>\n      Transformers: Map<string, Transformer>\n      Triggers: Trigger list\n      Signals: Signal list }\n\n// -----------------------------------\n// 8. Sample Usage\n// -----------------------------------\n\n// Example: Command -> CommandHandler -> Event -> Projector -> Projection\n\nlet submitTransactionCommand =\n    { Node = { Id = \"cmd1\"; Label = \"SubmitTransaction\"; Properties = Map.empty }\n      IssuedAt = System.DateTime.UtcNow }\n\nlet transactionHandler = \n    CommandHandler (\"txnHandler1\", fun (cmd: Command) ->\n        [ { Node = { Id = \"evt1\"; Label = \"TransactionSubmitted\"; Properties = Map.empty }\n            Timestamp = System.DateTime.UtcNow } ])\n\nlet transactionProjector = \n    Projector (\"proj1\", fun (evt: Event) ->\n        [ { Node = { Id = \"projTxn1\"; Label = \"TransactionProjection\"; Properties = Map.empty }\n            UpdatedAt = System.DateTime.UtcNow } ])\n\nlet triggerForHandler =\n    { EventNodeId = submitTransactionCommand.Node.Id\n      TransformerId = \"txnHandler1\"\n      Condition = fun _ -> true }\n\nlet signalToProjector =\n    { SourceNodeId = \"evt1\"\n      Payload = { Node = { Id = \"evt1\"; Label = \"TransactionSubmitted\"; Properties = Map.empty }\n                  Timestamp = System.DateTime.UtcNow }\n      TargetTransformerIds = [\"proj1\"] }\n```\n\n---\n\n### ✅ How This Maps to Graph Theory\n\n| Concept       | Graph Representation                      |\n|---------------|------------------------------------------|\n| Node          | Node / vertex (fact, command, projection) |\n| Event         | Node (immutable fact)                     |\n| Projection    | Node (derived view)                        |\n| Command       | Node (intent)                              |\n| Transformer   | Meta-node or functional edge               |\n| Trigger       | Edge activating transformer                |\n| Signal        | Edge propagating event data                |\n\n- **Transformers are DUs** distinguishing roles: `CommandHandler` vs `Projector`.  \n- **Triggers and signals** are edges in the graph connecting nodes to transformers and projections.  \n- **Graph container** holds all nodes, edges, transformers, and signals in-memory.  \n\n---\n\nThis structure allows:  \n\n- Incremental loading of events or nodes from files.  \n- Transformers acting deterministically on relevant subgraphs.  \n- Propagation of events/signals to projections and other graphs.  \n- Easy extension: additional transformer types, edge types, or graph partitions.\n\n---\n\nIf you want, I can **draw a diagram showing this F# type mapping visually**, with nodes for commands, events, projections, and edges for triggers/signals — essentially a **Nexus Core Graph diagram in F# terms**.  \n\nDo you want me to do that?"
+

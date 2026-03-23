@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-326b-75ec-8144-01324e9bf456"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cce-7e4e-b875-d01abb80842d"
+conversation_id = "019d174f-2cce-7e4e-b875-d01abb80842d"
+message_id = "019d174f-2cd3-7ef8-b962-97ac5f602cd5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T23:22:39.1033809Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "49f94656fa12fb415d7ffd5ed2ceeb9a280f1ecf50d43a3d1cd8a899c77450d0"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69ba9caf-1cc4-832b-a8bb-a8ec09d9ed4e"
+conversation_native_id = "69ba9caf-1cc4-832b-a8bb-a8ec09d9ed4e"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "6abd1d25-9058-4985-bb44-3c439b907734"
+conversation_native_id = "69ba9caf-1cc4-832b-a8bb-a8ec09d9ed4e"
+message_native_id = "6abd1d25-9058-4985-bb44-3c439b907734"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "6abd1d25-9058-4985-bb44-3c439b907734"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 148
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect—this is exactly the right move. Making the EM ↔ NEXUS mapping explicit *in the canonical flow* will remove a lot of ambiguity.\n\nI’ll give you clean, **copyable blocks** so you can edit them directly.\n\n---\n\n:::writing{variant=\"standard\" id=\"10001\"}\n### 2. Canonical Flow (EM ↔ NEXUS Mapping)\n\n#### Write Side (Command / Fact Creation)\n\nEM terms:\nActor → Command → Event\n\nNEXUS mapping:\nActor ──triggers──► Command ──ResolvesTo──► Fact\n\nCombined:\nActor ──triggers──► Command ──ResolvesTo──► Event (Fact)\n:::\n\n---\n\n:::writing{variant=\"standard\" id=\"10002\"}\n#### Read Side (Projection / Representation)\n\nEM terms:\nEvent → View → Actor\n\nNEXUS mapping:\nFact ──ProjectsTo──► Representation ──Informs──► Actor\n\nCombined:\nEvent (Fact) ──ProjectsTo──► View (Representation) ──Informs──► Actor\n:::\n\n---\n\n:::writing{variant=\"standard\" id=\"10003\"}\n#### Processor / Automation Continuation\n\nEM terms:\nEvent → View → Processor → Command → Event\n\nNEXUS mapping:\nFact ──ProjectsTo──► Representation ──Informs──► Actor (Processor)\nActor (Processor) ──triggers──► Command ──ResolvesTo──► Fact\n\nCombined:\nEvent ──ProjectsTo──► View ──Informs──► Processor\nProcessor ──triggers──► Command ──ResolvesTo──► Event\n:::\n\n---\n\n:::writing{variant=\"standard\" id=\"10004\"}\n#### Unified Loop\n\nEM terms:\nActor → Command → Event → View → Actor\n\nNEXUS mapping:\nActor ──triggers──► Command ──ResolvesTo──► Fact\nFact ──ProjectsTo──► Representation ──Informs──► Actor\n\nCombined loop:\nActor\n  ──triggers──► Command\n  ──ResolvesTo──► Event (Fact)\n  ──ProjectsTo──► View (Representation)\n  ──Informs──► Actor\n:::\n\n---\n\n:::writing{variant=\"standard\" id=\"10005\"}\n#### Notes\n\n- EM uses: Actor, Command, Event, View\n- NEXUS uses: Actor, Command, Fact, Representation\n\n- Event = Fact (immutable result)\n- View = Representation (projected data)\n\n- \"ProjectsTo\" = projection process (Fact → Representation)\n- \"Informs\" = delivery/consumption (Representation → Actor)\n- \"ResolvesTo\" = resolution (Command → Fact)\n- \"triggers\" = initiation (Actor → Command)\n\n- Processors are modeled as Actors in NEXUS\n:::\n\n---\n\nTake your time editing these.  \n\nWhen you send back your corrections, I’ll:\n\n- reconcile terminology\n- propagate changes across the full docs (table, EM doc, F#, TOML)\n- call out any semantic inconsistencies that show up\n\nThis is exactly the right place to tighten things."
+

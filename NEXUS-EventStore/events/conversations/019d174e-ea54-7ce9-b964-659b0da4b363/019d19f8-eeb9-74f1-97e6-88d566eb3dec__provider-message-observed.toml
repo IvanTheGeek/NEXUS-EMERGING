@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-74f1-97e6-88d566eb3dec"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-7ab6-af3a-1877a8e2e918"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T21:08:51.052118Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "23bc65b87a947face41f5cf3570ce2ebad3f749b85ae57cd4c7ff36c22770015"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cab3b-4093-7123-a418-549832e267cd"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019cab3b-4093-7123-a418-549832e267cd"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cab3b-4093-7123-a418-549832e267cd"
+role = "assistant"
+sequence_hint = 345
+
+[[body.segments]]
+kind = "plain_text"
+text = "Both terms are accurate and Adam uses both. The distinction worth understanding:\n\n**Read Model** — describes the *purpose*. It exists to be read. It serves the UI or an API consumer. The name is from the CQRS pattern (Command Query Responsibility Segregation) where reads and writes are separated. It emphasizes the consumer-facing role.\n\n**Projection** — describes the *mechanism*. It is projected from events, the same way a film projector produces an image from frames on a strip. The name emphasizes how it comes to exist — as a derived view of the event history. It is never the source of truth, always a derivation.\n\nThe reason Projection resonates more is probably because it's more honest to the event sourcing philosophy. A Read Model could theoretically be stored and mutated directly — the name doesn't preclude that. A Projection cannot be — by definition it is derived. The name carries the constraint with it.\n\nIn practice within an event sourced system, every read model *is* a projection. So Projection is the more precise term for this context. Read Model is the broader CQRS term that applies whether or not you're doing full event sourcing.\n\nGiven that NEXUS is explicitly event sourced at the foundation, **Projection** is the more accurate and philosophically consistent term. It also reinforces the mental model every time someone reads it — current state is always projected from history, never stored as truth.\n\nMy recommendation: use Projection as the primary term in NEXUS documentation, with a note that Read Model is the equivalent CQRS term they'll encounter in broader literature. That way someone coming from CQRS background recognizes it, but the NEXUS-native term carries the right meaning.\n\nDoes that align with your instinct?"
+

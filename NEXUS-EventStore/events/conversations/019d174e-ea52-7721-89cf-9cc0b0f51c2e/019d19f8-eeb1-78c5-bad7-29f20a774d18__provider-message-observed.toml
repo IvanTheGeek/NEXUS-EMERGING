@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb1-78c5-bad7-29f20a774d18"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea52-7721-89cf-9cc0b0f51c2e"
+conversation_id = "019d174e-ea52-7721-89cf-9cc0b0f51c2e"
+message_id = "019d174e-ea53-7f13-b09c-99e48a818188"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-19T16:44:56.025938Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "9a49f65ec5a397597baa28d043e135702f929f034aac85148d510a5595dd619a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+conversation_native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9cff-c1ee-748a-8e04-af8e6484bd31"
+conversation_native_id = "e35ecbd1-d65f-4237-97e9-59c3387c6baf"
+message_native_id = "019a9cff-c1ee-748a-8e04-af8e6484bd31"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9cff-c1ee-748a-8e04-af8e6484bd31"
+role = "assistant"
+sequence_hint = 43
+
+[[body.segments]]
+kind = "reasoning"
+text = "Great question. This is about where web search fits in the architecture.\n\nLet me think through the options:\n\n**Option 1: Pre-prompt (Your F# code decides)**\n- F# analyzes query\n- Determines if web search needed\n- Performs search\n- Includes results in prompt to SLM\n\n**Option 2: SLM triggers (Model requests search)**\n- SLM receives query\n- Outputs structured request for web search\n- F# executes search\n- Returns results to model for final response\n\n**Option 3: Post-response (Enrichment)**\n- SLM generates response\n- F# detects if search would help\n- Adds web context as validation\n\nThe user's RAG approach suggests pre-prompt makes more sense - the F# orchestration layer handles all external data fetching before the model sees anything.\n\nBut there's a nuance: web search is different from Nexus RAG because:\n- Nexus context: Always relevant (user's own data)\n- Web search: Only sometimes needed (current info, breaking changes, new tools)\n\nSo the question is really about detection: who decides if web search is needed?\n\nArguments for F# deciding:\n- Consistent with RAG pattern\n- SLM doesn't need to learn this meta-skill\n- Simpler model behavior\n- Can use heuristics (keywords like \"latest\", \"current\", dates, library names)\n\nArguments for SLM triggering:\n- Model can reason about what info it lacks\n- More flexible - model decides based on context\n- But requires function-calling capability or structured output parsing\n\nGiven the user's preference for:\n1. Simple, deterministic architecture\n2. SLM focused on domain expertise\n3. F# doing the orchestration\n4. Already established pattern with RAG\n\nI think pre-prompt makes more sense. The F# layer can:\n- Detect query patterns that need current info\n- Perform web search\n- Include results alongside Nexus context\n- Model just reasons with all provided data\n\n\n- Maintains a clean, focused workflow for the language model\n\nMaintaining a straightforward approach ensures the model concentrates solely on generating high-quality responses using the comprehensive context provided."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Pre-prompt preparation** - keeps your architecture consistent.\n\n## Why F# Should Decide\n\nYour established pattern:\n```\nQuery → F# fetches context → Enriched prompt → SLM generates\n```\n\nWeb search is just another context source:\n\n```fsharp\nlet buildPrompt userId query =\n    // 1. Always fetch user context (Nexus)\n    let userContext = nexus.GetRelevantEvents(query, userId)\n    \n    // 2. Detect if web search needed\n    let webContext = \n        if needsWebSearch query then\n            performWebSearch query\n        else\n            None\n    \n    // 3. Build complete prompt\n    let prompt = $\"\"\"\nPast decisions and context:\n{userContext}\n\n{match webContext with\n | Some results -> $\"Current information from web:\\n{results}\"\n | None -> \"\"}\n\nUser query: {query}\n\n[reasoning format instructions...]\n\"\"\"\n    \n    ollama.Generate(prompt)\n```\n\n## Detection Heuristics\n\n```fsharp\nlet needsWebSearch query =\n    let keywords = [\n        \"latest\"; \"current\"; \"recent\"; \"new\"\n        \"breaking\"; \"updated\"; \"version\"\n        \"what's\"; \"2024\"; \"2025\"\n    ]\n    \n    let libraryPatterns = [\n        \"qdrant\"; \"ollama\"; \"fsharp\"; \"dotnet\"\n        // specific tools/libraries\n    ]\n    \n    // Check for temporal indicators\n    let hasTemporal = \n        keywords \n        |> List.exists (fun kw -> \n            query.ToLower().Contains(kw))\n    \n    // Check for library/tool mentions\n    let mentionsLibrary = \n        libraryPatterns\n        |> List.exists (fun lib -> \n            query.ToLower().Contains(lib))\n    \n    hasTemporal || mentionsLibrary\n```\n\n## Example Flows\n\n**Query: \"Should we use Qdrant or pgvector?\"**\n```fsharp\n// F# detects: mentions libraries\nlet webResults = searchWeb(\"Qdrant vs pgvector 2025\")\nlet nexusContext = nexus.Search(\"database vector\")\n\n// Prompt includes both:\n\"\"\"\nYour past database decisions:\n- Chose PostgreSQL for event store\n- Preference for minimal dependencies\n\nCurrent comparison (web search):\n- Qdrant 1.8.0 released with new features...\n- pgvector 0.5.1 now supports HNSW indexes...\n- Benchmarks show...\n\nQuery: Should we use Qdrant or pgvector?\n\"\"\"\n```\n\n**Query: \"Explain F# async workflows\"**\n```fsharp\n// F# detects: no temporal keywords, established topic\n// No web search needed\n\n// Prompt:\n\"\"\"\nYour past F# work:\n- Built async event processing pipeline\n- Used mailbox processors\n\nQuery: Explain F# async workflows\n\"\"\"\n```\n\n## Benefits vs SLM-Triggered\n\n**Pre-prompt (F# decides):**\n- ✅ Model stays focused on domain expertise\n- ✅ Consistent with RAG pattern\n- ✅ Deterministic (testable, predictable)\n- ✅ Works with any model (no function-calling required)\n- ✅ Can cache web results (query hash → cached search)\n\n**SLM-triggered:**\n- ❌ Requires function-calling capability\n- ❌ Model must learn when to search\n- ❌ More complex prompt engineering\n- ❌ Two-stage inference (slower)\n- ❌ Harder to test/debug\n\n## For Testing\n\nWeb search becomes part of test suite:\n\n```yaml\n# tests/current-info-questions.yaml\nsuite_name: \"Current Information Questions\"\ndescription: \"Tests using web search context appropriately\"\n\ntests:\n  - name: \"Library version question\"\n    query: \"What's the latest Ollama version?\"\n    triggers_web_search: true\n    search_query: \"Ollama latest version 2025\"\n    context:\n      - \"User runs Ollama locally\"\n    expected_output:\n      uses_web_context: true\n      mentions_version_number: true\n      \n  - name: \"Timeless question\"\n    query: \"What is event sourcing?\"\n    triggers_web_search: false\n    context: []\n    expected_output:\n      uses_web_context: false\n      correct_definition: true\n```\n\nRunner validates: \"Did F# search when expected?\"\n\n## Refinement Over Time\n\nYou can improve detection logic based on Nexus events:\n\n```fsharp\n// Log search decisions\nnexus.LogEvent {\n    EventType = \"WebSearchDecisionMade\"\n    Query = query\n    TriggeredSearch = didSearch\n    SearchQuery = searchQuery\n    ResultsUseful = null // filled in later by feedback\n}\n\n// Later, analyze patterns\n// \"Queries mentioning 'docker' should trigger search\"\n// \"Queries about 'event sourcing' don't need search\"\n```\n\nMachine learning optional: start with simple heuristics, refine based on logged data.\n\n## Edge Case: Model Indicates Uncertainty\n\nModel can still signal \"I don't know\":\n\n```\nReasoning:\n- Query asks about current Qdrant features\n- Provided context doesn't mention recent updates\n- My training data may be outdated\n\nConfidence: low\nResponse: Based on past context, I'd recommend... but I'm uncertain about current Qdrant capabilities.\n```\n\nYour F# can detect low confidence + certain keywords → retry with web search.\n\n**Still F# orchestrating, not model.**\n\nDoes this fit your architecture vision? Keep SLM simple, F# handles intelligence routing?"
+

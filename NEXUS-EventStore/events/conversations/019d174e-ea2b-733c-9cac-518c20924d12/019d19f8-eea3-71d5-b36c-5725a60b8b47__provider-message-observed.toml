@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea3-71d5-b36c-5725a60b8b47"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+conversation_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+message_id = "019d174e-ea2b-753f-bfd6-fbd5da0cdfd5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-26T23:55:00.813677Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "11693759392a79f4c5b9661ce03c936427b6904015a29212e8b4b2a394bec2d6"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac297-4bb8-7402-be29-835bace15a6d"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+message_native_id = "019ac297-4bb8-7402-be29-835bace15a6d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac297-4bb8-7402-be29-835bace15a6d"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about how git branching works. This is a straightforward technical question that doesn't require any special context from past conversations or any clarification. They want to understand git branching.\n\nGiven their preferences:\n- Be direct and efficient - skip unnecessary preambles\n- They have 20 years of software development experience\n- They work with F# and event sourcing\n\nI should give a clear, technical explanation appropriate for an experienced developer. No need to be overly basic, but I should cover the key concepts clearly.\n\nThis is a general knowledge question, so I don't need to search or check past context."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Git branches are lightweight pointers to commits. Here's how they work:\n\n**Core Mechanics**\n\nA branch is just a reference (stored in `.git/refs/heads/`) pointing to a specific commit SHA. When you create a branch, git creates a new pointer - it doesn't copy any files or commits.\n\n```fsharp\n// Conceptually:\ntype Branch = { Name: string; CommitSHA: string }\ntype HEAD = BranchRef of string | DetachedCommit of string\n```\n\n**HEAD** is a special pointer indicating your current position. Usually it points to a branch (which points to a commit), but can point directly to a commit (detached HEAD state).\n\n**Operations**\n\n- `git branch feature` - creates pointer named \"feature\" at current commit\n- `git checkout feature` - moves HEAD to point to \"feature\" branch\n- `git commit` - creates new commit, updates the branch pointer to new commit, parent is previous commit\n- `git merge` - creates commit with two parents, integrates histories\n\n**The Graph Structure**\n\nCommits form a directed acyclic graph (DAG). Each commit has:\n- Unique SHA\n- Parent commit(s) - zero for initial, one for normal, two+ for merges\n- Snapshot of entire project state\n- Metadata (author, message, timestamp)\n\nBranches don't contain commits - they just reference them. Multiple branches can point to the same commit. When you delete a branch, you're just removing the pointer; commits remain until garbage collected (if unreachable).\n\n**Divergence & Merging**\n\nWhen branches diverge:\n```\nA---B---C (main)\n     \\\n      D---E (feature)\n```\n\nMerging creates a commit with both C and E as parents, combining the changes.\n\nIs there a specific aspect of branching you're working with or trying to understand better?"
+

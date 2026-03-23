@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-7141-9732-352fd8e1a53c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea92-7547-a6fe-da39e0da8b96"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T12:01:50.016733Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "f1a4f9cf4505e6372bd582b404659db22387014a4cb701545f1f92658d15403f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfbac-531a-76bc-a91d-1725b08ab366"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfbac-531a-76bc-a91d-1725b08ab366"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfbac-531a-76bc-a91d-1725b08ab366"
+role = "assistant"
+sequence_hint = 42
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is thinking about this in F# terms — Actor as a discriminated union type where Agent is one of the cases."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Exactly right. Clean F# modeling:\n\n```fsharp\ntype Actor =\n    | Human of HumanActor\n    | Agent of AgentActor\n    | External of ExternalActor  // integration, third-party\n```\n\n## What That Means for NEXUS\n\nActor is still **one primitive** — the DU is the representation. No new node type needed in the graph. The type tag carries the distinction.\n\n```\nActor (primitive)\n  ├── Human    — person, user, operator\n  ├── Agent    — subactor, gears, system-initiated, scoped to parent\n  └── External — integration, third-party system, bot\n```\n\n## The Graph Edge Still Matters\n\nAgent specifically has a **parent relationship** — it operates within another actor's context. Human and External don't necessarily have that.\n\nSo in TOML or graph terms:\n\n```toml\n[actor]\nid = \"...\"\ntype = \"Agent\"\nparent = \"UserActor_ID\"\n```\n\nThe `parent` field is what makes Agent semantically different — not just a label but a structural relationship.\n\n## Keeps NEXUS Tight\n\nOne primitive, typed at the representation layer. The graph builder handles `Agent` differently only in that it resolves the parent edge. Everything else — slices, commands, events — stays uniform.\n\nWorth capturing in the session doc and memory?"
+

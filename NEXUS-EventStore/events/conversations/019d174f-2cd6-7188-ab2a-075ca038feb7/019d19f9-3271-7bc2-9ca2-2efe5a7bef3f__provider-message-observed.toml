@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3271-7bc2-9ca2-2efe5a7bef3f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd6-7188-ab2a-075ca038feb7"
+conversation_id = "019d174f-2cd6-7188-ab2a-075ca038feb7"
+message_id = "019d174f-2cd6-7c10-a838-69d39615784c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T15:47:45.2674629Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "b0286c68a36cf47fc1b60289271e0849903418346aa229f511d97fb1acd68927"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bc1a53-7f3c-8332-939a-4e27ac1a23fb"
+conversation_native_id = "69bc1a53-7f3c-8332-939a-4e27ac1a23fb"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "3f1227dd-b534-400e-9c5b-a901498a7a6a"
+conversation_native_id = "69bc1a53-7f3c-8332-939a-4e27ac1a23fb"
+message_native_id = "3f1227dd-b534-400e-9c5b-a901498a7a6a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "3f1227dd-b534-400e-9c5b-a901498a7a6a"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 7
+
+[[body.segments]]
+kind = "plain_text"
+text = "Short answer: **No — Docker does not natively use TOML for its main configuration formats.**\n\nBut the *why* matters more than the answer, especially for what you're building.\n\n---\n\n# 🐳 Where Docker Uses What\n\n## 1. Docker Compose\n- Uses **YAML** (`docker-compose.yml`)\n\n```yaml\nservices:\n  app:\n    image: myapp\n    ports:\n      - \"8080:80\"\n```\n\n👉 YAML chosen for:\n- readability\n- nesting\n- comments\n\n---\n\n## 2. Docker CLI / Engine APIs\n- Use **JSON**\n\n```json\n{\n  \"Image\": \"nginx\",\n  \"Ports\": [{ \"ContainerPort\": 80 }]\n}\n```\n\n👉 JSON chosen for:\n- machine communication\n- API compatibility\n\n---\n\n## 3. Dockerfile\n- Custom DSL (not JSON/YAML/TOML)\n\n```dockerfile\nFROM node:18\nCOPY . /app\nRUN npm install\n```\n\n---\n\n# ❌ TOML in Docker?\nNot natively supported for:\n\n- `docker-compose`\n- `Dockerfile`\n- Docker Engine config\n\n---\n\n# 🤔 Why NOT TOML?\n\nThis is actually a really important design signal:\n\n### 1. Ecosystem inertia\n- YAML already dominant in infra (Kubernetes, CI/CD, etc.)\n- JSON for APIs\n\n👉 Docker followed the ecosystem, not \"best format\"\n\n---\n\n### 2. YAML handles “infra shapes” better\nYAML supports:\n- anchors\n- references\n- complex nesting\n\nTOML is intentionally simpler → less expressive for infra graphs\n\n---\n\n### 3. Timing\n- Docker Compose (2014 era) → TOML wasn’t widely adopted yet\n- YAML already everywhere\n\n---\n\n# 🧠 But here's the key insight for YOU\n\nEven though Docker doesn’t support TOML…\n\n👉 **YOU CAN STILL USE TOML AS YOUR SOURCE OF TRUTH**\n\nThen compile to YAML/JSON.\n\n---\n\n# 🔥 This matches your FORGE / NEXUS idea perfectly\n\nThink:\n\n```text\nTOML (truth graph / authoring)\n        ↓ transpile\nYAML (docker-compose)\nJSON (runtime / APIs)\n```\n\n---\n\n# ✨ Example Flow\n\n## Your TOML (clean, human)\n```toml\n[service.app]\nimage = \"myapp\"\nport = 8080\n```\n\n## Generated YAML (for Docker)\n```yaml\nservices:\n  app:\n    image: myapp\n    ports:\n      - \"8080:80\"\n```\n\n👉 That’s a **transpiler**, not a manual format choice.\n\n---\n\n# 🧩 Real-world proof this pattern works\n\nEven outside Docker:\n\n- entity[\"software\",\"Cargo\",\"Rust package manager\"] → uses TOML → compiles to build steps\n- entity[\"software\",\"Terraform\",\"infrastructure as code tool\"] → HCL → compiles to execution graph\n- entity[\"software\",\"Kubernetes\",\"container orchestration system\"] → YAML → compiled into internal state\n\n👉 Nobody uses runtime formats as authoring truth.\n\n---\n\n# 💡 The Deeper Principle (very NEXUS-aligned)\n\nDocker configs are:\n\n> **A projection of a system graph into an execution format**\n\nSo:\n- YAML = a *view*\n- JSON = a *transport*\n- TOML = could be your *truth model*\n\n---\n\n# ✅ Bottom Line\n\n- ❌ Docker does NOT support TOML natively  \n- ✅ Docker uses YAML (Compose) and JSON (APIs)  \n- ✅ You *can and should* use TOML upstream and generate Docker configs  \n\n---\n\nIf you want next step, I can:\n\n👉 Design a **TOML schema for your infrastructure graph**  \n👉 And show an F# transpiler that outputs Docker Compose YAML  \n\nThat would plug directly into your ATLAS → FORGE pipeline."
+

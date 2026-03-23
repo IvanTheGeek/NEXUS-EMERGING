@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7f36-a81e-25a3c3d44981"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-769e-8486-04ba631bf978"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T07:19:38.599406Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "422f070680a240b60cc76c25797863c5a2a95a40bc6b1c7fb9aab2f8b2ac0f1d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf05d-3ef9-7017-b925-17cd8a79c479"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf05d-3ef9-7017-b925-17cd8a79c479"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf05d-3ef9-7017-b925-17cd8a79c479"
+role = "assistant"
+sequence_hint = 104
+
+[[body.segments]]
+kind = "reasoning"
+text = "OK so the structure is:\n\n```\ntruth-graph/\n  laundrylog/\n    model/\n      OpenApp_019644a1-b1a0-7000-8000-000000000100/\n        019644a1-b1a0-7000-8000-000000000100_C_OpenApp.toml\n        app-splash-screen.png\n```\n\nLet me create the updated file in the proper directory structure and present it."
+
+[[body.segments]]
+kind = "plain_text"
+text = "So the full structure for OpenApp would be:\n\n```\ntruth-graph/\n  laundrylog/\n    model/\n      OpenApp_019644a1-b1a0-7000-8000-000000000100/\n        019644a1-b1a0-7000-8000-000000000100_C_OpenApp.toml\n        app-splash-screen.png\n```\n\nReady to move to the next slice — CheckSessionStatus ViewSlice. The projector needs to read AppOpened and any LaundryExpenseLogged events, apply the 3-hour rule and first-time check, and produce a SessionStatus view telling the app what to show next.\n\nWhat fields should SessionStatus carry? My thinking:\n\n- `hasActiveSession` (bool) — is there a session within 3 hours\n- `needsLocation` (bool) — does the app need to ask for location\n- `lastExpenseAt` (datetime, optional) — when was the last expense\n\nOr do you see it differently?"
+

@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-731f-85ad-6c6d48f5ceb8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7050-8151-f931e80380ad"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:39:32.364547Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "85b5b138fc3216a1b578d13a4472041bb9d75b6f1048523e15ee2cd7506c5d58"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9278-8b1f-762a-881b-c75a0fa1a131"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a9278-8b1f-762a-881b-c75a0fa1a131"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9278-8b1f-762a-881b-c75a0fa1a131"
+role = "assistant"
+sequence_hint = 78
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user has found the nexus binaries. They're in the RiderProjects/FnMCP.IvanTheGeek directory, not in FnMCP.Nexus. Let me use the correct path to generate the API key."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect! Use the single-file binary:\n\n```bash\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"test\",\"version\":\"1.0\"}}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{\"name\":\"generate_api_key\",\"arguments\":{\"scope\":\"full_access\",\"description\":\"VPS deployment key\"}}}' | /home/linux/RiderProjects/FnMCP.IvanTheGeek/bin/publish_single/nexus /home/linux/Nexus-Data\n```\n\nRun this and show me the API key from the output!\n\n---\n\n**Token Usage:**\n- Last response: ~152 tokens\n- Session total: 81,804 tokens used\n- Remaining: 108,196 tokens (56.9% available)"
+

@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7ae0-924a-e68053c5796f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eab7-75ca-9d8d-e8d580ad1930"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T06:49:45.906899Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "66659413337b4612d1a4b02894bc7eca33e3cfdb52988b93591be881dea5dc71"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfa8e-7e34-7382-b4de-5e763be93cd9"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cfa8e-7e34-7382-b4de-5e763be93cd9"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfa8e-7e34-7382-b4de-5e763be93cd9"
+role = "assistant"
+sequence_hint = 188
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is connecting multiple dots about how PATHs with example data serve multiple purposes across the ecosystem. Let me engage with this insight."
+
+[[body.segments]]
+kind = "plain_text"
+text = "That's the loop closing completely. One data structure — PATHs with example data — serves the entire ecosystem:\n\n**ATLAS** — modeling, visualize journeys, discover missing slices\n\n**FORGE** — test generation. Each PATH becomes a test case. GWT + example data = Given(concrete events), When(concrete command), Then(expected event with concrete fields). Edge cases are just PATHs with boundary data.\n\n**PAXUS** — runtime. The actual user session *is* a PATH. Every command, every event, timestamped, with real data. The system produces PATHs as a natural byproduct of running.\n\n**LOGOS** — support. User has a bug. They export their event log. That log *is* a PATH. Support loads it into ATLAS. The journey is visible — you can see exactly which slice, which GWT rule, which data values led to the unexpected behavior. The fix goes back into the spec, new GWT rule or new PATH as a regression test.\n\nThe cycle for a single bug:\n\n1. User hits issue → PAXUS captured the PATH (runtime events)\n2. User shares event log → LOGOS ingests it as facts\n3. Support loads PATH in ATLAS → sees the journey, finds the gap\n4. Modeler adds GWT rule or fixes spec → ATLAS updated\n5. FORGE generates new test from the user's PATH data → regression covered\n6. PAXUS deploys fix, monitors for recurrence → feeds back to LOGOS\n\nThe user's actual experience becomes a test case. Not a reproduction — the *real thing*. No \"steps to reproduce\" guessing. The event log is deterministic — replay it and you get the exact same state.\n\nAnd for edge cases — you don't have to imagine them. Real users find them. Their PATHs collect in LOGOS. Over time you have a corpus of real-world journeys that become your test suite. The test suite grows from usage, not from developer imagination."
+

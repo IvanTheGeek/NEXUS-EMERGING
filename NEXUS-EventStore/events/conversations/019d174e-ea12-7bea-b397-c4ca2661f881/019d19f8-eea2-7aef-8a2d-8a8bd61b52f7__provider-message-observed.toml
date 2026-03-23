@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea2-7aef-8a2d-8a8bd61b52f7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+conversation_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+message_id = "019d174e-ea20-74df-9b93-975838c87ccd"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T14:24:16.195258Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "e1ac65c4b1b996c9068942703560ef8f7ae2a8f453457712c4dc666e5637b228"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7873-af8a-750b-b64c-8dd98e715cb4"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+message_native_id = "019a7873-af8a-750b-b64c-8dd98e715cb4"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7873-af8a-750b-b64c-8dd98e715cb4"
+role = "assistant"
+sequence_hint = 50
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ah! Important clarification. The user has:\n- `/home/linux/Nexus/` - where the MCP binary runs (deployment location)\n- `/home/linux/FnMCP.Nexus/` - where the code development happens\n- Wants data at: `/home/linux/Nexus-Data/` - separate from both\n\nSo we have three locations:\n1. Development (code): `/home/linux/FnMCP.Nexus/`\n2. Deployment (binary): `/home/linux/Nexus/`\n3. Data (new): `/home/linux/Nexus-Data/`\n\nThis makes sense - the data repo needs to be in a location that:\n- The MCP server can read from (configured path)\n- Is separate from the code repo\n- Can be version controlled independently\n\nLet me confirm this understanding and move forward with the structure."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Got it! Three distinct locations:**\n\n1. **Development (code):** `/home/linux/FnMCP.Nexus/`\n2. **Deployment (binary):** `/home/linux/Nexus/` (MCP server runs here)\n3. **Data (new):** `/home/linux/Nexus-Data/` (independent git repo)\n\n## Question 4: MCP Server Configuration\n\nThe MCP server currently reads from:\n- Current: `/home/linux/FnMCP.Nexus/context-library/`\n- Future: `/home/linux/Nexus-Data/`\n\n**Do you want to:**\n\n**A)** Move data first, update MCP config to point to `/home/linux/Nexus-Data/`, test\n**B)** Restructure data in-place first (within context-library), then move and update config\n**C)** Create new structure at `/home/linux/Nexus-Data/`, migrate gradually (both locations work during transition)\n\nWhich approach feels safest?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [███████████░░░░░░░░░] 110,160 / 190,000 tokens (58.0%)\n\nAllocation:\n├─ System Prompts: ~30,000 tokens (15.8%)\n├─ Project Knowledge: ~510 tokens (0.3%)\n├─ Conversation: ~76,540 tokens (40.3%)\n│  ├─ Your messages: ~1,930 tokens\n│  ├─ My responses: ~27,360 tokens\n│  └─ Tool calls: ~47,250 tokens\n└─ This Response: ~3,110 tokens (1.6%)\n\nRemaining: 79,840 tokens (42.0%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

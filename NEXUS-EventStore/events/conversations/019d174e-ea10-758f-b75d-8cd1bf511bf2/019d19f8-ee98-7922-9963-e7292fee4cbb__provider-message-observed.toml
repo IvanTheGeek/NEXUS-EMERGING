@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee98-7922-9963-e7292fee4cbb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+conversation_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+message_id = "019d174e-ea10-7470-821f-ff82563b2519"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T09:06:50.996422Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7a63f1ae2709e9c4a36c4fb2d2e197a36047526612879a32afbfc1b8444e6325"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7c77-7114-7586-a26f-3667c555d402"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+message_native_id = "019a7c77-7114-7586-a26f-3667c555d402"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7c77-7114-7586-a26f-3667c555d402"
+role = "assistant"
+sequence_hint = 22
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user knows float32, float16, int8 data types. They're asking about quantization in the context of running multiple LLM models. Given their background (F# developer, working on MCP servers, familiar with .NET), they likely understand:\n- Memory layout and sizes\n- Precision/accuracy trade-offs\n- Basic data type representations\n\nI should now explain quantization techniques more technically, since they've confirmed they understand the basics. I can be more direct and technical here.\n\nGiven the userStyle, this is a technical question from someone with programming knowledge, so I can skip the excessive pedagogical scaffolding and be more direct while still being clear."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good - then I can be more technical.\n\n**Quantization techniques for LLMs:**\n\n**Symmetric vs Asymmetric:**\n- Symmetric: Maps float range [-α, α] → int range [-127, 127]\n- Asymmetric: Maps float range [min, max] → int range [0, 255]\n- Most 4-bit uses asymmetric with zero-point offset\n\n**Granularity levels:**\n```\nPer-tensor:    One scale factor for entire weight matrix\nPer-channel:   One scale factor per output channel (better quality)\nPer-group:     Scale factor per N values (QLoRA default: groups of 128)\n```\n\n**QLoRA's specific approach:**\n1. Base model → 4-bit NormalFloat (NF4)\n   - Custom data type optimized for normal distribution of weights\n   - Uses lookup table instead of linear quantization\n2. LoRA adapters stay in fp16/bf16 (trainable precision)\n3. During forward pass: dequantize → compute → quantize\n4. Backward pass: only updates fp16 adapters\n\n**Unsloth's \"dynamic 4-bit quants\":**\n- Don't quantize ALL layers to 4-bit\n- Keep sensitive layers (embeddings, some attention) at 16-bit\n- Result: ~10% more VRAM but much better accuracy\n- This is why `unsloth/Phi-4-mini-instruct-bnb-4bit` outperforms naive 4-bit\n\n**Memory calculation for multi-model scenario:**\n```fsharp\n// Naive 4-bit: 3.8B × 0.5 bytes = 1.9GB per model\n// Unsloth dynamic: ~2.1GB per model\n// KV cache during inference: depends on context length\n// 3 models × 2.1GB = ~6.3GB base + KV cache overhead\n```\n\nDoes this help you decide whether to load multiple quantized models vs swapping a single one?"
+

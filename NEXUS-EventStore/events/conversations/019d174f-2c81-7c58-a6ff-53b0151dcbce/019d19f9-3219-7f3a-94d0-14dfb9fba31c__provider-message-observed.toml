@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3219-7f3a-94d0-14dfb9fba31c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-7c58-a6ff-53b0151dcbce"
+conversation_id = "019d174f-2c81-7c58-a6ff-53b0151dcbce"
+message_id = "019d174f-2c81-706a-8d28-d50a21f7a6bc"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-04T07:05:21.4645309Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "d3b7e8ab087fcbbd18bde7c862d7a01fe9133f6ca71f82eb46b7cf6235dbec0f"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7d75d-7178-8332-a0be-6698d1c8b029"
+conversation_native_id = "69a7d75d-7178-8332-a0be-6698d1c8b029"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "efb812c0-346c-47fa-a0ec-cf76d94229bb"
+conversation_native_id = "69a7d75d-7178-8332-a0be-6698d1c8b029"
+message_native_id = "efb812c0-346c-47fa-a0ec-cf76d94229bb"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "efb812c0-346c-47fa-a0ec-cf76d94229bb"
+role = "assistant"
+model_name = "gpt-5-2"
+sequence_hint = 15
+
+[[body.segments]]
+kind = "plain_text"
+text = "Great question — because this changes the economics and the control layer completely.\n\nThere are **two different models** these tools use:\n\n---\n\n# 🔐 Model 1 — *You Bring Your Own API Key (BYOK)*\n\nYou pay:\n\n- entity[\"organization\",\"OpenAI\",\"ai research company\"]  \n- entity[\"organization\",\"Anthropic\",\"ai safety company\"]  \n- etc.\n\nAnd the tool just acts as a **UI layer**.\n\n### Tools that typically work this way:\n\n- entity[\"organization\",\"LibreChat\",\"open source ai chat ui\"]  \n- entity[\"organization\",\"TypingMind\",\"local llm ui software\"]  \n- entity[\"organization\",\"ChainForge\",\"prompt evaluation platform\"]  \n\n### What this means:\n- You enter your API key\n- Calls are billed directly to **your** OpenAI / Anthropic account\n- The tool never pays for usage\n- You get full transparency\n- You control logging\n- Often better for research and Nexus-style tracking\n\n**This is usually what serious builders prefer.**\n\n---\n\n# 💳 Model 2 — They Provide the API Key (You Pay Them)\n\nYou pay the platform instead of OpenAI directly.\n\nExample:\n\n- entity[\"organization\",\"OpenRouter\",\"ai api gateway platform\"]  \n\nWith OpenRouter:\n- You fund an OpenRouter account\n- They call OpenAI / Anthropic behind the scenes\n- You don’t need separate API accounts\n- One key → many models\n\n### What this means:\n- Simpler setup\n- Centralized billing\n- Slight markup sometimes\n- Less direct provider visibility\n\nGood for convenience. Less “pure” from a systems perspective.\n\n---\n\n# 🧠 For What You're Trying to Do (Model Evaluation / Nexus Logging)\n\nYou probably want:\n\n✅ **BYOK model (your own API keys)**  \nBecause:\n\n- You can measure true cost per provider\n- You can log latency accurately\n- You can build canonical event structures\n- You avoid platform abstraction distortion\n- You maintain architectural purity\n\nVery on-brand for how you think.\n\n---\n\n# ⚖️ Quick Comparison\n\n| Question | BYOK Tools | Aggregator Tools |\n|-----------|------------|-----------------|\n| Who pays OpenAI? | You | The platform |\n| Who controls logging? | You | Shared |\n| Can you analyze true costs? | Yes | Sometimes |\n| Setup complexity | Medium | Easy |\n| Best for Nexus? | Yes | Short-term only |\n\n---\n\n# 💡 My Strategic Advice\n\nStart with:\n\n- **OpenRouter** for quick experimentation\n- Move to **LibreChat or ChainForge with your own keys** when you begin serious evaluation\n\n---\n\nIf you'd like, I can help you design:\n\n**A cost-controlled evaluation pipeline**\nwhere:\n- You set token limits\n- You log responses\n- You compare Sonnet vs Opus vs GPT-4o\n- You store structured output for analysis\n\nThat would turn this from “testing models” into “building your model intelligence layer.”"
+

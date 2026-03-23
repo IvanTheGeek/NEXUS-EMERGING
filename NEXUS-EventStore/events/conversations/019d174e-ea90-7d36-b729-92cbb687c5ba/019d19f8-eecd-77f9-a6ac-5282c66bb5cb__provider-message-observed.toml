@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-eecd-77f9-a6ac-5282c66bb5cb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7d36-b729-92cbb687c5ba"
+conversation_id = "019d174e-ea90-7d36-b729-92cbb687c5ba"
+message_id = "019d174e-ea90-7e53-86c3-58652d1c8a23"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-16T20:27:24.256181Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b2198c55169f1b55a9493727c852d24b9f3ab5045590edfe02e115be836afcde"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "7e8be5c1-2db6-4517-89e0-9180e8c21150"
+conversation_native_id = "7e8be5c1-2db6-4517-89e0-9180e8c21150"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf854-da76-7351-8d25-c6a661b0e3d7"
+conversation_native_id = "7e8be5c1-2db6-4517-89e0-9180e8c21150"
+message_native_id = "019cf854-da76-7351-8d25-c6a661b0e3d7"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf854-da76-7351-8d25-c6a661b0e3d7"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about \"Preferences vs settings vs config\" - this seems like a conceptual question. Given their background in NEXUS/Event Modeling/system design, they might be asking about this in a specific context. Let me think about what they might mean...\n\nThis could be:\n1. A general conceptual/design question about distinguishing these three concepts\n2. Specific to their NEXUS/LaundryLog ecosystem\n3. About Claude's own preference/settings system\n\nGiven the brevity, I should ask for clarification about the context."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Quick clarification — what context are you asking in?"
+
+[[body.segments]]
+kind = "tool_use"
+text = "Generating ask_user_input_v0..."
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"questions\": [\n    {\n      \"question\": \"What context is this question in?\",\n      \"type\": \"single_select\",\n      \"options\": [\n        \"NEXUS/LaundryLog domain modeling\",\n        \"Claude's own preference/settings system\",\n        \"General software design concepts\",\n        \"Specific tech stack (F#, Bolero, etc.)\"\n      ]\n    }\n  ]\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Waiting for the user's response."
+

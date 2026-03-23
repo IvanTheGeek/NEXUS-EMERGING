@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb4-7076-8b83-8090ab2c077d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea56-716a-8936-17730a3d45da"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T20:33:19.626369Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "565cab2c6ac12c02e1e9d2cfd7d3d85555ed603c9e103641f195604c182a6376"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca5f4-67b8-7683-9d72-77c6bdd4fc37"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca5f4-67b8-7683-9d72-77c6bdd4fc37"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca5f4-67b8-7683-9d72-77c6bdd4fc37"
+role = "assistant"
+sequence_hint = 182
+
+[[body.segments]]
+kind = "plain_text"
+text = "That's a beautifully event-sourced approach to documentation itself:\n\n```\nTalkyard Limitations topic\n  └── each limitation = a post (the event/fact)\n\nCustom Forum Specs wiki\n  └── projected read model from the limitation events\n  └── links back to specific limitation posts as sources\n  └── living document that updates as new limitations discovered\n```\n\nThe limitation posts are immutable facts — something was observed, it gets recorded. The specs wiki is the current best understanding derived from those facts. New limitation discovered → new post → specs wiki updated to reflect it. Exactly how event sourcing works.\n\nOn **Requirements vs Specs** — they serve different purposes:\n\n**Requirements** — what the system must do, written from a needs perspective. \"The forum must support unlimited subcategory nesting.\" Validates against: does it do this or not?\n\n**Specs** — how the system will fulfill the requirement, more implementation-leaning. \"Categories are stored as a recursive tree structure with parent reference.\" Validates against: is this the right design?\n\nFor where you are now — before any implementation — **Requirements** is the honest term. Specs come later when you're designing how to fulfill them. Though in your framework the line blurs because Event Modeling naturally bridges both.\n\nMy suggestion: call it **Custom Forum Requirements** now, with the understanding it evolves into **Specs** as the event model gets designed.\n\nShall I draft the topic and initial posts structure for the Talkyard Limitations, plus the Requirements wiki seed?"
+

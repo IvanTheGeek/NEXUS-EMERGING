@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-7dd1-b1b0-119e8f87d417"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7eff-b8aa-8dc9097316e8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:21:21.998975Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b3ad5e0bf5cdcf989e57b25394844c5bb58e5478ce286d89174890166122cd82"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9267-dd13-75ef-830a-3836b1de2ee6"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a9267-dd13-75ef-830a-3836b1de2ee6"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9267-dd13-75ef-830a-3836b1de2ee6"
+role = "assistant"
+sequence_hint = 36
+
+[[body.segments]]
+kind = "reasoning"
+text = "Great! The Docker image is loaded on the VPS. Now we need to:\n\n1. Create the docker-compose.yml file on the VPS (it wasn't transferred, just the image)\n2. Create the .env file with the QDRANT_API_KEY\n3. Ensure the nexus-network exists\n4. Ensure /var/lib/nexus/event-store has the data\n5. Start the container\n\nLet me proceed with the deployment steps."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect! Image loaded on VPS. Now let's deploy it:\n\n## Step 4: Create docker-compose.yml on VPS\n\n```bash\ncd /srv/nexus\n\n# Create docker-compose.yml\nsudo tee docker-compose.nexus-mcp.yml > /dev/null <<'EOF'\nversion: '3.8'\n\nservices:\n  nexus-mcp:\n    image: nexus-mcp:latest\n    container_name: nexus-mcp\n    restart: unless-stopped\n    ports:\n      - \"18080:18080\"\n    environment:\n      - NEXUS_TRANSPORT=http\n      - NEXUS_MCP_PORT=18080\n      - CONTEXT_LIBRARY_PATH=/data/event-store\n      - QDRANT_URL=http://qdrant:6333\n      - QDRANT_API_KEY=${QDRANT_API_KEY}\n      - EMBEDDING_API_URL=http://embedding:5000/embed\n    volumes:\n      - /var/lib/nexus/event-store:/data/event-store:ro\n    networks:\n      - nexus-network\n\nnetworks:\n  nexus-network:\n    external: true\nEOF\n\n# Verify\ncat docker-compose.nexus-mcp.yml\n```\n\nRun this and let me know when it's created.\n\n---\n\n**Token Usage:**\n- Last response: ~282 tokens\n- Session total: 78,456 tokens used\n- Remaining: 111,544 tokens (58.7% available)"
+

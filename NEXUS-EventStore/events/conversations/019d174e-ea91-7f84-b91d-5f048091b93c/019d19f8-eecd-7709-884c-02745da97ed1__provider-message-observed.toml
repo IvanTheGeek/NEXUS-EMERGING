@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7709-884c-02745da97ed1"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7f84-b91d-5f048091b93c"
+conversation_id = "019d174e-ea91-7f84-b91d-5f048091b93c"
+message_id = "019d174e-ea91-7b9d-a8bb-b1ca189e5731"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T14:16:11.55563Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "dca9b0bb78642d63bea1336b4d9578ac255b6703aeb6b567b0084df9acc3e002"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "6d723f18-c715-4eea-97f4-07288bda2ac8"
+conversation_native_id = "6d723f18-c715-4eea-97f4-07288bda2ac8"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfc27-47b9-7441-b414-ee51d20fefa1"
+conversation_native_id = "6d723f18-c715-4eea-97f4-07288bda2ac8"
+message_native_id = "019cfc27-47b9-7441-b414-ee51d20fefa1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfc27-47b9-7441-b414-ee51d20fefa1"
+role = "assistant"
+sequence_hint = 16
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is asking where the ui.visual GWT facts live. Looking at the TOML slice example I showed earlier, the `[[projector.gwt]]` blocks with `facet = \"ui.visual\"` are inside the ViewSlice TOML file. So the ui.visual GWT facts live in the slice files themselves - not in a separate ui.visual.toml.\n\nThe question is essentially pointing out: the ui.visual GWT blocks are already in the slice TOML files. So Option B's separate subgraph definition file would only contain vocabulary/tokens/components - not GWT facts. The GWT facts are already in the slices.\n\nThis is a sharp observation - he's checking my reasoning."
+
+[[body.segments]]
+kind = "plain_text"
+text = "They're in the **slice TOML files** — the `[[projector.gwt]]` blocks with `facet = \"ui.visual\"` that we defined earlier.\n\n```toml\n[[projector.gwt]]\nfacet = \"ui.visual\"\ngiven = [\"RecentExpensesSummary\"]\nwhen = [\"map expenses to ExpenseCard components\", \"show EmptyState if none\"]\nthen = \"RecentExpensesScreen\"\n```\n\nThat's the ui.visual GWT fact for the `RecentExpenses` slice. It lives in the slice, not in a subgraph file.\n\n---\n\n### What This Means for Option B\n\nThe subgraph definition file wouldn't contain GWT facts — those are already owned by slices. So Option B's `ui.visual.toml` would only hold:\n\n- Component registry (vocabulary the GWT blocks reference)\n- Design tokens\n- Nothing behavioral\n\nWhich raises the question: is that thin registry file worth having as a separate artifact, or does the graph builder just collect component names by scanning all `facet = \"ui.visual\"` GWT blocks across all slices and inferring the registry?\n\n---\n\n### The Tension\n\n**Separate file** → explicit registry, ATLAS/FORGE have a clear lookup table, but you're maintaining it manually in sync with slice vocabulary.\n\n**Emergent** → graph builder derives the registry from slices, single SoT, but ATLAS and Penpot have no component definitions until the graph is built.\n\nDesign tokens probably need an explicit home regardless. Component registry could go either way."
+

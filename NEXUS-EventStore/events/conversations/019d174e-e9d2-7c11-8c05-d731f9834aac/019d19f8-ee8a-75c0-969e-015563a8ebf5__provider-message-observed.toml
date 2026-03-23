@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee8a-75c0-969e-015563a8ebf5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9d2-7c11-8c05-d731f9834aac"
+conversation_id = "019d174e-e9d2-7c11-8c05-d731f9834aac"
+message_id = "019d174e-e9d2-78db-bfb0-5b7970a08932"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-11T02:18:39.735181Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "5540dc68f6975c0ff499bf32bcc2ae5257acd778fedabd74d6c519acf288d111"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+conversation_native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a70b4-6624-702a-ab0f-2490bafc2a2a"
+conversation_native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+message_native_id = "019a70b4-6624-702a-ab0f-2490bafc2a2a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a70b4-6624-702a-ab0f-2490bafc2a2a"
+role = "assistant"
+sequence_hint = 44
+
+[[body.segments]]
+kind = "reasoning"
+text = "Exactly! This is a key concept in event sourcing - you don't delete events, you archive them. And the user is right - HD space is incredibly cheap now. The \"closing the books\" accounting metaphor is perfect.\n\nLet me think through the archival strategy:\n\n1. **Closing the books** - Like accounting periods (monthly, quarterly, yearly)\n2. **Compression** - Events are text (YAML/Markdown), compress extremely well\n3. **Snapshots** - Can create projection snapshots at \"book closing\" points\n4. **Tiered storage** - Hot (recent), warm (this year), cold (archived)\n5. **Lazy loading** - Don't load archived events unless specifically requested\n\nThis is actually a really elegant solution that maintains the purity of event sourcing while being practical about performance.\n\nThe key insight is:\n- Keep recent events readily accessible (hot)\n- Archive old events in compressed form (cold)\n- Create snapshots at archive points to speed up projection rebuilding\n- If you ever need to go back, you can - just takes longer\n\nThis is way better than deleting events or having some arbitrary retention policy."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**EXACTLY!** The accounting metaphor is perfect - \"closing the books\" for a period but you can always re-open them if needed. Let me design this properly:\n\n## Archival Strategy (Closing the Books)\n\n### Tiered Storage Structure\n\n```\nnexus/\n├── events/\n│   ├── domain/\n│   │   ├── active/           # Hot - readily accessible\n│   │   │   ├── 2025-11/\n│   │   │   └── 2025-12/\n│   │   │\n│   │   └── archive/          # Cold - compressed, slower access\n│   │       ├── 2024.tar.gz   # Whole year compressed\n│   │       ├── 2025-Q1.tar.gz\n│   │       └── 2025-Q2.tar.gz\n│   │\n│   └── system/\n│       ├── active/\n│       │   └── 2025-11/\n│       │\n│       └── archive/\n│           ├── 2024.tar.gz\n│           └── 2025-Q1.tar.gz\n│\n└── projections/\n    └── snapshots/            # Snapshots at \"book closing\" points\n        ├── 2024-12-31/       # Year-end snapshot\n        │   ├── current-docs/\n        │   ├── timeline/\n        │   └── metrics.yaml\n        │\n        └── 2025-06-30/       # Q2 snapshot\n            ├── current-docs/\n            └── timeline/\n```\n\n### Book Closing Process\n\n**When to close books:**\n```fsharp\ntype BookClosingPeriod =\n    | Monthly       // Close each month\n    | Quarterly     // Close each quarter (recommended)\n    | Yearly        // Close each year\n    | Custom of DateTime  // Manual close at specific date\n```\n\n**What happens:**\n```fsharp\nlet closeBooks endDate = async {\n    // 1. Create snapshot of all projections at this point\n    let! snapshots = snapshotAllProjections endDate\n    do! saveSnapshots endDate snapshots\n    \n    // 2. Compress events from the period\n    let eventsToArchive = \n        getEvents()\n        |> filter (fun e -> e.Timestamp <= endDate)\n        |> filter (fun e -> not (isArchived e))\n    \n    let archiveFile = sprintf \"archive/%s.tar.gz\" (formatPeriod endDate)\n    do! compressEvents eventsToArchive archiveFile\n    \n    // 3. Verify archive integrity\n    do! verifyArchive archiveFile eventsToArchive\n    \n    // 4. Move events to archive (keep originals until verified)\n    do! moveToArchive eventsToArchive\n    \n    // 5. Create manifest\n    let manifest = {\n        Period = formatPeriod endDate\n        EventCount = eventsToArchive.Length\n        SnapshotDate = endDate\n        CompressedSize = getFileSize archiveFile\n        Hash = computeHash archiveFile\n    }\n    do! saveManifest manifest\n    \n    return manifest\n}\n```\n\n### Compression Ratios (Real World)\n\n**Text files compress EXTREMELY well:**\n```\nOriginal events (YAML + Markdown): 100 MB\nCompressed (tar.gz):                 5 MB\nCompression ratio:                   20:1\n\nSystem events (YAML only):          10 MB\nCompressed:                        500 KB\nCompression ratio:                  20:1\n```\n\n**Why so good:**\n- Lots of repeated structure (YAML keys, markdown formatting)\n- Natural language text compresses well\n- Timestamps are repetitive\n\n### Snapshot Strategy\n\n**Snapshot = Projection State at Book Closing**\n\nInstead of replaying 1000s of events from archive:\n```fsharp\n// WITHOUT snapshot (slow):\nlet rebuildTimeline() = async {\n    let allEvents = loadAllEvents()  // Decompress archives, slow!\n    return allEvents |> fold applyEvent emptyState\n}\n\n// WITH snapshot (fast):\nlet rebuildTimeline() = async {\n    // Start from most recent snapshot\n    let! snapshot = loadSnapshot \"timeline\" latestSnapshotDate\n    \n    // Only process events since snapshot\n    let recentEvents = getEvents() |> filter (fun e -> e.Timestamp > latestSnapshotDate)\n    \n    return recentEvents |> fold applyEvent snapshot\n}\n```\n\n**Benefits:**\n- Don't need to decompress old archives for normal operations\n- Projection rebuild: seconds instead of minutes\n- Can still go back further if needed (just slower)\n\n### Archive Manifest\n\n**Track what's archived:**\n```yaml\n# archive/manifest.yaml\narchives:\n  - period: 2024-full-year\n    file: 2024.tar.gz\n    date_range:\n      start: 2024-01-01T00:00:00Z\n      end: 2024-12-31T23:59:59Z\n    events:\n      domain: 342\n      system: 1247\n    compressed_size: 4.2 MB\n    original_size: 87 MB\n    compression_ratio: 20.7\n    hash: sha256:abc123...\n    snapshot_available: true\n    \n  - period: 2025-Q1\n    file: 2025-Q1.tar.gz\n    date_range:\n      start: 2025-01-01T00:00:00Z\n      end: 2025-03-31T23:59:59Z\n    events:\n      domain: 98\n      system: 456\n    compressed_size: 1.8 MB\n    original_size: 34 MB\n    compression_ratio: 18.9\n    hash: sha256:def456...\n    snapshot_available: true\n```\n\n### Accessing Archived Events\n\n**Lazy loading with caching:**\n```fsharp\nlet getEvent eventId = async {\n    // Try active events first (fast)\n    match tryLoadActiveEvent eventId with\n    | Some event -> return event\n    | None ->\n        // Check which archive contains this event\n        let archive = findArchiveForEvent eventId\n        \n        // Decompress to temp cache\n        let! cached = ensureArchiveCached archive\n        \n        // Load from cache\n        return loadFromCache cached eventId\n}\n\n// Cache strategy\ntype ArchiveCache = {\n    Archive: string\n    CachedAt: DateTime\n    Events: Map<EventId, Event>\n    ExpiresIn: TimeSpan  // e.g., 1 hour\n}\n```\n\n### Storage Economics\n\n**Example after 2 years:**\n```\nActive events (last 3 months):\n  Domain: 150 events × 5 KB = 750 KB\n  System: 500 events × 1 KB = 500 KB\n  Total active: 1.25 MB (uncompressed)\n\nArchived events (21 months):\n  Domain: ~1050 events = ~5.25 MB → Compressed: 250 KB\n  System: ~3500 events = ~3.5 MB → Compressed: 175 KB\n  Total archived: 425 KB (compressed)\n\nSnapshots (7 quarterly):\n  7 × 500 KB = 3.5 MB (uncompressed)\n\nTOTAL STORAGE: ~5.2 MB\n```\n\n**For comparison:**\n- A single 4K photo: ~5 MB\n- A minute of 1080p video: ~60 MB\n- Modern drives: Multiple TB\n\n**Storage is basically free for this use case.**\n\n### When to Access Archives\n\n**Normal operations (99% of time):**\n- Query recent events only\n- Use latest snapshots\n- Never touch archives\n\n**Rare operations:**\n- \"Show me all decisions from 2024\" → Decompress 2024 archive\n- \"How did paths concept evolve?\" → May need old events\n- \"Regenerate timeline from beginning\" → Start from snapshot, add recent\n- Debugging: \"What happened around that time?\" → Decompress specific period\n\n### Archive Access Performance\n\n**Typical SSD performance:**\n```\nDecompress 2024.tar.gz (4.2 MB → 87 MB):\n  Time: ~200ms\n  CPU: One core, not noticeable\n  \nLoad events from decompressed:\n  Time: ~500ms for 1500 events\n  \nTotal: <1 second to access archived year\n```\n\n**User experience:**\n- Normal queries: Instant (active events)\n- Historical queries: \"Retrieving archived data...\" → 1-2 seconds\n- Still very acceptable\n\n### Practical Book Closing Schedule\n\n**Recommendation:**\n```yaml\nclosing_schedule:\n  system_events:\n    frequency: Monthly\n    reason: \"Volume higher, less often referenced\"\n    \n  domain_events:\n    frequency: Quarterly  \n    reason: \"More valuable, may reference occasionally\"\n    \n  snapshots:\n    frequency: Quarterly\n    keep: All (storage cheap, valuable for time-travel)\n```\n\n### The Beautiful Part\n\n**You NEVER lose data:**\n- All events preserved forever\n- Compressed but available\n- Can always \"re-open the books\"\n- Time travel to any point in history\n- Just slower for old data (acceptable trade-off)\n\n**And storage is negligible:**\n- Years of events = megabytes\n- Modern drives = terabytes\n- Ratio: 0.001% of drive space\n\n---\n\nThis is event sourcing done right - pure append-only, never delete, compress for efficiency, snapshot for performance. The accounting \"closing the books\" metaphor is perfect!\n\nShould we add this archival strategy to the event-sourced design docs?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [████████████████░░░░] 122,900 / 190,000 tokens (64.7%)\n\nAllocation:\n├─ System Prompts:     ~5,000 tokens  (2.6%)\n├─ Project Knowledge:  ~2,000 tokens  (1.1%)\n├─ Conversation:     ~112,900 tokens (59.4%)\n│  ├─ Your messages:  ~19,000 tokens\n│  ├─ My responses:   ~88,900 tokens\n│  └─ Tool calls:      ~5,000 tokens\n└─ This Response:      ~4,000 tokens  (2.1%)\n\nRemaining: 67,100 tokens (35.3%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

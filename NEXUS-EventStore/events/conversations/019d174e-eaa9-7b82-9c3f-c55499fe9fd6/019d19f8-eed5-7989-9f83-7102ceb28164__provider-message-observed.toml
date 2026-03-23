@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7989-9f83-7102ceb28164"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-722e-b051-534b1c0377da"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T14:02:38.61504Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "0ac5d3a68be541a77aecb4c6821631499f4962eb1016034d0868a45bb9d2986b"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf1ce-2ac4-71de-9502-566a00de8dd5"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf1ce-2ac4-71de-9502-566a00de8dd5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf1ce-2ac4-71de-9502-566a00de8dd5"
+role = "assistant"
+sequence_hint = 126
+
+[[body.segments]]
+kind = "reasoning"
+text = "So the flow is:\n\n1. CommandSlice: OpenApp → AppOpened\n2. ViewSlice: Given [AppOpened], no LaundryExpenseLogged found → show \"needs location\" (but the screen itself isn't shown in business facet for ViewSlice)\n3. CommandSlice: Get Location screen shown → SetLocation command → LocationSet event (or similar)\n\nLet me write the ViewSlice for CheckSessionStatus. It's simple - projector reads AppOpened, checks for LaundryExpenseLogged, finds none, view indicates needs location.\n\nFor the ViewSlice at business level, Adam hides the screen. So no origins with snapshot in the business facet. \n\nThe view just communicates that there are no prior expenses and location is required."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Got it. The ViewSlice at business level is just the data decision — no screen shown. The screen appears on the *next* CommandSlice where the actor acts on what the view told them.\n\n**ViewSlice: CheckSessionStatus**\n- Given: [AppOpened] (looks for LaundryExpenseLogged, finds none)\n- Then: SessionStatus { needsLocation: true }\n\n**Next CommandSlice: SetLocation**\n- Origin: \"Get Location Screen\" with snapshot showing location textbox filled with \"Love's #134 - Springfield, OH\"\n- Command: SetLocation { location }\n- Event: LocationSet { location }\n\nWant me to create the ViewSlice TOML first?"
+

@@ -1,0 +1,66 @@
+schema_version = 1
+event_id = "019d19f8-eecf-7277-be78-a9fb3d15197b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea99-75a9-9d8c-8a1ae9f220e6"
+conversation_id = "019d174e-ea99-75a9-9d8c-8a1ae9f220e6"
+message_id = "019d174e-ea9a-7106-b8d9-ceb601fa662f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-16T00:22:48.605917Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "5645122bf9217403d2dfec8e0e8567fb976490cf16facab9c68d5441cc164c88"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+conversation_native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf405-899b-7ac3-9911-da2c32b3bee9"
+conversation_native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+message_native_id = "019cf405-899b-7ac3-9911-da2c32b3bee9"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf405-899b-7ac3-9911-da2c32b3bee9"
+role = "assistant"
+sequence_hint = 10
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants the \"cmd\" tag badge moved so it doesn't overlap the \"OpenApp\" text. Let me adjust the x position of that badge.\n\nLooking at the SVG: \"OpenApp\" text is at x=\"92\", font-size 8.5. It's roughly 50px wide, so it ends around x=142. The cmd badge is at x=\"128\" which overlaps. I need to move it further right, maybe x=\"148\" or so."
+
+[[body.segments]]
+kind = "tool_use"
+text = "show_widget"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Content rendered and shown to the user. Please do not duplicate the shown content in text because it's already visually represented.\n[This tool call rendered an interactive widget in the chat. The user can already see the result — do not repeat it in text or with another visualization tool.]"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Badge is now tucked after the text with a small gap. Everything else unchanged."
+

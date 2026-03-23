@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb8-7895-8aa4-49628844ea2f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-7261-8969-db411e815e6d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T14:26:47.41183Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b5999512c0e2bb5eca9c87d916f9792f3aa7f973b8505f39d86b1de56d638f35"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca9cb-33d1-7766-9dcd-b0bb0b6f297c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca9cb-33d1-7766-9dcd-b0bb0b6f297c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca9cb-33d1-7766-9dcd-b0bb0b6f297c"
+role = "assistant"
+sequence_hint = 253
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about the \"Limitation —\" prefix in topic titles and whether it's the right approach."
+
+[[body.segments]]
+kind = "plain_text"
+text = "The argument for it is purely navigational — when the category contains a mix of topic types (the README, maybe future discussion topics, status updates), the prefix lets you scan the list and immediately know which topics are limitation records vs. other things.\n\nBut that argument weakens considerably given the context:\n\n**This is a dedicated subcategory.** Everything in \"Talkyard Limitations\" is by definition a limitation record. The prefix is redundant — it's like filing things in a folder called \"Invoices\" and labeling each one \"Invoice —\". The category name already carries that meaning.\n\n**Alternatives worth considering:**\n\nThe real question is what the title should *lead with* — the subject or the nature of the thing.\n\n- **Just the subject:** `Subcategory depth is capped at one level` — clean, scannable, the limitation is implicit from context\n- **Talkyard as subject:** `Talkyard: subcategory depth capped at one level` — useful if these ever appear outside the category (search results, cross-references)\n- **Impact-first:** `Cannot nest subcategories beyond one level` — frames it from the user's experience rather than the system's behavior\n- **No prefix at all, declarative statement:** `Wiki edit history is not accessible` — reads as a fact, which is exactly what it is\n\nMy honest recommendation: drop the prefix entirely and write the title as a plain declarative fact. `Tags are a flat global list with no scoping`. `Claude export does not include model version`. \n\nThe category is the context. The title should just be the thing itself."
+

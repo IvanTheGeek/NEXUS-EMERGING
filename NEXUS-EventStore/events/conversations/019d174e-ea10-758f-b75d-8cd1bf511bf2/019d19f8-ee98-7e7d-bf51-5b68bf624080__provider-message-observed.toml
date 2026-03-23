@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-ee98-7e7d-bf51-5b68bf624080"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+conversation_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+message_id = "019d174e-ea10-74ce-965e-b637e246056c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T10:27:44.780431Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "9f4cb4f39c201eb1e2021ff26e42b5af589cc90b83cc17ee5fdee50c3cd61146"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7cc1-5917-742c-b7dc-fd3d48bc252e"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+message_native_id = "019a7cc1-5917-742c-b7dc-fd3d48bc252e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7cc1-5917-742c-b7dc-fd3d48bc252e"
+role = "assistant"
+sequence_hint = 42
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants me to include his prompt (the message he sent before my long reflection) in the first artifact. Let me look back at what he said that triggered my reflection response.\n\nHis message was:\n\"Once I starter regularly encountering the end of chat issue and learning more about the context tokens, I wanted a solution and then each Claude chat brought ideas and improvements. This is in concert with me wanting Claude to understand and help me figure out and use my event modeling vision combined with my app ideas combined with my tech stack ideas and so on. I have this vision that has been worked on and brewing and trying for 20 years, just kept hitting walls and dead ends and along with fundamental blocks and gaps (I love tech,hench IvanTheGeek, just suck at programming and command line, much more a point and click guy). Spending hours googling to do something simple and just getting derailed. A try with Rider with Junie a few weeks ago gave me the confidence that I can design a system now, it work correctly,completely documented, can be tested, verified, hell, I get this all working as envisioned and we will throw F* (fstar) in the mix for formal verification! So just each step led to knowing it needs more.\"\n\nI should prepend this to the reflection artifact so readers have the full context of what triggered my response."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Adding Ivan's prompt that triggered the reflection to provide full context"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Successfully replaced string in /mnt/user-data/outputs/reflection-20-year-vision.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants me to include his prompt (the message he sent before my reflection) in the first artifact. I've successfully updated the reflection artifact to include his original prompt at the beginning, set off as a quote, so readers can see what triggered the reflection response. This provides complete context for anyone reading the document."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done. The reflection artifact now includes your full prompt at the beginning, so anyone reading it (including future Claude instances or your future self) will have the complete context of what triggered that response.\n\n[Updated reflection with your prompt included](computer:///mnt/user-data/outputs/reflection-20-year-vision.md)"
+

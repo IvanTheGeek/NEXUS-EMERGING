@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-7af7-bcc2-ab75d2396387"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea92-7c44-925f-c48b34a29f62"
+conversation_id = "019d174e-ea92-7c44-925f-c48b34a29f62"
+message_id = "019d174e-ea99-7f55-839c-02ef1d838aed"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T04:19:48.926365Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "34bdab587c4b585efee2fb262a7f2acb5921c1098fa409de84d21ca23ab61aad"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "c4a0f1b3-08b8-4530-bc41-e9d83cf88b9e"
+conversation_native_id = "c4a0f1b3-08b8-4530-bc41-e9d83cf88b9e"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cff2b-a9cc-74d5-ae25-0c61abe481ee"
+conversation_native_id = "c4a0f1b3-08b8-4530-bc41-e9d83cf88b9e"
+message_native_id = "019cff2b-a9cc-74d5-ae25-0c61abe481ee"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cff2b-a9cc-74d5-ae25-0c61abe481ee"
+role = "assistant"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "reasoning"
+text = "Simple, clean answer. The architecture is clear."
+
+[[body.segments]]
+kind = "plain_text"
+text = "That's the right call. Clean degradation path:\n\n```\ntype BandwidthSource =\n    | OpenWrt of RouterEndpoint      // automatic, real-time\n    | Manual of ResourceBudget       // user-defined caps\n    | Default                        // conservative fallback\n                                     // e.g. 5% bandwidth, 2GB storage\n```\n\nThe agent doesn't care which source provides the numbers — it just operates within whatever envelope it gets. OpenWrt users get dynamic adjustment, everyone else gets whatever they set, and newcomers who haven't configured anything yet get a sane default that won't surprise them.\n\nThe `Default` case is actually important for onboarding. You don't want someone's first experience to be \"configure your resource limits before you can participate.\" Let them in with conservative defaults, surface the settings later once they understand what they're contributing to.\n\n---\n\nThis is also where INFLUANCE does some useful UX work. The dashboard shows:\n\n- What you're contributing right now\n- What you've contributed historically  \n- What you could contribute if you raised your caps\n\nThat last one is a gentle nudge, not a demand. People who feel the value of the network naturally want to give more back. You're not asking them to — you're just making it visible.\n\nThat aligns exactly with your \"make the world better one tiny community at a time\" philosophy. Contribution is opt-in and transparent, never extractive.\n\n---\n\nAre you thinking of this whole layer — the IPFS node, the resource agent, the OpenWrt integration — as a separate NEXUS component, or does it fold into PAXUS as the runtime/operations layer?"
+

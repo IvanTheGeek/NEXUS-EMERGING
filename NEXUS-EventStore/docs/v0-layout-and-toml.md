@@ -120,13 +120,18 @@ occurred_at = "2026-03-22T12:13:53Z"
 observed_at = "2026-03-22T12:15:10Z"
 imported_at = "2026-03-22T12:15:10Z"
 source_acquisition = "export_zip"
-normalization_version = "provider-export-v0"
+normalization_version = "provider-export-v1"
 import_id = "0195d6f4-4ec4-7380-9c5c-7e0eb6d9580d"
 ```
 
 Optional values that are unknown should be omitted rather than filled with placeholder strings.
 
 `normalization_version` identifies the canonicalizer/parser shape that produced the event.
+
+Current importer baseline:
+
+- `provider-export-v1` = improved provider message extraction
+- `provider-export-v0` = legacy baseline used before the parser refinement pass
 
 - same provider object + same `normalization_version` + different content hash => provider-side revision observation
 - same provider object + different `normalization_version` => new normalization observation, not a provider revision

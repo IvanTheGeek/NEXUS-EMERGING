@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7ab8-aa0c-79c2677eb511"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7b11-9889-052ff25f0d11"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T12:25:29.20957Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "337a219a763595885d222c0c1e0115a9d697786568290e1abf1c20950a5cf682"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf174-fc8c-713a-8e71-b3c6f19561d0"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf174-fc8c-713a-8e71-b3c6f19561d0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf174-fc8c-713a-8e71-b3c6f19561d0"
+role = "assistant"
+sequence_hint = 106
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is raising a fundamental architectural question about how the TOML files should be organized given that the Truth Graph contains ALL the information, and different lenses/perspectives show different subsets of it.\n\nThe key insight: the same slice node in the graph has different amounts of detail depending on who's looking at it:\n\n- Business lens (Adam's EM diagram): Actor, Command, Event, GWT - the LCD\n- Dev lens: Adds handler details, field types, F# type info, implementation notes\n- UI lens: Adds screen snapshots, interaction layers, visual layout details\n- All from the SAME underlying truth\n\nSo the question is: one file with everything, or layered files per lens?\n\n\nI'm thinking about this as a graph problem where nodes have properties and lenses simply filter what's visible. The cleanest approach feels like storing everything in a single TOML file per slice—that's the source of truth—and letting the lenses act as projections that show or hide specific properties. This aligns perfectly with their ViewSlice concept where the same events get different representations depending on perspective."
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is the core design question. The Truth Graph is **one graph**. Lenses are projections of it — exactly like ViewSlices are projections of events.\n\nTwo approaches:\n\n**One file, all data**: The TOML contains everything — business fields, dev types, UI snapshots, handler details. Lenses are just filters that show/hide sections when rendering. The file IS the truth. Simple, no sync issues, but files get large.\n\n**Layered files**: A base file with the LCD (business perspective), then overlay files that add lens-specific data. Like CSS layers on HTML. Keeps each file focused, but you have to compose them and they could drift.\n\nThe Truth Graph philosophy argues for one file. The truth is one thing. A View/Projection hides what you don't need to see — it doesn't store different truths in different places. That's the whole point of your architecture.\n\nThe TOML sections already naturally separate concerns:\n\n```toml\n[slice]          # everyone sees this\n[command]        # business sees name, dev sees fields/types\n[handler]        # dev lens only\n[[event]]        # everyone sees name, dev sees fields\n[[handler.gwt]]  # business + dev\n[[origins]]      # business sees name, UI sees snapshot\n```\n\nThe lens doesn't need different files — it needs a **visibility rule** per section or field. \"Business lens shows: slice, command.name, event.name, gwt, origins.name. Dev lens adds: fields, handler, types. UI lens adds: snapshot.\"\n\nThat visibility mapping could itself be a TOML file — a lens definition that says what to render.\n\nOne file per slice with everything, or layered?"
+

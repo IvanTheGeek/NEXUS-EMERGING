@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed0-70c3-9ecb-386288eb1192"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaa9-7512-8a7b-85b6e24a9cc8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T02:16:18.660488Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "0348ba25f623218450748b7f508eee964b8a5819acf3fb721f3acfca289e6c5c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cef47-6bfd-7e28-86d7-31a1465b58ec"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cef47-6bfd-7e28-86d7-31a1465b58ec"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cef47-6bfd-7e28-86d7-31a1465b58ec"
+role = "assistant"
+sequence_hint = 10
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is exploring graph theory for the first time and wants to reason through whether Rule should be a node vs an edge. Let me help him think through this from first principles, keeping it grounded in his existing domain knowledge (Event Modeling, NEXUS).\n\nLet me think about the key distinction: nodes vs edges in graph theory, and why it matters for his Truth Graph."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — let's reason from what you already know.\n\nIn a graph you have two things: **nodes** (the things) and **edges** (the relationships between things). The fundamental design question is always: *is this concept a thing, or a relationship between things?*\n\nHere's a simple test: **can it have properties of its own, and can multiple other things point to it?**\n\nTake the Handler in a Command Slice. It has GWT rules — that's content, properties that belong to *it*. And it sits between a Command and an Event, meaning both the Command and the Event have a relationship *to* it. If you made the Handler just an edge (Command →processes→ Event), where do the GWT rules live? They'd have to be metadata on the edge. That works, but it limits you.\n\nConsider this concrete scenario — two Commands that share the same validation logic but produce different Events. As an edge, you'd duplicate the rules on each edge. As a node, both Commands connect to the same Rule node, and you can *see* that shared dependency in the graph.\n\nSo the practical question is: **do you ever need to reference, share, query, or reason about the transformation independently from the things it connects?**\n\nFor your use cases the answer seems clearly yes — \"show me all rules that reference this event type\" is a traversal that starts at a Rule node.\n\nThat gives you five primitives:\n\n- **Actor** — who\n- **Intent** — what they want\n- **Rule** — the governing logic\n- **Fact** — what happened\n- **Interpretation** — what it means\n\nEach is a node type. Now the edges become simpler — they're mostly **flow** (this leads to that) and **reference** (this depends on that). Does that framing feel right before we go further into edge types?"
+

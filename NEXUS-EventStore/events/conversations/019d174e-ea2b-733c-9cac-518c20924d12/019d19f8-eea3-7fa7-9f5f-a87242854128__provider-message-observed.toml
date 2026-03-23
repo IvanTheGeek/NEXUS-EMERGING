@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea3-7fa7-9f5f-a87242854128"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+conversation_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+message_id = "019d174e-ea2b-7a68-903f-7ceb99cca042"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-27T00:29:15.83208Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "6b6a4f5291f9a4bc499cccfaf37c47c02751ec3964da54bc912ea645b84850b8"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac2b6-5a17-7711-b147-38d1f6062af5"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+message_native_id = "019ac2b6-5a17-7711-b147-38d1f6062af5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac2b6-5a17-7711-b147-38d1f6062af5"
+role = "assistant"
+sequence_hint = 6
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about a git workflow strategy for working with Claude Code (or similar tools). They want:\n\n1. Start from a previous commit each time\n2. Create a branch for the work\n3. Make a commit when done\n4. Be able to revert back\n5. Be able to try again from the same starting point, keeping the old attempt\n6. Have all attempts exist simultaneously\n7. Merge successful attempts back to main\n\nThis is a perfect use case for a branching strategy. Let me think through what they're describing:\n\nThey want an experimentation workflow where they can:\n- Try multiple approaches to the same problem\n- Keep all attempts\n- Not lose work\n- Merge successful ones\n\nThe pattern they're describing is essentially:\n1. Start from a known good state (like main)\n2. Create a branch for attempt 1\n3. Let Claude Code work, commit the result\n4. Go back to the same starting point\n5. Create a different branch for attempt 2\n6. Repeat\n7. Later merge the one they like\n\nThis is a common pattern. The key insights they need:\n- Branches are cheap, create many\n- You can create multiple branches from the same commit\n- Each attempt gets its own branch\n- Commits preserve the state permanently\n- You can switch between attempts freely\n- Merging brings successful work back to main\n\nLet me explain this as a workflow with the conceptual model and practical commands."
+
+[[body.segments]]
+kind = "plain_text"
+text = "You're describing a perfect use case for git branches, and your instincts are exactly right. Let me walk through both the conceptual model and the practical workflow.\n\n**The Mental Model**\n\nThink of your main branch as your stable base. Each time you want to experiment, you're creating a new timeline that branches off from a specific point. These timelines can coexist indefinitely, and you can jump between them at will. When an experiment succeeds, you fold that timeline back into main. When it fails, you just leave it there (or delete it) and try again from the same starting point.\n\nThe key insight is that multiple branches can start from the same commit. So you can have attempt1, attempt2, and attempt3 all branching from the same point on main, each representing a different approach to the same problem.\n\n**The Workflow**\n\nHere's how this works in practice. Let's say you're on main and everything is working:\n\n```fsharp\nA---B---C (main, HEAD)\n```\n\nYou want Claude Code to try something. First, make sure you're on main and everything is committed. Then create a branch for this attempt:\n\n```bash\ngit checkout main  # make sure you're on main\ngit pull  # get latest if you're syncing with remote\ngit checkout -b attempt-feature-x  # creates branch and switches to it\n```\n\nNow you're on the attempt-feature-x branch, which points to the same commit C that main points to. Let Claude Code do its work. When it's done, commit the changes:\n\n```bash\ngit add .\ngit commit -m \"Attempt 1: implemented feature X using approach Y\"\n```\n\nNow your graph looks like:\n\n```fsharp\nA---B---C (main)\n         \\\n          D (attempt-feature-x, HEAD)\n```\n\nCommit D contains all of Claude Code's changes. Now you want to try a different approach from the same starting point. Switch back to main:\n\n```bash\ngit checkout main\n```\n\nYour working directory now looks exactly like it did before Claude Code made any changes - you're back at commit C. Create another branch for the second attempt:\n\n```bash\ngit checkout -b attempt-feature-x-alternate\n```\n\nLet Claude Code try a different approach. When done, commit again:\n\n```bash\ngit add .\ngit commit -m \"Attempt 2: implemented feature X using different approach Z\"\n```\n\nNow your graph looks like this:\n\n```fsharp\nA---B---C (main)\n         \\\n          D (attempt-feature-x)\n           \\\n            E (attempt-feature-x-alternate, HEAD)\n```\n\nActually, that's not quite right. Both branches start from C, so it's more like:\n\n```fsharp\n        D (attempt-feature-x)\n       /\nA---B---C (main)\n       \\\n        E (attempt-feature-x-alternate, HEAD)\n```\n\nYou can now switch between these attempts at any time to examine them, test them, or continue working on them. To see attempt one:\n\n```bash\ngit checkout attempt-feature-x\n```\n\nYour working directory instantly transforms to show the code from attempt one. To see attempt two:\n\n```bash\ngit checkout attempt-feature-x-alternate\n```\n\nAnd you're looking at attempt two's code. To go back to your original stable state:\n\n```bash\ngit checkout main\n```\n\n**Merging the Winner**\n\nWhen you decide which attempt you like (or if you want to combine aspects of both), you merge it back into main. Let's say attempt two was the winner:\n\n```bash\ngit checkout main  # switch to main\ngit merge attempt-feature-x-alternate  # bring in the changes\n```\n\nThis creates a merge commit (or fast-forwards if main hasn't changed) that incorporates those changes into main:\n\n```fsharp\n        D (attempt-feature-x)\n       /\nA---B---C---F (main, HEAD)\n       \\   /\n        E (attempt-feature-x-alternate)\n```\n\nNow main has the changes from attempt two. The other attempt still exists on its branch, but you can delete it if you want:\n\n```bash\ngit branch -d attempt-feature-x  # delete the branch pointer\n```\n\nThe commits don't disappear immediately, but the branch reference does.\n\n**Practical Considerations**\n\nOne thing to watch for: if you have uncommitted changes when you try to switch branches, git will either carry them with you or refuse to switch (if there would be conflicts). Always commit or stash your changes before switching branches.\n\nAlso, you might want a naming convention for your experiment branches. Something like `experiment/feature-name-approach1`, `experiment/feature-name-approach2` helps you see at a glance that these are experimental branches.\n\nYou can see all your branches with `git branch -a`, and you can see the commit graph with `git log --all --graph --oneline` which will show you the tree structure visually.\n\nDoes this workflow match what you were envisioning? Are there specific parts of the process where you'd want more detail on the mechanics?"
+

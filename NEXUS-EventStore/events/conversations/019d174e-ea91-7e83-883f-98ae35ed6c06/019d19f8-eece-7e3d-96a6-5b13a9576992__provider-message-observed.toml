@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-7e3d-96a6-5b13a9576992"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea91-7c09-a36b-a3e1ea7e6ece"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T11:26:09.518181Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b88471b6c2c8a9f69791ffda148cf85aa0b5416195e67dea4c36437f98de8661"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfb8b-9ccf-7776-8bfe-b4be26b71896"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfb8b-9ccf-7776-8bfe-b4be26b71896"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfb8b-9ccf-7776-8bfe-b4be26b71896"
+role = "assistant"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is saying Option B - separate GWT blocks per subgraph - aligns with the facet/lens visibility model. If you're only looking at `business.emd` facet, the `ui.visual` GWT layer is invisible/irrelevant. The facets act as toggles - you see only the layers you care about.\n\nThis is a natural extension of the \"animation cells\" / facet concept already in NEXUS."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Exactly — and that's already how facets work. **Facets as toggles, GWT blocks as layers.**\n\n## How It Composes\n\n```toml\n# business.emd GWT — domain truth\n[[projector.gwt]]\nfacet = \"business.emd\"\ngiven = [\"LaundryExpenseLogged\"]\nwhen = [\"fold into expense list\"]\nthen = \"AllExpenses\"\n\n# ui.visual GWT — display shaping on top\n[[projector.gwt]]\nfacet = \"ui.visual\"\ngiven = [\"AllExpenses\"]          # feeds from business.emd output\nwhen = [\"filter within last 3 hours\"]\nthen = \"RecentExpenses\"\n```\n\n## What This Gets You\n\n- Toggle off `ui.visual` → you see the domain projection only, clean\n- Toggle off `business.emd` → nothing works, it's foundational\n- The **layering order is implicit in the feed chain** — `given` references the prior layer's output\n- ATLAS renders only the facets you have active\n\n## The Elegant Part\n\n`ui.visual` GWT takes the **output of a lower facet as its given** — not raw events. That's the pipeline composition happening naturally across subgraphs. Each layer adds its concern without polluting the layer below.\n\nThis also means FORGE knows exactly which F# code belongs to which layer — domain fold vs display filter are separate functions, separate concerns, separate testability.\n\nReady to update memory with the `when` pipeline concept and the per-facet GWT layering?"
+

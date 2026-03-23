@@ -58,9 +58,9 @@ module ImportWindowNaming =
 
 [<RequireQualifiedAccess>]
 module NormalizationNaming =
-    let current = NormalizationVersion.create "provider-export-v0"
+    let legacyDefault = NormalizationVersion.create "provider-export-v0"
 
-    let legacyDefault = current
+    let current = NormalizationVersion.create "provider-export-v1"
 
     let value normalizationVersion =
         NormalizationVersion.value normalizationVersion

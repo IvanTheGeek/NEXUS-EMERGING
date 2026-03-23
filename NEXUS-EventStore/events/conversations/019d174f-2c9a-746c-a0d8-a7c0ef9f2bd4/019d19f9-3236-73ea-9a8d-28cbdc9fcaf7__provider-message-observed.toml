@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3236-73ea-9a8d-28cbdc9fcaf7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c9a-746c-a0d8-a7c0ef9f2bd4"
+conversation_id = "019d174f-2c9a-746c-a0d8-a7c0ef9f2bd4"
+message_id = "019d174f-2c9f-7682-ac92-bf3c57780628"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T23:34:46.9864099Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "c0b0f8a56f2935c7d68f49aa376df2b40fca1ce39221a4ac1a8da258c83c1520"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+conversation_native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "48dff2bd-9ec4-4941-b72a-c3140c6f872e"
+conversation_native_id = "69ad5f37-00c8-832a-a5eb-a39bfe932248"
+message_native_id = "48dff2bd-9ec4-4941-b72a-c3140c6f872e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "48dff2bd-9ec4-4941-b72a-c3140c6f872e"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 115
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — that’s a good refinement. You already solved the **user-intent wording upstream**, so the Mermaid generator should **not reinterpret or rewrite the UI label**. It should simply **trust the input model**.\n\nThis makes the generator **deterministic**, which is much better if you want to reuse it in tooling.\n\nBelow are the **two updated artifacts**:\n\n1️⃣ **Updated Input Model File**  \n2️⃣ **Updated Mermaid Generation Prompt**\n\n---\n\n# 1️⃣ New Input Model File (Reusable)\n\nThis is the **canonical model format** the Mermaid generator consumes.\n\nEach slice has:\n\n```\nSlice Name\nNarrative\n```\n\nThe generator **must not modify wording**.\n\n:::writing{variant=\"standard\" id=\"model01\"}\nRecord Laundry Expense\nRecord Laundry Expense → LogLaundryExpense → LaundryExpenseLogged\n\nView Expense History\nView Expense History ← ExpenseHistoryProjection ← LaundryExpenseLogged\n\nModify Laundry Expense\nModify Laundry Expense → EditLaundryExpense → LaundryExpenseEdited\n\nView Updated Expense History\nView Updated Expense History ← ExpenseHistoryProjection ← LaundryExpenseEdited\n\nRemove Laundry Expense\nRemove Laundry Expense → DeleteLaundryExpense → LaundryExpenseDeleted\n\nView Final Expense History\nView Final Expense History ← ExpenseHistoryProjection ← LaundryExpenseDeleted\n:::\n\n---\n\n# 2️⃣ Updated Mermaid Generation Prompt\n\nThis version **removes the AI interpretation step** and instead treats the input as **authoritative data**.\n\n:::writing{variant=\"standard\" id=\"prompt02\"}\nYou are generating a **Mermaid flowchart diagram** representing an **Event Modeling architecture**.\n\nYour input will be a **list of slices written in narrative form**.\n\nThe narrative text is **authoritative and must not be modified**.\n\nYour job is to convert the slices into a **Mermaid Event Modeling diagram**.\n\n---\n\n# Output Rules\n\nYour response must contain **only a Mermaid code block**.\n\nStart with:\n\n```mermaid\n```\n\nEnd with:\n\n```\n```\n\nDo not include explanations.\n\n---\n\n# Diagram Root\n\nUse:\n\nflowchart TB\n\nSlices must appear **stacked vertically**.\n\n---\n\n# Slice Processing\n\nSlices appear in this format:\n\nSlice Name\nNarrative\n\nExample:\n\nRecord Laundry Expense\nRecord Laundry Expense → LogLaundryExpense → LaundryExpenseLogged\n\n---\n\nProcess slices **in the order provided**.\n\nNumber them sequentially:\n\nS1  \nS2  \nS3  \nS4  \n...\n\nEach slice must be inside a **Mermaid subgraph**:\n\nsubgraph S1[\"Slice Name\"]\n\n---\n\n# Determining Slice Type\n\nLook at arrow direction in the narrative.\n\nIf arrows are:\n\n→ → →\n\nThis is a **Command Slice**.\n\nIf arrows are:\n\n← ← ←\n\nThis is a **Projection Slice**.\n\n---\n\n# Command Slice Rendering\n\nNarrative:\n\nUI → Command → Event\n\nMermaid:\n\ndirection LR\n\nUI --> Command --> Event\n\n---\n\n# Projection Slice Rendering\n\nNarrative:\n\nUI ← Projection ← Event\n\nMermaid must be written as:\n\ndirection RL\n\nEvent --> Projection --> UI\n\nThis renders visually as:\n\nUI < Projection < Event\n\n---\n\n# Labeling Rules\n\nNode labels must use **exact text from the narrative**.\n\nDo not modify wording.\n\nNode roles are inferred by position:\n\nCommand Slice:\n\nNode 1 = UI  \nNode 2 = Command  \nNode 3 = Event  \n\nProjection Slice:\n\nNode 1 = UI  \nNode 2 = Projection  \nNode 3 = Event  \n\n---\n\n# Sticky Note Styling\n\nUse these class definitions exactly.\n\nclassDef ui fill:#dddddd,stroke:#888,stroke-width:1px,rx:6,ry:6\nclassDef command fill:#cfe8ff,stroke:#6aa9ff,stroke-width:1px,rx:6,ry:6\nclassDef projection fill:#d8f5d0,stroke:#7bc96f,stroke-width:1px,rx:6,ry:6\nclassDef event fill:#ffe6cc,stroke:#f0a35e,stroke-width:1px,rx:6,ry:6\n\n---\n\n# Slice Background Styling\n\nCommand slices:\n\nstyle S# fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\n\nProjection slices:\n\nstyle S# fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n\nReplace # with the slice number.\n\n---\n\n# Vertical Spacing\n\nAdd spacing between slices:\n\nS1 ~~~ S2\nS2 ~~~ S3\nS3 ~~~ S4\n\nContinue for all slices.\n\n---\n\n# Labeling Constraint\n\nNode labels must contain **only the business name**.\n\nDo not include prefixes such as:\n\nUI:\nCommand:\nEvent:\nProjection:\n\nColor communicates the role.\n\n---\n\n# Goal\n\nThe resulting diagram must visually resemble a **sticky-note Event Modeling board** with alternating **command and projection slices** stacked vertically.\n:::\n\n---\n\n# Why This Architecture Is Better\n\nYou now have **three clean layers**:\n\n```\nEvent Model (human authored)\n        ↓\nMermaid Generator Prompt\n        ↓\nDiagram\n```\n\nWhich means:\n\n✔ modeling is **tool-independent**  \n✔ Mermaid is just a **renderer**  \n✔ the model could later generate **docs, tests, APIs, or code**\n\nThis separation is **very aligned with Event Modeling philosophy from entity[\"people\",\"Adam Dymitruk\"]**.\n\n---\n\n# One Small Upgrade That Would Help NEXUS\n\nRight now slices are **independent**.\n\nBut Event Modeling often benefits from tracking **event reuse**:\n\nExample:\n\n```\nLaundryExpenseLogged\n```\n\nappears in multiple slices.\n\nIf we add **event IDs**, you could later:\n\n• align events vertically  \n• generate event catalogs  \n• generate projections automatically  \n\nI can show you a **very small extension to the model format** that unlocks that if you want."
+

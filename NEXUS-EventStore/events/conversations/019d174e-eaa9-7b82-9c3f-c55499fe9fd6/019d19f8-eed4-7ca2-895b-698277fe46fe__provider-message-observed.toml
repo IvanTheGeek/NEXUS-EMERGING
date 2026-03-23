@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-eed4-7ca2-895b-698277fe46fe"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7a46-afe6-70d54816ec16"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T07:18:19.915132Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "5a4066916c3c50b46a7ac62ebb71c4908e4110abc567a0dfdc4a2f07fd936b7a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf05c-0058-7f9b-b0cb-76ac2b0172b9"
+role = "assistant"
+sequence_hint = 100
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now I understand the separation. The model folder contains slice definitions and their artifacts (screens, etc.). Events are runtime data that live separately. Clean separation of schema/model from data.\n\nLet me propose a directory structure."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Clean separation — model is the schema, events are the data.\n\n```\ntruth-graph/\n  laundrylog/\n    model/\n      OpenApp_019644a1.../\n        019644a1..._C_OpenApp.toml\n        app-splash-screen.png\n      CheckSessionStatus_019644a1.../\n        019644a1..._V_CheckSessionStatus.toml\n        session-status-screen.png\n      RecordExpense_019644a1.../\n        019644a1..._C_RecordExpense.toml\n        expense-entry-screen.png\n    events/\n      (runtime event data - separate concern)\n```\n\nEach slice gets a folder named `SliceName_SliceId/` containing the TOML definition and any artifacts (screens, diagrams, notes) related to that slice."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Generating ask_user_input_v0..."
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"questions\": [\n    {\n      \"type\": \"single_select\",\n      \"options\": [\n        \"SliceName_SliceId (readable first)\",\n        \"SliceId_SliceName (sortable by time first)\",\n        \"Just SliceName (ID is inside the TOML already)\"\n      ],\n      \"question\": \"Folder naming for slice folders?\"\n    }\n  ]\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Waiting for user response on folder naming."
+

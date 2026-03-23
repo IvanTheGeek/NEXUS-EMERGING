@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-eecf-7487-b550-3ff81bd6f2bc"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea99-75a9-9d8c-8a1ae9f220e6"
+conversation_id = "019d174e-ea99-75a9-9d8c-8a1ae9f220e6"
+message_id = "019d174e-ea9a-7dc5-9534-f15e08e827e5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-16T00:21:21.523835Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "a72e2cf239bc48eb97dc928378ea42531fe747d8f6c46e4a8b044640a34f6e3d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+conversation_native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf404-0772-75ef-8e61-6a93f95e1d03"
+conversation_native_id = "90a5cbca-af54-46bc-81cc-251a99441eb5"
+message_native_id = "019cf404-0772-75ef-8e61-6a93f95e1d03"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf404-0772-75ef-8e61-6a93f95e1d03"
+role = "assistant"
+sequence_hint = 8
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants to replace the \"website\" look with a more functional app UI. Key changes:\n- Remove \"Sign In\" button\n- Remove \"Uptime\" stat (it's local WASM, not a service)\n- Remove the marketing/hero section feel\n- Make it look like an actual app interface - more like a dashboard/tool UI\n- Keep it muted, placeholder-y\n- eventmodel.ing URL\n- Open source, local WASM app\n\nLet me think about what a functional Event Modeling app screen would look like. Something like:\n- A sidebar with model/slice list\n- A main content area showing slices or a timeline\n- Toolbar at top\n\n\n- A properties panel on the side would really sell the \"app\" feel instead of a landing page."
+
+[[body.segments]]
+kind = "tool_use"
+text = "show_widget"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Content rendered and shown to the user. Please do not duplicate the shown content in text because it's already visually represented.\n[This tool call rendered an interactive widget in the chat. The user can already see the result — do not repeat it in text or with another visualization tool.]"
+
+[[body.segments]]
+kind = "reasoning"
+text = "That looks much better - a functional app UI with a sidebar showing slices, a main content area with slice details, command/event columns, and GWT rules. All muted tones, no marketing content, no sign in, no uptime stat."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Much more tool-like now — sidebar with your actual slice list, a detail panel showing command/event/GWT, and toolbar actions. Uses LaundryLog slice names as the placeholder data since that's what it's standing in for. Want any adjustments?"
+

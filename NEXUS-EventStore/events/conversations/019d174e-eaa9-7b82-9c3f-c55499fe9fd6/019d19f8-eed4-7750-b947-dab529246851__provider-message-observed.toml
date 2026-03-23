@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed4-7750-b947-dab529246851"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-79db-bec4-bafbe56a8f00"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T04:56:02.108653Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "fc4d6cdb3bb07d2dd19de09b30d3470d7485c45d748ed182307a14db5ceafcdb"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cefd9-bc90-7ffa-992a-74978bcf7ead"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cefd9-bc90-7ffa-992a-74978bcf7ead"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cefd9-bc90-7ffa-992a-74978bcf7ead"
+role = "assistant"
+sequence_hint = 68
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about when a GWT rule's decision branches based on a property value. For example, in a CommandSlice, the handler might need to check a property of the command or the current state to decide which event to emit.\n\nLike: if paymentMethod = \"card\" then emit one event, if paymentMethod = \"coins\" emit another. Or more likely, validation rules like \"if quantity > 10 then reject.\"\n\nThis is about the WHEN clause being more specific than just \"when this command arrives\" — it's \"when this command arrives AND this property has this value.\""
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good question. Right now `when` is just the command name. But sometimes the handler's decision depends on a property — like \"if expense already exists, reject\" or branching on payment method.\n\nA couple of ways this could look:\n\n```toml\n# Option A: when as a condition expression\n[[handler.gwt]]\nname = \"RejectDuplicate\"\ngiven = [\"LaundryExpenseRecorded\"]\nwhen = \"RecordLaundryExpense AND expenseId exists\"\nthen = \"RecordLaundryExpenseRejected\"\n\n# Option B: when stays as command, add a condition field\n[[handler.gwt]]\nname = \"RejectDuplicate\"\ngiven = [\"LaundryExpenseRecorded\"]\nwhen = \"RecordLaundryExpense\"\ncondition = \"expenseId exists in given events\"\nthen = \"RecordLaundryExpenseRejected\"\n```\n\nOption A keeps it compact but overloads `when`. Option B separates the trigger (which command) from the decision logic (what property matters).\n\nWhich direction fits your thinking, or is it something different entirely?"
+

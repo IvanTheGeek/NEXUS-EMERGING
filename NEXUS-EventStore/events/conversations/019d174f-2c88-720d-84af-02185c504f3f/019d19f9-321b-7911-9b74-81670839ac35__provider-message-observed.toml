@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-321b-7911-9b74-81670839ac35"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c88-720d-84af-02185c504f3f"
+conversation_id = "019d174f-2c88-720d-84af-02185c504f3f"
+message_id = "019d174f-2c88-7a53-b745-3ca265945fef"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-06T01:23:37.878339Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "50da8b2c8feda1d45c88afd5a1552871e3b9d89e6d92a21d5c5333e799848851"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69aa2c35-5c70-832f-a96c-7ab4c2c2d53c"
+conversation_native_id = "69aa2c35-5c70-832f-a96c-7ab4c2c2d53c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "12bf773f-fd24-4dab-8553-c1588eb6b700"
+conversation_native_id = "69aa2c35-5c70-832f-a96c-7ab4c2c2d53c"
+message_native_id = "12bf773f-fd24-4dab-8553-c1588eb6b700"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "12bf773f-fd24-4dab-8553-c1588eb6b700"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 5
+
+[[body.segments]]
+kind = "plain_text"
+text = "The confusing phrase **“once removed”** describes a **difference in generations**.\n\nThink of cousin relationships as two dimensions:\n\n1. **Cousin level** → how far back the shared ancestor is  \n2. **Removed** → how many generations apart the two people are\n\n---\n\n## 1. First Cousins\nTwo people are **first cousins** when they share **grandparents**.\n\nExample:\n\n- Grandparents  \n  - Parent A  \n    - **Alice**\n  - Parent B  \n    - **Bob**\n\n**Alice and Bob = first cousins**\n\nSame generation → **no “removed.”**\n\n---\n\n## 2. First Cousin Once Removed\nNow introduce a generation difference.\n\nExample:\n\n- Grandparents  \n  - Parent A  \n    - **Alice**\n      - **Emma**\n  - Parent B  \n    - **Bob**\n\nRelationships:\n\n- **Alice ↔ Bob** = first cousins  \n- **Emma ↔ Bob** = **first cousins once removed**\n\nWhy?  \nEmma is **one generation lower** than Bob.\n\nSo:\n\n- **Emma is Bob’s first cousin once removed**\n- **Bob is Emma’s first cousin once removed**\n\n“Removed” simply counts the **generation gap**.\n\n| Generation Gap | Term |\n|---|---|\n| 1 generation | once removed |\n| 2 generations | twice removed |\n\n---\n\n## 3. Visual Example\n\n```\nGreat-Grandparents\n        │\n   Grandparents\n      /     \\\n   Parent A  Parent B\n      │        │\n    Alice     Bob     ← first cousins\n      │\n    Emma             ← Emma & Bob = first cousins once removed\n```\n\n---\n\n## 4. Quick Rule\n1. **Find the closest shared ancestors.**\n2. **Count generations to each person.**\n3. The **smaller number − 1 = cousin level**  \n4. The **difference between generations = removed**\n\n---\n\n## 5. Your Earlier Question in This System\n\n- **Children of first cousins**\n\n```\nAlice ── Bob (first cousins)\n │        │\nEmma     Noah\n```\n\nEmma and Noah are in the **same generation** and share **great-grandparents**, so they are:\n\n**Second cousins (not removed).**\n\n---\n\nIf you'd like, I can also show a **very simple trick genealogists use to instantly compute cousin relationships** without drawing a tree. It's surprisingly elegant."
+

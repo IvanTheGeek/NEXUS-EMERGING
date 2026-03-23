@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee7e-7466-a920-8d4e74f0bf46"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9b1-7d98-a011-ed8cc3760351"
+conversation_id = "019d174e-e9b1-7d98-a011-ed8cc3760351"
+message_id = "019d174e-e9b1-79cf-8c73-84885e879cb0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T22:47:24.553599Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b45e38a8889426d92f538ccb8769907d9efe837efd7186b9c4b58baedec00d12"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5880f0f1-2c47-46dc-9ce4-89241cc6c101"
+conversation_native_id = "5880f0f1-2c47-46dc-9ce4-89241cc6c101"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ccfa2-269f-7180-9de4-8b553ba5f47a"
+conversation_native_id = "5880f0f1-2c47-46dc-9ce4-89241cc6c101"
+message_native_id = "019ccfa2-269f-7180-9de4-8b553ba5f47a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ccfa2-269f-7180-9de4-8b553ba5f47a"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants me to generate a Mermaid diagram using the instructions in the second file and the data in the first file. Let me produce the diagram."
+
+[[body.segments]]
+kind = "plain_text"
+text = "```mermaid\nflowchart TB\n\nsubgraph S1[\"Record Laundry Expense\"]\n  direction LR\n  UI1[\"Record Laundry Expense\"]:::ui --> CMD1[\"LogLaundryExpense\"]:::command --> EVT1[\"LaundryExpenseLogged\"]:::event\nend\n\nsubgraph S2[\"View Expense History\"]\n  direction RL\n  UI2[\"View Expense History\"]:::ui --> PROJ2[\"ExpenseHistoryProjection\"]:::projection --> EVT2[\"LaundryExpenseLogged\"]:::event\nend\n\nsubgraph S3[\"Modify Laundry Expense\"]\n  direction LR\n  UI3[\"Modify Laundry Expense\"]:::ui --> CMD3[\"EditLaundryExpense\"]:::command --> EVT3[\"LaundryExpenseEdited\"]:::event\nend\n\nsubgraph S4[\"View Updated Expense History\"]\n  direction RL\n  UI4[\"View Updated Expense History\"]:::ui --> PROJ4[\"ExpenseHistoryProjection\"]:::projection --> EVT4[\"LaundryExpenseEdited\"]:::event\nend\n\nsubgraph S5[\"Remove Laundry Expense\"]\n  direction LR\n  UI5[\"Remove Laundry Expense\"]:::ui --> CMD5[\"DeleteLaundryExpense\"]:::command --> EVT5[\"LaundryExpenseDeleted\"]:::event\nend\n\nsubgraph S6[\"View Final Expense History\"]\n  direction RL\n  UI6[\"View Final Expense History\"]:::ui --> PROJ6[\"ExpenseHistoryProjection\"]:::projection --> EVT6[\"LaundryExpenseDeleted\"]:::event\nend\n\nS1 ~~~ S2\nS2 ~~~ S3\nS3 ~~~ S4\nS4 ~~~ S5\nS5 ~~~ S6\n\nclassDef ui fill:#dddddd,stroke:#888,stroke-width:1px,rx:6,ry:6\nclassDef command fill:#cfe8ff,stroke:#6aa9ff,stroke-width:1px,rx:6,ry:6\nclassDef projection fill:#d8f5d0,stroke:#7bc96f,stroke-width:1px,rx:6,ry:6\nclassDef event fill:#ffe6cc,stroke:#f0a35e,stroke-width:1px,rx:6,ry:6\n\nstyle S1 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\nstyle S2 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\nstyle S3 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\nstyle S4 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\nstyle S5 fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\nstyle S6 fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n```"
+

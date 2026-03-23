@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3263-7a51-b72c-5bfc95f20c18"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+conversation_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+message_id = "019d174f-2cc4-7b2e-bc85-4d0ca69d99f1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-13T22:18:59.1614809Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "f3746d0996ff92908ac0741a8cb34f5593f30a028de40606e608cc251834ed2c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "d5a3b956-c46a-4b75-9af3-96edae951c1c"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+message_native_id = "d5a3b956-c46a-4b75-9af3-96edae951c1c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "d5a3b956-c46a-4b75-9af3-96edae951c1c"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 126
+
+[[body.segments]]
+kind = "plain_text"
+text = "Great example. This screen is a **perfect case to apply EMUI + Nexus cells** because it has:\n\n- **signals (UI interactions)**\n- **intents (commands)**\n- **facts (state changes)**\n- **interpretations (screens/views)**\n\nLet’s walk through the slices that would exist behind this screen.\n\n---\n\n# 1. First Slice – Show Location Screen\n\nWhen the app opens, the user sees this screen.\n\nThis is an **InterpretationCell** (ViewSlice).\n\n### Event Modeling Slice\n\n```\nEvent: AppOpened\n   ↓\nView: LocationSelectionScreen\n   ↓\nAgent: User\n```\n\n### Nexus Cell\n\n```\nFact → Interpretation\n```\n\n### GWT\n\n```toml\n[[slice]]\nAgent = \"User\"\nView  = \"LocationSelectionScreen\"\n\n[[slice.GWT]]\nGiven = [\"AppOpened\"]\nThen  = \"LocationSelectionScreen\"\n```\n\n---\n\n# 2. Signal – Tap \"Use GPS Location\"\n\nUser taps the button.\n\nThat is a **Signal**, not yet an Intent.\n\n```\nSignal: TapUseGps\n```\n\nMembrane converts it to an **Intent**.\n\n```\nIntent: RequestGpsLocation\n```\n\n---\n\n# 3. Slice – Request GPS Location\n\nThis is an **IntentCell / CommandSlice**.\n\n### Event Modeling Slice\n\n```\nUser\n ↓\nRequestGpsLocation\n ↓\nGpsLocationRequested\n```\n\n### GWT\n\n```toml\n[[slice]]\nAgent  = \"User\"\nIntent = \"RequestGpsLocation\"\n\n[[slice.GWT]]\nWhen = \"RequestGpsLocation\"\nThen = [\"GpsLocationRequested\"]\n```\n\n---\n\n# 4. Processor / External System\n\nThe device GPS returns coordinates.\n\nThis is an **Agent (External System)**.\n\n```\nAgent: DeviceGPS\n```\n\nIt produces a fact.\n\n```\nFact: GpsLocationDetected\n```\n\nEvent Modeling often shows this as a **processor slice**.\n\n```\nDeviceGPS\n ↓\nDetectLocation\n ↓\nGpsLocationDetected\n```\n\n---\n\n# 5. Interpretation – Populate Location Field\n\nNow the UI reacts.\n\n```\nGpsLocationDetected\n ↓\nLocationDetectedView\n ↓\nUser\n```\n\n### GWT\n\n```toml\n[[slice]]\nAgent = \"User\"\nView  = \"LocationDetectedView\"\n\n[[slice.GWT]]\nGiven = [\"GpsLocationDetected\"]\nThen  = \"LocationDetectedView\"\n```\n\n---\n\n# 6. Manual Entry Path\n\nIf the user types a location instead.\n\nSignal:\n\n```\nSignal: EnterLocationText\n```\n\nIntent:\n\n```\nIntent: SetLocation\n```\n\nSlice:\n\n```\nUser\n ↓\nSetLocation\n ↓\nLocationSet\n```\n\n### GWT\n\n```toml\n[[slice]]\nAgent  = \"User\"\nIntent = \"SetLocation\"\n\n[[slice.GWT]]\nWhen = \"SetLocation\"\nThen = [\"LocationSet\"]\n```\n\n---\n\n# 7. Interpretation – Enable \"Set Location\" Button\n\nTyping in the box changes UI state.\n\n```\nLocationTextEntered\n ↓\nEnableSetLocationButton\n ↓\nUser\n```\n\n---\n\n# 8. Full Event Modeling Flow\n\nPutting it together:\n\n```\nAppOpened\n ↓\nLocationSelectionScreen\n\nUser taps GPS\n ↓\nRequestGpsLocation\n ↓\nGpsLocationRequested\n ↓\nGpsLocationDetected\n ↓\nLocationDetectedView\n\nOR\n\nUser enters location\n ↓\nSetLocation\n ↓\nLocationSet\n```\n\n---\n\n# 9. Nexus Cell Structure\n\nUnderneath, the cells look like this:\n\n```\nInterpretationCell\n  AppOpened → LocationSelectionScreen\n\nCommandCell\n  RequestGpsLocation → GpsLocationRequested\n\nCommandCell\n  SetLocation → LocationSet\n\nInterpretationCell\n  GpsLocationDetected → LocationDetectedView\n```\n\n---\n\n# 10. Signals (UI Layer)\n\nSignals coming from this screen:\n\n```\nTapUseGps\nEnterLocationText\nTapSetLocation\n```\n\nThese are **membrane inputs**.\n\nThey become **Intents**.\n\n---\n\n# 11. What This Means for EMUI\n\nYour UI layer becomes a set of **Signal → Intent adapters**.\n\nExample:\n\n```\nTapUseGps\n  → RequestGpsLocation\n\nTapSetLocation\n  → SetLocation\n```\n\nSo EMUI is basically the **signal layer feeding intents into the domain**.\n\n---\n\n# 12. Interesting Observation\n\nThis screen actually reveals **two separate models**:\n\n### UI Model\n\n```\nsignals\nUI state\nbutton enablement\n```\n\n### Domain Model\n\n```\nlocation selected\nlaundry expenses\n```\n\nYour **Bridge idea** fits here perfectly.\n\n```\nUI EMUI model\n   ↓ bridge\nDomain Event Model\n```\n\n---\n\n✅ If you'd like, I can also show the **full 7-slice Event Model for LaundryLog's location flow** exactly the way Adam would diagram it. It’s actually a very nice tiny example domain."
+

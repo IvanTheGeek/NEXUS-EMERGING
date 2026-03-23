@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7ff2-81c2-64c9f3413dda"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+conversation_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+message_id = "019d174e-ea90-7e71-82c6-b73ab7cf5300"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T02:58:05.915612Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "98bddf00e43956e9b9343606ca04b331dbddda173d8f137ae0e942c4ba7e2689"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfee0-c5dc-7b50-87a6-fd6b2d44c501"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+message_native_id = "019cfee0-c5dc-7b50-87a6-fd6b2d44c501"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfee0-c5dc-7b50-87a6-fd6b2d44c501"
+role = "assistant"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is asking for analysis on the data modeling question: whole email as one Fact vs. each attachment as its own Fact, with threaded replies linked via InReplyTo.\n\nLet me think through this in NEXUS/LOGOS terms."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Here's how I'd analyze it against NEXUS Fact semantics:\n\n**Whole email as one Fact**\n- Clean ingestion boundary — one IMAP message = one immutable event in the world\n- `MessageId` is a natural, externally-assigned Fact ID (already unique, already stable)\n- `InReplyTo` / `References` give you edges to other Facts for free — threading is graph traversal, not schema design\n- Attachments embedded as sub-content within the Fact payload\n\n**Each attachment as its own Fact**\n- Attachment *is* a distinct artifact — it has its own identity, type, and content independent of the email\n- Same attachment forwarded in multiple emails shouldn't be duplicated — content hash as ID catches this\n- Enables separate processing pipelines (e.g. PDF extraction, image OCR) without coupling to the parent email Fact\n- Parent email Fact holds references to attachment Fact IDs\n\n**My analysis:**\n\nThese aren't in conflict — they're two tiers. An email is an *event* (something happened: someone sent you a thing). An attachment is an *artifact* (a thing that exists). Those are different ontological categories, which in NEXUS terms suggests they *should* be separate Fact types.\n\nThe model I'd suggest:\n\n```\nEmailReceived (Fact)\n  └── MessageId         ← natural external ID\n  └── InReplyTo         ← edge to parent EmailReceived Fact\n  └── References[]      ← full thread chain edges\n  └── From/To/Subject/Date/Body\n  └── AttachmentIds[]   ← references to Attachment Facts\n\nAttachment (Fact)\n  └── ContentHash       ← natural ID (deduplicates across emails)\n  └── FileName, MimeType, Size\n  └── SourceEmailId     ← back-reference\n  └── Content (blob ref or inline)\n```\n\nThis gives you:\n- Thread graphs via `InReplyTo` / `References`\n- Attachment deduplication via content hash\n- Separate processing pipelines per Fact type\n- CORTEX can reason about attachments independently of their carrier email\n\nThe only question is whether you want body text as inline content in the Fact, or extracted as its own Fact type for RAG chunking. That's the next natural split if email bodies get long.\n\nDoes that model fit how you're thinking about LOGOS Fact types?"
+

@@ -87,5 +87,6 @@ Optional overrides:
 - The raw object layer is ignored by Git in this repo for now.
 - The canonical event store is intended to be committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
+- The current importer baseline is `provider-export-v1`. Earlier history without explicit versioning is treated as the legacy `provider-export-v0` baseline for reparse comparisons.
 - Re-importing the same provider objects under the same normalization version will skip duplicates and emit revision events only when a known provider message is observed with changed canonical content.
 - Re-importing the same provider objects under a different normalization version appends new message observations instead of pretending the provider message itself changed.

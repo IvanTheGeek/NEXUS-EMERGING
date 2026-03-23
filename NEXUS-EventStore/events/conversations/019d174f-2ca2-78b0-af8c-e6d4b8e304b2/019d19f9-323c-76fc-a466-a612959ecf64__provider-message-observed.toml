@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323c-76fc-a466-a612959ecf64"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca2-78b0-af8c-e6d4b8e304b2"
+conversation_id = "019d174f-2ca2-78b0-af8c-e6d4b8e304b2"
+message_id = "019d174f-2ca2-790d-a4d3-00ac489212b8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T04:49:14.1260669Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "3c8318f724d5818f8ad5c5f30215bf9a206f2783f83a196572a7f41109ccc352"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69afa277-fad8-8330-9869-1ed943eeb7cf"
+conversation_native_id = "69afa277-fad8-8330-9869-1ed943eeb7cf"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "322aed41-2e62-45e8-810b-f7d7e313ef76"
+conversation_native_id = "69afa277-fad8-8330-9869-1ed943eeb7cf"
+message_native_id = "322aed41-2e62-45e8-810b-f7d7e313ef76"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "322aed41-2e62-45e8-810b-f7d7e313ef76"
+role = "assistant"
+model_name = "gpt-5-t-mini"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "plain_text"
+text = "Nice — I pulled together what we’d already sketched in our recent chats (I found the notes that show the two slices: “Slice 1 — Command  UI → Command → Event” and the corrected “Slice 2 — Projection  UI < Projection < Event”) and combined that with common event-modeling practice. Below is a compact, practical list of the layers you’ve been referring to and what each means when you treat an event model as a graph.\n\n# Layers of an event model (graph view)\n1. **Behavior (Commands → Events)**  \n   - What users/actors *ask* the system to do (commands) and what *actually happened* (events).  \n   - Graph: commands point to events (causation edges).\n\n2. **Domain / Structure (Entities, Aggregates, Domain Concepts)**  \n   - The conceptual data model — domain objects, identity boundaries, invariants.  \n   - Graph: entities as nodes; events apply to entity nodes or aggregate nodes.\n\n3. **Projections / Read Models**  \n   - Materialized views built from events for read queries.  \n   - Graph: events flow into projection nodes; projections serve UI and queries.\n\n4. **Presentation / UI**  \n   - Screens, components, and UX flows that trigger commands and read projections.  \n   - Graph: UI nodes link to command nodes (user → command) and to projection nodes (read-from).\n\n5. **Process / Policies / Sagas**  \n   - Long-running workflows and business policies that react to events and emit commands/events.  \n   - Graph: event → policy node → command/event (fan-out or chained edges).\n\n6. **Storage / Persistence (Event Store)**  \n   - Where events are durably recorded. Often modeled as a node that events are appended to.  \n   - Graph: events are produced into the event-store node; projections subscribe/read.\n\n7. **Integration / Boundaries (External Systems, APIs)**  \n   - Connections to other systems (notifications, payment gateways). Represented as nodes the system emits events to or receives commands from.  \n   - Graph: bi-directional edges for inbound/outbound integration.\n\n8. **Security & Authorization**  \n   - Rules that gate commands and hide projections. Represented as constraints on edges or conditional nodes.  \n   - Graph: edges annotated with auth/permission constraints.\n\n9. **Monitoring / Analytics / Reporting**  \n   - Aggregated event consumers for metrics and auditing. Graph nodes consume event streams but don’t affect domain state.\n\n10. **Deployment / Infra (optional layer)**  \n   - Operational view (where things run, partitions, retention policy). Useful when the graph needs operational constraints (retention, read model sync).\n\n# How this maps to “slices” you sketched\n- Your **Slice 1** (UI → Command → Event) is the *behavior* slice.  \n- Your **Slice 2** (UI < Projection < Event) is the *presentation/read* slice.  \n- Add a third slice for **process/policies**: Event → Policy/Saga → Command (or Event).  \n- Add a storage slice: Event → EventStore → (Projection / Audit / Analytics).\n\n# Why graph thinking helps\n- Nodes = actors, commands, events, projections, policies, external systems.  \n- Edges = “causes”, “reads from”, “updates”, “publishes to”.  \n- Graph queries let you answer questions like “which UI flows can cause this projection to change?” or “which policies are triggered by this event?”\n\n# Quick mermaid example (toy)\n```\ngraph LR\n  UI[UI: Order screen] -->|submit| CMD[Command: PlaceOrder]\n  CMD -->|produces| EVT[Event: OrderPlaced]\n  EVT --> PRJ[Projection: OrdersList]\n  EVT --> SAGA[Policy: PaymentSaga]\n  SAGA -->|issues| CMD2[Command: ChargeCard]\n  EVT -->|append| ES[EventStore]\n  ES --> PRJ\n  EVT --> ANALYTICS[Analytics]\n  EXTSYS[Payment Gateway] <--|call| SAGA\n```\n\nIf you want, I can:\n- collapse our past notes into a single canonical diagram (Mermaid or DOT) that matches your Nexus/slices language; or  \n- produce a short notation (TOML or YAML) that enumerates nodes and edges so you can feed it into your tooling.\n\nWhich would you like me to produce now?"
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323d-77b2-8e83-a23df196023f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+conversation_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+message_id = "019d174f-2cae-7312-ba91-ddfdc45a132b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T12:19:22.406347Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "5be0b398202ca5688e3c0ba4ea4ab2bb983bd3788daa390353e0ba6098e9e4bd"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "a04bbca4-cb1a-4470-a0df-0fc31100b2b8"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+message_native_id = "a04bbca4-cb1a-4470-a0df-0fc31100b2b8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "a04bbca4-cb1a-4470-a0df-0fc31100b2b8"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 14
+
+[[body.segments]]
+kind = "plain_text"
+text = "Short answer: **yes, most of the time Adam’s Given–When–Then lines represent policies**, but with an important nuance.\n\nThe Given–When–Then structure in entity[\"people\",\"Adam Dymitruk\"]’s **Event Modeling** is a **behavior specification**, and in many cases that behavior is exactly what we would call a **policy** in event-driven architecture.\n\nHowever, **not every Given–When–Then is a policy**. Some represent **aggregate/domain decision logic** instead.\n\nUnderstanding that distinction will make your models much clearer.\n\n---\n\n# 1. What Given–When–Then actually describes\n\nThe structure comes from **behavior-driven development (BDD)**.\n\n```\nGiven  (existing state / prior events)\nWhen   (a command happens)\nThen   (a new event occurs)\n```\n\nExample:\n\n```\nGiven  LaundryLoadStarted\nWhen   CompleteLaundryLoad\nThen   LaundryLoadCompleted\n```\n\nThis describes **a rule about system behavior**.\n\n---\n\n# 2. What a policy is in event systems\n\nIn event-driven architecture a **policy** is typically:\n\n```\nEvent → Command\n```\n\nMeaning:\n\n> When an event occurs, the system automatically issues a command.\n\nExample:\n\n```\nLaundryLoadCompleted\n    ↓\nSendNotification\n```\n\nPolicies are sometimes called:\n\n- process managers\n- sagas\n- reactors\n- automations\n\n---\n\n# 3. Where Given–When–Then fits\n\nA Given–When–Then scenario actually describes:\n\n```\nState + Command → Event\n```\n\nGraphically:\n\n```\nEvents (Given)\n      ↓\nCommand (When)\n      ↓\nEvent (Then)\n```\n\nThat is **domain decision logic**.\n\n---\n\n# 4. The key distinction\n\nThere are two different causal patterns in event systems:\n\n### Command decision\n\n```\nState + Command → Event\n```\n\nExample:\n\n```\nGiven  MachineAvailable\nWhen   StartLaundryLoad\nThen   LaundryLoadStarted\n```\n\nThis is **domain logic**.\n\nUsually inside a **command handler / aggregate / decision function**.\n\n---\n\n### Policy automation\n\n```\nEvent → Command\n```\n\nExample:\n\n```\nLaundryLoadCompleted\n    ↓\nSendCompletionNotification\n```\n\nThis is a **policy**.\n\n---\n\n# 5. How Event Modeling mixes these visually\n\nEvent Modeling boards typically show both:\n\n```\nCommand → Event\nEvent → Policy → Command\n```\n\nBut when writing **Given–When–Then scenarios**, people often write them for **both kinds of behavior**.\n\nExample policy written in BDD form:\n\n```\nGiven LaundryLoadCompleted\nWhen  SystemProcessesEvent\nThen  NotificationSent\n```\n\nWhich hides the underlying:\n\n```\nEvent → Command → Event\n```\n\n---\n\n# 6. So the mapping looks like this\n\n| Concept | Graph Pattern |\n|------|------|\nCommand decision | State + Command → Event |\nPolicy | Event → Command |\nProjection | Event → Read Model |\n\nGiven–When–Then typically models **the first**.\n\nBut sometimes it implicitly includes the second.\n\n---\n\n# 7. In a graph model (which you’ve been exploring)\n\nThese become distinct node types:\n\n```\nCommand\nEvent\nPolicy\nProjection\n```\n\nExample:\n\n```\nStartLaundryLoad (Command)\n      │\n      ▼\nLaundryLoadStarted (Event)\n      │\n      ▼\nNotifyUserPolicy\n      │\n      ▼\nSendNotification (Command)\n      │\n      ▼\nNotificationSent (Event)\n```\n\nNow the causal structure is explicit.\n\n---\n\n# 8. Why this matters for your architecture\n\nIf you separate them cleanly you get a very nice graph:\n\n```\nCommands → Events → Policies → Commands → Events\n                   ↓\n               Projections\n                   ↓\n               Read Models\n```\n\nThis fits extremely well with your **slice / graph architecture idea**.\n\n---\n\n# 9. A good rule of thumb\n\nWhen modeling:\n\n**Ask two questions**\n\n1️⃣ *Did a human/system request something?*  \n→ **Command**\n\n2️⃣ *Did the system automatically react?*  \n→ **Policy**\n\n---\n\n# 10. My recommendation for your modeling style\n\nSince you are building a **graph-oriented architecture**, I would explicitly model policies as their own node type.\n\nExample node types:\n\n```\nCommand\nEvent\nPolicy\nProjection\nReadModel\nView\n```\n\nThat makes causal flows much easier to analyze.\n\n---\n\n✅ **Command decision**\n\n```\nCommand → Event\n```\n\n⚙️ **Policy**\n\n```\nEvent → Command\n```\n\n📊 **Projection**\n\n```\nEvent → Read Model\n```\n\n---\n\nIf you'd like, I can also show you something that tends to **blow people’s minds once they see it**:\n\nThere are actually **only three fundamental transformation types in an event-modeled system**, and everything on the board is one of those three."
+

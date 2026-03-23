@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea2-7888-b385-983f56ae8825"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea22-7140-9be3-5b273345bbe0"
+conversation_id = "019d174e-ea22-7140-9be3-5b273345bbe0"
+message_id = "019d174e-ea22-7fba-9827-2a614b15eff2"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-22T12:07:29.934718Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "178eab82803bb21878257ec11fc5b92bd77a1a3b874946c186d6cce595ebbf8f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+conversation_native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019aab76-0d19-756f-b52a-aa78ffd7fe56"
+conversation_native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+message_native_id = "019aab76-0d19-756f-b52a-aa78ffd7fe56"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019aab76-0d19-756f-b52a-aa78ffd7fe56"
+role = "assistant"
+sequence_hint = 15
+
+[[body.segments]]
+kind = "reasoning"
+text = "This is a really good question about linked clones in VMware. Let me think about how this works:\n\nIn VMware:\n- **Linked Clone**: Creates a new VM that references the parent VM's disk as a base, with only delta changes stored\n- **Snapshot-based**: Linked clones are created from a snapshot of the parent VM\n- **Key limitation**: The linked clone is tied to the snapshot at creation time, NOT the current state of the parent\n\nSo the answer is **NO** - if you update the base VM after creating linked clones, those updates do NOT flow through to the existing linked clones. The linked clones are frozen at the snapshot point.\n\n**How it actually works:**\n1. Create base VM\n2. Take snapshot \"Clean Base v1\"\n3. Create linked clones from \"Clean Base v1\" snapshot\n4. Update base VM (install new software, updates, etc.)\n5. Existing linked clones still reference \"Clean Base v1\" snapshot - they don't see the updates\n6. Take new snapshot \"Clean Base v2\"\n7. NEW linked clones can be created from \"Clean Base v2\", but old ones still on v1\n\nThis is different from some container/image systems where you can update a base and have it propagate.\n\n**Workarounds if you want to update:**\n- Create new linked clones from a new snapshot after updates\n- Delete old linked clones and recreate\n- Or just use full clones and accept the disk space cost\n\nFor Ivan's use case of \"test craziness and not mess up host\", linked clones could work if:\n- He doesn't care about updating the base after clones exist\n- He's willing to recreate clones when he wants updates\n- Disk space is a concern\n\nBut given he has a 64GB RAM machine and modern storage, full clones are probably better for true isolation."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**No - linked clones are frozen at the snapshot point.**\n\n**How it actually works:**\n1. Create base VM\n2. Snapshot: \"Clean Base v1\"\n3. Create linked clones → they reference \"Clean Base v1\" snapshot\n4. **Update base VM** (new software, patches, etc.)\n5. **Existing linked clones DON'T see updates** - still frozen at v1\n6. Take new snapshot: \"Clean Base v2\"\n7. Create NEW linked clones from v2, but old clones still on v1\n\n**To update linked clones, you must:**\n- Delete old linked clones\n- Create new ones from updated snapshot\n- Lose any changes in the old clones\n\n**For your \"test craziness\" workflow:**\n\n**Full Clones** are better because:\n- True independence - break one, others unaffected\n- Can update base without orphaning clones\n- Simpler mental model\n- Disk space isn't your constraint (you have modern storage)\n\n**Linked Clones** only make sense if:\n- Extreme disk space constraints\n- Short-lived test VMs you delete frequently\n- Don't plan to update base\n\n**Stick with Full Clones for your use case?**"
+

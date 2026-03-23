@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee88-7362-ab13-928bb695ea30"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9c1-7e47-9a32-216a2966e88b"
+conversation_id = "019d174e-e9c1-7e47-9a32-216a2966e88b"
+message_id = "019d174e-e9c1-7e51-927e-42ad4a1e9505"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-08T23:50:39.164391Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "3533975e79637134cc462a43c9cb17564b2538af57ddd1b4087a3545fbbfd8c8"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "00617440-5251-444a-a960-fe983113d2f5"
+conversation_native_id = "00617440-5251-444a-a960-fe983113d2f5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a65e0-e64c-761b-9e77-ab73e95cfa00"
+conversation_native_id = "00617440-5251-444a-a960-fe983113d2f5"
+message_native_id = "019a65e0-e64c-761b-9e77-ab73e95cfa00"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a65e0-e64c-761b-9e77-ab73e95cfa00"
+role = "assistant"
+sequence_hint = 60
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ah, this is a good point. In the concept PDF, the partial days (start and end) are shown with a different shade of green - lighter green for partial days vs. darker green for full days. The user is suggesting that maybe showing them as 3/4 filled could be even more visual - like a pie chart or curved indicator showing 75% filled.\n\nThey mention \"with a curve with the appropriate open parts being relative to a start day or an end day\" - so maybe:\n- Start day: show 3/4 filled with the \"empty\" part on the left side (representing the partial start)\n- End day: show 3/4 filled with the \"empty\" part on the right side (representing the partial end)\n\nThis would visually communicate:\n1. That these are partial days\n2. Which end of the trip they are (start vs end)\n3. The actual proportion (75%)\n\nSimilar to how the concept shows lighter green for partial days, but more visually explicit about the 75% calculation."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Noted:\n- **Partial days (start/end) need clearer visual distinction** from full days\n- **Current approach:** Just lighter green isn't clear enough\n- **Better approach:** Show partial days as **3/4 filled** graphically\n  - Start day: 3/4 filled with empty/open portion indicating it's a start\n  - End day: 3/4 filled with empty/open portion indicating it's an end\n  - Visual curve/shape to show the proportion\n- **Like your concept** but more explicit about the 75% partial calculation\n\nWaiting for more notes..."
+

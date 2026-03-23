@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-7a29-80dc-a1b93e20d975"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7d6b-8f59-8331a80ee5c5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:28:31.688543Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c086439456e8e06d00546a54dcec2903e68837cf9dec48351e68d91bd2d55511"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a926e-65d8-72ca-8ffd-47cd15bb02c7"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a926e-65d8-72ca-8ffd-47cd15bb02c7"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a926e-65d8-72ca-8ffd-47cd15bb02c7"
+role = "assistant"
+sequence_hint = 56
+
+[[body.segments]]
+kind = "reasoning"
+text = "The curl command returned nothing, which is odd. It should have returned an unauthorized message. Let me check what's happening. The SSE endpoint might be hanging waiting for events, or there might be an issue with the authentication middleware.\n\nLet me suggest testing with verbose output to see what's actually happening."
+
+[[body.segments]]
+kind = "plain_text"
+text = "The request is hanging (SSE keeps connection open). Let's test with a timeout and verbose output:\n\n```bash\n# Test with timeout to see headers\ncurl -v --max-time 2 https://mcp.nexus.ivanthegeek.com/sse/events 2>&1 | head -30\n```\n\nThis will show us if auth is working. If it's streaming events without requiring auth, we have a problem. Show me the output.\n\n---\n\n**Token Usage:**\n- Last response: ~102 tokens\n- Session total: 79,995 tokens used\n- Remaining: 110,005 tokens (57.9% available)"
+

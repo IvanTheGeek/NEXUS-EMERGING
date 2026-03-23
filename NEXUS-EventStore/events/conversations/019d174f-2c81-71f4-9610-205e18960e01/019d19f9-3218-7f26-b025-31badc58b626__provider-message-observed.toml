@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3218-7f26-b025-31badc58b626"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-746d-9ded-ee56ab49f940"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T13:33:48.243807Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "473b4418ae6c34284461eda4573e1287a782d1ec8799145d7dcb1dab44817aa1"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "2d41da5d-e2e9-4fa4-a87d-3b541fdbb787"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "2d41da5d-e2e9-4fa4-a87d-3b541fdbb787"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "2d41da5d-e2e9-4fa4-a87d-3b541fdbb787"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 65
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — you're exactly right, and thank you for pointing that out. My earlier explanation blurred two concepts together a bit. What you’re describing matches **entity[\"people\",\"Adam Dymitruk\"]’s entity[\"software_methodology\",\"Event Modeling\"] more precisely.\n\nLet’s align the terminology.\n\n---\n\n# The Two Slice Types in Event Modeling\n\nEvent Modeling really revolves around **two slice types**.\n\n## 1️⃣ Command Slice\n\nThis represents **behavior that changes the system**.\n\nStructure:\n\n```\nUI\nCOMMAND\nEVENT\n```\n\nExample:\n\n```\nAdd Load Button\nAddLaundryLoad\nLaundryLoadAdded\n```\n\nThis slice answers:\n\n```\nHow does a user cause an event?\n```\n\n---\n\n## 2️⃣ Projection Slice\n\nThis represents **behavior that derives state from events**.\n\nStructure:\n\n```\nEVENTS\nPROJECTION\nUI\n```\n\nExample:\n\n```\nLaundryLoadAdded\nLaundryLoadStarted\nLaundryLoadFinished\n↓\nLaundryLogProjection\n↓\nLaundryLog Screen\n```\n\nThis slice answers:\n\n```\nHow does the system display state from events?\n```\n\n---\n\n# Where Given-When-Then Fits\n\nAdam often describes **command slices** using **Given–When–Then**.\n\nStructure:\n\n```\nGiven\nWhen\nThen\n```\n\nMapping to event modeling:\n\n```\nGiven = current state (from past events)\nWhen  = command\nThen  = resulting event\n```\n\nExample:\n\n```\nGiven\nLoad exists and is not started\n\nWhen\nStartLaundryLoad\n\nThen\nLaundryLoadStarted\n```\n\nSo the command slice can be thought of like this:\n\n```\nGiven (state from prior events)\n↓\nWhen (command)\n↓\nThen (event)\n```\n\n---\n\n# Where My Earlier “Invariant” Fits\n\nWhat I called **invariants** live inside the **Given condition**.\n\nExample rule:\n\n```\nA load cannot be started twice\n```\n\nExpressed as Given-When-Then:\n\n```\nGiven\nLoad already started\n\nWhen\nStartLaundryLoad\n\nThen\nReject command\n```\n\nOr the valid case:\n\n```\nGiven\nLoad exists and is not started\n\nWhen\nStartLaundryLoad\n\nThen\nLaundryLoadStarted\n```\n\nSo yes — the **invariant is encoded in the Given condition**.\n\nYou’re correct to notice the alignment.\n\n---\n\n# The Clean Mental Model\n\nCommand slice:\n\n```\nGiven (state from past events)\nWhen  (command)\nThen  (event)\n```\n\nProjection slice:\n\n```\nEvents\n↓\nProjection\n↓\nUI\n```\n\nThese are the **two halves of the system**.\n\n```\nwrite side\nread side\n```\n\nOr more visually:\n\n```\nUSER ACTION\n↓\nCOMMAND SLICE\n↓\nEVENT\n↓\nPROJECTION SLICE\n↓\nUI STATE\n```\n\n---\n\n# Why Event Modeling Separates Them\n\nThis separation keeps two concerns clean.\n\n### Write Side\n\n```\ndeciding if an event is allowed\n```\n\nCommand slice.\n\n---\n\n### Read Side\n\n```\ncomputing views from events\n```\n\nProjection slice.\n\n---\n\n# Where This Matters for Your emIDE Idea\n\nYour modeling environment probably needs to represent **both slice types explicitly**.\n\nSomething like:\n\n```\nCommand Slice\nUI → Command → Event\n```\n\n```\nProjection Slice\nEvents → Projection → UI\n```\n\nThose become **two primitives in the modeling language**.\n\nNot just arbitrary blocks.\n\n---\n\n# One Subtle Thing Adam Mentions That’s Important\n\nProjection slices often consume **events from many earlier slices**.\n\nExample:\n\n```\nEvent 1  LaundryLoadAdded\nEvent 2  LaundryLoadStarted\nEvent 3  LaundryLoadFinished\n```\n\nAll feeding:\n\n```\nLaundryLogProjection\n```\n\nWhich produces:\n\n```\nLaundryLog UI\n```\n\nSo projection slices tend to **span the timeline**.\n\nThat’s why arrows are often drawn backward in the model.\n\n---\n\n# Why Your Hover Idea Fits Perfectly\n\nYour earlier concept:\n\n```\nhover projection\n→ highlight source events\n```\n\nmaps directly to this projection slice structure.\n\nThe viewer would simply reveal:\n\n```\nevents consumed by this projection\n```\n\nWhich is normally only implied in static diagrams.\n\n---\n\n# One Thing I’m Curious About in Your Nexus Thinking\n\nAdam’s model basically has **two slice types**:\n\n```\nCommand Slice\nProjection Slice\n```\n\nBut your earlier **“replace slices instead of mutating them”** principle makes me wonder something.\n\nAre you imagining that **slices themselves become versionable artifacts**, something like:\n\n```\nSlice v1\nSlice v2\nSlice v3\n```\n\nthat can be swapped or evolved as the system design changes?\n\nBecause if so, that has **big implications for how an emIDE would store and manage the model.**"
+

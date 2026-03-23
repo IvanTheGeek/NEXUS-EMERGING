@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-7a26-9bdd-c3bf62d30d2d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-73b7-9896-d6092cd6af0f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T15:42:05.311843Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7e886519b3c22b4acc90aa909d2ad57b40ae4d50c7b8b10475459c884aa5d7ca"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019caa10-0d29-7d6b-9996-7ae5530f94ea"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019caa10-0d29-7d6b-9996-7ae5530f94ea"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019caa10-0d29-7d6b-9996-7ae5530f94ea"
+role = "assistant"
+sequence_hint = 271
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants me to draft the Talkyard Limitations topic that was suggested earlier. Note the correction: Talkyard's types are Discussion, Wiki, Question, Problem, Idea — not \"Q&A\". Also, the title should drop the \"Limitation —\" prefix per our earlier decision.\n\n**Title:** `No custom topic types or type-specific workflows`\n\nFormat follows the other limitation topics in the category."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Title:** `No custom topic types or type-specific workflows`\n\n**Type:** Discussion\n\n```markdown\n**What the limitation is**\nTalkyard offers a fixed set of topic types: Discussion, Wiki, Question, Problem, Idea. There is no ability to define custom types, attach custom status models to them, or modify the behavior of existing types.\n\n**How it was discovered**\nStructuring the Talkyard Limitations subcategory. The topics here needed to convey \"immutable observed fact\" — something that exists as a permanent record with no resolution workflow. None of the five available types fit precisely. Problem was the closest but imposes a New/Planned/Started/Done status model that implies the limitation is something to be resolved, which misrepresents what these topics are. Discussion was chosen as the least wrong option because it imposes nothing.\n\n**Impact**\nEvery domain has its own kinds of things with their own lifecycles. Forcing them into a fixed type set means either picking the least wrong option or misrepresenting the nature of the content. The type system cannot be made to reflect the actual structure of the work.\n\n**Workaround**\nDiscussion type used for limitation records — it imposes no status model and makes no claims about the topic's lifecycle. README documentation carries the meaning that the type cannot express.\n\n**Status**\nWorkaround in place. Accepted constraint for interim platform use.\n\n**LOGOS Requirement**\nSee: LOGOS → Requirements — Custom topic types with definable status workflows\n```"
+

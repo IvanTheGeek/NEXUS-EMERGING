@@ -1,0 +1,82 @@
+schema_version = 1
+event_id = "019d19f8-ee94-713e-91f7-5e9a1e9d4624"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+conversation_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+message_id = "019d174e-e9f5-754f-bec9-993d7a002064"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T17:28:18.00036Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "b8a4ed8f2d59f704601130ac8fc686e1af49e6b47be2feecc40bcf731d78a6af"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a92db-68f0-7340-8d6c-5ffaaec7914a"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+message_native_id = "019a92db-68f0-7340-8d6c-5ffaaec7914a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a92db-68f0-7340-8d6c-5ffaaec7914a"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking me to read a specific file: quick-start/mcp-stdio-investigation.md\n\nI tried /home/claude but got access denied. The allowed directories seem to be /home/linux based on the error. Let me search there.\n\nThey also uploaded a status-check file that says the status file isn't found and to use 'update-status' prompt. That's separate from what they're asking now though.\n\nLet me search for the file in /home/linux."
+
+[[body.segments]]
+kind = "tool_use"
+text = "search_files"
+
+[[body.segments]]
+kind = "tool_result"
+text = "/home/linux/Nexus-Data/quick-start/mcp-stdio-investigation.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Found it! Now let me read it."
+
+[[body.segments]]
+kind = "tool_use"
+text = "read_text_file"
+
+[[body.segments]]
+kind = "tool_result"
+text = "# MCP Stdio Format Investigation - Nov 17, 2025\n\n## TL;DR\n\n**WRONG DIAGNOSIS, WRONG FIX**: Initially believed MCP stdio required Content-Length framing. This was INCORRECT. MCP stdio uses **NDJSON format** (one JSON object per line). The Content-Length \"fix\" actually BROKE it.\n\n## Problem Statement\n\nClaude Desktop connected to VPS via SSH stdio but showed **NO resources visible** in the MCP panel, despite 100+ markdown files available.\n\n## Investigation Timeline\n\n### Initial Diagnosis (INCORRECT ❌)\n\n**Hypothesis**: Server was sending plain NDJSON but Claude Desktop expected Content-Length framing.\n\n**Reasoning**:\n- Found code reading requests WITH Content-Length headers (readNextMessage in StdioTransport.fs)\n- Assumed protocol should be symmetric (read AND write use Content-Length)\n- LSP (Language Server Protocol) uses Content-Length framing for stdio\n\n**Action Taken**:\n- Added `writeResponse()` function in StdioTransport.fs\n- Wrote responses as: `Content-Length: {bytes}\\r\\n\\r\\n{json}`\n- Tested manually - appeared to work\n- Deployed to VPS\n- Committed as \"fix\" (commit 6eecee9)\n\n**Result**: Claude Desktop connection **FAILED** with timeout errors\n\n### Log Analysis (Revealing the Truth ✅)\n\n**Evidence from `/home/linux/.config/Claude/logs/mcp-server-nexus-vps.log`:**\n\n```\n2025-11-17T16:57:09.233Z [nexus-vps] [error] Unexpected token 'C', \"Content-Length: 203\" is not valid JSON {\n2025-11-17T16:57:09.234Z [nexus-vps] [error] Unexpected end of JSON input {\n2025-11-17T16:58:08.639Z [nexus-vps] [info] Message from client: {...\"requestId\":0,\"reason\":\"McpError: MCP error -32001: Request timed out\"...}\n```\n\n**Evidence from working Filesystem MCP server:**\n\n```\n2025-11-17T16:13:51.285Z [Filesystem] [info] Message from server: {\"result\":{\"protocolVersion\":\"2025-06-18\",...}}\n```\n\n**NO Content-Length headers!** Just plain JSON on a line.\n\n## Root Cause Analysis\n\n### Why the Confusion?\n\n1. **Asymmetric Protocol**: MCP stdio READS using Content-Length framing BUT writes plain NDJSON\n   - Requests (incoming): `Content-Length: {bytes}\\r\\n\\r\\n{json}`\n   - Responses (outgoing): `{json}\\n`\n\n2. **LSP Influence**: Language Server Protocol uses Content-Length for BOTH directions\n   - I incorrectly assumed MCP followed LSP pattern\n   - MCP specification uses different framing\n\n3. **Manual Testing Artifact**: My manual tests with Content-Length \"worked\" because I was testing server-side only\n   - Didn't test actual Claude Desktop parsing\n   - Should have compared with working MCP server logs first\n\n### The Real Problem (Still Unknown)\n\n**Why were resources originally invisible?**\n\nThe original NDJSON code was CORRECT. The resource visibility issue must have had a different cause:\n- Possible causes to investigate:\n  - Empty `/data/event-store` directory (was fixed by syncing data)\n  - Container restart issues\n  - Timing issues on initialization\n  - SSH connection instability\n\nThe \"fix\" that seemed to work may have just coincided with syncing the event store data.\n\n## Correct Solution\n\n### Reverted Changes\n\n**File**: `src/FnMCP.Nexus/Transport/StdioTransport.fs`\n\n**BEFORE (BROKEN - with Content-Length):**\n```fsharp\nlet writeResponse (json: string) =\n    let bytes = Encoding.UTF8.GetBytes(json)\n    let contentLength = bytes.Length\n    Console.Write($\"Content-Length: {contentLength}\\r\\n\\r\\n\")\n    Console.Out.Flush()\n    Console.Out.Write(json)\n    Console.Out.Flush()\n\n// ... later ...\nwriteResponse json\n```\n\n**AFTER (CORRECT - NDJSON):**\n```fsharp\nConsole.WriteLine(json)\nConsole.Out.Flush()\n```\n\n### Verification\n\n**Local Test:**\n```bash\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{...}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"resources/list\"}' | \\\n  CONTEXT_LIBRARY_PATH=/home/linux/Nexus-Data \\\n  dotnet run -- /home/linux/Nexus-Data\n```\n\n**Output Format (Correct NDJSON):**\n```\n{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{...}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"result\":{\"resources\":[...]}}\n```\n\n**VPS Test:**\n```bash\necho '...' | ssh root@66.179.208.238 \\\n  \"docker exec -i -e NEXUS_TRANSPORT=stdio nexus-mcp ./FnMCP.Nexus /data/event-store\"\n```\n\n**Result**: ✅ 100+ resources returned in proper NDJSON format\n\n## Lessons Learned\n\n### 1. **Compare with Working Examples FIRST**\n\nBefore implementing a \"fix\", examine logs from working MCP servers (like Filesystem) to understand the expected format.\n\n**What I should have done**:\n```bash\n# Compare formats\ntail -100 /home/linux/.config/Claude/logs/mcp-server-Filesystem.log | grep \"Message from server\"\ntail -100 /home/linux/.config/Claude/logs/mcp-server-nexus-vps.log | grep \"Message from server\"\n```\n\n### 2. **Asymmetric Protocols Exist**\n\nDon't assume protocol symmetry. MCP stdio is intentionally asymmetric:\n- **Requests**: Need Content-Length because multiple processes might write (need framing)\n- **Responses**: Single process (server) writes sequentially (NDJSON sufficient)\n\n### 3. **Test with Actual Client**\n\nManual testing showed \"Content-Length works!\" but didn't reveal Claude Desktop couldn't parse it.\n\n**Better test strategy**:\n1. Check actual client logs FIRST\n2. Compare with working server logs\n3. THEN implement fix\n4. Verify in client logs again\n\n### 4. **Document Assumptions**\n\nThe MCP specification should be consulted for stdio framing. Assumptions based on LSP experience were incorrect.\n\n**MCP Stdio Specification**:\n- ✅ Requests: Content-Length framing (from client)\n- ✅ Responses: NDJSON format (from server)\n\n### 5. **Correlation ≠ Causation**\n\nThe \"fix\" seemed to work because I also:\n- Synced event store data to VPS\n- Restarted container\n- Fixed Docker ENTRYPOINT\n\nOne of THOSE changes likely fixed the visibility issue, not the Content-Length headers.\n\n## Current Status\n\n✅ **NDJSON format restored and deployed to VPS**\n✅ **100+ resources available via SSH stdio**\n⏳ **Awaiting Claude Desktop verification**\n\n## Files Modified\n\n- `src/FnMCP.Nexus/Transport/StdioTransport.fs` - Reverted to NDJSON\n- `quick-start/project-status.md` - Updated with investigation status (needs update)\n- `quick-start/code-mcp-fixes-needed.md` - Marked issue as investigated (needs update)\n\n## Next Steps\n\n1. Update status docs with corrected information\n2. Test in Claude Desktop to verify resources visible\n3. If still not working, investigate other potential causes:\n   - Event store permissions\n   - Resource filtering/listing logic\n   - SSH connection stability\n\n## Meta-Lesson\n\n**Debugging is hypothesis testing, not confirmation bias.**\n\nI found \"evidence\" (Content-Length reading code) that fit my hypothesis (need Content-Length writing) and stopped investigating. The correct approach:\n\n1. State hypothesis\n2. Find COUNTER-evidence (check working servers)\n3. Test hypothesis against counter-evidence\n4. Reject or refine hypothesis\n5. Implement solution\n6. Verify with actual client behavior\n\nThis investigation demonstrates the importance of **empirical testing** over **theoretical assumptions**."
+
+[[body.segments]]
+kind = "reasoning"
+text = "Great, I've read the investigation. This is a detailed post-mortem of an MCP stdio protocol issue where Ivan initially misdiagnosed the problem. The key points:\n\n1. **Wrong fix**: Added Content-Length framing to responses thinking MCP stdio required it (based on LSP experience)\n2. **Real format**: MCP stdio is asymmetric - reads Content-Length but writes NDJSON\n3. **Evidence**: Claude Desktop logs showed parse errors on Content-Length responses\n4. **Correct solution**: Reverted to simple `Console.WriteLine(json)` NDJSON format\n5. **Real cause unknown**: Original resource visibility problem likely due to empty event store or container issues, not protocol framing\n\nThe document is very thorough with lessons learned about debugging methodology.\n\nWhat does Ivan want me to do with this? Just acknowledge I read it? Or does he have follow-up questions/tasks? I should wait for his next instruction since he just asked me to read it."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Read through the MCP stdio investigation. Key takeaway: MCP stdio is **asymmetric** - reads requests with Content-Length framing but writes responses as plain NDJSON (one JSON per line). The Content-Length \"fix\" actually broke it.\n\nThe investigation is thorough with good post-mortem analysis. The original resource visibility issue likely wasn't protocol-related at all - probably empty event store or container issues that got fixed during the troubleshooting process.\n\nWhat's next?"
+

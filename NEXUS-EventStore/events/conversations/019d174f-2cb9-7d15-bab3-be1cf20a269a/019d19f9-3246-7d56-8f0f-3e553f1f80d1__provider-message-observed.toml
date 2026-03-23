@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3246-7d56-8f0f-3e553f1f80d1"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+conversation_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+message_id = "019d174f-2cb9-71f4-a5f8-b516d6c5dea3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T21:39:31.676455Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "a5d677dd5825e8d076289336767b4bad6703f697756241030a3de8e333a400db"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "beb63bd8-3f48-48e6-8f83-8802868c07cf"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+message_native_id = "beb63bd8-3f48-48e6-8f83-8802868c07cf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "beb63bd8-3f48-48e6-8f83-8802868c07cf"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 55
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect — keeping the slice **that minimal** is actually very faithful to how entity[\"people\",\"Adam Dymitruk\",\"event modeling creator\"] teaches Event Modeling.\n\nYour slice becomes exactly:\n\n```text\nUI\n ↓\nCommand\n ↓\nEvent\n```\n\nNo actors, no agents, no views inside the slice. Just the **behavioral cause → intent → fact** chain.\n\nThat’s a very strong foundation for your POC.\n\n---\n\n# 1. The Meaning of Each Cell\n\n### UI\n\nRepresents **the interaction surface** that triggered the action.\n\nImportant: this is a **snapshot**, not the implementation.\n\nExamples:\n\n```text\nLogExpenseForm\nAdminAdjustExpense\nRecordCoinPayment\n```\n\n---\n\n### Command\n\nRepresents **intent**.\n\nCommands are requests to change the system.\n\nExamples:\n\n```text\nLogLaundryExpense\nAdjustLaundryExpense\nRecordCoinPayment\n```\n\nCommands should always be phrased as **imperatives**.\n\n---\n\n### Event\n\nRepresents **a fact that happened**.\n\nEvents are immutable records.\n\nExamples:\n\n```text\nLaundryExpenseLogged\nLaundryExpenseAdjusted\nCoinPaymentRecorded\n```\n\nEvents are always **past tense**.\n\n---\n\n# 2. Filesystem Slice Structure\n\nWith your minimal rule, a slice directory becomes very simple.\n\nExample:\n\n```\nslices/\n018fa600_log-expense/\n```\n\nContents:\n\n```\nui.toml\ncommand.ref\nevent.ref\n```\n\n---\n\n# 3. Example Files\n\n### UI snapshot\n\n```toml\ntype = \"ui\"\n\nname = \"LogExpenseForm\"\n\ndescription = \"Form used to log a laundry expense.\"\n```\n\n---\n\n### command.ref\n\n```\n../../commands/018fa601_log-laundry-expense.toml\n```\n\n---\n\n### event.ref\n\n```\n../../events/018fa602_laundry-expense-logged.toml\n```\n\n---\n\n# 4. Example Command File\n\n```\ncommands/\n018fa601_log-laundry-expense.toml\n```\n\n```toml\nid = \"018fa601-9d21-7a01-8d91-22a8c94b1d44\"\n\ntype = \"command\"\nname = \"LogLaundryExpense\"\nslug = \"log-laundry-expense\"\n\ndomain = \"laundry\"\ncontext = \"expense-tracking\"\nconstruct = \"laundrylog\"\n```\n\n---\n\n# 5. Example Event File\n\n```\nevents/\n018fa602_laundry-expense-logged.toml\n```\n\n```toml\nid = \"018fa602-3b87-7af2-a911-6b2c5a91ef9f\"\n\ntype = \"event\"\nname = \"LaundryExpenseLogged\"\nslug = \"laundry-expense-logged\"\n\ndomain = \"laundry\"\ncontext = \"expense-tracking\"\nconstruct = \"laundrylog\"\n```\n\n---\n\n# 6. Why This Minimal Slice Is Powerful\n\nEach slice expresses **exactly one causal statement**:\n\n```\nThis UI interaction\nproduced this command\nwhich produced this event.\n```\n\nThat’s the smallest useful unit of behavior.\n\n---\n\n# 7. Your Filesystem Model Now Becomes\n\nNodes:\n\n```\ncommands/\nevents/\n```\n\nSlice containers:\n\n```\nslices/\n```\n\nUI snapshots:\n\n```\ninside slices\n```\n\nWhich maps cleanly to your earlier idea:\n\n```\nFilesystem = truth graph storage\n```\n\n---\n\n# 8. Example Timeline\n\nBecause you're using **UUIDv7**, slice directories naturally sort chronologically.\n\n```\nslices/\n\n018fa600_log-expense/\n018fa601_adjust-expense/\n018fa602_view-expenses/\n```\n\nThis preserves the **timeline storytelling** that Event Modeling relies on.\n\n---\n\n# 9. What You Can Add Later (Without Breaking Anything)\n\nLater you can introduce:\n\n```\nView slices\nAutomation slices\nPolicies\nAgents\n```\n\nBut your base slice:\n\n```\nUI\n ↓\nCommand\n ↓\nEvent\n```\n\nnever changes.\n\nEverything else builds on top of that.\n\n---\n\n# 10. Why This Is a Great POC Starting Point\n\nYour model now has:\n\n• **one slice structure**  \n• **one command → event rule**  \n• **filesystem simplicity**  \n• **graph relationships via references**\n\nThat is exactly the right level of complexity for a **Nexus proof-of-concept**.\n\n---\n\nIf you'd like, the next thing worth designing is something **surprisingly important for this approach**:\n\nHow to structure the **slice directory names** so they preserve **timeline ordering while still being human-readable**, which becomes very useful once you have dozens or hundreds of slices."
+

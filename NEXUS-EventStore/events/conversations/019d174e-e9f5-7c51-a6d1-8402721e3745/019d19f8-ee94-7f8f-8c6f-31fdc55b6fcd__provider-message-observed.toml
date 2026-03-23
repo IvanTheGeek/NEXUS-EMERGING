@@ -1,0 +1,110 @@
+schema_version = 1
+event_id = "019d19f8-ee94-7f8f-8c6f-31fdc55b6fcd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+conversation_id = "019d174e-e9f5-7c51-a6d1-8402721e3745"
+message_id = "019d174e-e9f5-73db-bfda-b6a17c46ca07"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T17:26:43.453099Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c9508fd003546a315afe5d46110b1b2d90f0ceaa1915ee1e8035fa7a41e1a28c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+conversation_native_id = "c46cf88f-ad89-4d14-88d4-97d0d577b52c"
+message_native_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a92da-1d35-7133-96e2-276e20c60e40"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants me to read a specific file: quick-start/mcp-stdio-investigation.md\n\nI should use the view tool to read this file. Let me check what's in it."
+
+[[body.segments]]
+kind = "plain_text"
+text = "I'll read that investigation document for you."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Reading the MCP stdio investigation document"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Path not found: /home/claude/quick-start/mcp-stdio-investigation.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The file isn't in /home/claude/quick-start/. Let me try to find it. I should check if there's a quick-start directory elsewhere, or search for the file.\n\nLet me first check what's in /home/claude to see the directory structure."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Checking the home directory structure"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Here are the files and directories up to 2 levels deep in /home/claude, excluding hidden items and node_modules:\n3.0G\t/home/claude"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The directory seems empty or the view didn't show the contents properly. Let me search for the file using the Filesystem search tool."
+
+[[body.segments]]
+kind = "tool_use"
+text = "search_files"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Error: Access denied - path outside allowed directories: /home/claude not in /home/linux"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ah, I see. The allowed directories are under /home/linux, not /home/claude. Let me check what directories I have access to first."
+
+[[body.segments]]
+kind = "tool_use"
+text = "list_allowed_directories"
+
+[[body.segments]]
+kind = "tool_result"
+text = "The user has chosen to disallow the tool call."
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user blocked that call. Let me try searching in /home/linux instead."
+
+[[body.segments]]
+kind = "tool_use"
+text = "search_files"
+

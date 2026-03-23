@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3269-76c6-a641-dd2e2b4987fb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+conversation_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+message_id = "019d174f-2cc6-72ee-bd89-4b908a8bec7e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T02:51:30.023889Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "01822bc3c1a13b40d123016e94af6aed3a7450c3feb1817da445d9fe1c4d5425"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ff6d76e2-dd2d-42fe-96b5-f56807820153"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+message_native_id = "ff6d76e2-dd2d-42fe-96b5-f56807820153"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ff6d76e2-dd2d-42fe-96b5-f56807820153"
+role = "assistant"
+model_name = "gpt-5-mini"
+sequence_hint = 123
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect — this is where your system really shines. Let’s break it down carefully. We’re talking about **different graph types** that the UI can use, and then **how perspective modifies what is shown**.  \n\n---\n\n# 1. Base Graph Types for UI\n\nThese are the **structural layers** you’d likely have in ATLAS:\n\n| Graph Type | Purpose | Notes |\n|------------|---------|-------|\n| **Event Graph** | Shows raw events/facts | Each node is an event/fact; edges can be triggers/signals; foundation layer |\n| **Projection Graph** | Derived state for UI or reporting | Applies transformers to events; nodes are projections; edges show dependencies |\n| **Command Graph** | Tracks user/system intents | Useful for debugging flows; shows what commands led to what events |\n| **UI Interaction Graph** | Captures UI flow | Nodes = UI elements/screens; edges = transitions; shows user interactions over time |\n| **Knowledge Graph (LOGOS)** | Shows relationships & meaning | Abstract graph of facts, derived concepts, reconciliations; not always visible in UI |\n| **Dependency / Flow Graph** | Shows causality | Can be applied to any of the above; edges = “leads to / triggers / signals” |\n\n---\n\n# 2. How Perspective Modifies These Graphs\n\n**Perspective = lens applied to a graph type**. It decides:\n\n1. **Which nodes are visible**\n2. **Which edges are emphasized**\n3. **Level of detail**\n4. **Aggregation / filtering rules**\n\n---\n\n### Examples\n\n#### a) **CEO Perspective**\n- Graph Type: Projection Graph  \n- Focus:\n  - High-level business outcomes\n  - Aggregated KPIs\n  - Only major events  \n- Nodes: Departments, top-level transactions  \n- Edges: Business impact, not every signal  \n\n#### b) **Customer Perspective**\n- Graph Type: UI Interaction Graph + Event Graph  \n- Focus:\n  - User-specific events\n  - Recent interactions\n  - Visual path through UI\n- Nodes: Account screens, transactions  \n- Edges: Clicks, form submissions  \n\n#### c) **Developer Perspective**\n- Graph Type: Event Graph + Command Graph + Dependency Graph  \n- Focus:\n  - Raw event history  \n  - Command → Event → Projection flows  \n  - Triggers and signals  \n- Nodes: Every event, command, projection  \n- Edges: Full trace of causality  \n\n#### d) **Support / Analyst Perspective**\n- Graph Type: Knowledge Graph + Projection Graph  \n- Focus:\n  - Patterns and relationships  \n  - Derived insights  \n  - Conflicts or exceptions  \n- Nodes: Events, reconciled transactions, alerts  \n- Edges: Cause-effect, duplicates, reconciliations  \n\n---\n\n# 3. Visualization Analogy\n\nThink of **the same underlying event data**:\n\n- **Event Graph** = raw film reel  \n- **Projection Graph** = edited film  \n- **UI Interaction Graph** = storyboard of user paths  \n- **Knowledge Graph** = director’s notes / annotations  \n- **Perspective** = which cut the audience sees (CEO cut, customer cut, dev cut)\n\n---\n\n# 4. Combining Graph Type + Perspective\n\n```text\nRendered UI = Graph Type + Context + Perspective\n```\n\n- Graph Type = structure of the nodes/edges  \n- Context = meaning applied (finance, transactions, rules)  \n- Perspective = what the viewer cares about, and how it is aggregated/displayed  \n\n**Example:**  \n\n```text\nGraph Type: Event Graph\nContext: Transactions\nPerspective: CEO\n→ Shows top-level transaction totals per month, ignores minor edits\n```\n\n```text\nGraph Type: UI Interaction Graph\nContext: User Behavior\nPerspective: Customer\n→ Shows only their own clicks and interactions\n```\n\n---\n\n# 5. Key Insight\n\n> You **don’t need a separate graph** for every perspective.  \n> Instead, **graph types define structure**, and **perspective defines the filter & aggregation layer**.\n\n- This saves memory  \n- Prevents duplication  \n- Allows dynamic views of the same underlying data  \n\n---\n\nIf you want, I can **draw a diagram showing multiple UI graph types overlaid on the same underlying events**, each with different perspectives applied — basically **how ATLAS can show CEO vs Customer vs Developer simultaneously**.  \n\nDo you want me to do that?"
+

@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea2-7e34-9e39-31cfbe41d8b8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+conversation_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+message_id = "019d174e-ea20-772f-bb23-6e59eea4a7d4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T14:21:13.220774Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "ac7917ef8594a56187ee1530d3aaf1505de554bf960112b7b8cb9daa05ce5710"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7870-e0b5-76ac-8d8f-a3c0c19aadbe"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+message_native_id = "019a7870-e0b5-76ac-8d8f-a3c0c19aadbe"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7870-e0b5-76ac-8d8f-a3c0c19aadbe"
+role = "assistant"
+sequence_hint = 48
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants:\n- A) Cleaner organization (easier navigation)\n- B) Repository separation prep (code vs. data)\n- PLUS: Data separate from development\n\nSo they want a clear separation where:\n- Code repo = FnMCP.Nexus (the MCP server application code)\n- Data repo = The context-library (all the documentation, events, projections)\n\nThis is a significant restructuring. Let me think about the plan:\n\n1. Create two separate repositories\n2. Restructure/clean the context-library before separating\n3. Configure the MCP server to read from the separate data repo\n4. Update all references\n\nLet me outline this step by step."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Perfect. Clear goal: Two separate repos with clean organization.**\n\n## Proposed Structure\n\n### Repo 1: FnMCP.Nexus (Code)\n```\n/home/linux/FnMCP.Nexus/\n├── src/\n│   └── FnMCP.Nexus/\n│       ├── Domain/\n│       ├── Tools/\n│       ├── Projections/\n│       ├── MCP/\n│       └── CLI/\n├── tests/\n├── README.md\n├── .gitignore\n└── FnMCP.Nexus.sln\n```\n\n### Repo 2: Nexus (Data)\n```\n/home/linux/Nexus/\n├── apps/\n│   ├── laundrylog/\n│   └── perdiem/\n├── framework/\n├── technical/\n├── quick-start/\n├── events/\n│   ├── core/\n│   ├── fnmcp-nexus/\n│   ├── laundrylog/\n│   └── perdiem/\n├── projections/\n│   ├── timeline/\n│   ├── knowledge/\n│   └── metrics/\n├── bootstrap/\n│   ├── nexus-bootstrap.md\n│   └── perdiem-bootstrap.md\n└── README.md\n```\n\n## Question 3: Naming\n\n**For the data repository, which name feels right?**\n\n**Option A:** `Nexus` (simple, the knowledge system itself)\n**Option B:** `Nexus-Data` (explicit about contents)\n**Option C:** `IvanTheGeek-Nexus` (includes your developer identity)\n**Option D:** Something else?\n\nWhat do you prefer?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [███████████░░░░░░░░░] 108,830 / 190,000 tokens (57.3%)\n\nAllocation:\n├─ System Prompts: ~30,000 tokens (15.8%)\n├─ Project Knowledge: ~510 tokens (0.3%)\n├─ Conversation: ~75,250 tokens (39.6%)\n│  ├─ Your messages: ~1,850 tokens\n│  ├─ My responses: ~26,380 tokens\n│  └─ Tool calls: ~47,020 tokens\n└─ This Response: ~3,070 tokens (1.6%)\n\nRemaining: 81,170 tokens (42.7%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
