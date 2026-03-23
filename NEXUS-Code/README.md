@@ -49,6 +49,7 @@ See:
 - `/docs/how-to/report-unresolved-artifacts.md`
 - `/docs/how-to/export-codex-sessions.md`
 - `/docs/how-to/run-tests.md`
+- `/docs/fsharp-documentation-convention.md`
 
 ## Testing Approach
 

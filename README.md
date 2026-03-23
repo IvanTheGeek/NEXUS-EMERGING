@@ -35,6 +35,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 
 - `docs/nexus-core-conceptual-layers.md`
 - `docs/nexus-ingestion-architecture.md`
+- `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
 - `docs/how-to/`
 - `docs/decisions/`
