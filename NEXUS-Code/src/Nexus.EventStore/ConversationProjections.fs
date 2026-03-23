@@ -413,6 +413,15 @@ module ConversationProjections =
         File.WriteAllText(absolutePath, render builder)
         relativePath
 
+    /// <summary>
+    /// Rebuilds conversation projections from canonical event history.
+    /// </summary>
+    /// <param name="rootPath">The root of the event-store workspace to rebuild into.</param>
+    /// <returns>The relative paths of all written conversation projection files.</returns>
+    /// <remarks>
+    /// Projections are rebuildable views, not source truth.
+    /// Full workflow notes: docs/how-to/rebuild-conversation-projections.md
+    /// </remarks>
     let rebuild rootPath =
         let absoluteRoot = Path.GetFullPath(rootPath)
         let states = Dictionary<string, ConversationProjectionState>(StringComparer.Ordinal)

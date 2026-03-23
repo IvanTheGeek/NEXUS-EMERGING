@@ -5,6 +5,9 @@ open System.Collections.Generic
 open System.Globalization
 open System.IO
 
+/// <summary>
+/// The projection shape used for artifact reporting queries.
+/// </summary>
 type ArtifactProjectionRecord =
     { ArtifactId: string
       ConversationId: string option
@@ -22,6 +25,9 @@ type ArtifactProjectionRecord =
       ProviderMessageIds: string list
       ProviderArtifactIds: string list }
 
+/// <summary>
+/// A summarized unresolved-artifact report derived from artifact projections.
+/// </summary>
 type UnresolvedArtifactReport =
     { TotalArtifacts: int
       CapturedArtifacts: int
@@ -29,6 +35,9 @@ type UnresolvedArtifactReport =
       ProviderCounts: (string * int) list
       Items: ArtifactProjectionRecord list }
 
+/// <summary>
+/// Loads and summarizes artifact projections for operator-facing reports.
+/// </summary>
 [<RequireQualifiedAccess>]
 module ArtifactProjectionReports =
     let private tryParseInt (value: string option) =
@@ -104,6 +113,11 @@ module ArtifactProjectionReports =
           ProviderMessageIds = TomlDocument.tryScalar "provider_message_ids" document |> parseStringList
           ProviderArtifactIds = TomlDocument.tryScalar "provider_artifact_ids" document |> parseStringList }
 
+    /// <summary>
+    /// Loads artifact projection records from the event-store projection directory.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <returns>The parsed artifact projection records currently present on disk.</returns>
     let load (eventStoreRoot: string) =
         let projectionsRoot = Path.Combine(Path.GetFullPath(eventStoreRoot), "projections", "artifacts")
 
@@ -114,6 +128,16 @@ module ArtifactProjectionReports =
         else
             []
 
+    /// <summary>
+    /// Builds a report of unresolved artifacts, optionally filtered by provider.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="providerFilter">An optional provider slug filter such as <c>chatgpt</c> or <c>claude</c>.</param>
+    /// <param name="limit">The maximum number of unresolved items to include in the report body.</param>
+    /// <returns>A summarized unresolved-artifact report.</returns>
+    /// <remarks>
+    /// Full workflow notes: docs/how-to/report-unresolved-artifacts.md
+    /// </remarks>
     let buildUnresolvedReport eventStoreRoot providerFilter limit =
         let allArtifacts = load eventStoreRoot
 
