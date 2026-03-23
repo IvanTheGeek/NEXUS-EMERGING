@@ -7,7 +7,8 @@ module Program =
     let main argv =
         testList
             "nexus"
-            [ ProviderAdapterTests.tests
+            [ KernelTests.tests
+              ProviderAdapterTests.tests
               WorkflowTests.tests
               GraphAssertionTests.tests
               PropertyTests.tests

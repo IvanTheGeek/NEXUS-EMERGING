@@ -15,6 +15,8 @@ Near-term focus:
 
 The first code scaffold is intentionally small and centered on the canonical ingestion layer.
 
+- `src/Nexus.Kernel/`
+  small semantic kernel for ontology-level role and relation primitives
 - `src/Nexus.Domain/`
   stable IDs, provenance, observed-history events, and a thin graph layer
 - `src/Nexus.EventStore/`
@@ -57,6 +59,7 @@ See:
 - `/docs/how-to/report-unresolved-artifacts.md`
 - `/docs/how-to/export-codex-sessions.md`
 - `/docs/how-to/run-tests.md`
+- `/docs/nexus-ontology-imprint-alignment.md`
 - `/docs/fsharp-documentation-convention.md`
 
 ## Testing Approach
