@@ -157,3 +157,24 @@ The right move is:
 1. document the ontology alignment
 2. create a minimal kernel project
 3. validate it against more than one bounded context before freezing more concepts
+
+## Current Implementation Bridge
+
+The current bridge into the codebase is:
+
+- `RoleId` in `Nexus.Kernel`
+- `SemanticRoleAnnotation` in the graph layer
+
+This keeps structure and meaning separate:
+
+- nodes stay structural
+- semantic roles annotate nodes without changing node identity
+
+Current first use:
+
+- derived message nodes are annotated with the `imprint` role
+- derived artifact nodes are annotated with the `imprint` role
+
+That is intentionally conservative.
+
+It gives the ontology a real foothold in the implementation without prematurely declaring every graph node to be an imprint.

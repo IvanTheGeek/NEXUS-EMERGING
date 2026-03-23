@@ -57,6 +57,12 @@ A graph-level assertion derived from canonical history and tied back to provenan
 
 The shared structural layer of nodes, edges, and assertions derived from observed history.
 
+## Imprint
+
+A domain-neutral meaning applied to structure when that structure is understood as the persistent result of causality and a source for later interpretation.
+
+In the current ontology direction, `Imprint` is a role, not a structural primitive.
+
 ## Import
 
 A single acquisition run that processes one or more provider artifacts and appends canonical history.
@@ -64,6 +70,10 @@ A single acquisition run that processes one or more provider artifacts and appen
 ## Lens
 
 A perspective over the underlying graph that localizes meaning, naming, grouping, and emphasis for a purpose or audience.
+
+## Semantic Role
+
+A meaning classification applied to a node without changing the node's structural identity.
 
 ## Normalization Version
 

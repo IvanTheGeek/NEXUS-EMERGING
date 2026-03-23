@@ -30,6 +30,7 @@ NEXUS-EventStore/graph/assertions/<fact-id>.toml
 The first pass currently derives assertions such as:
 
 - node kind facts for conversations, messages, artifacts, imports, domains, and bounded contexts
+- semantic role facts such as `imprint` on current message and artifact nodes
 - message-to-conversation relationships
 - message-to-artifact relationships
 - subject-to-import relationships
@@ -43,3 +44,4 @@ The first pass currently derives assertions such as:
 - The rebuild deletes and rewrites the existing graph assertion folder.
 - Node and fact IDs in this layer are deterministic so rebuilds remain stable.
 - This is intentionally a thin graph pass. It is meant to create a usable substrate without locking the final NEXUS ontology too early.
+- This layer is also intended to support future graph visualization consumers such as Graphviz and later FnHCI views.

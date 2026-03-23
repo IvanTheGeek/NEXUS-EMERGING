@@ -6,6 +6,7 @@ open System.IO
 open System.Security.Cryptography
 open System.Text
 open Nexus.Domain
+open Nexus.Kernel
 
 [<RequireQualifiedAccess>]
 module GraphAssertions =
@@ -47,6 +48,7 @@ module GraphAssertions =
         | BelongsToConversation -> "belongs_to_conversation"
         | ReferencesArtifact -> "references_artifact"
         | ObservedDuringImport -> "observed_during_import"
+        | HasSemanticRole -> "has_semantic_role"
         | SupportsFact -> "supports_fact"
         | LocatedInDomain -> "located_in_domain"
         | InterpretedWithinContext -> "interpreted_within_context"
@@ -288,7 +290,29 @@ module GraphAssertions =
           LensId = None
           Provenance = provenance }
 
-    let private mergeAssertion current incoming =
+    let private semanticRoleAnnotation subject roleId domainId boundedContextId provenance =
+        let domainKey =
+            domainId |> Option.map DomainId.value |> Option.defaultValue ""
+
+        let boundedContextKey =
+            boundedContextId |> Option.map BoundedContextId.value |> Option.defaultValue ""
+
+        let factKey =
+            String.concat "|"
+                [ NodeId.format subject
+                  RoleId.value roleId
+                  domainKey
+                  boundedContextKey ]
+
+        { FactId = FactId(stableGuid "semantic-role" factKey)
+          Subject = subject
+          RoleId = roleId
+          DomainId = domainId
+          BoundedContextId = boundedContextId
+          LensId = None
+          Provenance = provenance }
+
+    let private mergeAssertion (current: GraphAssertion) (incoming: GraphAssertion) =
         { current with
             Provenance =
                 { ImportId = mergeImportIds current.Provenance.ImportId incoming.Provenance.ImportId
@@ -303,6 +327,11 @@ module GraphAssertions =
         match assertions.TryGetValue(key) with
         | true, existing -> assertions[key] <- mergeAssertion existing assertion
         | false, _ -> assertions[key] <- assertion
+
+    let private addSemanticRole (assertions: Dictionary<string, GraphAssertion>) (annotation: SemanticRoleAnnotation) =
+        annotation
+        |> SemanticRoleAnnotation.toGraphAssertion
+        |> addAssertion assertions
 
     let private addNodeMetadata assertions eventDocument nodeId nodeKind =
         let provenance = buildProvenance eventDocument
@@ -356,6 +385,14 @@ module GraphAssertions =
     let private addMessageAssertions assertions eventDocument messageNode =
         addNodeMetadata assertions eventDocument messageNode "message_node"
         addSubjectLinks assertions eventDocument messageNode
+        addSemanticRole
+            assertions
+            (semanticRoleAnnotation
+                messageNode
+                CoreRoles.imprint
+                eventDocument.DomainId
+                eventDocument.BoundedContextId
+                (buildProvenance eventDocument))
 
         eventDocument.ConversationId
         |> Option.iter (fun conversationNode ->
@@ -383,6 +420,14 @@ module GraphAssertions =
     let private addArtifactAssertions assertions eventDocument artifactNode =
         addNodeMetadata assertions eventDocument artifactNode "artifact_node"
         addSubjectLinks assertions eventDocument artifactNode
+        addSemanticRole
+            assertions
+            (semanticRoleAnnotation
+                artifactNode
+                CoreRoles.imprint
+                eventDocument.DomainId
+                eventDocument.BoundedContextId
+                (buildProvenance eventDocument))
 
         eventDocument.ConversationId
         |> Option.iter (fun conversationNode ->

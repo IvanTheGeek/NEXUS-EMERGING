@@ -36,7 +36,7 @@ The goal is to stabilize naming and module responsibilities while the first real
 - `Nexus.Domain/CanonicalHistory.fs`
   append-only canonical event envelope, event bodies, and import manifest types
 - `Nexus.Domain/Graph.fs`
-  a thin graph-compatible layer for nodes, edges, values, and assertions
+  a thin graph-compatible layer for nodes, edges, assertions, and semantic role annotations
 - `Nexus.EventStore/Toml.fs`
   low-level TOML rendering helpers
 - `Nexus.EventStore/TomlDocument.fs`

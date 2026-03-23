@@ -1,6 +1,7 @@
 namespace Nexus.Domain
 
 open System
+open Nexus.Kernel
 
 /// <summary>
 /// The minimal node categories used by the thin NEXUS graph layer.
@@ -22,6 +23,7 @@ type EdgeKind =
     | BelongsToConversation
     | ReferencesArtifact
     | ObservedDuringImport
+    | HasSemanticRole
     | SupportsFact
     | LocatedInDomain
     | InterpretedWithinContext
@@ -61,3 +63,37 @@ type GraphAssertion =
       BoundedContextId: BoundedContextId option
       LensId: LensId option
       Provenance: FactProvenance }
+
+/// <summary>
+/// Applies a semantic role to a node without altering the node's structural identity.
+/// </summary>
+/// <remarks>
+/// This is the bridge between structure and meaning for the emerging ontology kernel.
+/// Full notes: docs/nexus-ontology-imprint-alignment.md
+/// </remarks>
+type SemanticRoleAnnotation =
+    { FactId: FactId
+      Subject: NodeId
+      RoleId: RoleId
+      DomainId: DomainId option
+      BoundedContextId: BoundedContextId option
+      LensId: LensId option
+      Provenance: FactProvenance }
+
+/// <summary>
+/// Converts semantic role annotations into graph assertions so the derived graph layer can persist them uniformly.
+/// </summary>
+[<RequireQualifiedAccess>]
+module SemanticRoleAnnotation =
+    /// <summary>
+    /// Converts a semantic role annotation into a graph assertion using the stable <c>has_semantic_role</c> relation.
+    /// </summary>
+    let toGraphAssertion (annotation: SemanticRoleAnnotation) =
+        { FactId = annotation.FactId
+          Subject = annotation.Subject
+          Predicate = HasSemanticRole
+          Object = Literal(StringValue(RoleId.value annotation.RoleId))
+          DomainId = annotation.DomainId
+          BoundedContextId = annotation.BoundedContextId
+          LensId = annotation.LensId
+          Provenance = annotation.Provenance }

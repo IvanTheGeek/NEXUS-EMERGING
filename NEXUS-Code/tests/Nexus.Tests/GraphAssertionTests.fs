@@ -92,12 +92,20 @@ module GraphAssertionTests =
                           "Expected a message-to-conversation assertion."
 
                       Expect.isSome
+                          (tryFindAssertion "has_semantic_role" messageId (Some "imprint") assertionDocuments)
+                          "Expected the message node to be annotated with the imprint role."
+
+                      Expect.isSome
                           (tryFindAssertion "has_role" messageId (Some "assistant") assertionDocuments)
                           "Expected an assistant role assertion."
 
                       Expect.isSome
                           (tryFindNodeRefAssertion "references_artifact" messageId artifactId assertionDocuments)
                           "Expected a message-to-artifact assertion."
+
+                      Expect.isSome
+                          (tryFindAssertion "has_semantic_role" artifactId (Some "imprint") assertionDocuments)
+                          "Expected the artifact node to be annotated with the imprint role."
 
                       Expect.isSome
                           (assertionDocuments

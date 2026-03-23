@@ -122,6 +122,7 @@ module CanonicalStore =
         | BelongsToConversation -> "belongs_to_conversation"
         | ReferencesArtifact -> "references_artifact"
         | ObservedDuringImport -> "observed_during_import"
+        | HasSemanticRole -> "has_semantic_role"
         | SupportsFact -> "supports_fact"
         | LocatedInDomain -> "located_in_domain"
         | InterpretedWithinContext -> "interpreted_within_context"
