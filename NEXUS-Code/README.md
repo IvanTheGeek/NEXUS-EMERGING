@@ -49,3 +49,13 @@ See:
 - `/docs/how-to/report-unresolved-artifacts.md`
 - `/docs/how-to/export-codex-sessions.md`
 - `/docs/how-to/run-tests.md`
+
+## Testing Approach
+
+The current testing stack is:
+
+- `Expecto` for standard tests
+- `Expecto.FsCheck` for invariants and property-style tests
+- `Verify.Expecto` for snapshot verification of generated TOML artifacts
+
+When learning a library used here, prefer its repo docs and examples first, then source, with XML/API inspection used only when exact behavior needs confirmation.

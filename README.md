@@ -39,6 +39,13 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - `docs/how-to/`
 - `docs/decisions/`
 
+Repository docs are the primary onboarding surface. Prefer:
+
+1. docs/TOC first
+2. examples and tests next
+3. source after that
+4. XML docs and API-level inspection as supporting detail
+
 ## Current Status
 
 The project is past pure scaffolding and into first working ingestion.
