@@ -123,6 +123,7 @@ module CanonicalStore =
     let private occurredAtValue (OccurredAt value) = value
     let private observedAtValue (ObservedAt value) = value
     let private importedAtValue (ImportedAt value) = value
+    let private normalizationVersionValue (value: NormalizationVersion) = NormalizationVersion.value value
 
     let private eventKindValue =
         function
@@ -182,6 +183,7 @@ module CanonicalStore =
         appendInt builder "new_events_appended" counts.NewEventsAppended
         appendInt builder "duplicates_skipped" counts.DuplicatesSkipped
         appendInt builder "revisions_observed" counts.RevisionsObserved
+        appendInt builder "reparse_observations_appended" counts.ReparseObservationsAppended
         appendBlank builder
 
     let private streamRefForEvent (event: CanonicalEvent) =
@@ -241,6 +243,7 @@ module CanonicalStore =
         appendTimestamp builder "observed_at" (observedAtValue event.Envelope.ObservedAt)
         appendTimestampOption builder "imported_at" (event.Envelope.ImportedAt |> Option.map importedAtValue)
         appendString builder "source_acquisition" (sourceAcquisitionValue event.Envelope.SourceAcquisition)
+        appendStringOption builder "normalization_version" (event.Envelope.NormalizationVersion |> Option.map normalizationVersionValue)
         appendStringOption builder "import_id" (event.Envelope.ImportId |> Option.map ImportId.format)
         appendBlank builder
 
@@ -329,6 +332,7 @@ module CanonicalStore =
         appendString builder "import_id" (ImportId.format manifest.ImportId)
         appendString builder "provider" (providerKindValue manifest.Provider)
         appendString builder "source_acquisition" (sourceAcquisitionValue manifest.SourceAcquisition)
+        appendStringOption builder "normalization_version" (manifest.NormalizationVersion |> Option.map normalizationVersionValue)
         appendStringOption builder "window_kind" (manifest.Window |> Option.map importWindowValue)
         appendTimestamp builder "imported_at" (importedAtValue manifest.ImportedAt)
 

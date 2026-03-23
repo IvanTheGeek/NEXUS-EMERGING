@@ -12,6 +12,8 @@ open Nexus.EventStore
 
 [<RequireQualifiedAccess>]
 module ImportWorkflow =
+    let private currentNormalizationVersion = NormalizationNaming.current
+
     type private RawIntake =
         { ImportedAt: ImportedAt
           SourceFileName: string
@@ -219,6 +221,7 @@ module ImportWorkflow =
           ObservedAt = observedAtFromImported intake.ImportedAt
           ImportedAt = Some intake.ImportedAt
           SourceAcquisition = ExportZip
+          NormalizationVersion = Some currentNormalizationVersion
           ContentHash = None
           ImportId = Some importId
           ProviderRefs = []
@@ -266,13 +269,14 @@ module ImportWorkflow =
                 fallbackKey |> Option.iter (fun key -> index.ArtifactsByFallbackKey[key] <- artifactId)
                 artifactId, false
 
-    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions =
+    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses =
         { ConversationsSeen = conversationsSeen
           MessagesSeen = messagesSeen
           ArtifactsReferenced = artifactsReferenced
           NewEventsAppended = newEvents
           DuplicatesSkipped = duplicates
-          RevisionsObserved = revisions }
+          RevisionsObserved = revisions
+          ReparseObservationsAppended = reparses }
 
     let run request =
         let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
@@ -308,6 +312,7 @@ module ImportWorkflow =
         let mutable artifactsReferenced = 0
         let mutable duplicatesSkipped = 0
         let mutable revisionsObserved = 0
+        let mutable reparseObservationsAppended = 0
 
         appendEvent
             events
@@ -368,42 +373,65 @@ module ImportWorkflow =
                 let messageContentHash = contentHashForSignature message.ContentSignature
 
                 match tryGetMessageState index request.Provider conversation.ProviderConversationId message.ProviderMessageId with
-                | Some (providerKey, existingMessage) when existingMessage.ContentHash = Some messageContentHash ->
-                    duplicatesSkipped <- duplicatesSkipped + 1
                 | Some (providerKey, existingMessage) ->
-                    revisionsObserved <- revisionsObserved + 1
+                    match EventStoreIndex.tryGetObservedContentHash currentNormalizationVersion existingMessage with
+                    | Some (Some existingContentHash) when existingContentHash = messageContentHash ->
+                        duplicatesSkipped <- duplicatesSkipped + 1
+                    | Some existingContentHash ->
+                        revisionsObserved <- revisionsObserved + 1
 
-                    appendEvent
-                        events
-                        { Envelope =
-                            { baseEnvelope intake importId (CanonicalEventId.create ()) with
-                                ConversationId = Some conversationId
-                                MessageId = Some existingMessage.MessageId
-                                OccurredAt = message.OccurredAt |> Option.map occurredAt
-                                ContentHash = Some messageContentHash
-                                ProviderRefs = [ conversationRef; messageRef ] }
-                          Body =
-                            ProviderMessageRevisionObserved
-                                { MessageId = existingMessage.MessageId
-                                  PriorContentHash = existingMessage.ContentHash
-                                  RevisedContentHash = messageContentHash
-                                  RevisionReason = Some "Provider message was observed again with different canonical content." } }
+                        appendEvent
+                            events
+                            { Envelope =
+                                { baseEnvelope intake importId (CanonicalEventId.create ()) with
+                                    ConversationId = Some conversationId
+                                    MessageId = Some existingMessage.MessageId
+                                    OccurredAt = message.OccurredAt |> Option.map occurredAt
+                                    ContentHash = Some messageContentHash
+                                    ProviderRefs = [ conversationRef; messageRef ] }
+                              Body =
+                                ProviderMessageRevisionObserved
+                                    { MessageId = existingMessage.MessageId
+                                      PriorContentHash = existingContentHash
+                                      RevisedContentHash = messageContentHash
+                                      RevisionReason = Some "Provider message was observed again with different canonical content under the same normalization version." } }
 
-                    setMessageState
-                        index
-                        providerKey
-                        { existingMessage with
-                            ContentHash = Some messageContentHash }
+                        EventStoreIndex.setObservedContentHash currentNormalizationVersion (Some messageContentHash) existingMessage
+                    | None ->
+                        reparseObservationsAppended <- reparseObservationsAppended + 1
+
+                        appendEvent
+                            events
+                            { Envelope =
+                                { baseEnvelope intake importId (CanonicalEventId.create ()) with
+                                    ConversationId = Some conversationId
+                                    MessageId = Some existingMessage.MessageId
+                                    OccurredAt = message.OccurredAt |> Option.map occurredAt
+                                    ContentHash = Some messageContentHash
+                                    ProviderRefs = [ conversationRef; messageRef ] }
+                              Body =
+                                ProviderMessageObserved
+                                    { MessageId = existingMessage.MessageId
+                                      ConversationId = conversationId
+                                      ProviderMessage = messageRef
+                                      Role = message.Role
+                                      Segments = message.Segments
+                                      ModelName = message.ModelName
+                                      SequenceHint = message.SequenceHint } }
+
+                        EventStoreIndex.setObservedContentHash currentNormalizationVersion (Some messageContentHash) existingMessage
                 | None ->
                     let messageId = MessageId.create ()
                     let providerKey = ProviderKey.message request.Provider conversation.ProviderConversationId message.ProviderMessageId
+                    let contentHashesByNormalizationVersion = Dictionary<string, ContentHash option>(StringComparer.Ordinal)
+                    contentHashesByNormalizationVersion[NormalizationNaming.value currentNormalizationVersion] <- Some messageContentHash
 
                     setMessageState
                         index
                         providerKey
                         { MessageId = messageId
                           ConversationId = Some conversationId
-                          ContentHash = Some messageContentHash }
+                          ContentHashesByNormalizationVersion = contentHashesByNormalizationVersion }
 
                     appendEvent
                         events
@@ -481,6 +509,7 @@ module ImportWorkflow =
                 (events.Count + 1)
                 duplicatesSkipped
                 revisionsObserved
+                reparseObservationsAppended
 
         let importCompletedEvent =
             { Envelope =
@@ -501,6 +530,7 @@ module ImportWorkflow =
             { ImportId = importId
               Provider = request.Provider
               SourceAcquisition = ExportZip
+              NormalizationVersion = Some currentNormalizationVersion
               Window = request.Window
               ImportedAt = intake.ImportedAt
               RootArtifact = intake.RootArtifact

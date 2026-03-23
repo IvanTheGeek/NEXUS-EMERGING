@@ -302,18 +302,30 @@ module ConversationProjections =
 
     let private addMessageObserved state document =
         match TomlDocument.tryScalar "message_id" document with
-        | Some messageId when not (state.MessagesById.ContainsKey(messageId)) ->
-            let preview =
-                { MessageId = messageId
-                  Role = TomlDocument.tryTableValue "body" "role" document
-                  SequenceHint = TomlDocument.tryTableValue "body" "sequence_hint" document |> tryParseInt
-                  OccurredAt = TomlDocument.tryScalar "occurred_at" document |> tryParseTimestamp
-                  Excerpt = messageExcerpt document
-                  ArtifactReferenceCount = 0 }
+        | Some messageId ->
+            let role = TomlDocument.tryTableValue "body" "role" document
+            let sequenceHint = TomlDocument.tryTableValue "body" "sequence_hint" document |> tryParseInt
+            let occurredAt = TomlDocument.tryScalar "occurred_at" document |> tryParseTimestamp
+            let excerpt = messageExcerpt document
 
-            state.MessagesById[messageId] <- preview
-            state.MessageCount <- state.MessageCount + 1
-        | _ -> ()
+            match state.MessagesById.TryGetValue(messageId) with
+            | true, preview ->
+                preview.Role <- role |> Option.orElse preview.Role
+                preview.SequenceHint <- sequenceHint |> Option.orElse preview.SequenceHint
+                preview.OccurredAt <- occurredAt |> Option.orElse preview.OccurredAt
+                preview.Excerpt <- excerpt |> Option.orElse preview.Excerpt
+            | false, _ ->
+                let preview =
+                    { MessageId = messageId
+                      Role = role
+                      SequenceHint = sequenceHint
+                      OccurredAt = occurredAt
+                      Excerpt = excerpt
+                      ArtifactReferenceCount = 0 }
+
+                state.MessagesById[messageId] <- preview
+                state.MessageCount <- state.MessageCount + 1
+        | None -> ()
 
     let private addArtifactReference state document =
         state.ArtifactReferenceCount <- state.ArtifactReferenceCount + 1

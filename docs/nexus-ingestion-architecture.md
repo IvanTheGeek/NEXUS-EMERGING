@@ -71,6 +71,16 @@ Initial event kinds:
 - `ArtifactPayloadCaptured`
 - `ImportCompleted`
 
+Canonical imports should also stamp a `NormalizationVersion` so the system can distinguish:
+
+- provider-side changes in the same normalization regime
+- NEXUS parser/canonicalizer changes across reparses
+
+Rule:
+
+- same provider object + same normalization version + changed content hash => `ProviderMessageRevisionObserved`
+- same provider object + different normalization version => append a new `ProviderMessageObserved`, not a revision
+
 ## What `Canonical` Means Here
 
 `Canonical` in this repository is bounded-context-specific.

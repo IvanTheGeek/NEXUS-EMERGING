@@ -1,5 +1,23 @@
 namespace Nexus.Domain
 
+open System
+
+type NormalizationVersion = private NormalizationVersion of string
+
+[<RequireQualifiedAccess>]
+module NormalizationVersion =
+    let create (value: string) =
+        let normalized = value.Trim()
+
+        if String.IsNullOrWhiteSpace(normalized) then
+            invalidArg "value" "Normalization version cannot be blank."
+
+        NormalizationVersion normalized
+
+    let parse (value: string) = create value
+
+    let value (NormalizationVersion value) = value
+
 type SourceAcquisitionKind =
     | ExportZip
     | ManualArtifactAdd

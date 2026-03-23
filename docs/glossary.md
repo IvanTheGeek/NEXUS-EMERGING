@@ -61,6 +61,15 @@ A single acquisition run that processes one or more provider artifacts and appen
 
 A perspective over the underlying graph that localizes meaning, naming, grouping, and emphasis for a purpose or audience.
 
+## Normalization Version
+
+The version label of the parser/canonicalizer shape that produced a canonical observation.
+
+It exists so NEXUS can distinguish:
+
+- a provider object changing under the same normalization rules
+- NEXUS re-observing the same provider object after its own parser or canonicalizer changed
+
 ## Observed History
 
 The provenance-first layer that records what NEXUS actually encountered from exports, manual additions, and later capture paths.

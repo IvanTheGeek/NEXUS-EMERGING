@@ -34,6 +34,7 @@ type CanonicalEventEnvelope =
       ObservedAt: ObservedAt
       ImportedAt: ImportedAt option
       SourceAcquisition: SourceAcquisitionKind
+      NormalizationVersion: NormalizationVersion option
       ContentHash: ContentHash option
       ImportId: ImportId option
       ProviderRefs: ProviderRef list
@@ -100,7 +101,8 @@ type ImportCounts =
       ArtifactsReferenced: int
       NewEventsAppended: int
       DuplicatesSkipped: int
-      RevisionsObserved: int }
+      RevisionsObserved: int
+      ReparseObservationsAppended: int }
 
 type ImportCompleted =
     { ImportId: ImportId
@@ -112,6 +114,7 @@ type ImportManifest =
     { ImportId: ImportId
       Provider: ProviderKind
       SourceAcquisition: SourceAcquisitionKind
+      NormalizationVersion: NormalizationVersion option
       Window: ImportWindowKind option
       ImportedAt: ImportedAt
       RootArtifact: RawObjectRef

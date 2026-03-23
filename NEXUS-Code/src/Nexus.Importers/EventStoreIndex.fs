@@ -9,7 +9,7 @@ open Nexus.EventStore
 type ExistingMessageState =
     { MessageId: MessageId
       ConversationId: ConversationId option
-      ContentHash: ContentHash option }
+      ContentHashesByNormalizationVersion: Dictionary<string, ContentHash option> }
 
 type ExistingEventStoreIndex =
     { ConversationsByProviderKey: Dictionary<string, ConversationId>
@@ -61,6 +61,23 @@ module EventStoreIndex =
                   Value = value }
         | _ -> None
 
+    let private normalizationVersionValue document =
+        tryScalar "normalization_version" document
+        |> Option.map NormalizationVersion.parse
+        |> Option.defaultValue NormalizationNaming.legacyDefault
+        |> NormalizationNaming.value
+
+    let private updateMessageStateHash normalizationVersionKey contentHash state =
+        state.ContentHashesByNormalizationVersion[normalizationVersionKey] <- contentHash
+
+    let private createMessageState messageId conversationId normalizationVersionKey contentHash =
+        let hashes = Dictionary<string, ContentHash option>(StringComparer.Ordinal)
+        hashes[normalizationVersionKey] <- contentHash
+
+        { MessageId = messageId
+          ConversationId = conversationId
+          ContentHashesByNormalizationVersion = hashes }
+
     let private addConversationIndex (index: ExistingEventStoreIndex) (document: TomlDocument) =
         match tryScalar "conversation_id" document, tryProviderRefByKind "conversation_object" document with
         | Some conversationIdValue, Some providerRef ->
@@ -84,15 +101,22 @@ module EventStoreIndex =
             match provider, conversationNativeId, messageNativeId with
             | Some providerKind, Some conversationId, Some messageId ->
                 let providerKey = ProviderKey.message providerKind conversationId messageId
+                let normalizationVersionKey = normalizationVersionValue document
 
                 let conversationId =
                     tryScalar "conversation_id" document
                     |> Option.map ConversationId.parse
 
-                index.MessagesByProviderKey[providerKey] <-
-                    { MessageId = MessageId.parse messageIdValue
-                      ConversationId = conversationId
-                      ContentHash = tryContentHash "content_hash" document }
+                match index.MessagesByProviderKey.TryGetValue(providerKey) with
+                | true, existingState ->
+                    updateMessageStateHash normalizationVersionKey (tryContentHash "content_hash" document) existingState
+                | false, _ ->
+                    index.MessagesByProviderKey[providerKey] <-
+                        createMessageState
+                            (MessageId.parse messageIdValue)
+                            conversationId
+                            normalizationVersionKey
+                            (tryContentHash "content_hash" document)
             | _ -> ()
         | _ -> ()
 
@@ -106,15 +130,25 @@ module EventStoreIndex =
             match provider, conversationNativeId, messageNativeId with
             | Some providerKind, Some conversationId, Some messageId ->
                 let providerKey = ProviderKey.message providerKind conversationId messageId
+                let normalizationVersionKey = normalizationVersionValue document
 
                 match index.MessagesByProviderKey.TryGetValue(providerKey), tryContentHash "body.revised_content_hash" document with
                 | (true, current), Some revisedContentHash ->
-                    index.MessagesByProviderKey[providerKey] <-
-                        { current with
-                            ContentHash = Some revisedContentHash }
+                    updateMessageStateHash normalizationVersionKey (Some revisedContentHash) current
                 | _ -> ()
             | _ -> ()
         | _ -> ()
+
+    let tryGetObservedContentHash normalizationVersion state =
+        let key = NormalizationNaming.value normalizationVersion
+
+        match state.ContentHashesByNormalizationVersion.TryGetValue(key) with
+        | true, contentHash -> Some contentHash
+        | false, _ -> None
+
+    let setObservedContentHash normalizationVersion contentHash state =
+        let key = NormalizationNaming.value normalizationVersion
+        updateMessageStateHash key contentHash state
 
     let private addArtifactIndex (index: ExistingEventStoreIndex) (document: TomlDocument) =
         match tryScalar "artifact_id" document with

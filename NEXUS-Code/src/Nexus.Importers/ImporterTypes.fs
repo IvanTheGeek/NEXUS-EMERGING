@@ -56,6 +56,15 @@ module ImportWindowNaming =
             |> Seq.toArray
             |> String
 
+[<RequireQualifiedAccess>]
+module NormalizationNaming =
+    let current = NormalizationVersion.create "provider-export-v0"
+
+    let legacyDefault = current
+
+    let value normalizationVersion =
+        NormalizationVersion.value normalizationVersion
+
 type ParsedArtifactReference =
     { ProviderArtifactId: string option
       FileName: string option

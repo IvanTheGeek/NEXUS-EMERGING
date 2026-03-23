@@ -215,6 +215,7 @@ module Program =
               ObservedAt = observedAtValue
               ImportedAt = Some importedAtValue
               SourceAcquisition = ExportZip
+              NormalizationVersion = Some NormalizationNaming.current
               ContentHash = None
               ImportId = Some importId
               ProviderRefs = []
@@ -321,7 +322,8 @@ module Program =
               ArtifactsReferenced = 1
               NewEventsAppended = appendedEventCount
               DuplicatesSkipped = 0
-              RevisionsObserved = 0 }
+              RevisionsObserved = 0
+              ReparseObservationsAppended = 0 }
 
         let importCompletedEvent =
             { Envelope =
@@ -347,6 +349,7 @@ module Program =
             { ImportId = importId
               Provider = Claude
               SourceAcquisition = ExportZip
+              NormalizationVersion = Some NormalizationNaming.current
               Window = Some Full
               ImportedAt = importedAtValue
               RootArtifact = rootArtifact
@@ -393,6 +396,7 @@ module Program =
         printfn "  New events appended: %d" result.Counts.NewEventsAppended
         printfn "  Duplicates skipped: %d" result.Counts.DuplicatesSkipped
         printfn "  Revisions observed: %d" result.Counts.RevisionsObserved
+        printfn "  Reparse observations appended: %d" result.Counts.ReparseObservationsAppended
 
         if not result.EventPaths.IsEmpty then
             printfn "  First event files:"
