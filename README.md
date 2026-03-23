@@ -59,3 +59,13 @@ Not yet established:
 - final domain taxonomy
 - final live capture workflow
 - final storage split into separate deployed systems
+
+## Git Workflow
+
+This repository preserves branch history intentionally.
+
+- merge feature and exploration branches into `main` with `--no-ff`
+- do not rely on fast-forward merges for accepted work
+- avoid squash merges when the branch history itself is part of the durable record
+
+The goal is to keep implementation branches inspectable later as durable lines of work, thought, and experimentation.
