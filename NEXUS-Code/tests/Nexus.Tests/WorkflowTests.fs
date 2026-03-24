@@ -38,6 +38,7 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
                       Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected the import to update the graph working catalog."
+                      Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected the import to refresh the SQLite graph working index."
                       Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
 
                       let workingManifestPath =
@@ -57,6 +58,13 @@ module WorkflowTests =
                       let catalog = TestHelpers.readToml catalogPath
                       Expect.equal (TomlDocument.tryScalar "catalog_version" catalog) (Some "graph-working-import-catalog-v1") "Expected the graph working catalog version."
                       Expect.equal (TomlDocument.tryScalar "entry_count" catalog) (Some "1") "Expected a single graph working catalog entry."
+
+                      let indexPath =
+                          firstImport.WorkingGraphIndexRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing working graph SQLite index path.")
+
+                      Expect.isTrue (File.Exists(indexPath)) "Expected the SQLite graph working index file to exist."
 
                       let secondImport = ImportWorkflow.run request
                       Expect.equal secondImport.Counts.NewEventsAppended 3 "Expected only import-stream events on duplicate import."
@@ -140,6 +148,7 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.NewEventsAppended 5 "Expected artifact, conversation, two messages, and import completion events."
                       Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected Codex import to materialize a graph working slice."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected Codex import to update the graph working catalog."
+                      Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected Codex import to refresh the SQLite graph working index."
                       Expect.equal firstImport.WorkingGraphAssertionCount (Some 36) "Expected the Codex graph working slice assertion count for the fixture import."
 
                       let secondImport = CodexImportWorkflow.run request

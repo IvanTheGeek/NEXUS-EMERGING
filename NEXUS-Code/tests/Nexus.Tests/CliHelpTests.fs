@@ -79,6 +79,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-imports.md" "Expected the working-graph report guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-imports.")
 
+              testCase "Working graph slice help exposes the SQLite index workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-graph-slice" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-working-graph-slice to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-graph-slice" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
+                  Expect.stringContains result.StandardOutput "SQLite" "Expected the SQLite working-index note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-slice.md" "Expected the working-slice guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-slice.")
+
               testCase "Concept note help exposes the curation workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
 

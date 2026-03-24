@@ -24,5 +24,6 @@ Current guides:
 - `rebuild-graph-assertions.md`
 - `report-unresolved-artifacts.md`
 - `report-working-graph-imports.md`
+- `report-working-graph-slice.md`
 - `run-tests.md`
 - `write-sample-event-store.md`

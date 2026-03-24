@@ -189,6 +189,7 @@ type ImportResult =
       ManifestRelativePath: string
       WorkingGraphManifestRelativePath: string option
       WorkingGraphCatalogRelativePath: string option
+      WorkingGraphIndexRelativePath: string option
       WorkingGraphAssertionCount: int option
       Counts: ImportCounts }
 
@@ -214,6 +215,7 @@ type CodexSessionImportResult =
       ManifestRelativePath: string
       WorkingGraphManifestRelativePath: string option
       WorkingGraphCatalogRelativePath: string option
+      WorkingGraphIndexRelativePath: string option
       WorkingGraphAssertionCount: int option
       Counts: ImportCounts }
 

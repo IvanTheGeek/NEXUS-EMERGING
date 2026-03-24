@@ -327,6 +327,8 @@ module CodexImportWorkflow =
             GraphMaterialization.materializeImportBatchWithStatus ignore eventStoreRoot importId eventList
         let workingGraphCatalogRelativePath =
             GraphWorkingCatalog.upsertImportBatch eventStoreRoot workingGraph
+        let workingGraphIndexRelativePath =
+            GraphWorkingIndex.refreshImportBatch eventStoreRoot workingGraph
 
         { ImportId = importId
           SnapshotRoot = snapshotRoot
@@ -335,5 +337,6 @@ module CodexImportWorkflow =
           ManifestRelativePath = manifestPath
           WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
           WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
+          WorkingGraphIndexRelativePath = Some workingGraphIndexRelativePath
           WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
           Counts = counts }

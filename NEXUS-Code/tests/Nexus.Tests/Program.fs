@@ -12,6 +12,7 @@ module Program =
               WorkflowTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
+              GraphWorkingIndexTests.tests
               GraphvizDotTests.tests
               PropertyTests.tests
               SnapshotTests.tests

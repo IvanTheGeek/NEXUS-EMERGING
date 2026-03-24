@@ -44,6 +44,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
 7. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
 8. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
+9. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
 
 ## Progress Output
 
@@ -62,7 +63,7 @@ Typical phases:
 
 Larger imports also emit periodic conversation-processing updates with running message, artifact, duplicate, revision, and reparse counts.
 
-The import summary also reports the graph-working manifest path, the graph working catalog path, and the assertion count for the batch-local materialization.
+The import summary also reports the graph-working manifest path, the graph working catalog path, the SQLite working-index path, and the assertion count for the batch-local materialization.
 
 ## Current v0 Scope
 

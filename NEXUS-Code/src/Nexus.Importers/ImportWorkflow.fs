@@ -619,6 +619,9 @@ module ImportWorkflow =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
         let workingGraphCatalogRelativePath =
             GraphWorkingCatalog.upsertImportBatch eventStoreRoot workingGraph
+        emitStatus status $"Refreshing SQLite graph working index for import {ImportId.format importId}."
+        let workingGraphIndexRelativePath =
+            GraphWorkingIndex.refreshImportBatch eventStoreRoot workingGraph
         stopwatch.Stop()
         emitStatus
             status
@@ -633,6 +636,7 @@ module ImportWorkflow =
           ManifestRelativePath = manifestPath
           WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
           WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
+          WorkingGraphIndexRelativePath = Some workingGraphIndexRelativePath
           WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
           Counts = importCompletedCounts }
 

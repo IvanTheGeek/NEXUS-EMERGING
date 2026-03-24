@@ -30,6 +30,7 @@ module Program =
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
+        | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateConceptNote of request: CreateConceptNoteRequest
 
@@ -281,6 +282,24 @@ module Program =
                     [ "This report prefers the graph working catalog under graph/working/catalog/ and falls back to manifest scanning if needed."
                       "The detail list joins each working-slice entry back to the canonical import manifest when present."
                       "Detailed guide: docs/how-to/report-working-graph-imports.md" ] }
+        | "report-working-graph-slice" ->
+            Some
+                { Name = name
+                  Summary = "Summarize one import-batch graph working slice from the persisted SQLite index."
+                  Usage =
+                    [ sprintf "%s report-working-graph-slice --import-id <uuid>" cliInvocation
+                      sprintf "%s report-working-graph-slice --import-id <uuid> --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--import-id <uuid>", "Required. Select the graph working import slice to summarize."
+                      "--limit <n>", "Limit predicate-count rows. Defaults to 10." ]
+                  Examples =
+                    [ sprintf "%s report-working-graph-slice --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s report-working-graph-slice --event-store-root /tmp/nexus-event-store --import-id <uuid> --limit 5" cliInvocation ]
+                  Notes =
+                    [ "This report reads the SQLite working index under graph/working/index/."
+                      "Working slices remain derived and rebuildable from canonical history."
+                      "Detailed guide: docs/how-to/report-working-graph-slice.md" ] }
         | "rebuild-conversation-projections" ->
             Some
                 { Name = name
@@ -330,6 +349,7 @@ module Program =
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
           "report-working-graph-imports"
+          "report-working-graph-slice"
           "rebuild-conversation-projections"
           "create-concept-note" ]
         |> List.choose (fun name ->
@@ -835,6 +855,45 @@ module Program =
 
             loop defaultEventStoreRoot 20 args
 
+    let private parseReportWorkingGraphSlice (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-working-graph-slice"))
+        else
+            let rec loop eventStoreRoot importId limit remaining =
+                match remaining with
+                | [] ->
+                    match importId with
+                    | Some importIdValue -> Ok (ReportWorkingGraphSlice(eventStoreRoot, importIdValue, limit))
+                    | None ->
+                        eprintfn "Missing required option: --import-id"
+                        printCommandHelp "report-working-graph-slice"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value importId limit rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) limit rest
+                    | false, _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "report-working-graph-slice"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot importId parsedValue rest
+                    | true, _
+                    | false, _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-working-graph-slice"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-working-graph-slice: %s" option
+                    printCommandHelp "report-working-graph-slice"
+                    Error 1
+
+            loop defaultEventStoreRoot None 10 args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -872,6 +931,8 @@ module Program =
             parseReportUnresolvedArtifacts rest
         | "report-working-graph-imports" :: rest ->
             parseReportWorkingGraphImports rest
+        | "report-working-graph-slice" :: rest ->
+            parseReportWorkingGraphSlice rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | "create-concept-note" :: rest ->
@@ -888,6 +949,23 @@ module Program =
     let private contentHashForText value =
         { Algorithm = "sha256"
           Value = sha256ForText value }
+
+    let private printWorkingGraphArtifacts manifestPath catalogPath indexPath assertionCount =
+        match manifestPath with
+        | Some value -> printfn "  Working graph manifest: %s" value
+        | None -> ()
+
+        match catalogPath with
+        | Some value -> printfn "  Working graph catalog: %s" value
+        | None -> ()
+
+        match indexPath with
+        | Some value -> printfn "  Working graph index: %s" value
+        | None -> ()
+
+        match assertionCount with
+        | Some value -> printfn "  Working graph assertions written: %d" value
+        | None -> ()
 
     let private buildSampleData () =
         let now = DateTimeOffset.UtcNow
@@ -1126,27 +1204,11 @@ module Program =
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath
-        match result.WorkingGraphManifestRelativePath, result.WorkingGraphCatalogRelativePath, result.WorkingGraphAssertionCount with
-        | Some manifestPath, Some catalogPath, Some assertionCount ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph catalog: %s" catalogPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | Some manifestPath, None, Some assertionCount ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | None, Some catalogPath, Some assertionCount ->
-            printfn "  Working graph catalog: %s" catalogPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | Some manifestPath, Some catalogPath, None ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph catalog: %s" catalogPath
-        | Some manifestPath, None, None ->
-            printfn "  Working graph manifest: %s" manifestPath
-        | None, Some catalogPath, None ->
-            printfn "  Working graph catalog: %s" catalogPath
-        | None, None, Some assertionCount ->
-            printfn "  Working graph assertions written: %d" assertionCount
-        | None, None, None -> ()
+        printWorkingGraphArtifacts
+            result.WorkingGraphManifestRelativePath
+            result.WorkingGraphCatalogRelativePath
+            result.WorkingGraphIndexRelativePath
+            result.WorkingGraphAssertionCount
         printfn "  Events written: %d" result.EventPaths.Length
         printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
         printfn "  Messages seen: %d" result.Counts.MessagesSeen
@@ -1174,27 +1236,11 @@ module Program =
         printfn "  Snapshot root: %s" result.SnapshotRoot
         printfn "  Root artifact: %s" result.RootArtifactRelativePath
         printfn "  Event manifest: %s" result.ManifestRelativePath
-        match result.WorkingGraphManifestRelativePath, result.WorkingGraphCatalogRelativePath, result.WorkingGraphAssertionCount with
-        | Some manifestPath, Some catalogPath, Some assertionCount ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph catalog: %s" catalogPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | Some manifestPath, None, Some assertionCount ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | None, Some catalogPath, Some assertionCount ->
-            printfn "  Working graph catalog: %s" catalogPath
-            printfn "  Working graph assertions written: %d" assertionCount
-        | Some manifestPath, Some catalogPath, None ->
-            printfn "  Working graph manifest: %s" manifestPath
-            printfn "  Working graph catalog: %s" catalogPath
-        | Some manifestPath, None, None ->
-            printfn "  Working graph manifest: %s" manifestPath
-        | None, Some catalogPath, None ->
-            printfn "  Working graph catalog: %s" catalogPath
-        | None, None, Some assertionCount ->
-            printfn "  Working graph assertions written: %d" assertionCount
-        | None, None, None -> ()
+        printWorkingGraphArtifacts
+            result.WorkingGraphManifestRelativePath
+            result.WorkingGraphCatalogRelativePath
+            result.WorkingGraphIndexRelativePath
+            result.WorkingGraphAssertionCount
         printfn "  Events written: %d" result.EventPaths.Length
         printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
         printfn "  Messages seen: %d" result.Counts.MessagesSeen
@@ -1445,6 +1491,48 @@ module Program =
 
         0
 
+    let private reportWorkingGraphSlice eventStoreRoot importId limit =
+        match GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importId limit with
+        | Some report ->
+            printfn "Graph working slice report."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Index: %s" report.IndexRelativePath
+            printfn "  Import ID: %s" (ImportId.format report.ImportId)
+
+            match report.Provider with
+            | Some value -> printfn "  Provider: %s" value
+            | None -> ()
+
+            match report.Window with
+            | Some value -> printfn "  Window: %s" value
+            | None -> ()
+
+            match report.ImportedAt with
+            | Some value -> printfn "  Imported at: %s" (value.ToUniversalTime().ToString("O"))
+            | None -> ()
+
+            printfn "  Materialized at: %s" (report.MaterializedAt.ToUniversalTime().ToString("O"))
+            printfn "  Canonical events: %d" report.CanonicalEventCount
+            printfn "  Graph assertions: %d" report.GraphAssertionCount
+            printfn "  Distinct subjects: %d" report.DistinctSubjectCount
+            printfn "  Node-ref assertions: %d" report.NodeRefAssertionCount
+            printfn "  Literal assertions: %d" report.LiteralAssertionCount
+            printfn "  Working root: %s" report.WorkingRootRelativePath
+            printfn "  Manifest: %s" report.ManifestRelativePath
+
+            if not report.PredicateCounts.IsEmpty then
+                printfn "  Predicates:"
+
+                report.PredicateCounts
+                |> List.iter (fun item ->
+                    printfn "    %s: %d" item.Predicate item.Count)
+
+            0
+        | None ->
+            eprintfn "No graph working slice found in the SQLite index for import %s." (ImportId.format importId)
+            eprintfn "Import a batch first or refresh the working index from a new import."
+            1
+
     let private createConceptNote request =
         match ConceptNotes.create request with
         | Error error ->
@@ -1491,6 +1579,8 @@ module Program =
             reportUnresolvedArtifacts eventStoreRoot provider limit
         | Ok (ReportWorkingGraphImports(eventStoreRoot, limit)) ->
             reportWorkingGraphImports eventStoreRoot limit
+        | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
+            reportWorkingGraphSlice eventStoreRoot importId limit
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Ok (CreateConceptNote request) ->

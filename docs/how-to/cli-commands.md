@@ -107,6 +107,12 @@ The CLI supports both:
 - Use it when you want a fast view of the current secondary graph working layer.
 - Details: `docs/how-to/report-working-graph-imports.md`
 
+`report-working-graph-slice`
+
+- Summarizes one graph working import slice from the SQLite working index.
+- Use it when you want a quick structural view of a specific fresh import batch.
+- Details: `docs/how-to/report-working-graph-slice.md`
+
 ## Common Workflow Sequences
 
 Provider import:
@@ -119,12 +125,14 @@ Provider import:
 6. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
 7. Run `report-unresolved-artifacts` if you want to identify missing payloads.
 8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
+9. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
 
 Codex session import:
 
 1. Run `dotnet fsi NEXUS-Code/scripts/export_codex_sessions.fsx`.
 2. Run `import-codex-sessions`.
 3. Run `rebuild-conversation-projections`.
+4. Run `report-working-graph-slice --import-id <uuid>` if you want the local working-index summary for that batch.
 
 Concept harvest:
 
@@ -161,4 +169,5 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/report-working-graph-imports.md`
+- `docs/how-to/report-working-graph-slice.md`
 - `docs/how-to/run-tests.md`
