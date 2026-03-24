@@ -56,10 +56,10 @@ module ConceptNoteTests =
                           Expect.equal note.NormalizedSlug "fnhci" "Expected the slug to normalize to lowercase kebab-case."
                           Expect.stringContains text "note_kind = \"concept_seed\"" "Expected TOML front matter for the note kind."
                           Expect.stringContains text "# FnHCI" "Expected the concept note title heading."
-                          Expect.stringContains text "Mermaid sequence diagram for chat" "Expected the source conversation title."
+                          Expect.stringContains text "Claude Fixture Conversation" "Expected the source conversation title."
                           Expect.stringContains text conversationId "Expected the canonical conversation ID in the note."
                           Expect.stringContains text "export-graphviz-dot --conversation-id" "Expected a graph slice command for the source conversation."
-                          Expect.stringContains text "can you make a mermaid sequence diagram" "Expected message excerpts from the projection."))
+                          Expect.stringContains text "Hello from Claude fixture." "Expected message excerpts from the projection."))
 
               testCase "Concept note seed refuses to overwrite an existing note" (fun () ->
                   TestHelpers.withTempDirectory "nexus-concept-note-duplicate" (fun tempRoot ->

@@ -22,5 +22,6 @@ Current guides:
 - `rebuild-conversation-projections.md`
 - `rebuild-graph-assertions.md`
 - `report-unresolved-artifacts.md`
+- `report-working-graph-imports.md`
 - `run-tests.md`
 - `write-sample-event-store.md`

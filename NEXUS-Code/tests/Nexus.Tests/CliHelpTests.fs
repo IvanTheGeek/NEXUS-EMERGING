@@ -55,6 +55,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/rebuild-graph-assertions.md" "Expected the graph rebuild guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-graph-assertions.")
 
+              testCase "Working graph report help exposes the catalog workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-graph-imports" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-working-graph-imports to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-graph-imports" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
+                  Expect.stringContains result.StandardOutput "graph/working/catalog" "Expected the graph working catalog note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-imports.md" "Expected the working-graph report guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-imports.")
+
               testCase "Concept note help exposes the curation workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
 

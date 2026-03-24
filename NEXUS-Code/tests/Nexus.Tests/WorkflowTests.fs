@@ -37,6 +37,7 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.ArtifactsReferenced 1 "Expected one Claude artifact reference."
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
                       Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
+                      Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected the import to update the graph working catalog."
                       Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
 
                       let workingManifestPath =
@@ -47,6 +48,15 @@ module WorkflowTests =
                       let workingManifest = TestHelpers.readToml workingManifestPath
                       Expect.equal (TomlDocument.tryScalar "mode" workingManifest) (Some "incremental_import_batch") "Expected the incremental graph working manifest."
                       Expect.equal (TomlDocument.tryScalar "graph_assertions_written" workingManifest) (Some "46") "Expected the working graph assertion count in the manifest."
+
+                      let catalogPath =
+                          firstImport.WorkingGraphCatalogRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing working graph catalog path.")
+
+                      let catalog = TestHelpers.readToml catalogPath
+                      Expect.equal (TomlDocument.tryScalar "catalog_version" catalog) (Some "graph-working-import-catalog-v1") "Expected the graph working catalog version."
+                      Expect.equal (TomlDocument.tryScalar "entry_count" catalog) (Some "1") "Expected a single graph working catalog entry."
 
                       let secondImport = ImportWorkflow.run request
                       Expect.equal secondImport.Counts.NewEventsAppended 3 "Expected only import-stream events on duplicate import."

@@ -617,6 +617,8 @@ module ImportWorkflow =
         emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
         let workingGraph =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
+        let workingGraphCatalogRelativePath =
+            GraphWorkingCatalog.upsertImportBatch eventStoreRoot workingGraph
         stopwatch.Stop()
         emitStatus
             status
@@ -630,6 +632,7 @@ module ImportWorkflow =
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
           WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
+          WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
           WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
           Counts = importCompletedCounts }
 

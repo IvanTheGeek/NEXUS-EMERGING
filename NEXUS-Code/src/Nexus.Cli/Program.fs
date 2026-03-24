@@ -28,6 +28,7 @@ module Program =
         | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
+        | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateConceptNote of request: CreateConceptNoteRequest
 
@@ -231,6 +232,23 @@ module Program =
                   Notes =
                     [ "This report reads artifact projections, so rebuild them after new imports if needed."
                       "Detailed guide: docs/how-to/report-unresolved-artifacts.md" ] }
+        | "report-working-graph-imports" ->
+            Some
+                { Name = name
+                  Summary = "Summarize the import-batch graph working slices without rereading every assertion TOML file."
+                  Usage =
+                    [ sprintf "%s report-working-graph-imports" cliInvocation
+                      sprintf "%s report-working-graph-imports --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--limit <n>", "Limit detailed items. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-working-graph-imports" cliInvocation
+                      sprintf "%s report-working-graph-imports --event-store-root /tmp/nexus-event-store --limit 5" cliInvocation ]
+                  Notes =
+                    [ "This report prefers the graph working catalog under graph/working/catalog/ and falls back to manifest scanning if needed."
+                      "The detail list joins each working-slice entry back to the canonical import manifest when present."
+                      "Detailed guide: docs/how-to/report-working-graph-imports.md" ] }
         | "rebuild-conversation-projections" ->
             Some
                 { Name = name
@@ -278,6 +296,7 @@ module Program =
           "export-graphviz-dot"
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
+          "report-working-graph-imports"
           "rebuild-conversation-projections"
           "create-concept-note" ]
         |> List.choose (fun name ->
@@ -677,6 +696,31 @@ module Program =
 
             loop defaultEventStoreRoot None 20 args
 
+    let private parseReportWorkingGraphImports (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-working-graph-imports"))
+        else
+            let rec loop eventStoreRoot limit remaining =
+                match remaining with
+                | [] -> Ok (ReportWorkingGraphImports(eventStoreRoot, limit))
+                | "--event-store-root" :: value :: rest ->
+                    loop value limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot parsedValue rest
+                    | true, _
+                    | false, _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-working-graph-imports"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-working-graph-imports: %s" option
+                    printCommandHelp "report-working-graph-imports"
+                    Error 1
+
+            loop defaultEventStoreRoot 20 args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -710,6 +754,8 @@ module Program =
             parseRebuildArtifactProjections rest
         | "report-unresolved-artifacts" :: rest ->
             parseReportUnresolvedArtifacts rest
+        | "report-working-graph-imports" :: rest ->
+            parseReportWorkingGraphImports rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | "create-concept-note" :: rest ->
@@ -964,11 +1010,27 @@ module Program =
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath
-        match result.WorkingGraphManifestRelativePath, result.WorkingGraphAssertionCount with
-        | Some manifestPath, Some assertionCount ->
+        match result.WorkingGraphManifestRelativePath, result.WorkingGraphCatalogRelativePath, result.WorkingGraphAssertionCount with
+        | Some manifestPath, Some catalogPath, Some assertionCount ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph catalog: %s" catalogPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | Some manifestPath, None, Some assertionCount ->
             printfn "  Working graph manifest: %s" manifestPath
             printfn "  Working graph assertions written: %d" assertionCount
-        | _ -> ()
+        | None, Some catalogPath, Some assertionCount ->
+            printfn "  Working graph catalog: %s" catalogPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | Some manifestPath, Some catalogPath, None ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph catalog: %s" catalogPath
+        | Some manifestPath, None, None ->
+            printfn "  Working graph manifest: %s" manifestPath
+        | None, Some catalogPath, None ->
+            printfn "  Working graph catalog: %s" catalogPath
+        | None, None, Some assertionCount ->
+            printfn "  Working graph assertions written: %d" assertionCount
+        | None, None, None -> ()
         printfn "  Events written: %d" result.EventPaths.Length
         printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
         printfn "  Messages seen: %d" result.Counts.MessagesSeen
@@ -1170,6 +1232,58 @@ module Program =
 
         0
 
+    let private reportWorkingGraphImports eventStoreRoot limit =
+        let report = GraphWorkingCatalog.buildReport eventStoreRoot limit
+
+        printfn "Graph working imports report."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Catalog: %s" report.CatalogRelativePath
+        printfn "  Working slices: %d" report.WorkingSliceCount
+        printfn "  Total canonical events: %d" report.TotalCanonicalEvents
+        printfn "  Total graph assertions: %d" report.TotalGraphAssertions
+
+        if not report.ProviderCounts.IsEmpty then
+            printfn "  Providers:"
+
+            report.ProviderCounts
+            |> List.iter (fun (providerValue, count) ->
+                printfn "    %s: %d" providerValue count)
+
+        if not report.Items.IsEmpty then
+            printfn "  Recent slices:"
+
+            report.Items
+            |> List.iter (fun item ->
+                let providerText =
+                    match item.Provider with
+                    | Some providerValue -> providerValue
+                    | None -> "unknown"
+
+                let windowText =
+                    match item.Window with
+                    | Some windowValue -> windowValue
+                    | None -> "unknown"
+
+                let importedAtText =
+                    match item.ImportedAt with
+                    | Some importedAtValue -> importedAtValue.ToUniversalTime().ToString("O")
+                    | None -> "unknown"
+
+                printfn "    %s" (ImportId.format item.ImportId)
+                printfn
+                    "      provider=%s window=%s imported_at=%s materialized_at=%s"
+                    providerText
+                    windowText
+                    importedAtText
+                    (item.MaterializedAt.ToUniversalTime().ToString("O"))
+                printfn
+                    "      canonical_events=%d graph_assertions=%d"
+                    item.CanonicalEventCount
+                    item.GraphAssertionCount
+                printfn "      manifest=%s" item.ManifestRelativePath)
+
+        0
+
     let private createConceptNote request =
         match ConceptNotes.create request with
         | Error error ->
@@ -1212,6 +1326,8 @@ module Program =
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
             reportUnresolvedArtifacts eventStoreRoot provider limit
+        | Ok (ReportWorkingGraphImports(eventStoreRoot, limit)) ->
+            reportWorkingGraphImports eventStoreRoot limit
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Ok (CreateConceptNote request) ->

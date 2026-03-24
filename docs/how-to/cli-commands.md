@@ -95,6 +95,12 @@ The CLI supports both:
 - Use it to find good candidates for manual artifact recovery.
 - Details: `docs/how-to/report-unresolved-artifacts.md`
 
+`report-working-graph-imports`
+
+- Summarizes the graph working-layer import slices from the lightweight catalog.
+- Use it when you want a fast view of the current secondary graph working layer.
+- Details: `docs/how-to/report-working-graph-imports.md`
+
 ## Common Workflow Sequences
 
 Provider import:
@@ -105,6 +111,7 @@ Provider import:
 4. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
 5. Run `export-graphviz-dot` if you want an external graph view.
 6. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+7. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
 
 Codex session import:
 
@@ -145,4 +152,5 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
+- `docs/how-to/report-working-graph-imports.md`
 - `docs/how-to/run-tests.md`

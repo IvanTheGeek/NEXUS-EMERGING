@@ -11,8 +11,10 @@ module Program =
               ProviderAdapterTests.tests
               WorkflowTests.tests
               GraphAssertionTests.tests
+              GraphWorkingCatalogTests.tests
               GraphvizDotTests.tests
               PropertyTests.tests
               SnapshotTests.tests
-              CliHelpTests.tests ]
+              CliHelpTests.tests
+              ConceptNoteTests.tests ]
         |> runTestsWithCLIArgs [] argv
