@@ -31,6 +31,7 @@ module Program =
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
         | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
+        | VerifyWorkingGraphSlice of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateConceptNote of request: CreateConceptNoteRequest
@@ -301,6 +302,24 @@ module Program =
                     [ "This report reads the SQLite working index under graph/working/index/."
                       "Working slices remain derived and rebuildable from canonical history."
                       "Detailed guide: docs/how-to/report-working-graph-slice.md" ] }
+        | "verify-working-graph-slice" ->
+            Some
+                { Name = name
+                  Summary = "Verify one graph working slice back to canonical events and preserved raw objects."
+                  Usage =
+                    [ sprintf "%s verify-working-graph-slice --import-id <uuid>" cliInvocation
+                      sprintf "%s verify-working-graph-slice --import-id <uuid> --objects-root /tmp/nexus-objects" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--import-id <uuid>", "Required. Select the graph working import slice to verify." ]
+                  Examples =
+                    [ sprintf "%s verify-working-graph-slice --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s verify-working-graph-slice --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --import-id <uuid>" cliInvocation ]
+                  Notes =
+                    [ "This command verifies the traceability chain from the working slice back to canonical events and raw object refs."
+                      "It exits non-zero when canonical event links or raw object refs are missing."
+                      "Detailed guide: docs/how-to/verify-working-graph-slice.md" ] }
         | "rebuild-working-graph-index" ->
             Some
                 { Name = name
@@ -367,6 +386,7 @@ module Program =
           "report-unresolved-artifacts"
           "report-working-graph-imports"
           "report-working-graph-slice"
+          "verify-working-graph-slice"
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
           "create-concept-note" ]
@@ -912,6 +932,38 @@ module Program =
 
             loop defaultEventStoreRoot None 10 args
 
+    let private parseVerifyWorkingGraphSlice (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "verify-working-graph-slice"))
+        else
+            let rec loop eventStoreRoot objectsRoot importId remaining =
+                match remaining with
+                | [] ->
+                    match importId with
+                    | Some importIdValue -> Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importIdValue))
+                    | None ->
+                        eprintfn "Missing required option: --import-id"
+                        printCommandHelp "verify-working-graph-slice"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot importId rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value importId rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot objectsRoot (Some (ImportId.parse value)) rest
+                    | false, _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "verify-working-graph-slice"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for verify-working-graph-slice: %s" option
+                    printCommandHelp "verify-working-graph-slice"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot None args
+
     let private parseRebuildWorkingGraphIndex (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-working-graph-index"))
@@ -967,6 +1019,8 @@ module Program =
             parseReportWorkingGraphImports rest
         | "report-working-graph-slice" :: rest ->
             parseReportWorkingGraphSlice rest
+        | "verify-working-graph-slice" :: rest ->
+            parseVerifyWorkingGraphSlice rest
         | "rebuild-working-graph-index" :: rest ->
             parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
@@ -1569,6 +1623,48 @@ module Program =
             eprintfn "Import a batch first or refresh the working index from a new import."
             1
 
+    let private verifyWorkingGraphSlice eventStoreRoot objectsRoot importId =
+        let report = GraphWorkingVerification.verifyImportSlice eventStoreRoot objectsRoot importId
+
+        printfn "Graph working slice verification."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Objects root: %s" objectsRoot
+        printfn "  Import ID: %s" (ImportId.format report.ImportId)
+        printfn "  Working root: %s" report.WorkingRootRelativePath
+        printfn "  Manifest: %s" report.ManifestRelativePath
+        printfn "  Verified at: %s" (report.VerifiedAt.ToUniversalTime().ToString("O"))
+        printfn "  SQLite index entry available: %b" report.IndexAvailable
+        printfn "  Assertions scanned: %d" report.AssertionCount
+        printfn "  Assertion import mismatches: %d" report.AssertionImportMismatches
+        printfn "  Assertions without supporting events: %d" report.AssertionsWithoutSupportingEvents
+        printfn "  Supporting event refs: %d" report.SupportingEventReferenceCount
+        printfn "  Distinct supporting events: %d" report.DistinctSupportingEventCount
+        printfn "  Raw object refs: %d" report.RawObjectReferenceCount
+        printfn "  Distinct raw objects: %d" report.DistinctRawObjectCount
+        printfn "  Missing canonical event refs: %d" report.MissingCanonicalEventReferences.Length
+        printfn "  Missing raw object refs: %d" report.MissingRawObjectReferences.Length
+
+        if not report.MissingCanonicalEventReferences.IsEmpty then
+            printfn "  Missing canonical events:"
+
+            report.MissingCanonicalEventReferences
+            |> List.truncate 10
+            |> List.iter (fun item ->
+                printfn "    %s referenced by %s" (CanonicalEventId.format item.EventId) (FactId.format item.ReferencedByFactId))
+
+        if not report.MissingRawObjectReferences.IsEmpty then
+            printfn "  Missing raw objects:"
+
+            report.MissingRawObjectReferences
+            |> List.truncate 10
+            |> List.iter (fun item ->
+                printfn "    %s referenced by %s" item.RelativePath (FactId.format item.ReferencedByFactId))
+
+        if GraphWorkingVerification.isClean report then
+            0
+        else
+            2
+
     let private rebuildWorkingGraphIndex eventStoreRoot =
         let result =
             GraphWorkingIndex.rebuildFromCatalogWithStatus
@@ -1631,6 +1727,8 @@ module Program =
             reportWorkingGraphImports eventStoreRoot limit
         | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
             reportWorkingGraphSlice eventStoreRoot importId limit
+        | Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importId)) ->
+            verifyWorkingGraphSlice eventStoreRoot objectsRoot importId
         | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
             rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->

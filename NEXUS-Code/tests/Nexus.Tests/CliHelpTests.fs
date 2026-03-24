@@ -99,6 +99,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/rebuild-working-graph-index.md" "Expected the working-index rebuild guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-working-graph-index.")
 
+              testCase "Working graph verification help exposes the traceability workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "verify-working-graph-slice" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help verify-working-graph-slice to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: verify-working-graph-slice" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected objects-root guidance."
+                  Expect.stringContains result.StandardOutput "canonical events" "Expected canonical verification guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/verify-working-graph-slice.md" "Expected the verification guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help verify-working-graph-slice.")
+
               testCase "Concept note help exposes the curation workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
 

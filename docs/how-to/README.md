@@ -27,4 +27,5 @@ Current guides:
 - `report-working-graph-imports.md`
 - `report-working-graph-slice.md`
 - `run-tests.md`
+- `verify-working-graph-slice.md`
 - `write-sample-event-store.md`

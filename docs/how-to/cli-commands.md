@@ -113,6 +113,12 @@ The CLI supports both:
 - Use it when you want a quick structural view of a specific fresh import batch.
 - Details: `docs/how-to/report-working-graph-slice.md`
 
+`verify-working-graph-slice`
+
+- Verifies one graph working import slice back to canonical events and preserved raw objects.
+- Use it when a slice matters enough to trade speed for stronger provenance validation.
+- Details: `docs/how-to/verify-working-graph-slice.md`
+
 `rebuild-working-graph-index`
 
 - Rebuilds the SQLite graph working index from the existing graph working import slices.
@@ -133,6 +139,7 @@ Provider import:
 8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
 9. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
 10. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
+11. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
 
 Codex session import:
 
@@ -179,3 +186,4 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/report-working-graph-imports.md`
 - `docs/how-to/report-working-graph-slice.md`
 - `docs/how-to/run-tests.md`
+- `docs/how-to/verify-working-graph-slice.md`

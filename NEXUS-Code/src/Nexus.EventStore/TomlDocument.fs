@@ -2,6 +2,7 @@ namespace Nexus.EventStore
 
 open System
 open System.Collections.Generic
+open System.Text.Json
 
 /// <summary>
 /// A lightweight TOML document shape used by NEXUS read models and importer indexing.
@@ -33,6 +34,14 @@ module TomlDocument =
                 .Replace("\\t", "\t")
         else
             trimmed
+
+    let private tryParseStringListLiteral (rawValue: string) =
+        try
+            JsonSerializer.Deserialize<string array>(rawValue)
+            |> Option.ofObj
+            |> Option.map Array.toList
+        with
+        | :? JsonException -> None
 
     /// <summary>
     /// Parses TOML text into the lightweight <see cref="T:Nexus.EventStore.TomlDocument" /> representation.
@@ -101,6 +110,13 @@ module TomlDocument =
         | false, _ -> None
 
     /// <summary>
+    /// Looks up a string-list value at the document root when the stored scalar is a TOML string array.
+    /// </summary>
+    let tryStringList key (document: TomlDocument) =
+        tryScalar key document
+        |> Option.bind tryParseStringListLiteral
+
+    /// <summary>
     /// Looks up a scalar value inside a named TOML table.
     /// </summary>
     let tryTableValue path key (document: TomlDocument) =
@@ -110,6 +126,13 @@ module TomlDocument =
             | true, value -> Some value
             | false, _ -> None
         | false, _ -> None
+
+    /// <summary>
+    /// Looks up a string-list value inside a named TOML table when the stored value is a TOML string array.
+    /// </summary>
+    let tryTableStringList path key (document: TomlDocument) =
+        tryTableValue path key document
+        |> Option.bind tryParseStringListLiteral
 
     /// <summary>
     /// Returns the tables stored under a TOML array-of-tables path.

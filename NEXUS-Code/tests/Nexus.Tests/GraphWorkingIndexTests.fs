@@ -1,5 +1,6 @@
 namespace Nexus.Tests
 
+open System
 open System.IO
 open Expecto
 open Nexus.Domain
@@ -100,4 +101,54 @@ module GraphWorkingIndexTests =
                           GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importResult.ImportId 5
                           |> Option.defaultWith (fun () -> failwith "Expected the rebuilt SQLite index to answer slice queries.")
 
-                      Expect.equal report.GraphAssertionCount 46 "Expected the rebuilt SQLite index to restore the slice.")) ]
+                      Expect.equal report.GraphAssertionCount 46 "Expected the rebuilt SQLite index to restore the slice."))
+
+              testCase "CLI verify-working-graph-slice succeeds for a clean fixture import" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-verify-clean" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let importResult = ImportWorkflow.run request
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "verify-working-graph-slice"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--objects-root"
+                                objectsRoot
+                                "--import-id"
+                                (ImportId.format importResult.ImportId) ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected graph working verification to succeed for the clean fixture import."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the clean verification command."
+                      Expect.stringContains cliResult.StandardOutput "Graph working slice verification." "Expected the verification header."
+                      Expect.stringContains cliResult.StandardOutput "Missing canonical event refs: 0" "Expected no missing canonical events."
+                      Expect.stringContains cliResult.StandardOutput "Missing raw object refs: 0" "Expected no missing raw objects."))
+
+              testCase "CLI verify-working-graph-slice fails when a canonical event is missing" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-verify-broken" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let importResult = ImportWorkflow.run request
+
+                      let eventPath =
+                          importResult.EventPaths
+                          |> List.find (fun path -> path.Contains("__provider-message-observed.toml", StringComparison.Ordinal))
+                          |> fun relativePath -> Path.Combine(eventStoreRoot, relativePath)
+
+                      File.Delete(eventPath)
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "verify-working-graph-slice"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--objects-root"
+                                objectsRoot
+                                "--import-id"
+                                (ImportId.format importResult.ImportId) ]
+
+                      Expect.equal cliResult.ExitCode 2 "Expected verification failure when a canonical event file is missing."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the broken verification command."
+                      Expect.stringContains cliResult.StandardOutput "Missing canonical event refs:" "Expected the missing canonical event summary."
+                      Expect.stringContains cliResult.StandardOutput "referenced by" "Expected missing-canonical detail output.")) ]
