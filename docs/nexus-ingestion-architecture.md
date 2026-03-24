@@ -25,6 +25,7 @@ Use one workspace for now, but keep three explicit boundaries:
 - referenced-but-missing artifacts are valid unresolved references
 - later manual artifact capture appends new facts and does not rewrite history
 - reparse from raw source is expected and designed for
+- derived indexes and projections must not sever the verification path back to canonical and raw source layers
 
 ## Minimum Stable Base Types
 
