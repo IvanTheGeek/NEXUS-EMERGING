@@ -68,4 +68,36 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Index: graph/working/index/graph-working.sqlite" "Expected the SQLite index path in the report."
                       Expect.stringContains cliResult.StandardOutput "Provider: claude" "Expected provider enrichment in the report."
                       Expect.stringContains cliResult.StandardOutput "Graph assertions: 46" "Expected the graph assertion count in the report."
-                      Expect.stringContains cliResult.StandardOutput "has_node_kind: 8" "Expected predicate counts in the report.")) ]
+                      Expect.stringContains cliResult.StandardOutput "has_node_kind: 8" "Expected predicate counts in the report."))
+
+              testCase "CLI rebuild-working-graph-index recreates the SQLite index from working slices" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-index-rebuild" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let indexPath =
+                          importResult.WorkingGraphIndexRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing working graph SQLite index path.")
+
+                      File.Delete(indexPath)
+                      Expect.isFalse (File.Exists(indexPath)) "Expected the SQLite graph working index to be deleted before rebuild."
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "rebuild-working-graph-index"
+                                "--event-store-root"
+                                eventStoreRoot ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected the working-index rebuild command to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-index rebuild command."
+                      Expect.isTrue (File.Exists(indexPath)) "Expected the SQLite graph working index to be recreated."
+                      Expect.stringContains cliResult.StandardOutput "Graph working SQLite index rebuilt." "Expected the rebuild header."
+                      Expect.stringContains cliResult.StandardOutput "Working slices indexed: 1" "Expected the indexed slice count."
+                      Expect.stringContains cliResult.StandardOutput "Graph assertions indexed: 46" "Expected the indexed assertion count."
+
+                      let report =
+                          GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importResult.ImportId 5
+                          |> Option.defaultWith (fun () -> failwith "Expected the rebuilt SQLite index to answer slice queries.")
+
+                      Expect.equal report.GraphAssertionCount 46 "Expected the rebuilt SQLite index to restore the slice.")) ]

@@ -89,6 +89,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-slice.md" "Expected the working-slice guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-slice.")
 
+              testCase "Working graph index rebuild help exposes the rebuild workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "rebuild-working-graph-index" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help rebuild-working-graph-index to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: rebuild-working-graph-index" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "graph/working/imports" "Expected the working-slice source note."
+                  Expect.stringContains result.StandardOutput "graph-working.sqlite" "Expected the SQLite index target note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/rebuild-working-graph-index.md" "Expected the working-index rebuild guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-working-graph-index.")
+
               testCase "Concept note help exposes the curation workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
 

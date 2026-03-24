@@ -31,6 +31,7 @@ module Program =
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
         | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
+        | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateConceptNote of request: CreateConceptNoteRequest
 
@@ -300,6 +301,22 @@ module Program =
                     [ "This report reads the SQLite working index under graph/working/index/."
                       "Working slices remain derived and rebuildable from canonical history."
                       "Detailed guide: docs/how-to/report-working-graph-slice.md" ] }
+        | "rebuild-working-graph-index" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild the SQLite graph working index from the existing graph working import slices."
+                  Usage =
+                    [ sprintf "%s rebuild-working-graph-index" cliInvocation
+                      sprintf "%s rebuild-working-graph-index --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-working-graph-index" cliInvocation
+                      sprintf "%s rebuild-working-graph-index --event-store-root /tmp/nexus-event-store" cliInvocation ]
+                  Notes =
+                    [ "This command rescans graph/working/imports/... and repopulates graph/working/index/graph-working.sqlite."
+                      "Use it when the SQLite working index is missing, stale, or intentionally reset."
+                      "Detailed guide: docs/how-to/rebuild-working-graph-index.md" ] }
         | "rebuild-conversation-projections" ->
             Some
                 { Name = name
@@ -350,6 +367,7 @@ module Program =
           "report-unresolved-artifacts"
           "report-working-graph-imports"
           "report-working-graph-slice"
+          "rebuild-working-graph-index"
           "rebuild-conversation-projections"
           "create-concept-note" ]
         |> List.choose (fun name ->
@@ -894,6 +912,22 @@ module Program =
 
             loop defaultEventStoreRoot None 10 args
 
+    let private parseRebuildWorkingGraphIndex (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-working-graph-index"))
+        else
+            let rec loop eventStoreRoot remaining =
+                match remaining with
+                | [] -> Ok (RebuildWorkingGraphIndex eventStoreRoot)
+                | "--event-store-root" :: value :: rest ->
+                    loop value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-working-graph-index: %s" option
+                    printCommandHelp "rebuild-working-graph-index"
+                    Error 1
+
+            loop defaultEventStoreRoot args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -933,6 +967,8 @@ module Program =
             parseReportWorkingGraphImports rest
         | "report-working-graph-slice" :: rest ->
             parseReportWorkingGraphSlice rest
+        | "rebuild-working-graph-index" :: rest ->
+            parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
         | "create-concept-note" :: rest ->
@@ -1533,6 +1569,20 @@ module Program =
             eprintfn "Import a batch first or refresh the working index from a new import."
             1
 
+    let private rebuildWorkingGraphIndex eventStoreRoot =
+        let result =
+            GraphWorkingIndex.rebuildFromCatalogWithStatus
+                (fun message -> printfn "  %s" message)
+                eventStoreRoot
+
+        printfn "Graph working SQLite index rebuilt."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Catalog: %s" result.CatalogRelativePath
+        printfn "  Index: %s" result.IndexRelativePath
+        printfn "  Working slices indexed: %d" result.WorkingSliceCount
+        printfn "  Graph assertions indexed: %d" result.GraphAssertionCount
+        0
+
     let private createConceptNote request =
         match ConceptNotes.create request with
         | Error error ->
@@ -1581,6 +1631,8 @@ module Program =
             reportWorkingGraphImports eventStoreRoot limit
         | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
             reportWorkingGraphSlice eventStoreRoot importId limit
+        | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
+            rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
         | Ok (CreateConceptNote request) ->

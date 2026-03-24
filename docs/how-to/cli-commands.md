@@ -113,6 +113,12 @@ The CLI supports both:
 - Use it when you want a quick structural view of a specific fresh import batch.
 - Details: `docs/how-to/report-working-graph-slice.md`
 
+`rebuild-working-graph-index`
+
+- Rebuilds the SQLite graph working index from the existing graph working import slices.
+- Use it when the local working index is missing, stale, or intentionally reset.
+- Details: `docs/how-to/rebuild-working-graph-index.md`
+
 ## Common Workflow Sequences
 
 Provider import:
@@ -126,6 +132,7 @@ Provider import:
 7. Run `report-unresolved-artifacts` if you want to identify missing payloads.
 8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
 9. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
+10. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
 
 Codex session import:
 
@@ -166,6 +173,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/create-concept-note.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
+- `docs/how-to/rebuild-working-graph-index.md`
 - `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/report-working-graph-imports.md`

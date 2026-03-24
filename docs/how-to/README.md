@@ -22,6 +22,7 @@ Current guides:
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
 - `rebuild-graph-assertions.md`
+- `rebuild-working-graph-index.md`
 - `report-unresolved-artifacts.md`
 - `report-working-graph-imports.md`
 - `report-working-graph-slice.md`

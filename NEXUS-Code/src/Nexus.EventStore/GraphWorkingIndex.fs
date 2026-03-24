@@ -32,6 +32,15 @@ type WorkingGraphSliceReport =
       ManifestRelativePath: string
       PredicateCounts: WorkingGraphSlicePredicateCount list }
 
+/// <summary>
+/// Summarizes one full rebuild of the persisted graph working SQLite index.
+/// </summary>
+type WorkingGraphIndexRebuildResult =
+    { IndexRelativePath: string
+      CatalogRelativePath: string
+      WorkingSliceCount: int
+      GraphAssertionCount: int }
+
 type private ImportManifestMetadata =
     { Provider: string option
       Window: string option
@@ -59,6 +68,11 @@ type private IndexedAssertionRow =
 [<RequireQualifiedAccess>]
 module GraphWorkingIndex =
     let private indexRelativePath = Path.Combine("graph", "working", "index", "graph-working.sqlite")
+
+    /// <summary>
+    /// Emits human-readable graph working-index rebuild progress.
+    /// </summary>
+    type StatusReporter = string -> unit
 
     let private normalizePath (path: string) =
         path.Replace('\\', '/')
@@ -231,6 +245,37 @@ CREATE TABLE IF NOT EXISTS assertions (
         else
             None
 
+    let private timeSpanFromMilliseconds (value: int64 option) =
+        value
+        |> Option.map (fun milliseconds -> TimeSpan.FromMilliseconds(float milliseconds))
+        |> Option.defaultValue TimeSpan.Zero
+
+    let private importBatchResultFromCatalogEntry eventStoreRoot (entry: WorkingImportCatalogEntry) =
+        let assertionsRootAbsolutePath =
+            Path.Combine(Path.GetFullPath(eventStoreRoot), entry.WorkingRootRelativePath, "assertions")
+
+        let assertionPaths =
+            if Directory.Exists(assertionsRootAbsolutePath) then
+                Directory.EnumerateFiles(assertionsRootAbsolutePath, "*.toml", SearchOption.AllDirectories)
+                |> Seq.sort
+                |> Seq.map (fun absolutePath -> Path.GetRelativePath(Path.GetFullPath(eventStoreRoot), absolutePath) |> normalizePath)
+                |> Seq.toList
+            else
+                []
+
+        let result: GraphMaterialization.ImportBatchResult =
+            { ImportId = entry.ImportId
+              CanonicalEventCount = entry.CanonicalEventCount
+              GraphAssertionCount = assertionPaths.Length
+              DerivationElapsed = timeSpanFromMilliseconds entry.DerivationElapsedMilliseconds
+              TotalElapsed = timeSpanFromMilliseconds entry.TotalElapsedMilliseconds
+              AssertionPaths = assertionPaths
+              ManifestRelativePath = entry.ManifestRelativePath
+              MaterializedAt = entry.MaterializedAt
+              MaterializerVersion = entry.MaterializerVersion }
+
+        result
+
     /// <summary>
     /// Returns the stable relative path for the persisted graph working SQLite index.
     /// </summary>
@@ -370,6 +415,37 @@ INSERT INTO assertions (
             transaction.Commit())
 
         relativePath
+
+    /// <summary>
+    /// Rebuilds the persisted SQLite working index from the current graph working import slices.
+    /// </summary>
+    /// <param name="status">Receives human-readable rebuild progress updates.</param>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <returns>A summary of the rebuilt working index contents.</returns>
+    let rebuildFromCatalogWithStatus (status: StatusReporter) eventStoreRoot =
+        let catalog = GraphWorkingCatalog.load eventStoreRoot
+        let absolutePath = indexAbsolutePath eventStoreRoot
+
+        if File.Exists(absolutePath) then
+            status $"Removing previous graph working SQLite index at {absolutePath}"
+            File.Delete(absolutePath)
+
+        status $"Rebuilding graph working SQLite index from {catalog.Entries.Length} working slices."
+
+        let mutable totalAssertionCount = 0
+
+        for entry in catalog.Entries |> List.sortBy (fun currentEntry -> currentEntry.MaterializedAt, ImportId.format currentEntry.ImportId) do
+            status $"Indexing working slice {ImportId.format entry.ImportId} from {entry.WorkingRootRelativePath}"
+            let importBatchResult = importBatchResultFromCatalogEntry eventStoreRoot entry
+            totalAssertionCount <- totalAssertionCount + importBatchResult.GraphAssertionCount
+            refreshImportBatch eventStoreRoot importBatchResult |> ignore
+
+        status $"Graph working SQLite index rebuilt: {catalog.Entries.Length} slices, {totalAssertionCount} assertions."
+
+        { IndexRelativePath = relativePath
+          CatalogRelativePath = catalog.CatalogRelativePath
+          WorkingSliceCount = catalog.Entries.Length
+          GraphAssertionCount = totalAssertionCount }
 
     /// <summary>
     /// Builds a summary for one import-local graph working slice from the persisted SQLite index.
