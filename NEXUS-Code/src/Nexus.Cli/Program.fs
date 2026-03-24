@@ -1174,6 +1174,27 @@ module Program =
         printfn "  Snapshot root: %s" result.SnapshotRoot
         printfn "  Root artifact: %s" result.RootArtifactRelativePath
         printfn "  Event manifest: %s" result.ManifestRelativePath
+        match result.WorkingGraphManifestRelativePath, result.WorkingGraphCatalogRelativePath, result.WorkingGraphAssertionCount with
+        | Some manifestPath, Some catalogPath, Some assertionCount ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph catalog: %s" catalogPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | Some manifestPath, None, Some assertionCount ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | None, Some catalogPath, Some assertionCount ->
+            printfn "  Working graph catalog: %s" catalogPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | Some manifestPath, Some catalogPath, None ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph catalog: %s" catalogPath
+        | Some manifestPath, None, None ->
+            printfn "  Working graph manifest: %s" manifestPath
+        | None, Some catalogPath, None ->
+            printfn "  Working graph catalog: %s" catalogPath
+        | None, None, Some assertionCount ->
+            printfn "  Working graph assertions written: %d" assertionCount
+        | None, None, None -> ()
         printfn "  Events written: %d" result.EventPaths.Length
         printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
         printfn "  Messages seen: %d" result.Counts.MessagesSeen

@@ -22,6 +22,8 @@ It then:
 - canonicalizes `user_message` and `agent_message` records
 - writes append-only canonical events into `NEXUS-EventStore/events/`
 - writes an import manifest into `NEXUS-EventStore/imports/`
+- materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/`
+- updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
 
 In v1, richer Codex runtime records such as function calls, tool outputs, reasoning, token counts, and other non-message events remain preserved only in raw JSONL.
 
@@ -57,4 +59,11 @@ After importing, rebuild conversation projections:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- rebuild-conversation-projections
+```
+
+You can also inspect or visualize the fresh graph working slice without a full durable graph rebuild:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-imports
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id>
 ```

@@ -212,6 +212,9 @@ type CodexSessionImportResult =
       RootArtifactRelativePath: string
       EventPaths: string list
       ManifestRelativePath: string
+      WorkingGraphManifestRelativePath: string option
+      WorkingGraphCatalogRelativePath: string option
+      WorkingGraphAssertionCount: int option
       Counts: ImportCounts }
 
 /// <summary>

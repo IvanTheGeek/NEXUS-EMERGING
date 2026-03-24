@@ -323,10 +323,17 @@ module CodexImportWorkflow =
 
         let eventPaths = CanonicalStore.writeCanonicalEvents eventStoreRoot eventList
         let manifestPath = CanonicalStore.writeImportManifest eventStoreRoot manifest
+        let workingGraph =
+            GraphMaterialization.materializeImportBatchWithStatus ignore eventStoreRoot importId eventList
+        let workingGraphCatalogRelativePath =
+            GraphWorkingCatalog.upsertImportBatch eventStoreRoot workingGraph
 
         { ImportId = importId
           SnapshotRoot = snapshotRoot
           RootArtifactRelativePath = intake.RootArtifact.RelativePath
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
+          WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
+          WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
+          WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
           Counts = counts }

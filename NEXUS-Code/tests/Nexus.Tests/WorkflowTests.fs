@@ -138,10 +138,21 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.ConversationsSeen 1 "Expected one Codex conversation."
                       Expect.equal firstImport.Counts.MessagesSeen 2 "Expected two Codex fixture messages."
                       Expect.equal firstImport.Counts.NewEventsAppended 5 "Expected artifact, conversation, two messages, and import completion events."
+                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected Codex import to materialize a graph working slice."
+                      Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected Codex import to update the graph working catalog."
+                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 36) "Expected the Codex graph working slice assertion count for the fixture import."
 
                       let secondImport = CodexImportWorkflow.run request
                       Expect.equal secondImport.Counts.NewEventsAppended 2 "Expected only import-stream events on duplicate Codex import."
                       Expect.equal secondImport.Counts.DuplicatesSkipped 3 "Expected the duplicate conversation and messages to be skipped."
+
+                      let catalogPath =
+                          firstImport.WorkingGraphCatalogRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing Codex working graph catalog path.")
+
+                      let catalog = TestHelpers.readToml catalogPath
+                      Expect.equal (TomlDocument.tryScalar "entry_count" catalog) (Some "2") "Expected both Codex import batches to appear in the graph working catalog."
 
                       let projectionPaths = ConversationProjections.rebuild eventStoreRoot
                       Expect.equal projectionPaths.Length 1 "Expected one conversation projection."
