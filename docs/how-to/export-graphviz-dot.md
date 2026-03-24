@@ -46,6 +46,12 @@ Import slice:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --import-id <import-id>
 ```
 
+Working import slice:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id>
+```
+
 Custom event-store root:
 
 ```bash
@@ -65,6 +71,10 @@ When you use filters, the default file name becomes filter-aware, for example:
 - `nexus-graph__provider-chatgpt__conversation-abc123.dot`
 - `nexus-graph__import-019d....dot`
 
+Working import slices default to:
+
+- `graph/working/exports/nexus-working-graph__import-019d....dot`
+
 ## Recommended Sequence
 
 If the derived graph may be stale:
@@ -72,12 +82,19 @@ If the derived graph may be stale:
 1. Run `rebuild-graph-assertions`
 2. Run `export-graphviz-dot`
 
+If you just finished an import and want the batch-local working slice instead:
+
+1. Run `import-provider-export`
+2. Run `report-working-graph-imports` if you want to confirm the available working slices
+3. Run `export-graphviz-dot --working-import-id <import-id>`
+
 For large stores, prefer slices first:
 
 1. `--provider` for a provider-wide view
 2. `--conversation-id` for one canonical conversation and its immediate neighborhood
 3. `--provider-conversation-id` for one provider-native conversation
 4. `--import-id` for one import batch
+5. `--working-import-id` for one fresh graph working slice without a full durable-graph rebuild
 
 ## Rendering
 
@@ -96,7 +113,9 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 ## Notes
 
 - This export is derived from `graph/assertions/`, not from canonical history directly.
+- `--working-import-id` is the exception: it reads `graph/working/imports/<import-id>/assertions/` directly from the secondary working layer.
 - Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
 - `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.
+- `--working-import-id` cannot be combined with the durable-graph filter options because it already selects one explicit working slice.
 - The DOT file is an external lens, not the source of truth.
 - It is meant to help surface structure and relationships that may not yet be obvious from inside NEXUS itself.

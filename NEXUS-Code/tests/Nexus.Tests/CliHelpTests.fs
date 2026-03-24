@@ -42,6 +42,7 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import slice guidance."
+                  Expect.stringContains result.StandardOutput "--working-import-id <uuid>" "Expected graph working slice guidance."
                   Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help export-graphviz-dot.")
 

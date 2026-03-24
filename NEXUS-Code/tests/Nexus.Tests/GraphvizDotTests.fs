@@ -135,4 +135,37 @@ module GraphvizDotTests =
                       Expect.isLessThan sliceResult.NodeCount fullResult.NodeCount "Expected a conversation slice to include fewer nodes than the full graph."
                       Expect.stringContains sliceDot conversationTitle "Expected the selected conversation title in the slice."
                       Expect.stringContains sliceDot "references_artifact" "Expected local relationship edges around the conversation."
-                      Expect.stringContains sliceDot "semantic: imprint" "Expected node metadata for the local neighborhood.")) ]
+                      Expect.stringContains sliceDot "semantic: imprint" "Expected node metadata for the local neighborhood."))
+
+              testCase "Working import slice export works without a durable graph rebuild" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-working-import" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+                      let outputPath = Path.Combine(tempRoot, "working-import.dot")
+
+                      let moduleResult =
+                          GraphvizDot.exportWorkingImportBatch
+                              eventStoreRoot
+                              (ImportId.format importResult.ImportId)
+                              (Some outputPath)
+
+                      let dotText = File.ReadAllText(moduleResult.OutputPath)
+
+                      Expect.isTrue (File.Exists(moduleResult.OutputPath)) "Expected the working-slice DOT file to exist."
+                      Expect.equal moduleResult.ScannedAssertionCount 46 "Expected the working slice to read only its own assertion batch."
+                      Expect.equal moduleResult.AssertionCount 46 "Expected the exported working slice assertion count."
+                      Expect.stringContains dotText "Claude Fixture Conversation" "Expected the working import graph to include the imported conversation title."
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "export-graphviz-dot"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--working-import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--output"
+                                (Path.Combine(tempRoot, "working-import-cli.dot")) ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected working-import Graphviz export through the CLI to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind.")) ]
