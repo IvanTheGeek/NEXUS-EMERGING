@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2ca0-7f7a-8b94-e98dfc2b6ffd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca0-75d3-9497-c66c25acbc78"
+conversation_id = "019d174f-2ca0-75d3-9497-c66c25acbc78"
+message_id = "019d174f-2ca0-75b9-b03b-9175eade48b6"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T23:16:33.126013Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "ad9bb2c7218bae436a61c6301ea46c776b10c082039891dd9097ba16b191bd7e"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69adaaf8-9290-832b-be28-554727119481"
+conversation_native_id = "69adaaf8-9290-832b-be28-554727119481"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "eb3bd7ef-c2e7-421c-9f18-ed02de72fd50"
+conversation_native_id = "69adaaf8-9290-832b-be28-554727119481"
+message_native_id = "eb3bd7ef-c2e7-421c-9f18-ed02de72fd50"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "eb3bd7ef-c2e7-421c-9f18-ed02de72fd50"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 106
+
+[[body.segments]]
+kind = "plain_text"
+text = ":::writing{variant=\"standard\" id=\"59304\"}\nYou are generating a **Mermaid flowchart diagram** that represents an **Event Modeling architecture** using **Command Slices** and **Projection Slices**.\n\nFollow these instructions **exactly**. The correctness of arrow direction is critical.\n\n---\n\n# Output Rules\n\nYour response must contain **only a Mermaid code block**.\n\nStart with:\n\n```mermaid\n```\n\nEnd with:\n\n```\n```\n\nDo **not** include explanations.\n\n---\n\n# Diagram Structure\n\nCreate a Mermaid diagram using:\n\n```\nflowchart TB\n```\n\nThe diagram contains **6 slices stacked vertically**.\n\nEach slice must be inside a **Mermaid subgraph**.\n\nUse this naming pattern:\n\n```\nS1\nS2\nS3\nS4\nS5\nS6\n```\n\nSlices must be vertically spaced using:\n\n```\nS1 ~~~ S2\nS2 ~~~ S3\nS3 ~~~ S4\nS4 ~~~ S5\nS5 ~~~ S6\n```\n\n---\n\n# Architectural Pattern\n\nThere are two slice types.\n\n## Command Slice\n\nStructure:\n\n```\nUI → Command → Event\n```\n\nMermaid code pattern:\n\n```\nUI --> Command --> Event\n```\n\nLayout direction:\n\n```\ndirection LR\n```\n\n---\n\n## Projection Slice\n\nStructure:\n\n```\nUI ← Projection ← Event\n```\n\nIMPORTANT:\n\nThe **actual Mermaid arrows must be written as**:\n\n```\nEvent --> Projection --> UI\n```\n\nLayout direction:\n\n```\ndirection RL\n```\n\nThis ensures the diagram visually renders as:\n\n```\nUI < Projection < Event\n```\n\n---\n\n# Visual Style\n\nNodes must look like **sticky notes**.\n\nUse these class definitions exactly:\n\n```\nclassDef ui fill:#dddddd,stroke:#888,stroke-width:1px,rx:6,ry:6\nclassDef command fill:#cfe8ff,stroke:#6aa9ff,stroke-width:1px,rx:6,ry:6\nclassDef projection fill:#d8f5d0,stroke:#7bc96f,stroke-width:1px,rx:6,ry:6\nclassDef event fill:#ffe6cc,stroke:#f0a35e,stroke-width:1px,rx:6,ry:6\n```\n\n---\n\n# Slice Container Colors\n\nCommand slices must use:\n\n```\nstyle S# fill:#f4f9ff,stroke:#6aa9ff,stroke-width:1px\n```\n\nProjection slices must use:\n\n```\nstyle S# fill:#f3fff0,stroke:#7bc96f,stroke-width:1px\n```\n\nReplace `#` with the slice number.\n\n---\n\n# Node Labeling Rule\n\nEach node label must contain **only the business name**.\n\nDo **not** include role labels like:\n\n```\nCommand:\nProjection:\nEvent:\nUI:\n```\n\nThe **color communicates the role**.\n\n---\n\n# Slice Definitions\n\n## Slice 1 — Command\n\nSubgraph title:\n\n```\nRecord Laundry Expense\n```\n\nFlow:\n\n```\nRecord Laundry Expense → LogLaundryExpense → LaundryExpenseLogged\n```\n\n---\n\n## Slice 2 — Projection\n\nSubgraph title:\n\n```\nView Expense History\n```\n\nFlow:\n\n```\nView Expense History ← ExpenseHistoryProjection ← LaundryExpenseLogged\n```\n\n(Remember: Mermaid arrows must be written Event → Projection → UI)\n\n---\n\n## Slice 3 — Command\n\nSubgraph title:\n\n```\nModify Laundry Expense\n```\n\nFlow:\n\n```\nModify Laundry Expense → EditLaundryExpense → LaundryExpenseEdited\n```\n\n---\n\n## Slice 4 — Projection\n\nSubgraph title:\n\n```\nView Updated Expense History\n```\n\nFlow:\n\n```\nView Updated Expense History ← ExpenseHistoryProjection ← LaundryExpenseEdited\n```\n\n---\n\n## Slice 5 — Command\n\nSubgraph title:\n\n```\nRemove Laundry Expense\n```\n\nFlow:\n\n```\nRemove Laundry Expense → DeleteLaundryExpense → LaundryExpenseDeleted\n```\n\n---\n\n## Slice 6 — Projection\n\nSubgraph title:\n\n```\nView Final Expense History\n```\n\nFlow:\n\n```\nView Final Expense History ← ExpenseHistoryProjection ← LaundryExpenseDeleted\n```\n\n---\n\n# Summary Rules\n\nCommand slice:\n\n```\nUI --> Command --> Event\ndirection LR\n```\n\nProjection slice:\n\n```\nEvent --> Projection --> UI\ndirection RL\n```\n\n---\n\n# Goal\n\nThe final diagram should visually resemble a **sticky-note Event Modeling board with alternating command and projection slices**.\n:::"
+

@@ -1,0 +1,86 @@
+schema_version = 1
+event_id = "019d19f8-eed4-7e7e-a1ee-c17e73d92a2c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7ad8-8f77-5563e155ea23"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T06:30:37.130228Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "96345f1e8bdb3ff68401d77309940ebb265c9c2432c2049470c750a0841ffac1"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf030-1d44-795a-8fb6-03930ec6a044"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf030-1d44-795a-8fb6-03930ec6a044"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf030-1d44-795a-8fb6-03930ec6a044"
+role = "assistant"
+sequence_hint = 94
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants the snapshot reference on the origin entry. So for the OpenApp slice, the TruckDriver origin would have a snapshot field pointing to a filename. Let me create the TOML file.\n\nLet me also think about what needs to be in this file:\n- slice metadata\n- origins with snapshot reference\n- command\n- handler\n- event\n- GWT\n\nThe app splash screen is the snapshot for the TruckDriver origin. The MobileApp agent origin might not need a snapshot.\n\nLet me create the file."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Makes sense — the screen is what that specific actor/agent sees at this point. Different origins could see different things."
+
+[[body.segments]]
+kind = "tool_use"
+text = "OpenApp CommandSlice - the origin event for LaundryLog"
+
+[[body.segments]]
+kind = "tool_result"
+text = "File created successfully: /home/claude/truth-graph/slices/open-app.toml"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Let me present the file for the user to copy."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Presenting file(s)..."
+
+[[body.segments]]
+kind = "tool_result"
+text = "Files copied:\nCopied /home/claude/truth-graph/slices/open-app.toml to /mnt/user-data/outputs/open-app.toml"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Good. Now I should note a couple of things for the user to react to:\n- I put sessionId on the AppOpened event - is that right? Or does the session identity come later from the CheckSessionStatus view?\n- Command fields are empty since opening the app doesn't carry data"
+
+[[body.segments]]
+kind = "plain_text"
+text = "One thing to react to — I put `sessionId` on the AppOpened event. But thinking about it, this might be premature. The session determination happens in the *next* ViewSlice (CheckSessionStatus) based on the 3-hour rule. AppOpened might just need `openedAt` and whatever device/user identity is implicit. Does sessionId belong here or downstream?"
+

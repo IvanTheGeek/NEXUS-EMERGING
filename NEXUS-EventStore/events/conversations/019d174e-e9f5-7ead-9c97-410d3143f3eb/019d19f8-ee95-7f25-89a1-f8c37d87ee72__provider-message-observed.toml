@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee95-7f25-89a1-f8c37d87ee72"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+conversation_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+message_id = "019d174e-e9f5-738b-84e7-40be5ed3101e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T17:41:59.018309Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "5dbbc6d33564082bd9f70d366f3cf9a748de88d3f4852ec6bb8851b6e3486d89"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a92e8-6729-7591-9c96-322ffe8f780c"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+message_native_id = "019a92e8-6729-7591-9c96-322ffe8f780c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a92e8-6729-7591-9c96-322ffe8f780c"
+role = "assistant"
+sequence_hint = 26
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about the Ryzen 9 9955HX compared to the 9950X. Let me break down what I know:\n\nThe 9955HX is a mobile/laptop chip (HX series), while the 9950X is a desktop chip. The user might be seeing this in mini PC configurations or considering it for some reason.\n\nKey differences:\n- 9955HX: Mobile chip, 16 cores/32 threads, lower TDP (55W base, up to 120W), designed for laptops\n- 9950X: Desktop chip, 16 cores/32 threads, 170W TDP, designed for workstations\n\nFor the user's server build with a 3090, the HX chip would be a bad choice because:\n1. Lower sustained performance (thermally constrained)\n2. Requires mobile motherboard (expensive, limited)\n3. Can't pair with standard desktop components\n4. Would bottleneck the 3090\n5. Worse multi-threaded performance under sustained load\n\nI should clarify why they're asking - are they looking at pre-built systems? Mini PCs? Or did they see it mentioned somewhere?"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Ryzen 9 9955HX vs 9950X - Critical differences:**\n\n**9955HX (Mobile/Laptop chip):**\n- 16 cores/32 threads (same count)\n- **55W base TDP / 120W boost** (thermally constrained)\n- BGA soldered (can't upgrade)\n- Mobile motherboard required\n- Designed for laptops/compact systems\n- **Throttles under sustained load**\n- Lower clocks when all cores active\n\n**9950X (Desktop chip):**\n- 16 cores/32 threads\n- **170W TDP** (sustained performance)\n- AM5 socket (upgradeable)\n- Standard ATX/mATX motherboards\n- Designed for workstations/servers\n- **Full performance 24/7**\n- Higher all-core clocks\n\n---\n\n**Performance comparison (your workloads):**\n\n| Workload | 9955HX | 9950X |\n|----------|--------|-------|\n| Short bursts | ~90% | 100% |\n| **Sustained multi-thread** | **60-70%** | **100%** |\n| ZFS scrubs (hours long) | Throttles hard | Full speed |\n| Multiple containers | Thermal limit | No problem |\n| F# compilation (single) | ~85% | 100% |\n| 24/7 operation | Struggles | Designed for it |\n\n**The HX chip thermal throttles after 30-60 seconds of heavy load.**\n\n---\n\n**Why 9955HX exists:**\n\nIt's for **gaming laptops and compact systems** where:\n- You need battery power\n- Space is constrained\n- Short burst performance matters\n- You can't cool 170W\n\n---\n\n**For your dedicated server, 9955HX is WRONG:**\n\n**Problems:**\n1. **Throttles during ZFS scrubs** - Takes 2x longer\n2. **Can't sustain multi-container load** - Performance degrades\n3. **Mobile motherboard** - Expensive, limited SATA ports, no standard ATX\n4. **Bottlenecks your 3090** - Can't feed it data fast enough\n5. **Not upgradeable** - BGA soldered to board\n6. **Worse value** - Similar price, 30-40% less performance\n\n**Where are you seeing 9955HX?**\n\nIf you're looking at:\n- **Pre-built mini PCs** - They use mobile chips, bad for servers\n- **Compact workstations** - Same issue\n- **DIY build** - You can't buy mobile chips separately\n\n---\n\n**Recommendation: Stick with 9950X (or 7950X)**\n\nFor a dedicated server with:\n- 24/7 operation\n- ZFS workloads\n- Multiple containers\n- RTX 3090\n- Standard components\n\n**Desktop chip is the only option.**\n\n**Why are you considering the HX chip?** Did you find a pre-built system, or are you looking at mini PC form factors?"
+

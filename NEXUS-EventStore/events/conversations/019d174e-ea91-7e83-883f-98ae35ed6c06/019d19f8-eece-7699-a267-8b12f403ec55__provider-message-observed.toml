@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-7699-a267-8b12f403ec55"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea91-7f52-bc91-14e98ab8a97c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T11:18:08.515229Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "690ca4ef216e2707f7588222dfa939c7d9afd2f4263ab310bef4c657bc4b86ba"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfb84-5388-7294-88ae-5842471dd305"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfb84-5388-7294-88ae-5842471dd305"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfb84-5388-7294-88ae-5842471dd305"
+role = "assistant"
+sequence_hint = 20
+
+[[body.segments]]
+kind = "reasoning"
+text = "Good pragmatic approach. Let's affirm it and think about what this means for the TOML schema concretely."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Pragmatic and right — don't over-engineer a distinction that hasn't caused a problem yet.\n\n## Where This Lands for the Schema\n\n```toml\n[[projector.gwt]]\ngiven = [\"LaundryExpenseLogged\"]\nwhen = [\n    \"fold into expense list\",\n    \"filter within last 3 hours\"\n]\nthen = \"RecentExpenses\"\n\n[[projector.gwt]]\ngiven = [\"LaundryExpenseLogged\"]\nwhen = [\n    \"fold into expense list\"\n]\nthen = \"AllExpenses\"\n```\n\nClean, readable, explicit. The pipeline is visible right in the slice file.\n\n## What NEXUS Gets From This\n\n- Can diff two projectors and see exactly where their pipelines diverge\n- Shared `when` steps are detectable — candidates for named reusable transforms later\n- FORGE can map each step to an actual F# function in the generated code\n- Fully traceable: view output → pipeline steps → event source\n\n## The Evolution Path is Natural\n\nIf you later find a reason to distinguish filter vs aggregate vs reshape — those are just **step type annotations** you can add without breaking the structure:\n\n```toml\nwhen = [\n    { step = \"fold into expense list\", type = \"aggregate\" },\n    { step = \"filter within last 3 hours\", type = \"filter\" }\n]\n```\n\nString form now, structured form later if needed. Same semantics.\n\nWorth updating the NEXUS schema memory with this `when` pipeline concept?"
+

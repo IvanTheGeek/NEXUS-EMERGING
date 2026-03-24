@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea90-7998-b4d4-b4552ea04c8b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+conversation_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+message_id = "019d174e-ea90-754b-a7a0-df0902d4d121"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T03:03:41.968498Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "ce6a1ad8b3d33a82b1e4855ecb20dd9e5aae20b1d27fa9db4219b33d946fac06"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfee5-fd67-754e-8b9f-26fc26d06413"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+message_native_id = "019cfee5-fd67-754e-8b9f-26fc26d06413"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfee5-fd67-754e-8b9f-26fc26d06413"
+role = "assistant"
+sequence_hint = 16
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-18T03:03:33.872499Z\",\"stop_timestamp\":\"2026-03-18T03:03:33.872499Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-18T03:03:33.872499Z\",\"stop_timestamp\":\"2026-03-18T03:03:34.572579Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Clean decision. Let me summarize and move to the next question about attachments or overall schema.\",\"summaries\":[{\"summary\":\"Thinking about preserving HTML while normalizing text conditionally.\"},{\"summary\":\"Resolved preservation strategy for HTML and text body fields.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Clean rule:\n\n```fsharp\nlet textBody =\n    match msg.TextBody with\n    | null -> HtmlToTextConverter.Convert(msg.HtmlBody) // normalize only if absent\n    | text -> text\n```\n\nSo the Fact carries:\n- `TextBody` — always present (native or normalized from HTML)\n- `HtmlBody` — preserved when present, null/absent when not\n\nNext natural question: **Attachment content storage.** The `ContentHash` deduplication model works well for graph identity, but the actual bytes need to live somewhere.\n\nOptions:\n- **Inline in the Fact** (base64 / byte array) — simple, self-contained, gets large fast\n- **Forgejo LFS** — consistent with your existing git-backed storage strategy\n- **Separate blob store** (S3-compatible, local filesystem, etc.)\n- **Reference only** — store metadata Fact, content fetched on demand from source (only works if source is reliable/permanent)\n\nGiven your self-hosted infrastructure and NEXUS architecture, Forgejo LFS seems like the natural fit — keeps attachment artifacts in the same provenance system as everything else.\n\nDoes that align, or do you have a different blob storage in mind?"
+

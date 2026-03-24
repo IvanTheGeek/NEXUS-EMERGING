@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-7edf-b6cf-3ac8a855f612"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea92-77e6-af78-905e6cc885b2"
+conversation_id = "019d174e-ea92-77e6-af78-905e6cc885b2"
+message_id = "019d174e-ea92-7312-9e93-491862149ebe"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T00:57:49.197187Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "40100f97863a448fd4402d806f9df59c3fabcf9fc5993aab2ada1b869fb60294"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a635ba3f-b3d8-4a00-952c-ffe3a33c1f77"
+conversation_native_id = "a635ba3f-b3d8-4a00-952c-ffe3a33c1f77"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cd53f-e464-7f70-accf-0ef1427507ba"
+conversation_native_id = "a635ba3f-b3d8-4a00-952c-ffe3a33c1f77"
+message_native_id = "019cd53f-e464-7f70-accf-0ef1427507ba"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cd53f-e464-7f70-accf-0ef1427507ba"
+role = "assistant"
+sequence_hint = 8
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is on Windows with Claude Desktop. The config path on Windows is `%APPDATA%\\Claude\\claude_desktop_config.json`. The issue is likely that `npx` needs to be called differently on Windows - it needs `cmd /c npx` wrapper, or the path needs to be specified differently.\n\nLet me ask what they see in the logs first, or give them troubleshooting steps.\n\nActually, let me just give them the Windows-specific fix. On Windows, `npx` needs the `cmd /c` wrapper in Claude Desktop config."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Windows needs a slightly different config — `npx` requires a `cmd /c` wrapper to work in Claude Desktop.\n\n**Step 1 — Open the config file**\n\nPress `Win + R`, type `%APPDATA%\\Claude` and hit Enter. Open `claude_desktop_config.json` in Notepad.\n\n**Step 2 — Replace the eventlanes entry with this:**\n\n```json\n{\n  \"mcpServers\": {\n    \"eventlanes\": {\n      \"command\": \"cmd\",\n      \"args\": [\n        \"/c\",\n        \"npx\",\n        \"mcp-remote@latest\",\n        \"https://eventlanes.app/mcp\",\n        \"--header\",\n        \"Authorization: Bearer 123c61dc6cc497d15daedcbb1f024d2089091933767ba871974eaf13b750a646\"\n      ]\n    }\n  }\n}\n```\n\n**Step 3 — Save, fully quit Claude Desktop, relaunch**\n\n---\n\nIf it still fails, check the logs to see the actual error. The log file is at:\n```\n%APPDATA%\\Claude\\logs\\mcp-server-eventlanes.log\n```\n\nPaste whatever's in there and I can diagnose further."
+

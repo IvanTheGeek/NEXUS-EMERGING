@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2ce0-7377-87e4-35a90faeb491"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+conversation_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+message_id = "019d174f-2ce0-7740-bc93-39364a57a70f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T23:12:24.4802799Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "7050c22d1519020ed1709036c784fe9aadb2259bb0f88af239744c23838ea211"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "a4c0a773-a9b5-4eb6-b3f6-e49c2277c66d"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+message_native_id = "a4c0a773-a9b5-4eb6-b3f6-e49c2277c66d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "a4c0a773-a9b5-4eb6-b3f6-e49c2277c66d"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 123
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — that is the missing split.\n\nYou are separating:\n\n- **write/change path**\n- **read/view path**\n\nSo the earlier chain was collapsing both into one line. That is the wrong framing for your model.\n\nThe corrected shape is more like this:\n\n```text\nDOM Event\n   ↓\nBlazor (Actor)\n   ↓\nCommand / Intent\n   ↓\nEvent\n```\n\nand then separately:\n\n```text\nEvent\n   ↓\nProjection\n   ↓\nView\n```\n\nThat is the important divide.\n\n## The mistake in the earlier framing\n\nThis part:\n\n```text\nBlazor (Actor)\n   ↓\nIntent / Command\n   ↓\nEvent\n   ↓\nProjection\n```\n\nblends:\n\n- the **write side**: command causes event\n- the **read side**: event projects to view\n\nBut in your model, those are not one continuous undifferentiated flow. They are two distinct concerns.\n\n## Your split, stated cleanly\n\n### Write / change side\n\n```text\nSignal\n   ↓\nActor\n   ↓\nCommand\n   ↓\nEvent\n```\n\n### Read / view side\n\n```text\nEvent\n   ↓\nProjection\n   ↓\nView\n```\n\nThat is much more faithful.\n\n## Applying it to Blazor\n\nIn your browser/runtime lens:\n\n### Write side\n\n```text\nDOM Event\n   ↓\nBlazor Actor\n   ↓\nCommand\n   ↓\nEvent\n```\n\nExample:\n\n```text\nclick\n↓\nBlazor\n↓\nIncrementRequested\n↓\nCounterIncremented\n```\n\n### Read side\n\n```text\nCounterIncremented\n↓\nProjector\n↓\nCounterView\n```\n\nAnd then Blazor may render that view, but that is part of the read side, not the write side.\n\n## Why this matters\n\nBecause otherwise Blazor looks like one thing doing everything. But in your framing, Blazor participates differently depending on which side you are looking at.\n\nOn the **write side**, Blazor is the Actor receiving the browser signal and triggering the command path.\n\nOn the **read side**, Blazor is not really the Actor in the same way. It is more the rendering substrate or host for the projected view.\n\nSo even “Blazor” may need two different roles depending on lens.\n\n## Cleaner version\n\nYou may want something like this:\n\n### Write lens\n\n```text\nDOM Event\n   ↓\nBlazor Actor\n   ↓\nCommand\n   ↓\nEvent\n```\n\n### Read lens\n\n```text\nEvent\n   ↓\nProjector\n   ↓\nView Model / View Data\n   ↓\nBlazor View Host\n   ↓\nDOM\n```\n\nThat preserves your explicit separation.\n\n## Stronger formulation\n\nYou could say:\n\n> Blazor is the Actor on the write boundary, but the host/substrate on the read boundary.\n\nThat seems much closer to what you are aiming at.\n\n## In your terms\n\nThe core error was treating:\n\n```text\nCommand → Event → Projection\n```\n\nas one single chain.\n\nBut for you:\n\n- `Command → Event` is **write/change**\n- `Event → Projection → View` is **read/view**\n\nThose must stay explicitly separated.\n\n## Best compact version\n\n```text\nWRITE\nDOM Event → Blazor Actor → Command → Event\n\nREAD\nEvent → Projection → View\n```\n\nThat looks like the right correction.\n\nIf you want, I can now rewrite the whole browser/Blazor interaction model in your exact dual-lane form, with **WriteSlice** and **ViewSlice** terminology."
+

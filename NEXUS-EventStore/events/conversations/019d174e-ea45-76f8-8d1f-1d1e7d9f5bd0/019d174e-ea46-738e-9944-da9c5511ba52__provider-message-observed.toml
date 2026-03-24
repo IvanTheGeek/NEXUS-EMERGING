@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea46-738e-9944-da9c5511ba52"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea45-76f8-8d1f-1d1e7d9f5bd0"
+conversation_id = "019d174e-ea45-76f8-8d1f-1d1e7d9f5bd0"
+message_id = "019d174e-ea46-7ac8-a282-11d88d0690e7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-22T12:42:01.520471Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "feec1adda0b4c56af62eea8870905c735b6c3f51266a0bda70694c1b90ac9043"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "ff7d99cf-4020-454b-85a9-128f67a16052"
+conversation_native_id = "ff7d99cf-4020-454b-85a9-128f67a16052"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019aab95-af7a-710c-b45f-2aefb064a4ac"
+conversation_native_id = "ff7d99cf-4020-454b-85a9-128f67a16052"
+message_native_id = "019aab95-af7a-710c-b45f-2aefb064a4ac"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019aab95-af7a-710c-b45f-2aefb064a4ac"
+role = "assistant"
+sequence_hint = 18
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-22T12:41:48.355759Z\",\"stop_timestamp\":\"2025-11-22T12:41:56.480309Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is showing me that artifacts from today aren\\u0027t appearing in their Android app\\u0027s artifacts list. I can see other artifacts from earlier dates (Nov 8, Nov 12, 2025) but nothing from today (Nov 22, 2025).\\n\\nThis is a persistent issue - artifacts I\\u0027m creating aren\\u0027t showing up in their list and aren\\u0027t rendering properly. The Android app seems to be having trouble with artifacts I\\u0027m creating in this conversation.\\n\\nLet me think about what could be happening:\\n1. The artifacts I\\u0027m creating might not be getting saved properly\\n2. There might be a sync issue between the backend and the mobile app\\n3. The artifact format I\\u0027m using might not be compatible with the mobile app\\n\\nLooking at their existing artifacts, I see they have .jsx and .html files that appear to work. But the artifacts I\\u0027ve been creating in this session aren\\u0027t appearing at all.\\n\\nThis might be a bug with the Claude mobile app, or there might be something about how I\\u0027m creating artifacts that\\u0027s incompatible. But I should also consider that this could be a timing/sync issue.\\n\\nSince this is clearly a technical issue with the Claude app itself and not something I can fix by changing how I create artifacts, I should:\\n1. Acknowledge the problem\\n2. Suggest they try the desktop version\\n3. Maybe suggest reporting this as a bug\\n4. Offer an alternative approach (like creating a downloadable HTML file they can save)\",\"summaries\":[{\"summary\":\"Diagnosing persistent artifact visibility glitch.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "This appears to be a bug with the Android app - artifacts created in this conversation aren't syncing to your artifacts list. The app shows artifacts from earlier dates but nothing from today.\n\n**Options to work around this:**\n\n1. **Try desktop**: Open this conversation on desktop/web version - the artifact should render there\n2. **Download file approach**: I can create an HTML file you can download and save locally instead of using artifacts\n3. **Report bug**: You may want to use the feedback button (thumbs down) to report this to Anthropic\n\nWhich would you prefer? I can create a downloadable HTML file that you can open in any browser and bookmark on your device, bypassing the artifact system entirely."
+

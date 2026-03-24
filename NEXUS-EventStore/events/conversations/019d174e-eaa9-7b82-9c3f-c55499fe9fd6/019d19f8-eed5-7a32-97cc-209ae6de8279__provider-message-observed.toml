@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7a32-97cc-209ae6de8279"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eab7-7b28-99c5-01b6233eb142"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T06:07:33.583515Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c59634e55f679f18c1efaf2e7055c0eea160985a3ba330e0b92b6ddce27e778f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfa67-cf00-772a-8cf7-07935561f09d"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cfa67-cf00-772a-8cf7-07935561f09d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfa67-cf00-772a-8cf7-07935561f09d"
+role = "assistant"
+sequence_hint = 176
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is making two points:\n\n1. FORGE vs PAXUS responsibility: FORGE builds artifacts, PAXUS handles deployment and operations. That makes sense - FORGE is the factory, PAXUS is operations.\n\n2. Events per slice folder vs shared events folder. They like events being in the slice folder that produced them (like a stream per slice), but acknowledge the tradeoff that you can't see all events in timeline order from the filesystem alone.\n\nLet me think about this. If events live in the slice folder that produced them, that's actually like event streams in event sourcing - each aggregate/slice has its own stream. The graph builder can still read all events across all folders and build the timeline view."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, that's the right boundary. FORGE is the factory — it produces artifacts. PAXUS is operations — it takes those artifacts, deploys them, runs them, monitors them, handles scaling, rollback decisions, and feeds runtime data back to LOGOS. Deployment is an operational concern, not a build concern.\n\nOn events per folder — that's actually more aligned with event sourcing itself. Each slice folder is like an **event stream**. The events that slice produces live with it:\n\n```\natlas/\n  business.emd/\n    SetLocation_019.../\n      SetLocation_019....toml\n      events/\n        LocationSet_019....event.toml\n        LocationSet_019....event.toml\n        LocationSet_019....event.toml\n    LogExpense_019.../\n      LogExpense_019....toml\n      events/\n        LaundryExpenseLogged_019....event.toml\n        LaundryExpenseLogged_019....event.toml\n```\n\nThe slice folder *is* the stream. The event files accumulate as UUIDv7-named entries — each one a specific occurrence with concrete data. Git commits each new event file. The folder's event history *is* the stream history.\n\nThe event **schema** (field definitions) lives in the slice TOML under `[[event]]`. The event **instances** (runtime data) live as individual files in the `events/` subfolder. Schema vs data, same separation you already established.\n\nAnd the tradeoff you identified — you can't see cross-stream timeline from the filesystem. But the graph builder can. It reads every `events/` subfolder across all slices, sorts by UUIDv7 timestamp, and builds the full timeline. ATLAS renders it. The filesystem optimizes for streams (locality), ATLAS optimizes for timelines (global view).\n\nThis also makes git work naturally. A new event = a new file = a clean commit. No merge conflicts from appending to a shared file. Each stream is independent."
+

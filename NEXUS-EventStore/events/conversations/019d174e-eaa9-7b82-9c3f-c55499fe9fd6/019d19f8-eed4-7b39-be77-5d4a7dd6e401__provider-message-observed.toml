@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed4-7b39-be77-5d4a7dd6e401"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7c8f-9fbb-1cffb785b85e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T05:32:49.180517Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "f44a7c7ba03e458ad06cb7dac86dc1a9b4f7f59b045e106b05b01df680b9cde3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ceffb-5e00-7651-a56f-0dc42b39c1cc"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019ceffb-5e00-7651-a56f-0dc42b39c1cc"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ceffb-5e00-7651-a56f-0dc42b39c1cc"
+role = "assistant"
+sequence_hint = 72
+
+[[body.segments]]
+kind = "reasoning"
+text = "Let me think about this carefully.\n\nIvan is saying:\n1. A slice should produce ONE event - multiple events is an antipattern (slice doing too much)\n2. If multiple GWT rules match, need a strategy - first match or compress\n3. The condition field is the right approach for the Handler\n4. On the Projector side, the condition IS the when clause already\n\nSo for CommandSlice GWT, the ordering + first-match pattern is like F# pattern matching - first match wins. That's why time ordering matters.\n\nAnd condition becomes the property-based decision logic:\n\n```toml\n[[handler.gwt]]\nname = \"RejectDuplicate\"\n\n\ngiven = [\"LaundryExpenseRecorded\"]\nwhen = \"RecordLaundryExpense\"\ncondition = \"expenseId exists in given events\"\nthen = \"RecordExpenseRejected\"\n\n[[handler.gwt]]\nname = \"RecordNewExpense\"\ngiven = \"Unit\"\nwhen = \"RecordLaundryExpense\"\ncondition = \"\"  # or absent\nthen = \"LaundryExpenseRecorded\"\n```\n\nFirst match wins - ordered like F# match expressions. The rejection case comes first, the happy path is the catch-all at the bottom. This mirrors F# pattern matching exactly, where the first matching rule executes and subsequent rules are skipped."
+
+[[body.segments]]
+kind = "plain_text"
+text = "First match wins — exactly like F# pattern matching. That's why time ordering matters. The GWT sequence is a match expression read top to bottom, first rule that matches produces the single event.\n\nSo for RecordExpense with a duplicate check:\n\n```toml\n# Order matters - first match wins\n\n[[handler.gwt]]\nname = \"RejectDuplicate\"\ngiven = [\"LaundryExpenseRecorded\"]\nwhen = \"RecordLaundryExpense\"\ncondition = \"expenseId exists in given events\"\nthen = \"RecordExpenseRejected\"\n\n[[handler.gwt]]\nname = \"RecordNewExpense\"\ngiven = \"Unit\"\nwhen = \"RecordLaundryExpense\"\nthen = \"LaundryExpenseRecorded\"\n```\n\nRejection case first, happy path last as the catch-all. Same pattern as:\n\n```fsharp\nmatch state, cmd with\n| HasExpenses existing, cmd when isDuplicate existing cmd -> \n    Rejected { ... }\n| _, cmd -> \n    Recorded { ... }\n```\n\nAnd for ViewSlice — `when` is already the condition. The projector's `when` says \"apply this shaping when this filter matches.\" No separate `condition` field needed because the Projector isn't making decisions about branching outcomes — it's filtering and shaping.\n\nSo `condition` is CommandSlice-only. Want me to update the TOML files with this?"
+

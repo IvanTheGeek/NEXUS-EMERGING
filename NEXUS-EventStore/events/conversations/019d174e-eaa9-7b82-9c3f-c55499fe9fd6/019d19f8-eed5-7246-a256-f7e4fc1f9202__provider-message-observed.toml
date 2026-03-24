@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7246-a256-f7e4fc1f9202"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-7639-ac02-5d788ed4af74"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T15:27:17.03082Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "eae1be0540df5595fad60f6a82050780bed52c3ae3cefd104c3c8ba4cc995a53"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf21b-8ebf-740c-8961-0b03f2264b2b"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf21b-8ebf-740c-8961-0b03f2264b2b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf21b-8ebf-740c-8961-0b03f2264b2b"
+role = "assistant"
+sequence_hint = 138
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is noting that UUIDv7 embeds a timestamp, which could be useful for verification or derived meaning beyond just ordering and uniqueness. They're thinking ahead about potential uses but not wanting to commit to anything specific yet."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Right. UUIDv7's embedded timestamp is free metadata. For now it gives you ordering and uniqueness. But later:\n\n- **Audit trail**: when was this slice *created* in the model, decoded from the ID itself, no extra field needed\n- **Drift detection**: if a slice's ID timestamp is weeks before its GWT references a fact from a newer slice, that's a modeling sequence signal\n- **Conflict resolution**: two people model simultaneously, UUIDv7 gives natural merge ordering\n- **Verification**: the ID's timestamp should be ≤ any event data's `loggedAt` — if not, something's wrong\n\nThe key insight is it's **intrinsic** to the ID rather than a separate field that could drift. The truth is in the identifier itself. Fits the Truth Graph philosophy — even the IDs carry verifiable meaning.\n\nNo changes to the TOML needed for this. Just a property of the choice that pays dividends later when the graph builder or analysis tools want to reason about the model's own evolution.\n\nReady for the next slice? We need SetLocation to fill the hole, then the ViewSlice after LogExpense."
+

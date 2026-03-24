@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee94-727e-b208-5987c7d9aedd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+conversation_id = "019d174e-e9f5-7ead-9c97-410d3143f3eb"
+message_id = "019d174e-e9f5-77ec-997d-4080f38d58ec"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T07:43:40.269296Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "08df5250b327a28adba970c82f37115f397425495bbac1f1ba9ed2446e932985"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a90c4-763c-77d5-8f32-8a6ececfdd8d"
+conversation_native_id = "02af0c69-cae4-4938-8fa7-d06392cd9225"
+message_native_id = "019a90c4-763c-77d5-8f32-8a6ececfdd8d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a90c4-763c-77d5-8f32-8a6ececfdd8d"
+role = "assistant"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "reasoning"
+text = "Good question - let me think about actual RAM requirements for Nexus workloads specifically.\n\n**RAM consumption breakdown:**\n\n1. **Operating System**: ~4-8GB (Windows/Linux baseline)\n\n2. **Development tools**: \n   - Rider IDE: 2-4GB\n   - VS Code: 1-2GB\n   - F# compiler/FSI: 1-2GB during builds\n\n3. **Nexus event store**:\n   - His 21MB conversation export\n   - Event sourcing stores grow over time\n   - In-memory projections/aggregates\n   - Probably 2-8GB depending on working set\n\n4. **Qdrant (if running locally vs VPS)**:\n   - Vector indexes in RAM for speed\n   - His conversation embeddings\n   - Could be 4-16GB depending on corpus size\n\n5. **Model inference (Phi-4 on 3090)**:\n   - Model lives in GPU VRAM (24GB)\n   - CPU RAM only holds: prompts, batching, preprocessing\n   - Minimal CPU RAM impact: 1-2GB\n\n6. **Embedding generation**:\n   - If using sentence-transformers on CPU as fallback\n   - Model + batches: 2-4GB\n   - But his 3090 should handle this\n\n7. **Browser tabs** (documentation, Claude web):\n   - Modern browsers are RAM hogs\n   - 10-20 tabs: 4-8GB easily\n\n8. **Future expansion**:\n   - Multiple model experiments\n   - Fine-tuning data preparation\n   - Parallel inference testing\n\n**Realistic totals:**\n\n**32GB scenario:**\n- OS + tools: 8GB\n- Development: 6GB\n- Nexus + Qdrant: 10GB\n- Browser: 6GB\n- Headroom: 2GB\n= **Tight but workable**\n\n**64GB scenario:**\n- Same workloads: 30GB\n\n\n- Comfortable headroom: 34GB\n- Enables multiple concurrent experiments\n- Prevents system performance bottlenecks\n= **Ideal configuration**\n\n**128GB scenario**:\n- Excessive for current project needs\n- Unnecessary unless handling massive data processing\n- Overkill for Nexus development environment\n= **Unnecessary investment**\n\nQdrant is already deployed on his existing infrastructure, which simplifies the RAM calculation and reduces local memory requirements.\n\n**Optimal recommendation**: 64GB RAM\n- Provides flexibility for complex tasks\n- Ensures smooth multitasking performance\n- Balances cost-effectiveness with future scalability"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**RAM needs for Nexus - realistic breakdown:**\n\n**What actually consumes RAM on your local machine:**\n\n| Component | RAM Usage |\n|-----------|-----------|\n| OS (Windows/Linux) | 4-8GB |\n| Rider/VS Code | 3-6GB |\n| F# compilation + FSI | 2-4GB |\n| Nexus event store (in-memory) | 4-12GB |\n| Browser (docs, Claude) | 4-8GB |\n| Background services | 2-4GB |\n| **Headroom for experiments** | ? |\n\n**Key question: Where does Qdrant run?**\n\nYou already have Qdrant on VPS, so:\n- Vector indexes: **Not on local machine** (saves 4-16GB)\n- Embedding API: **On VPS** (saves 2-4GB)\n\n**This changes the math:**\n\n**32GB reality:**\n- Works for single-tasking\n- Tight when: Rider + browser + event processing + large F# build\n- You'll see swap usage under heavy multitasking\n- $90 cheaper\n\n**64GB reality:**\n- Comfortable for everything\n- Run multiple F# projects simultaneously\n- Heavy browser use + Rider + debugging doesn't pressure memory\n- Future-proof for 2-3 years\n- **Recommended**\n\n**128GB reality:**\n- Only useful if you:\n  - Move Qdrant local with huge corpus (100K+ documents)\n  - Run multiple fine-tuning experiments simultaneously\n  - Keep massive datasets in RAM\n- Probably overkill: **$360 vs $180 for 64GB**\n\n**Real scenarios:**\n\n*You're working on Nexus, with:*\n- Rider open (4GB)\n- 20 browser tabs for docs (6GB)\n- F# build running (3GB)\n- Nexus event store processing your 21MB export (6GB)\n- VS Code for script editing (2GB)\n- OS overhead (6GB)\n\n**= 27GB used with 32GB → tight**  \n**= 27GB used with 64GB → comfortable 37GB free**\n\n**Recommendation: 64GB DDR5**\n- Sweet spot for price/performance\n- Handles current + near-future workloads\n- Upgrade path: Add another 64GB later if you move Qdrant local\n\n**Updated $1,100-1,200 build:**\n\n- **CPU: Ryzen 9 7900X - $400** (12-core, better parallel work)\n- **RAM: 64GB DDR5-5600 - $180** (2x32GB)\n- **Mobo: B650 - $150**\n- **NVMe: 1TB Gen4 - $75**\n- **PSU: 850W Gold - $120**\n- **Case: ATX Mid - $80**\n- **Cooler: Tower - $40**\n\n**Total: ~$1,045**\n\nGo with 64GB?"
+

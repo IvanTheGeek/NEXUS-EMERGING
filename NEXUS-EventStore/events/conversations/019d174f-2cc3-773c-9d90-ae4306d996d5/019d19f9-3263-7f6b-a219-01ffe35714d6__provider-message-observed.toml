@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3263-7f6b-a219-01ffe35714d6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+conversation_id = "019d174f-2cc3-773c-9d90-ae4306d996d5"
+message_id = "019d174f-2cc4-7bad-a9f8-90bbbefd0528"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-14T02:20:52.0787024Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "9c9a550be4cb6f40b0b0c99d4b50a76e2d7181481a4cbcc43a0bea364c1d839a"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "3e6678ef-edcd-450a-9fe8-d55d5c3d5b85"
+conversation_native_id = "69b3cade-b2a4-8329-bb41-4df185cd0c11"
+message_native_id = "3e6678ef-edcd-450a-9fe8-d55d5c3d5b85"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "3e6678ef-edcd-450a-9fe8-d55d5c3d5b85"
+role = "tool"
+model_name = "gpt-5-3"
+sequence_hint = 139
+
+[[body.segments]]
+kind = "quote"
+text = "fileciteturn0file0\n\nyou are an event modeling architect. you describe everything in steps using example data. every step is either a state change or a view into state. each state change step has 4 items: 1. the screen that shows how the state change is initiated by the user including example data. 2. the command that contains the information that's needed to change the state including example data. only one command is allowed in this type of step. minimal information is used to mark the intent to change the state. this command can fail if business rules are broken. 3. the resulting event with the information that shows how the state is changed including example data 4. a reference to the previous step. each state view step has 4 items: 1. the screen with what information is available to view with example data, 2. the read model that contains the model that populates the screen including example data. this is the result of a reducer over any relevant previous events. It may contain default data if no relevant events occured yet. only one read model is allowed in this type of step. it includes relevant ids that can be used by the system to accomodate commands. 3. a list of relevant events including the step they were created in that happened in the previous steps to make the informaton available 4. a link to the previous step screen descriptions will include itemization of controls such as text boxes, lists, buttons, radio buttons, checkboxes, menus etc. When a state view step connects to a state change step, they share the same screen so please repeat the screen between the 2 if they are related. When a state change step is followed by a state view step, references to relevant previous events serve as a link. These links ensure that there is referential integrity to the data in the system being shown. State changes are only user initiated. Any other state change is strictly deduced from a reduction of previous events. There are no explicit commands to adjust product inventaries or total prices. Steps can also be called slices. A slice can be either a state change or a state view. Example data is used in each component - not just the property names. Data can be traced through the steps. Use realistic data and avoid gerenarlities like \"Prouct A\". Use integers or UUIDs as identifiers, but don't show them on the screens. You never combine operations into one step. if the instructions say something like \"remove 2 products\" you will make 2 steps to show explicitly how that happens. Each command will have a suite of tests in the style of Given-When-Then GWT from BDD with the following format: \"Given\" is a set of 0..N events. \"When\" is the command. \"Then\" is one event showing the resulting state change if the command was successful. \"Then\" can be an exception if the scenario shows the command failing. The minimal amount of test is 2: 1 for a failure, 1 for a success. But more is usually typical to show data variations. Each read model will have a suite of tests in the style of Given-When-Then GWT from BDD but without the \"When\" step. The \"Given\" is a set of 0..N events. The \"Then\" is a model that is the result of running a reducer over the events from the \"Given\" events. The tests for commands and read models will be fully listed after all steps of the system are described. Now that you know what to do, please architect the following system: comletely show what happens when a user sees a page listing 10 different products, adds 2 products and removes one of them from their basket in an online store and then goes to checkout and pay. Please keep track of inventory (but not viewable by the end user) along the way and the users invoice history. show all tests needed."
+

@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cba-7267-968d-1ca73093a8f4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cba-7166-9a88-db8527a02679"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T19:48:55.149892Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "a69a6f07c44c342af65724d8a305db6346eb4dbc8945e3b379c9a257638aafda"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "6028da0b-6114-47ce-8078-3989169ddcba"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "6028da0b-6114-47ce-8078-3989169ddcba"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "6028da0b-6114-47ce-8078-3989169ddcba"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 117
+
+[[body.segments]]
+kind = "plain_text"
+text = "You’re **very close**, but there’s an important distinction that will keep your model clean.\n\nA **projection is not like a command handler**.  \nThey are **symmetrical mechanisms on opposite sides of the event**.\n\nThink of the event as the center.\n\n```\nCommand Handler → Event → Projection\n```\n\nSo they mirror each other.\n\n---\n\n# The two hidden implementations\n\nEvent Modeling intentionally hides two implementation details to keep diagrams readable.\n\n### 1. Command Handler (write side)\n\nThis is what actually executes a command and produces an event.\n\n```\nCommand\n   ↓\nCommand Handler\n   ↓\nEvent\n```\n\nExample:\n\n```\nShipOrder\n   ↓\nShipOrderHandler\n   ↓\nOrderShipped\n```\n\nThe handler contains the rules and validation.\n\n---\n\n### 2. Projection (read side)\n\nThis consumes events and produces views.\n\n```\nEvent\n   ↓\nProjection\n   ↓\nView\n```\n\nExample:\n\n```\nOrderShipped\n   ↓\nOrderStatusProjection\n   ↓\nOrdersAwaitingDeliveryView\n```\n\n---\n\n# Why both are hidden in Event Modeling\n\nIn diagrams (as taught by **entity[\"people\",\"Adam Dymitruk\"]**), the focus is **behavior discovery**, not software structure.\n\nSo the implementation boxes disappear.\n\nInstead the diagram shows:\n\n```\nCommand → Event → View\n```\n\nBut underneath it is really:\n\n```\nCommand\n   ↓\nCommand Handler\n   ↓\nEvent\n   ↓\nProjection\n   ↓\nView\n```\n\n---\n\n# A helpful symmetry\n\nOnce you see it, the structure is very elegant.\n\n```\nIntent Side (Write)\nCommand → Handler → Event\n\nInterpretation Side (Read)\nEvent → Projection → View\n```\n\nBoth sides have **an implementation step that is hidden**.\n\n---\n\n# Why projection often feels confusing\n\nBecause in Event Modeling it behaves like **a query**, not like business logic.\n\nProjection usually does things like:\n\n```\nfilter events\ngroup events\naggregate values\nderive status\n```\n\nExample:\n\n```\nGIVEN OrderPlaced\nWHEN shipped=false\nTHEN OrdersAwaitingShipment\n```\n\nThat’s projection logic.\n\n---\n\n# Where the decision logic actually lives\n\nDecision logic lives in two places:\n\n### 1. Command handler\n\n```\ncan this command happen?\n```\n\nExample:\n\n```\ncannot ship an order twice\n```\n\n### 2. Processor / Bot\n\n```\nshould we issue a command automatically?\n```\n\nExample:\n\n```\nif payment confirmed → create shipment\n```\n\n---\n\n# So the real loop is\n\n```\nActor\n  ↓\nCommand\n  ↓\nCommand Handler\n  ↓\nEvent\n  ↓\nProjection\n  ↓\nView\n  ↓\nActor / Bot\n```\n\nTwo hidden implementations:\n\n```\nHandler\nProjection\n```\n\n---\n\n# In Nexus terminology\n\nYour abstraction might look like:\n\n```\nIntent → Fact → Interpretation\n```\n\nWhere:\n\n```\nCommand Handler = Intent execution\nProjection = Interpretation mechanism\n```\n\nSo the hidden layer is simply **mechanisms that transform between primitives**.\n\n---\n\n# The important conceptual boundary\n\nThe reason Event Modeling keeps projections simple is this rule:\n\n```\nEvents are facts\nProjections interpret facts\n```\n\nThey should **never change the facts**, only derive meaning from them.\n\n---\n\n# The mental shortcut\n\nA very useful way to remember it:\n\n```\nCommand Handler → produces facts\nProjection → interprets facts\n```\n\nTwo different responsibilities.\n\n---\n\nIf you're building **EM Extended**, one of the most powerful things you might do is make these **two hidden mechanisms explicit cell types**, which would give you something like:\n\n```\nCommand Cell\nHandler\nEvent Cell\nProjection\nView Cell\n```\n\nThat starts to resemble a **biological metabolism loop**, which actually fits surprisingly well with your **Nexus organism metaphor**."
+

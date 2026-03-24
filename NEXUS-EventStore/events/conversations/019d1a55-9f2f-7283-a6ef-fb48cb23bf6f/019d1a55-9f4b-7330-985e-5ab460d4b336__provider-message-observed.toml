@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1a55-9f4b-7330-985e-5ab460d4b336"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d1a55-9f4b-741a-80c8-21fba66fa97e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T14:36:34.366Z"
+observed_at = "2026-03-23T10:55:08.8647828Z"
+imported_at = "2026-03-23T10:55:08.8647828Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d1a55-9240-7798-b8fe-9b60775d8c57"
+
+[content_hash]
+algorithm = "sha256"
+value = "135919132f96c06c504406bccba4e6d54e80860aa435f5078fc3f97093fde283"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000235-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000235-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000235-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 36
+
+[[body.segments]]
+kind = "plain_text"
+text = "Given the way you’re framing NEXUS, I’d recommend `ProviderMessageObserved` as the v0 canonical name. If you want the shorter version, `MessageObserved` is the one I’d pick.\n\nWhy that name fits best:\n\n- `MessageImported` is too tied to one acquisition path. It becomes wrong or awkward once you add live capture, manual artifact hydration, or other provider intake paths.\n- `MessageRecorded` centers your system action, not the domain fact. It sounds like “we wrote something down,” not “this was encountered from a source.”\n- `Observed` is epistemically honest. It fits partial exports, missing artifacts, later revisions, and reparsing from raw sources.\n- In DDD/Event Modeling terms, the bounded context here is ingestion/provenance. The fact is not “a conversation happened” in the pure business sense, but “a provider message was observed by NEXUS from some acquisition source.”\n\nSo I’d lean toward this tone for the first layer:\n\n- `ProviderConversationObserved`\n- `ProviderMessageObserved`\n- `ProviderMessageRevisionObserved`\n- `ArtifactReferenced`\n- `ArtifactPayloadCaptured`\n- `ImportCompleted`\n\nThen later, in a different layer, you can have more semantically loaded events like:\n\n- `PromptSubmitted`\n- `ResponseReceived`\n\nThat separation keeps the ingestion layer truthful and keeps you from smuggling later ontology decisions into the base history too early.\n\nMy recommendation: use `ProviderMessageObserved` in the canonical event union, and allow a shorter label like `message_observed` in TOML if you want the files to stay readable."
+

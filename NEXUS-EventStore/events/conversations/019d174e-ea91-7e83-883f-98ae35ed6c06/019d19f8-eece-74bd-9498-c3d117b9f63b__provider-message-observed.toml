@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-74bd-9498-c3d117b9f63b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea91-781f-b118-e7a630700055"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T10:49:20.281698Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7f43c1576209376dc957f70ffae68e7744ae18f168a338fb1233c4f4603cd8f9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfb69-d30d-7793-bf62-b84261b71e06"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfb69-d30d-7793-bf62-b84261b71e06"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfb69-d30d-7793-bf62-b84261b71e06"
+role = "assistant"
+sequence_hint = 10
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is clarifying the conflict situation. Let me think through this:\n\n1. **Model files** - These are versioned via git commits themselves. Each save creates a new commit, so the \"version\" IS the git history. Conflicts on model files are unlikely because you'd just be adding new commits on top - the model evolves linearly through git history.\n\n2. **Event files** - These are the real concern. Events are immutable facts (UUIDs, append-only). The conflict scenario is if two devices both logged events affecting the same aggregate/object while offline, then both try to push.\n\nBut wait - Ivan is saying events are separate files (UUIDv7 filenames per event instance). \n\nSince each event gets its own UUID-based filename, two devices creating different events would just add separate new files to git - no conflicts there. The only potential issue is if those events affect the same aggregate in a way that matters for ordering, but that's an application-level concern, not a git merge problem. The design actually sidesteps most conflict scenarios entirely."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Right — your design already sidesteps the problem:\n\n## Why Conflicts Are Nearly Zero\n\n**Model files:** Git history IS the versioning. Each save is a commit. You're not resolving conflicts — you're choosing which commit to build on. Linear history, intentional.\n\n**Event files:** UUIDv7 per event instance = unique filename per event. Two devices creating events offline = two different files. Git sees two new files added — **no conflict, just a merge commit** adding both.\n\nThe only real edge case:\n\n- Two devices create events on the **same aggregate** while offline\n- Both push\n- Git merges fine, but **application-level ordering** of those events is ambiguous\n\nThat's a domain concern though, not a git concern. And UUIDv7 gives you **time-sortable** IDs, so even that has a natural resolution — earlier timestamp = earlier in sequence, even if pushed later.\n\n## Summary\n\n| Storage | Conflict Risk | Why |\n|---|---|---|\n| Model TOML | Near zero | Git history = versioning, linear commits |\n| Event files | Near zero | UUID filenames, append-only, merge = both exist |\n| Same aggregate events | Ordering ambiguity only | UUIDv7 timestamp resolves naturally |\n\nYour data design did the heavy lifting here without even targeting this problem explicitly. Clean."
+

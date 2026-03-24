@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeab-7b2d-a8db-c948d6561fb2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea43-7049-9e13-3d838bfcb73e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T07:15:53.870248Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "ff3a841657fbeda67d7ce03e2a66bd104a3534089fbf00751dc23ffa6136a8af"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8b85-0c3b-72cc-8576-2f9beb08b8b6"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8b85-0c3b-72cc-8576-2f9beb08b8b6"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8b85-0c3b-72cc-8576-2f9beb08b8b6"
+role = "assistant"
+sequence_hint = 52
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking if the `/tmp` being only 484M means the system is misconfigured or in a chroot. Looking at the df output:\n\n```\ntmpfs           484M     0  484M   0% /tmp\n```\n\nThis is tmpfs, which is a RAM-based filesystem. This is actually normal for many systems - /tmp is mounted as tmpfs to improve performance and security. It's not a misconfiguration, it's intentional.\n\nThe issue is that pip is trying to download a 900MB file to /tmp (the default temporary directory), which only has 484MB allocated.\n\nThe main disk `/dev/vda1` has 22G free, so there's plenty of space on the actual disk. The solution is to redirect the temporary downloads to use the actual disk instead of the tmpfs /tmp.\n\nUser is asking specifically if this is a chroot or misconfiguration. I should be concise and clear."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Not a chroot or misconfiguration. `/tmp` as tmpfs (RAM filesystem) is intentional and common for security/performance. It's sized at 484MB which is normal.\n\nThe issue: pip downloads to `/tmp` by default. PyTorch is 900MB. Won't fit.\n\nYour main disk `/dev/vda1` has 22G free. Solution is to redirect pip to use actual disk:\n\n```bash\nexport TMPDIR=/home/ivan/tmp\nmkdir -p $TMPDIR\npip install sentence-transformers\n```\n\nOr skip PyTorch entirely and use a different embedding approach (API-based or run on your dev machine).\n\n**Token Usage:** 113,068 used / 76,932 remaining"
+

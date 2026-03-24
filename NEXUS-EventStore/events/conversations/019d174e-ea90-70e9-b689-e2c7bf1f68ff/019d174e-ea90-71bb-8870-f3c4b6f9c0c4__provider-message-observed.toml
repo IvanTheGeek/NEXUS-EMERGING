@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea90-71bb-8870-f3c4b6f9c0c4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+conversation_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+message_id = "019d174e-ea90-7c22-9644-0b8c613be8ac"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T12:55:13.250976Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "ba095b5e132d108e6b5ccafb6703ca9a04a52b1ccea086cce652324c7b0738c3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfbdd-2de1-7708-98de-504e671ef3c2"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+message_native_id = "019cfbdd-2de1-7708-98de-504e671ef3c2"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfbdd-2de1-7708-98de-504e671ef3c2"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-17T12:55:03.820333Z\",\"stop_timestamp\":\"2026-03-17T12:55:03.820333Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-17T12:55:03.820333Z\",\"stop_timestamp\":\"2026-03-17T12:55:04.243959Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking about doing this specifically in GitHub\\u0027s UI/ecosystem.\",\"summaries\":[{\"summary\":\"Thinking about GitHub-related context from previous conversation.\"},{\"summary\":\"Contextualized the question within GitHub\\u0027s ecosystem.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "GitHub has built-in features for both scenarios:\n\n**Scenario 1: Backup copy**\n\nGitHub doesn't have a true \"mirror\" button in the UI, but you can:\n- **Fork** the repo — one click, you get a full copy under your account\n- Enable **\"Sync fork\"** — GitHub added a button that lets you pull upstream changes with one click\n\nThe downside: GitHub forks are publicly linked to the original. If you want a truly independent copy (unlinked), you have to do the `--mirror` clone via command line and push to a new blank repo.\n\n**Scenario 2: Your changes on top of upstream**\n\nThis is the standard **fork + PR workflow**, but for *keeping* your changes rather than contributing back:\n\n1. Fork the repo\n2. Create a branch for your changes\n3. When upstream updates, use the **\"Sync fork\"** button (or `git fetch upstream && git rebase upstream/main` locally)\n4. Resolve any conflicts, push your branch\n\nGitHub doesn't automate the rebase for you — syncing the fork updates your `main`, then you manually rebase your custom branch on top of that.\n\n---\n\n**The honest take:** GitHub forks work fine for this, but they're designed around contributing back, not permanent personal divergence. If the original repo disappears, your fork *might* be affected depending on GitHub's policies — orphaned forks sometimes get detached, sometimes deleted.\n\nFor real insurance, a local clone or self-hosted Forgejo mirror is more reliable than depending on GitHub's fork relationship."
+

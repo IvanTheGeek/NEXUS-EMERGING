@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea7f-704e-b3cd-c436677d606e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea7f-7b2e-91b0-97627f7d45f0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-27T03:41:41.584185Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "bff5f14943b3788e74ffa766e7ec3e5da21c50429be7b975a80a764766854618"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac366-e581-70b6-a421-8f98fb75ad1b"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019ac366-e581-70b6-a421-8f98fb75ad1b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac366-e581-70b6-a421-8f98fb75ad1b"
+role = "assistant"
+sequence_hint = 22
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-27T03:41:33.329822Z\",\"stop_timestamp\":\"2025-11-27T03:41:37.012874Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to use naming conventions in Penpot to identify interactive elements. This aligns with their vision where the design IS the implementation - the designer names elements semantically and Bolero uses those names to wire up interactivity.\\n\\nNext I should ask about the naming convention specifics, or we could move to the actual implementation approach. Let me think about what\\u0027s next in the sequence:\\n\\n1. \\u2713 Screen approach (artboards)\\n2. \\u2713 Interactivity approach (naming convention)\\n3. Naming convention specifics\\n4. SVG export method\\n5. Bolero project setup\\n6. Wiring it up\\n\\nLet me ask about the naming convention.\",\"summaries\":[{\"summary\":\"Thinking about an incomplete or fragmented prompt requiring clarification.\"},{\"summary\":\"I cannot provide a summary because the user prompt appears incomplete or corrupted (\\u0022A defiantly\\u0022). Please provide a valid user prompt.\"},{\"summary\":\"I cannot provide a meaningful summary because the user prompt \\u0022A defiantly\\u0022 is incomplete and does not contain a coherent request or question.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Makes sense - the design carries the semantic meaning. No disconnect between what the designer creates and what the code uses.\n\n**Next question**: What naming convention pattern?\n\nSome options:\n\n| Pattern | Example | Notes |\n|---------|---------|-------|\n| `type:name` | `input:userName`, `button:continue` | Simple, readable |\n| `type.name` | `input.userName`, `button.continue` | Dot notation |\n| `type--name` | `input--userName`, `button--continue` | BEM-ish |\n| `fn-type-name` | `fn-input-userName`, `fn-button-continue` | Prefixed, avoids collision |\n\nThe convention needs to:\n- Survive SVG export (becomes element ID)\n- Be parseable by Bolero\n- Be clear to designers\n\nDo you have a preference, or want to define your own pattern?"
+

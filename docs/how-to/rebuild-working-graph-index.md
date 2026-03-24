@@ -1,0 +1,45 @@
+# Rebuild Working Graph Index
+
+This command rebuilds the persisted SQLite working index from the existing graph working import slices.
+
+Use it when:
+
+- `graph/working/index/graph-working.sqlite` is missing
+- you intentionally deleted or reset the index
+- you want to prove the SQLite layer is rebuildable from the working-slice files
+
+## Command
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  rebuild-working-graph-index
+```
+
+## Example
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  rebuild-working-graph-index \
+  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore
+```
+
+## What It Does
+
+1. Reads the current graph working catalog and import-slice manifests
+2. Scans `graph/working/imports/<import-id>/assertions/`
+3. Rebuilds `graph/working/index/graph-working.sqlite`
+4. Restores per-import working-slice summaries for later CLI queries
+
+## Notes
+
+- This command rebuilds the SQLite working index only.
+- It does not touch canonical history.
+- It does not rebuild the durable `graph/assertions/` layer.
+- The SQLite index remains a derived working structure, not source truth.
+
+## Related Commands
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-imports
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-slice --import-id <uuid>
+```

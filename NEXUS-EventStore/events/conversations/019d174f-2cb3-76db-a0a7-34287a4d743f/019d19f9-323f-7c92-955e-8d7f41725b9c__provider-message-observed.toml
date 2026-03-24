@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323f-7c92-955e-8d7f41725b9c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb3-76db-a0a7-34287a4d743f"
+conversation_id = "019d174f-2cb3-76db-a0a7-34287a4d743f"
+message_id = "019d174f-2cb5-7195-94a2-0f4ff7496d84"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-11T23:11:19.198385Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "edaffe623cb381589f0bb20a6f36787e95be928dafc5790fce3add16187bd3c3"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+conversation_native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "65f8de29-7749-46de-ba3c-99a6bbb7f1dd"
+conversation_native_id = "69b0976f-a554-8326-ac9d-680b36d63bf3"
+message_native_id = "65f8de29-7749-46de-ba3c-99a6bbb7f1dd"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "65f8de29-7749-46de-ba3c-99a6bbb7f1dd"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 234
+
+[[body.segments]]
+kind = "plain_text"
+text = "What you’re touching on now is one of the **deepest ideas behind event-sourced systems**. When people like **entity[\"people\",\"Greg Young\",\"CQRS and Event Store creator\"]** talk about events, they’re implicitly describing a system where **time is fundamental**. Not just logging time, but **modeling time as part of truth**.\n\nWhen you combine:\n\n```\ntime\ncausation\ncorrelation\n```\n\nyou essentially get a **spacetime map of system behavior**.\n\nLet's explore that step by step.\n\n---\n\n# 1. Time in Traditional Systems vs Event Systems\n\nMost traditional systems treat time as **metadata**.\n\nExample database row:\n\n```\nOrder\n  id\n  total\n  status\n  updated_at\n```\n\nTime is just an attribute.\n\nBut in **entity[\"software_architecture_pattern\",\"Event Sourcing\",\"persisting state as events\"]**, time becomes **the structure of the system itself**.\n\nExample:\n\n```\nOrderPlaced\nPaymentCharged\nOrderShipped\n```\n\nThe order **exists through time**.\n\nState is simply the **result of replaying events in time order**.\n\n---\n\n# 2. Three Types of Time\n\nIn advanced event systems there are actually **multiple notions of time**.\n\n### 1️⃣ Event Time\n\nWhen something actually happened.\n\nExample:\n\n```\nPaymentCharged\ntimestamp: 2026-03-10 09:42:11\n```\n\n---\n\n### 2️⃣ System Time\n\nWhen the system recorded it.\n\nExample:\n\n```\nEventStored\ntimestamp: 2026-03-10 09:42:12\n```\n\nThese are sometimes different.\n\nExample:\n\n```\nmobile client offline\nevent recorded later\n```\n\n---\n\n### 3️⃣ Logical Time\n\nThe **causal ordering** of events.\n\nExample:\n\n```\nOrderPlaced\n↓\nPaymentCharged\n↓\nOrderShipped\n```\n\nEven if timestamps overlap, **logical order is preserved**.\n\n---\n\n# 3. Events Create a Timeline\n\nEach event forms part of a **timeline**.\n\nExample:\n\n```\nT1 OrderPlaced\nT2 PaymentCharged\nT3 InventoryReserved\nT4 OrderShipped\n```\n\nThis gives you **historical reconstruction**.\n\nAtlas could literally ask:\n\n```\nWhat did the system look like at time T2?\n```\n\nThen replay events up to that point.\n\n---\n\n# 4. Causation Adds Structure to Time\n\nTime alone only gives **sequence**.\n\nCausation adds **structure**.\n\nExample:\n\n```\nOrderPlaced\n   ↓\nPaymentCharged\n   ↓\nReceiptSent\n```\n\nBut maybe also:\n\n```\nOrderPlaced\n   ↓\nInventoryReserved\n```\n\nNow the timeline becomes a **branching structure**.\n\nThis is no longer a line.\n\nIt’s a **graph**.\n\n---\n\n# 5. Correlation Groups Timelines\n\nCorrelation groups events into **stories**.\n\nExample:\n\n```\nCorrelation: Order-48291\n```\n\nEvents:\n\n```\nOrderPlaced\nPaymentCharged\nInventoryReserved\nOrderShipped\nEmailSent\n```\n\nThis becomes a **business narrative**.\n\n---\n\n# 6. Time + Causation + Correlation = Event Spacetime\n\nWhen combined, you get something like this:\n\n```\n             PaymentCharged\n           /\nOrderPlaced\n           \\\n             InventoryReserved\n                  |"
+

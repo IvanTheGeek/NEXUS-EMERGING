@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3218-758e-99e8-a398d379c511"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-71bb-a1e6-8613aeb7cffa"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T13:24:48.972866Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "086270661d73704062984e3d3f53db939a2134165cad741cab96524d347b5940"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ddde769b-bd84-4834-98a2-fc8e4f317d0c"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "ddde769b-bd84-4834-98a2-fc8e4f317d0c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ddde769b-bd84-4834-98a2-fc8e4f317d0c"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 61
+
+[[body.segments]]
+kind = "plain_text"
+text = "You're absolutely right to correct that. In **basic entity[\"software_methodology\",\"Event Modeling\"] as taught by entity[\"people\",\"Adam Dymitruk\"]**, arrows *are* often drawn from past events into the projection to indicate that those events feed the read model. So the dependency **is represented**, just typically in a fairly lightweight way on the diagram.\n\nWhat you're proposing with **hover-highlighting** is actually a **much richer interaction model**, and it fits extremely well with your **EMViewer idea**.\n\nLet’s break down why.\n\n---\n\n# How Event Modeling Usually Shows This\n\nIn the standard diagram you might see something like:\n\n```\n[Event] LaundryLoadAdded\n[Event] LaundryLoadStarted\n[Event] LaundryLoadFinished\n            │\n            │\n            ▼\n      [Projection]\n      LaundryLog\n```\n\nThe arrows show:\n\n```\nthese events feed this projection\n```\n\nBut there are two limitations in static diagrams:\n\n1. **Too many arrows become messy**\n2. It’s hard to explore relationships dynamically\n\nThis is exactly where an **interactive viewer** becomes powerful.\n\n---\n\n# Your Hover Idea\n\nYou suggested something like:\n\n```\nhover projection\n→ highlight source events\n```\n\nConceptually:\n\n```\nEvents timeline\n ├ LaundryLoadAdded\n ├ LaundryLoadStarted\n ├ LaundryLoadFinished\n └ LaundryLoadRemoved\n\nProjection: LaundryLog\n```\n\nWhen hovering **LaundryLog**, the viewer could highlight:\n\n```\nLaundryLoadAdded\nLaundryLoadStarted\nLaundryLoadFinished\nLaundryLoadRemoved\n```\n\nEverything else fades.\n\nThis is very similar to how **HTML DevTools highlight DOM relationships**, which is a great analogy.\n\n---\n\n# Even Better: Bidirectional Highlighting\n\nThe really powerful version would be **bidirectional**.\n\n### Hover Projection\n\n```\nhighlight events feeding projection\n```\n\n### Hover Event\n\n```\nhighlight projections using event\n```\n\nExample:\n\nHover:\n\n```\nLaundryLoadAdded\n```\n\nThen highlight:\n\n```\nLaundryLogProjection\nActiveLoadsProjection\nUsageStatsProjection\n```\n\nThis instantly answers a critical architectural question:\n\n```\nwhat breaks if this event changes?\n```\n\nThat’s incredibly valuable for system design.\n\n---\n\n# Why This Is Actually a Big Deal\n\nOne of the hardest problems in event-sourced systems is understanding:\n\n```\nevent → projection dependencies\n```\n\nDevelopers constantly ask:\n\n```\nWhere is this event used?\n```\n\nor\n\n```\nWhat projections depend on this event?\n```\n\nYour viewer concept would make that **visually obvious**.\n\n---\n\n# The Really Interesting Nexus Angle\n\nEarlier you described EMViewer as:\n\n> a projection of the full true event\n\nYour hover idea turns the model into something like a **live dependency graph**.\n\nInstead of static documentation, the viewer becomes:\n\n```\nsystem comprehension tool\n```\n\nAlmost like:\n\n```\ngit blame\n+\narchitecture diagram\n+\nevent explorer\n```\n\n---\n\n# Why This Could Work Well With Figma (Initially)\n\nEven though Figma isn't built for this, your experiment could approximate the concept.\n\nExample approach:\n\nProjection frame:\n\n```\nProjection: LaundryLog\n```\n\nInside it include a list:\n\n```\nSource Events\nLaundryLoadAdded\nLaundryLoadStarted\nLaundryLoadFinished\nLaundryLoadRemoved\n```\n\nThat makes the relationship **explicit**, even if not interactive yet.\n\nLater an EMViewer could add:\n\n```\nhover\nhighlight\nfilter\ntrace\n```\n\n---\n\n# The Really Powerful Interaction (Future EMViewer)\n\nImagine this interaction:\n\n```\nhover projection\n```\n\nViewer highlights:\n\n```\npast events used\n```\n\nThen another option:\n\n```\nshow event replay\n```\n\nAnd you see:\n\n```\nLaundryLoadAdded\nLaundryLoadStarted\nLaundryLoadFinished\n```\n\nThen the projection state updates step by step.\n\nThis would visually show:\n\n```\nprojection = fold(events)\n```\n\nWhich is the **core concept of event sourcing**.\n\n---\n\n# One Thing I’m Curious About\n\nWhen you imagine **EMViewer**, is it closer to:\n\n**A**\n\n```\ndiagram viewer\n```\n\nsomething like an interactive Event Modeling board\n\n**B**\n\n```\nevent-stream visualizer\n```\n\nthat actually **replays events and shows projections updating**\n\nor\n\n**C**\n\n```\nsystem IDE\n```\n\nwhere you can design events, projections, and UI in one place.\n\nYour earlier comments about **canonical substrate and slices** make me suspect you're leaning toward **C**, which is a significantly more ambitious (and interesting) direction."
+

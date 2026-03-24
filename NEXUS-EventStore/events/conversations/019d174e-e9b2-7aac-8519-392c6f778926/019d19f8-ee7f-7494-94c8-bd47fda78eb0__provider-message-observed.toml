@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee7f-7494-94c8-bd47fda78eb0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9b2-7aac-8519-392c6f778926"
+conversation_id = "019d174e-e9b2-7aac-8519-392c6f778926"
+message_id = "019d174e-e9b2-7848-a1e7-7609c5f25b52"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-10T19:05:13.226181Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "511e2e846538f1662f27c701026a9514cd72168be3e53f733b85fc4cf5e3c5d6"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "cff79671-932c-42d4-92e5-e06da3b39ea4"
+conversation_native_id = "cff79671-932c-42d4-92e5-e06da3b39ea4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a6f28-373c-777d-8540-d21603074cd1"
+conversation_native_id = "cff79671-932c-42d4-92e5-e06da3b39ea4"
+message_native_id = "019a6f28-373c-777d-8540-d21603074cd1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a6f28-373c-777d-8540-d21603074cd1"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about Docker container priority configuration. This is a straightforward technical question about Docker resource management, so I don't need to ask clarifying questions about motivation - they're simply seeking information about whether and how Docker containers can be prioritized relative to each other.\n\nThis is a technical question about Docker capabilities, which is part of my training knowledge (Docker and container orchestration concepts were well-established before my knowledge cutoff). I don't need to do research for this - I can answer directly based on my knowledge of Docker's resource management features.\n\nKey points to cover:\n1. CPU priority/shares\n2. Memory limits\n3. I/O priority\n4. Nice values\n5. OOM score adjustment\n\nI should keep this practical and focused on the actual mechanisms available."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, Docker containers can definitely be configured with different priorities. Here are the main mechanisms:\n\n## CPU Priority\n\n**CPU Shares** (relative priority):\n```bash\ndocker run --cpu-shares=512 my-container\n```\n- Default is 1024\n- Lower values = lower priority\n- This is relative weighting, not absolute limits\n\n**CPU Quota** (hard limits):\n```bash\ndocker run --cpus=\"0.5\" my-container\n```\n- Limits to specific CPU allocation\n\n## Process Nice Values\n\n```bash\ndocker run --cap-add=SYS_NICE my-container\n```\nThen inside the container, use `nice`/`renice` to adjust process priority.\n\n## I/O Priority\n\n**Block I/O Weight**:\n```bash\ndocker run --blkio-weight=100 my-container\n```\n- Range: 10-1000 (default 500)\n- Lower = lower I/O priority\n\n**Device-specific I/O limits**:\n```bash\ndocker run --device-read-bps=/dev/sda:1mb my-container\n```\n\n## Memory Priority\n\nWhile you can't directly set memory \"priority\", you can use:\n```bash\ndocker run --memory=512m --memory-reservation=256m my-container\n```\n\n**OOM Score Adjustment** (controls which container gets killed first when system runs out of memory):\n```bash\ndocker run --oom-score-adj=500 my-container\n```\n- Range: -1000 to 1000\n- Higher = more likely to be killed\n\n## Docker Compose Example\n\n```yaml\nservices:\n  high-priority:\n    cpu_shares: 1024\n    blkio_weight: 1000\n  \n  low-priority:\n    cpu_shares: 256\n    blkio_weight: 100\n    oom_score_adj: 500\n```\n\nAre you looking to deprioritize specific containers in your development environment?"
+

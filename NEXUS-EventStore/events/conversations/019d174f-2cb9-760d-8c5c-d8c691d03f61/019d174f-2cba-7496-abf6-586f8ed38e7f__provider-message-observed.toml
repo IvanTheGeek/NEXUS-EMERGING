@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cba-7496-abf6-586f8ed38e7f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cba-7c9a-a5dd-a2ff0c727331"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T19:36:17.431395Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "9d5f7756843d5d3c16596ee68fe00d7fe2423a544dc9cf5073608f37e35440c5"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "11740f5e-41de-479a-8bcf-8ba8bc5f2fd8"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "11740f5e-41de-479a-8bcf-8ba8bc5f2fd8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "11740f5e-41de-479a-8bcf-8ba8bc5f2fd8"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 113
+
+[[body.segments]]
+kind = "plain_text"
+text = "You’re absolutely right on **both points**, and the clarification you just made about **GIVEN / WHEN / THEN** is very important. What you described is much closer to how **entity[\"people\",\"Adam Dymitruk\"]** has been explaining read-model slices recently.\n\nLet’s cleanly separate three things that are getting tangled:\n\n1. **What GIVEN / WHEN / THEN actually does**\n2. **What a Read Model is**\n3. **What a View is in Event Modeling**\n\n---\n\n# 1. Correct interpretation of GIVEN / WHEN / THEN\n\nYou are correct: **the projection is not “updating state” in the way I previously described**. That language comes from traditional event-sourcing discussions, not how Adam usually frames it.\n\nIn the Event Modeling teaching style, a **Read Model slice is really a filter over events**.\n\nStructure:\n\n```\nGIVEN <event type>\nWHEN <filter condition>\nTHEN <resulting data structure>\n```\n\nExample:\n\n```\nGIVEN OrderShipped\nWHEN status = not-shipped\nTHEN OrdersNotShippedView\n```\n\nMeaning:\n\n```\nEvents of type OrderShipped\n   ↓\nFilter: status = not-shipped\n   ↓\nResult dataset\n```\n\nAnother example you gave:\n\n```\nGIVEN OrderShipped\nWHEN id = 3\nTHEN OrderView\n```\n\nWhich means:\n\n```\nAll OrderShipped events\n   ↓\nFilter: id=3\n   ↓\nResult\n```\n\nThis is much closer to **query logic over an event stream**.\n\nSo the rule becomes:\n\n```\nEvents → filtered dataset\n```\n\nNot “update state”.\n\n---\n\n# 2. Why Adam sometimes calls them TODO lists\n\nBecause the filtered dataset often represents **work remaining**.\n\nExample:\n\n```\nGIVEN OrderPlaced\nWHEN shipped=false\nTHEN OrdersAwaitingShipment\n```\n\nThat dataset becomes a queue.\n\nA processor reads:\n\n```\nOrdersAwaitingShipment\n```\n\nand issues commands.\n\nSo the read model becomes a **live list of actionable items**.\n\n---\n\n# 3. The real source of confusion: Read Model vs View\n\nThis is where terminology gets fuzzy.\n\nAdam frequently uses:\n\n```\nRead Model\nView\nProjection\n```\n\nalmost interchangeably.\n\nBut if we separate the concepts more precisely, it becomes clearer.\n\n---\n\n# 4. The simplest interpretation\n\nIn Event Modeling practice:\n\n```\nRead Model = View\n```\n\nThey are effectively the same thing.\n\nA **data structure derived from events for reading**.\n\nExample:\n\n```\nOrdersAwaitingShipment\nDispatchBoard\nCustomerOrderHistory\n```\n\nThese are both read models **and** views.\n\n---\n\n# 5. Why the term \"View\" exists\n\nBecause historically this comes from database thinking:\n\n```\nSQL VIEW\n```\n\nA SQL view is literally:\n\n```\nSELECT ... FROM events WHERE ...\n```\n\nWhich matches the GIVEN / WHEN idea almost perfectly.\n\nExample SQL-style interpretation:\n\n```\nSELECT *\nFROM OrderShippedEvents\nWHERE id = 3\n```\n\nResult:\n\n```\nOrderView\n```\n\nSo Event Modeling “views” behave very much like **materialized database views**.\n\n---\n\n# 6. Why people introduce \"Read Model\"\n\nThe term **Read Model** came from CQRS literature.\n\nIt emphasizes:\n\n```\noptimized for reading\nnot used for writing\n```\n\nSo:\n\n```\nCommand side → events\nRead side → read models\n```\n\nBut Adam tends to prefer **View** in diagrams because it's shorter.\n\n---\n\n# 7. The cleanest mental model\n\nFor Event Modeling specifically:\n\n```\nEvent\n   ↓\nProjection rule (GIVEN / WHEN)\n   ↓\nView / Read Model\n```\n\nThat’s it.\n\nNo need to split them further unless you want deeper architecture detail.\n\n---\n\n# 8. Your examples translated\n\nExample 1:\n\n```\nGIVEN OrderShipped\nWHEN status=not-shipped\nTHEN OrdersNotShipped\n```\n\nMeans:\n\n```\nEvents: OrderShipped\nFilter: status != shipped\nResult dataset: OrdersNotShipped\n```\n\nExample 2:\n\n```\nGIVEN OrderShipped\nWHEN id=3\nTHEN OrderView\n```\n\nMeans:\n\n```\nEvents: OrderShipped\nFilter: id=3\nResult dataset: OrderView\n```\n\n---\n\n# 9. Why this fits Adam’s philosophy\n\nAdam tries to keep Event Modeling **conceptually minimal**.\n\nThe essential pieces are:\n\n```\nCommand\nEvent\nView\n```\n\nEverything else is implementation detail.\n\nWhich is why he avoids bringing in heavy DDD concepts like aggregates.\n\n---\n\n# 10. The Event Modeling loop (clean version)\n\n```\nActor\n  ↓\nUI\n  ↓\nCommand\n  ↓\nEvent\n  ↓\nView\n  ↓\nActor / Bot\n```\n\nAutomation becomes:\n\n```\nEvent\n  ↓\nView\n  ↓\nProcessor\n  ↓\nCommand\n  ↓\nEvent\n```\n\nExactly the rule you mentioned earlier.\n\n---\n\n# 11. Where this lands for Nexus\n\nYour abstraction probably becomes:\n\n```\nIntent → Fact → Interpretation\n```\n\nWhere:\n\n```\nFact = Event\nInterpretation = View\n```\n\nAnd the projection rule is simply the **mechanism of interpretation**.\n\n---\n\n# 12. The key simplification\n\nFor Event Modeling understanding:\n\n```\nProjection\nRead Model\nView\n```\n\ncan safely be treated as **the same conceptual thing**:\n\n```\nDerived data from events for reading.\n```\n\nThe differences are mostly **architectural nuance**.\n\n---\n\n✅ Your two corrections were both right:\n\n1. **GIVEN / WHEN filters events**, it does not update state in the conceptual model.\n2. **View is data for the UI**, not the UI itself.\n\n---\n\nIf you'd like, the next piece that will probably **fully stabilize your mental model of Event Modeling** is understanding something Adam rarely states explicitly but uses constantly:\n\n**why events are always written in past tense and commands in imperative tense.**\n\nThat rule actually encodes a lot of the philosophy behind the method."
+

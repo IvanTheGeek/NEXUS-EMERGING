@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cd6-734c-b2fa-12de3adcb426"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+conversation_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+message_id = "019d174f-2cd6-727f-a158-11b2948748cf"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T21:23:27.25196Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "cc57c65146b49dee2e84ee807fcc4fa7f66fffc6b08ca4f2a3b6c5701363d1f9"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "928e2add-d40f-4ba0-b3a7-bbb9adadc2b4"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+message_native_id = "928e2add-d40f-4ba0-b3a7-bbb9adadc2b4"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "928e2add-d40f-4ba0-b3a7-bbb9adadc2b4"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 7
+
+[[body.segments]]
+kind = "plain_text"
+text = "Short answer: **No—Paket is no longer the “default” or broadly accepted way.**  \nToday, the **Microsoft / .NET standard is NuGet (with SDK-style projects + PackageReference)**, and Paket is more of an **optional power-user tool**, mostly in F# circles.\n\n---\n\n## 🧭 The current state (2025–2026)\n\n### ✅ Default / mainstream approach\n- **NuGet + SDK-style projects (`.csproj` / `.fsproj`)**\n- Uses:\n  - `dotnet add package`\n  - `<PackageReference>` in project files\n- Built into:\n  - `dotnet` CLI\n  - Visual Studio\n- First-class supported by Microsoft citeturn0search7\n\n👉 This is what *most* .NET + F# projects use now.\n\n---\n\n### ⚙️ Paket (still alive, but niche)\n- Still actively maintained (supports .NET 9/10, recent releases) citeturn0search5  \n- Still solves real problems:\n  - Deterministic dependency resolution (`paket.lock`)\n  - Better control over transitive deps\n  - Git-based dependencies citeturn0search1  \n\n👉 But:\n- Not Microsoft-supported\n- Not default tooling\n- Requires extra setup / mental overhead\n\n---\n\n## 🤔 Why NuGet “won” (mostly)\n\nHistorically, Paket existed because NuGet had issues:\n- Poor transitive dependency control\n- Non-deterministic resolution\n\nBut modern NuGet:\n- Uses `PackageReference`\n- Has improved dependency resolution\n- Supports lock files (`packages.lock.json`)\n- Works seamlessly with the SDK + tooling\n\n👉 So the original reasons for Paket are **less critical now**\n\n---\n\n## 🧠 Practical guidance (what you should do)\n\n### Use NuGet (recommended)\nIf you:\n- Are starting fresh\n- Want compatibility with tooling (VS, Rider, CI, etc.)\n- Want minimal friction\n\n👉 **Use NuGet + PackageReference**\n\n---\n\n### Consider Paket if:\nYou specifically want:\n- Full control over dependency graph\n- Git dependencies as first-class\n- Deterministic builds across complex repos\n- Or you’re in an existing F# ecosystem that already uses it\n\n👉 Think of Paket as:\n> “Advanced dependency management for people who care deeply about the graph”\n\n---\n\n## 🔥 Your mental model (fits your NEXUS thinking)\n\n- **NuGet = implicit graph resolution**\n  - “trust the system”\n\n- **Paket = explicit graph control**\n  - “you own the graph”\n\nThat maps almost perfectly to your:\n> **truth graph vs derived lens idea**\n\nPaket is basically:\n> “Dependency graph as a first-class artifact”\n\n---\n\n## 🧾 Bottom line\n\n- **Modern standard:** NuGet (PackageReference)\n- **Paket status:** Still valid, but niche / optional\n- **Trend:** Most projects have moved *away* from Paket unless they need its power\n\n---\n\nIf you want, I can map:\n👉 Paket vs NuGet directly into your NEXUS primitives (graph, edges, projections) — it actually lines up *really cleanly*."
+

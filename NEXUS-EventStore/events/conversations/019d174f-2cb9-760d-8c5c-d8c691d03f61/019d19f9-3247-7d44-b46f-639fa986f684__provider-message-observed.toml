@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3247-7d44-b46f-639fa986f684"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+conversation_id = "019d174f-2cb9-760d-8c5c-d8c691d03f61"
+message_id = "019d174f-2cba-7f71-a2df-bc9d963ee0e7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T17:14:13.032623Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "2715345bccf56bb2856504110eebd15a961f8cdc1d5bb991ce5f1bd31834e962"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ac8f5bfa-74cc-475e-a1fd-97f521733835"
+conversation_native_id = "69b28f8e-5968-832c-a957-81e8e51e365c"
+message_native_id = "ac8f5bfa-74cc-475e-a1fd-97f521733835"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ac8f5bfa-74cc-475e-a1fd-97f521733835"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 89
+
+[[body.segments]]
+kind = "plain_text"
+text = "What you’re running into with **domain, context, construct, scope, focus, frame, goal** is essentially a **set of lenses for zooming into the Truth Graph**. They’re not all the same type of thing. Some describe **structure**, some describe **boundaries**, and some describe **human intent about what to study**.\n\nIf we organize them correctly, they form a clean hierarchy.\n\n---\n\n# 1. Three categories of “zoom concepts”\n\nThe easiest way to understand these is to separate them into three classes.\n\n### Structural reality (what exists in the graph)\n\nThese are **part of the domain universe itself**.\n\n```\nDomain\nContext\nConcept\nIntent\nFact\nInterpretation\n```\n\nThey are **ontological primitives**.\n\n---\n\n### Structural containers (how parts of the graph are grouped)\n\nThese help organize large graphs.\n\n```\nDomain\nSubdomain\nContext\nConstruct\n```\n\nThese are **structural partitions**.\n\n---\n\n### Analytical lenses (how humans look at the graph)\n\nThese describe **how we study or frame part of the graph**.\n\n```\nGoal\nFrame\nFocus\nScope\n```\n\nThese are **epistemological tools** (ways of knowing), not things in the domain itself.\n\nThis distinction is extremely important.\n\n---\n\n# 2. The hierarchy of structural containers\n\nLet’s map the structural containers first.\n\n```\nNexus Universe\n   ↓\nDomain\n   ↓\nSubdomain\n   ↓\nContext\n   ↓\nConstruct\n   ↓\nCells\n```\n\nEach level narrows the semantic environment.\n\n---\n\n## Domain\n\nA **domain** is a large sphere of activity or knowledge.\n\nExamples:\n\n```\nLogistics\nVideo Production\nEducation\nSoftware Development\n```\n\nIn Domain-Driven Design (DDD), a domain is the highest level business space.\n\nThis idea comes from **entity[\"software_methodology\",\"Domain-Driven Design\"]**.\n\n---\n\n## Subdomain\n\nA subdomain is a **major specialization**.\n\nExample inside logistics:\n\n```\nTransportation\nFleet management\nBilling\nCompliance\n```\n\nExample inside video production:\n\n```\nProduction\nEditing\nDistribution\nAsset management\n```\n\nSubdomains often align with teams.\n\n---\n\n## Context\n\nContexts are where **language and rules become precise**.\n\nExample:\n\n```\nDispatch Context\nBilling Context\nTracking Context\n```\n\nInside a context, a concept like **Load** has a specific meaning.\n\nContexts solve semantic ambiguity.\n\n---\n\n## Construct\n\nConstructs are **working models of behavior**.\n\nExamples:\n\n```\nLaundryLog system\nDispatch workflow\nVideo editing pipeline\nCourse publishing pipeline\n```\n\nA construct is the **specific implementation or model being built**.\n\nThis might correspond to a specific **event model** diagram.\n\n---\n\n# 3. Where Event Modeling fits\n\nEvent Modeling diagrams represent **constructs inside a context**.\n\nExample:\n\n```\nDomain\n   Logistics\n\nSubdomain\n   Transportation\n\nContext\n   Dispatch\n\nConstruct\n   Assign Driver Workflow\n```\n\nThat construct might contain slices like:\n\n```\nAssignDriver command slice\nLoadAssigned event\nDispatchBoard view slice\n```\n\nThese are the **cells inside the construct**.\n\nThe method was developed by **entity[\"people\",\"Adam Dymitruk\"]**.\n\n---\n\n# 4. The analytical lenses\n\nNow we look at the other group.\n\nThese are **not parts of the domain universe**.\n\nThey describe **how humans choose what to study**.\n\n---\n\n## Goal\n\nGoal answers:\n\n```\nWhy are we modeling this?\n```\n\nExamples:\n\n```\nAutomate dispatch\nTeach event modeling\nProduce a training video\n```\n\nGoal drives the investigation.\n\n---\n\n## Frame\n\nFrame defines the **perspective**.\n\nExample frames:\n\n```\nOperational frame\nEducational frame\nFinancial frame\nCreative frame\n```\n\nSame domain, different frame.\n\n---\n\n## Focus\n\nFocus determines **what elements we care about right now**.\n\nExample in video production:\n\nFocus on:\n\n```\nshooting workflow\n```\n\nIgnore:\n\n```\ndistribution\nanalytics\n```\n\nFocus is temporary.\n\n---\n\n## Scope\n\nScope defines the **boundaries of the current investigation**.\n\nExample:\n\n```\nFrom recording footage\nto final video export\n```\n\nEverything outside that is ignored.\n\n---\n\n# 5. The zoom stack\n\nWhen you combine everything, you get a clean zoom hierarchy.\n\n```\nNexus Universe\n   ↓\nDomain\n   ↓\nSubdomain\n   ↓\nContext\n   ↓\nConstruct\n   ↓\nCells (Intent / Fact / Interpretation)\n```\n\nAnd the **human analysis layer** sits beside it:\n\n```\nGoal\nFrame\nFocus\nScope\n```\n\nThese control *how we explore the graph*.\n\n---\n\n# 6. Example: Video production\n\nLet’s map everything.\n\n```\nDomain\n   Video Production\n\nSubdomain\n   Post Production\n\nContext\n   Editing\n\nConstruct\n   Edit Scene Workflow\n```\n\nInside the construct:\n\n```\nStartEdit intent\nEditStarted fact\nTimelineView interpretation\n```\n\nYour modeling session might have:\n\n```\nGoal\n   teach editing workflow\n\nFrame\n   educational\n\nFocus\n   editing timeline\n\nScope\n   import footage → export video\n```\n\nNow everything has a place.\n\n---\n\n# 7. How this fits Nexus philosophy\n\nThis structure reinforces your earlier idea:\n\nThe **Truth Graph is the universe**.\n\nDomains and contexts are **regions of that universe**.\n\nConstructs are **organisms being built inside it**.\n\nCells are **the living processes**.\n\nHumans use **goals, frames, focus, and scope** to decide where to look.\n\n---\n\n# 8. Why this separation matters\n\nWithout separating these ideas, people mix up:\n\n```\ndomain boundaries\nmodel boundaries\nanalysis boundaries\n```\n\nWhich leads to confusion during modeling.\n\nYour framework gives them **different layers**.\n\n---\n\n# 9. The minimal Nexus ontology\n\nAfter everything we explored, the minimal primitives are likely:\n\nStructural:\n\n```\nConcept\nContext\nIntent\nFact\nInterpretation\n```\n\nStructural containers:\n\n```\nDomain\nConstruct\n```\n\nHuman lenses:\n\n```\nGoal\nFrame\nFocus\nScope\n```\n\n---\n\n# 10. The deeper realization\n\nYour Nexus system is starting to resemble a **scientific framework for domains**.\n\nIt separates:\n\n```\nReality\nStructure\nObservation\nInvestigation\n```\n\nFew software methodologies go this far.\n\n---\n\nIf you want, the next thing worth exploring is a concept that might **tie all of this together into one clear mental model**:\n\n**“Domain organisms vs domain ecosystems”**\n\nThat idea makes the relationships between **constructs, contexts, and domains** much easier to reason about when the Truth Graph gets very large."
+

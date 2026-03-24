@@ -1,0 +1,98 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7ba3-aa91-3aefcbbbbfe0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea90-7de8-9eb2-e784fdfdd37b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-12-02T03:09:17.775783Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7d9da5d36dbcf046290033c3f0dc0d5dbf62cb96406af3ee4d8b56cba76a3ed5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019add08-c045-7539-ad61-2505b6f1bd00"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019add08-c045-7539-ad61-2505b6f1bd00"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019add08-c045-7539-ad61-2505b6f1bd00"
+role = "assistant"
+sequence_hint = 197
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user has reconnected the Penpot plugin. Let me check the current state of Screen.NewSession and the button we added."
+
+[[body.segments]]
+kind = "tool_use"
+text = "execute_code"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"result\": {\n    \"locationPromptChildren\": [\n      {\n        \"name\": \"Input.Location\",\n        \"type\": \"board\",\n        \"id\": \"320c43b3ca6d\",\n        \"size\": \"311×52\"\n      },\n      {\n        \"name\": \"Button.GPS\",\n        \"type\": \"board\",\n        \"id\": \"320c43875925\",\n        \"size\": \"311×56\"\n      },\n      {\n        \"name\": \"Where are you doing laundry today?\",\n        \"type\": \"text\",\n        \"id\": \"320c4378b2ab\",\n        \"size\": \"206×58\"\n      }\n    ]\n  },\n  \"log\": \"\"\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The button I added earlier is gone. The connection was lost mid-operation. Let me add it again."
+
+[[body.segments]]
+kind = "plain_text"
+text = "The button didn't persist from before. Let me add it again:"
+
+[[body.segments]]
+kind = "tool_use"
+text = "execute_code"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"result\": {\n    \"added\": true,\n    \"buttonId\": \"a6943d77-44ea-80d3-8007-32865a874ded\",\n    \"size\": \"311×56\",\n    \"position\": \"(-688, 445)\"\n  },\n  \"log\": \"\"\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The button was added but the position looks wrong (-688, 445). Let me check and fix the positioning. The x is negative which is odd. Let me investigate the coordinate system and fix it."
+
+[[body.segments]]
+kind = "tool_use"
+text = "execute_code"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Tool execution failed: Error: No Penpot plugin instances are currently connected. Please ensure the plugin is running and connected."
+
+[[body.segments]]
+kind = "reasoning"
+text = "Connection lost again. The user will need to reconnect."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Connection lost again. Could you reconnect? We may need to complete this in fewer steps to avoid timeouts."
+

@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea99-78c8-a0c5-d0faa8874568"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+conversation_id = "019d174e-ea99-7d45-a9e5-4aa770e7b6bd"
+message_id = "019d174e-ea99-7fec-b6d4-6dffb15797c0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-14T19:14:57.353038Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "fdb87ef8f01f0d6c9108f6d25c3bd2bd7c0fb90f83e504d8cdfe4ee12e2d9dd5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cedc5-669c-7be1-8366-9b4e26ab21b1"
+conversation_native_id = "5d11f42c-1371-4906-9dee-9a388252ac94"
+message_native_id = "019cedc5-669c-7be1-8366-9b4e26ab21b1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cedc5-669c-7be1-8366-9b4e26ab21b1"
+role = "assistant"
+sequence_hint = 16
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-14T19:14:25.841688Z\",\"stop_timestamp\":\"2026-03-14T19:14:25.841688Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-14T19:14:25.841688Z\",\"stop_timestamp\":\"2026-03-14T19:14:36.033502Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to add \\u0022methodology\\u0022 and \\u0022framework\\u0022 to the vocabulary. Let me think through these carefully in relation to the existing terms.\\n\\n**Methodology** \\u2014 a system of methods, principles, and rules for organizing work within a domain or paradigm. It\\u0027s the *how we work* \\u2014 a structured approach to doing things. NEXUS is a methodology. Event Modeling is a methodology. Agile is a methodology.\\n\\n**Framework** \\u2014 a reusable structure of components, rules, and conventions that provides a skeleton within which you build. Frameworks are more prescriptive than methodologies \\u2014 they provide the scaffold, not just the approach.\\n\\nKey distinctions:\\n- Paradigm: the worldview\\n\\n\\n- Methodology: the organized approach to working within that paradigm\\n- Framework: a concrete reusable structure implementing part of a methodology or paradigm\\n- System: a specific built thing\\n\\nA methodology tells you how to think and work, while a framework gives you the structure to build within \\u2014 you follow one and build within the other. Frameworks are reusable and general whereas systems are specific implementations, like how Bolero is a framework but LaundryLog is a system built within it. Models represent reality; frameworks provide the structure for building.\\n\\nThe hierarchy flows from paradigm through methodology to framework and finally to system. A paradigm informs a methodology, which may be embodied in a framework, which then scaffolds a system. Looking at concrete examples: NEXUS represents Ivan\\u0027s methodology for event-sourced system design, Event Modeling is another methodology, F# Bolero is the framework, and Event Sourcing itself could be either a paradigm or methodology depending on the level of abstraction.\",\"summaries\":[{\"summary\":\"Thinking about adding methodology and framework components to existing content.\"},{\"summary\":\"Defining methodology and framework within existing vocabulary.\"},{\"summary\":\"Delineated methodology and framework within conceptual hierarchy.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Methodology** — a structured, principled approach to doing work within a domain or paradigm. The *how we work* — organized methods, practices, and heuristics committed to as a way of operating. A methodology guides thinking and process without necessarily providing concrete tools.\n\n- *Examples:* NEXUS (your structured approach to event-sourced system design), Event Modeling (Adam Dymetrik's methodology), DDD, Agile, scientific method\n- *Key trait:* A methodology is followed and practiced — you internalize it. It shapes how you decompose problems, what questions you ask first, what artifacts you produce. It sits between Paradigm and Framework: a Paradigm says *what is real*; a Methodology says *how to work with what is real*.\n- *Distinction from Paradigm:* A paradigm is largely unconscious and foundational. A methodology is a deliberate commitment. Two people can share a paradigm (event sourcing) and follow different methodologies (Event Modeling vs. CQRS-heavy approaches). One paradigm can spawn many methodologies.\n\n---\n\n**Framework** — a reusable, concrete structure of components, conventions, and constraints within which you build. More prescriptive than a methodology — it provides the scaffold, the extension points, and the rules of engagement. You build *within* a framework; you follow a *methodology*.\n\n- *Examples:* F# Bolero (WebAssembly framework), Talkyard (forum framework), React, ASP.NET Core, EventLanes as a tooling framework\n- *Key trait:* A framework inverts control — it calls your code, you fill in the pieces it designates. It embodies decisions so you don't remake them. A framework is opinionated; it crystallizes choices from a methodology or paradigm into reusable structure.\n- *Distinction from System:* A framework is general and reusable — it exists to be built upon. A System is specific — it's what you built. LaundryLog is a System built within the Bolero framework using the NEXUS methodology.\n- *Distinction from Model:* A model represents reality for reasoning. A framework provides structure for building.\n\n---\n\n## Where They Sit\n\n```\nParadigm      ← worldview\n  Methodology ← principled approach to working within that worldview\n    Framework ← concrete reusable scaffold embodying methodology decisions\n      System  ← specific thing built within a framework\n        Model ← representation of that system for reasoning\n```\n\nThe chain reads cleanly: Event sourcing is a **Paradigm**. Event Modeling is a **Methodology** within that paradigm. EventLanes is a **Framework** that implements Event Modeling tooling. LaundryLog is a **System** built using it. The LaundryLog event model is a **Model** of that system.\n\n---\n\n## Updated Full Map\n\n```\nABSTRACTION STACK\n─────────────────────────────────────────\nParadigm       unconscious foundational worldview\n  Domain       territory of knowledge and practice\n    Layer      stacked level of concern (in domain or system)\n  Methodology  principled approach to working within a paradigm\n    Framework  reusable scaffold embodying methodology decisions\n      System   bounded, designed arrangement of components\n        Model  composed representation built from constructs\n          Context   situational circumstances (where/what)\n            Session   temporal container (when/how long)\n              Construct  named unit you reason with\n\nAGENCY DIMENSION\n─────────────────────────────────────────\nRole         defined function within a system\nActor        entity exercising agency\n  Agent      autonomous Actor with goals and a principal\n\nHUMAN CAUSAL CHAIN\n─────────────────────────────────────────\nMotivation   persistent underlying force\n  Goal       defined outcome spanning multiple sessions\n    Intent   specific goal driving a particular action\n      Action     discrete unit of doing\n        Event    recorded proof an action completed\n\nMECHANICAL CAUSAL CHAIN\n─────────────────────────────────────────\nTrigger    condition or signal that initiates\n  Action   discrete unit of doing\n    Event  recorded proof an action completed\n\nSTRUCTURAL RULES\n─────────────────────────────────────────\nConstraint   limits valid states or actions (pre-condition)\nInvariant    condition that must always hold (perpetual integrity)\n\nANALYTICAL TOOLS\n─────────────────────────────────────────\nLens         deliberate analytical filter\nAssumption   unstated belief underlying any of the above\n\nLANGUAGE\n─────────────────────────────────────────\nVocabulary   committed set of constructs for a domain/system\nInterface    defined crossing point between systems/layers/actors\n\nCOMMUNICATION CHAIN\n─────────────────────────────────────────\nPerspective  how you see from where you stand\nFraming      how you package what you see\nAudience     who receives it\n```\n\nShould I update the markdown file with these additions including the distinctions table entries for Methodology vs Framework, Framework vs System, and Methodology vs Paradigm?"
+

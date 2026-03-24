@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eece-74ce-a01d-80a5e3310d8a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea92-75a9-acea-bd9175092b6b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T11:32:03.031835Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "6135651dcdb41a3d444eafbb456af55ddcfedc6faaf14ec3bae6d44c00049e5a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfb90-f331-72da-af45-3e5b8a2736c6"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfb90-f331-72da-af45-3e5b8a2736c6"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfb90-f331-72da-af45-3e5b8a2736c6"
+role = "assistant"
+sequence_hint = 28
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is questioning whether `business.emd` is the right subgraph for the foundational \"fold events into current state\" concern. He's pointing out that this is really an **event stream concern** — establishing current state from the event stream — which feels more fundamental than a \"business\" concern. It's infrastructure-level, not domain-level.\n\nLet me think about this...\n\nThe fold over the event stream to produce current state is essentially the **event sourcing mechanics** — it's what produces the projection's base state. That's not really a \"business\" lens, it's more like the raw event processing layer.\n\nIvan is distinguishing between:\n1. **Event stream fold** — mechanical aggregation of events into current state (infrastructure/foundation)\n\n\n2. **Business rules/logic** — what those events *mean* in domain terms\n3. **Display shaping** — UI visual filters and transformations\n\nSo the real question is whether the mechanical event fold belongs in `business.emd` at all, or if it should live in a lower-level subgraph like `event.stream` or `app.state` that handles the raw aggregation, with `business.emd` sitting on top to interpret meaning.\n\nThe foundational layer is really just answering \"what is the current state of the event stream\" — that's pure mechanics, and business interpretation is a separate concern layered on top."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Sharp observation. You're identifying that the fold is **two different concerns collapsed into one**:\n\n1. **Mechanical** — reading the event stream and accumulating current state. Pure event sourcing mechanics. Infrastructure.\n2. **Business** — interpreting what that state *means* in domain terms.\n\n`business.emd` is the wrong home for the mechanical layer. It's not a business concern — it predates business interpretation.\n\n## What It Actually Is\n\nThe fold is closer to `event.stream` or `app.state` — it's establishing **what happened**, full stop. No interpretation yet. The output is raw current state.\n\n```\nevent.stream  →  fold events → current state      (mechanical, foundational)\nbusiness.emd  →  interpret current state           (domain meaning)\nui.visual     →  shape for display                 (presentation)\n```\n\n## The Implication\n\n`event.stream` becomes the truly non-toggleable foundation — because it's just the mechanics of event sourcing itself. `business.emd` becomes toggleable because it's a **lens** on top of that state, not the state itself.\n\nThat also makes `business.emd` feel more honest as a name — it really is a business interpretation layer, not a plumbing layer.\n\n## The Question\n\nDoes `event.stream` feel right as the subgraph name, or does something else capture \"establishing current state from the event log\" better?"
+

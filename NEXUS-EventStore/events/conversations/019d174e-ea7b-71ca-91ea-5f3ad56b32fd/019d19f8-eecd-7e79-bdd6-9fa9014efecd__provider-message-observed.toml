@@ -1,0 +1,182 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7e79-bdd6-9fa9014efecd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea8f-7e26-9218-073c236ca6ce"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-12-02T01:40:53.709118Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "91bdc77aca558891cf481a383f7aeab1b2dbcc82268c06ae3b60253ecbd6cd5b"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019adcb6-1f42-7615-b467-dfe2eb0afcbf"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019adcb6-1f42-7615-b467-dfe2eb0afcbf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019adcb6-1f42-7615-b467-dfe2eb0afcbf"
+role = "assistant"
+sequence_hint = 175
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking me to:\n1. Look at the current Penpot file state\n2. Review what went right and wrong in my execution\n3. Update the reference docs with learnings\n\nLet me first check the current state of the Penpot file."
+
+[[body.segments]]
+kind = "tool_use"
+text = "execute_code"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"result\": {\n    \"library\": [\n      {\n        \"name\": \"Screen.NewSession\",\n        \"id\": \"a6943d77-44ea-80d3-8007-3263cfbe369c\"\n      },\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"id\": \"a6943d77-44ea-80d3-8007-326dfba93a59\"\n      }\n    ],\n    \"screens\": [\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(0, 0)\",\n        \"size\": \"375×1384\",\n        \"isInstance\": true,\n        \"isRoot\": true\n      },\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(100, 100)\",\n        \"size\": \"375×1384\",\n        \"isInstance\": true,\n        \"isRoot\": true\n      },\n      {\n        \"name\": \"Screen.NewSession\",\n        \"position\": \"(100, 1807)\",\n        \"size\": \"375×667\",\n        \"isInstance\": true,\n        \"isRoot\": true\n      }\n    ],\n    \"paths\": [\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(460, 112)\",\n        \"size\": \"375×1384\",\n        \"isInstance\": true\n      },\n      {\n        \"name\": \"Path1.1-NewSession\",\n        \"position\": \"(35, 112)\",\n        \"size\": \"375×667\",\n        \"isInstance\": true\n      }\n    ],\n    \"pathLabels\": [\n      {\n        \"name\": \"Path1.3-EntryForm\",\n        \"characters\": \"Path1.3-EntryForm\",\n        \"position\": \"(460, 87)\"\n      },\n      {\n        \"name\": \"Path1.1-NewSession\",\n        \"characters\": \"Path1.1-NewSession\",\n        \"position\": \"(35, 95)\"\n      }\n    ]\n  },\n  \"log\": \"\"\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now let me analyze what went right and wrong:\n\n**What went right:**\n1. Component created in library: Screen.EntryForm ✓\n2. Component renamed from LaundryLog.Main to Screen.EntryForm ✓\n3. Instance created on PATHS page at (460, 112) ✓\n4. Text label created: Path1.3-EntryForm at (460, 87) ✓\n\n**What went wrong:**\n1. There's a duplicate Screen.EntryForm on Screens page at (0, 0)\n2. The main component is at (100, 100) but there's an extra instance at (0, 0)\n\nLooking at my execution:\n1. I found the board LaundryLog.Main on Screens page\n2. Tried to rename it - but `board.name = \"...\"` didn't work (read-only via API)\n3. Created component with `createComponent([board])` - this worked and inherited the board name\n4. Renamed the component via `component.name = \"Screen.EntryForm\"` - this worked\n5. Created first instance - this ended up at (0, 0) on Screens page (not intentional)\n6. Created second instance for PATHS page - this worked correctly\n7. Added text label - worked\n\nThe issue is that when I called `component.instance()` the first time, I didn't check which page I was on or where the instance landed. The instance was created at origin (0,0) on whatever page was current (probably Screens page).\n\nThen when I tried to find that instance on PATHS page, it wasn't there (because it was on Screens). So I created ANOTHER instance specifically for PATHS page, which worked.\n\nThe problem was:\n1. First `component.instance()` call created instance on current page (Screens) at origin\n2. I didn't verify which page I was on before creating instance\n3. I didn't position the first instance - it stayed at (0,0)\n\n\nI realized the second `component.instance()` call precisely targeted the PATHS page, creating the instance exactly where I intended. This highlighted a critical workflow: page context matters immensely when instantiating components.\n\n**Crucial Insights:**\n1. Page navigation determines instance placement\n2. Explicit page targeting prevents unintended positioning\n3. Each `component.instance()` call requires careful page context management\n\nThe main takeaway is precision in spatial and page-specific component creation, ensuring each instance lands exactly where planned."
+
+[[body.segments]]
+kind = "plain_text"
+text = "## Analysis: What Went Right vs Wrong\n\n### What Went Right ✓\n1. **Component created in library:** Screen.EntryForm\n2. **Component renamed:** LaundryLog.Main → Screen.EntryForm (via `component.name = \"...\"` after creation)\n3. **Main component stayed in place:** at (100, 100) on Screens page\n4. **Instance on PATHS page:** Screen.EntryForm at (460, 112)\n5. **Text label:** Path1.3-EntryForm at (460, 87)\n\n### What Went Wrong ✗\n1. **Unwanted instance at (0, 0) on Screens page**\n\n### Root Cause Analysis\n\nLooking at my execution sequence:\n\n```javascript\n// Step 1: Found board, created component - CORRECT\nconst component = penpot.library.local.createComponent([board]);\n\n// Step 2: Renamed component - CORRECT  \ncomponent.name = \"Screen.EntryForm\";\n\n// Step 3: Created instance WITHOUT navigating to PATHS first - WRONG\nconst instance = component.instance();  // Created at (0,0) on CURRENT page (Screens)\n\n// Step 4: Tried to find instance on PATHS - it wasn't there (it was on Screens)\n// So I created ANOTHER instance after navigating to PATHS - this one worked\n\n// Step 5: Second instance creation - CORRECT\npenpot.openPage(pathsPage);\nconst instance = component.instance();  // Now on PATHS\ninstance.x = 460;\ninstance.y = 112;\npenpot.root.appendChild(instance);\n```\n\n**The bug:** I called `component.instance()` while still on Screens page, which created an unwanted instance at origin (0,0) on Screens. Then when I couldn't find it on PATHS, I created another one correctly.\n\n### Key Learnings\n\n| Issue | Cause | Prevention |\n|-------|-------|------------|\n| Unwanted instance on wrong page | Called `instance()` before navigating to target page | **Always navigate to target page FIRST, then create instance** |\n| Instance at (0,0) | Didn't position immediately after creation | **Set x, y immediately after `instance()` call** |\n| Lost track of instance | Created instance, didn't verify location | **Verify instance landed on intended page before proceeding** |\n\nNow updating the reference docs:"
+
+[[body.segments]]
+kind = "tool_use"
+text = "Check current state of the screen template section in penpot-conventions.md"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Here's the content of /mnt/user-data/outputs/penpot-conventions.md (which has 516 lines total) with view_range=(288, 380):\n   288\t### Recommended Pattern\n   289\t```\n   290\tScreen.NewSession          (main component - template)\n   291\t  └── Path1.1-NewSession   (instance with overrides)\n   292\t  └── Path2.1-NewSession   (instance with different sample data)\n   293\t\n   294\tScreen.EntryForm           (main component - template)\n   295\t  └── Path1.3-EntryForm    (instance)\n   296\t  └── Path1.4-WasherSelected (instance - change Button variant to Selected)\n   297\t```\n   298\t\n   299\t### Override Capabilities in Instances\n   300\tConfirmed overridable:\n   301\t- Text content (if layer name unchanged)\n   302\t- Component variant selection (State property)\n   303\t- Size (within constraints)\n   304\t- Position (for absolute elements)\n   305\t\n   306\tNOT overridable (requires detach):\n   307\t- Adding/removing children\n   308\t- Changing layer structure\n   309\t- Swapping to different component type\n   310\t\n   311\t### Best Practice\n   312\tUse variants for state changes (selected buttons, etc.) rather than separate components. Then path screens are instances that simply switch the variant property.\n   313\t\n   314\t---\n   315\t\n   316\t## Creating Screen Template Components (Code Pattern)\n   317\t\n   318\tConverting an existing board to a screen template component with instances.\n   319\t\n   320\t### Page Structure\n   321\t```\n   322\tPages:\n   323\t├── Components     - Small reusable components (buttons, inputs, cards)\n   324\t├── Screens        - Main component roots for screen templates\n   325\t└── PATHS          - Instances of screen templates with path-specific data\n   326\t```\n   327\t\n   328\t### Correct Process\n   329\t\n   330\t**Step 1:** Rename board BEFORE making it a component\n   331\t```javascript\n   332\t// Find the board on current page\n   333\tconst board = page.findShapes().find(s => s.name === \"Path1.1-NewSession\" && s.type === 'board');\n   334\t\n   335\t// Rename to component name FIRST - this sets the library asset name\n   336\tboard.name = \"Screen.NewSession\";\n   337\t```\n   338\t\n   339\t**Step 2:** Create component (converts board in-place)\n   340\t```javascript\n   341\tconst component = penpot.library.local.createComponent([board]);\n   342\t// component.name inherits from board.name\n   343\t```\n   344\t\n   345\t**Step 3:** Move main component to Screens page\n   346\t```javascript\n   347\t// In UI: Cut (Ctrl+X) from current page, paste (Ctrl+V) on Screens page\n   348\t// Via API: May need to manipulate parent references (check API docs)\n   349\t```\n   350\t\n   351\t**Step 4:** Create instance for PATHS page\n   352\t```javascript\n   353\tconst instance = component.instance();\n   354\tinstance.name = \"Path1.1-NewSession\";  // Instance name differs from component\n   355\tinstance.x = 100;\n   356\tinstance.y = 100;\n   357\t```\n   358\t\n   359\t**Step 5:** Add to PATHS page\n   360\t```javascript\n   361\tconst pathsPage = penpot.currentFile.pages.find(p => p.name === \"PATHS\");\n   362\tpenpot.openPage(pathsPage);\n   363\tpenpot.root.appendChild(instance);\n   364\t```\n   365\t\n   366\t**Step 6:** Add text label for visual identification (optional)\n   367\t```javascript\n   368\t// Instances don't show name above board like regular boards do\n   369\tconst label = penpot.createText(\"Path1.1-NewSession\");\n   370\tlabel.x = instance.x;\n   371\tlabel.y = instance.y - 25;\n   372\tpenpot.root.appendChild(label);\n   373\t```\n   374\t\n   375\t### Result\n   376\t```\n   377\tLibrary Assets:\n   378\t└── Screen.NewSession (component)\n   379\t\n   380\tScreens page:"
+
+[[body.segments]]
+kind = "reasoning"
+text = "I need to update the \"Creating Screen Template Components\" section with corrected process that:\n1. Notes that board.name is read-only via API\n2. Shows renaming component AFTER creation\n3. Emphasizes navigating to target page BEFORE creating instance\n4. Shows the correct sequence to avoid unwanted instances\n\nLet me replace the entire section with the corrected version."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Replace the Creating Screen Template Components section with corrected process"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Successfully replaced string in /mnt/user-data/outputs/penpot-conventions.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now I need to also update the API Gotchas section to add the new learning about instance() creating on current page."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Check API Gotchas section"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Here's the content of /mnt/user-data/outputs/penpot-conventions.md (which has 550 lines total) with view_range=(405, 460):\n   405\t| Try to rename board via `board.name = \"...\"` | Name doesn't change (read-only) | Rename component after creation instead |\n   406\t| Don't position instance after creation | Instance stuck at origin (0,0) | Set x, y immediately after `instance()` |\n   407\t| Create instance without verifying page | Instance ends up on unexpected page | Check `penpot.currentPage.name` before creating |\n   408\t\n   409\t### Result\n   410\t```\n   411\tLibrary Assets:\n   412\t└── Screen.NewSession (component)\n   413\t\n   414\tScreens page:\n   415\t└── Screen.NewSession (375×667) - main component root (isInstance: true, isRoot: true)\n   416\t\n   417\tPATHS page:\n   418\t├── Path1.1-NewSession (text label)\n   419\t└── Path1.1-NewSession (375×667) - instance (isInstance: true, isRoot: true)\n   420\t```\n   421\t\n   422\t### Key Points\n   423\t- **Rename BEFORE createComponent()** - component name comes from board name at creation time\n   424\t- **Main component goes on Screens page** - this is the editable template\n   425\t- **Instances go on PATHS page** - these are path-specific copies\n   426\t- **Instance names can differ** - allows \"Path1.1-NewSession\" instance of \"Screen.NewSession\" component\n   427\t- **Add text labels to instances** - instances don't display names like boards do\n   428\t\n   429\t---\n   430\t\n   431\t## API Gotchas\n   432\t\n   433\t### `page.findShapes()` vs `penpot.root.children`\n   434\t\n   435\t**Always use `page.findShapes()` for accurate per-page queries:**\n   436\t```javascript\n   437\t// CORRECT - accurate results for specific page\n   438\tconst pathsPage = penpot.currentFile.pages.find(p => p.name === \"PATHS\");\n   439\tpenpot.openPage(pathsPage);\n   440\tconst shapes = pathsPage.findShapes();\n   441\t\n   442\t// UNRELIABLE - may return cached/stale data across page switches\n   443\tconst shapes = penpot.root.children;\n   444\t```\n   445\t\n   446\t### Component vs Instance Detection\n   447\t```javascript\n   448\tconst shape = page.findShapes().find(s => s.name === \"Screen.NewSession\");\n   449\t\n   450\t// Check if it's a component instance\n   451\tconst isInstance = shape.isComponentInstance ? shape.isComponentInstance() : false;\n   452\t\n   453\t// Check if it's a component root (main component, not just any instance)\n   454\tconst isRoot = shape.isComponentRoot ? shape.isComponentRoot() : false;\n   455\t\n   456\t// Main component: isInstance=true, isRoot=true\n   457\t// Regular instance: isInstance=true, isRoot=true (same!)\n   458\t// Non-component board: isInstance=false, isRoot=false\n   459\t```\n   460"
+
+[[body.segments]]
+kind = "reasoning"
+text = "I need to update the Key Points section to correct the outdated info about \"Rename BEFORE createComponent\" since we now know board.name is read-only. I also should add more API gotchas about instance creation."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Update Key Points section with corrected information"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Successfully replaced string in /mnt/user-data/outputs/penpot-conventions.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now I should also add a section about shape.name being read-only. Let me check the rest of the API Gotchas section."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Check rest of API Gotchas section"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Here's the content of /mnt/user-data/outputs/penpot-conventions.md (which has 570 lines total) with view_range=(455, 510):\n   455\t**Always use `page.findShapes()` for accurate per-page queries:**\n   456\t```javascript\n   457\t// CORRECT - accurate results for specific page\n   458\tconst pathsPage = penpot.currentFile.pages.find(p => p.name === \"PATHS\");\n   459\tpenpot.openPage(pathsPage);\n   460\tconst shapes = pathsPage.findShapes();\n   461\t\n   462\t// UNRELIABLE - may return cached/stale data across page switches\n   463\tconst shapes = penpot.root.children;\n   464\t```\n   465\t\n   466\t### Component vs Instance Detection\n   467\t```javascript\n   468\tconst shape = page.findShapes().find(s => s.name === \"Screen.NewSession\");\n   469\t\n   470\t// Check if it's a component instance\n   471\tconst isInstance = shape.isComponentInstance ? shape.isComponentInstance() : false;\n   472\t\n   473\t// Check if it's a component root (main component, not just any instance)\n   474\tconst isRoot = shape.isComponentRoot ? shape.isComponentRoot() : false;\n   475\t\n   476\t// Main component: isInstance=true, isRoot=true\n   477\t// Regular instance: isInstance=true, isRoot=true (same!)\n   478\t// Non-component board: isInstance=false, isRoot=false\n   479\t```\n   480\t\n   481\t### Component Naming Timing\n   482\t```javascript\n   483\t// BAD - name may not persist\n   484\tconst component = penpot.library.local.createComponent([board]);\n   485\tcomponent.name = \"Screen.NewSession\";  // May not stick\n   486\t\n   487\t// GOOD - name inherited from board\n   488\tboard.name = \"Screen.NewSession\";\n   489\tconst component = penpot.library.local.createComponent([board]);\n   490\t// component.name is already \"Screen.NewSession\"\n   491\t```\n   492\t\n   493\t---\n   494\t\n   495\t## Prototyping for Paths\n   496\t\n   497\t### Flow Setup\n   498\t1. Each path starts with a \"flow\" (starting point)\n   499\t2. Name flows by path: \"Path1-HappyPath\", \"Path2-GPSFlow\"\n   500\t3. Connect screens with single interaction per screen\n   501\t\n   502\t### Prototype Links\n   503\t- Set on individual layers, not whole boards\n   504\t- Can be set on component copies (instances)\n   505\t- Flows are selectable in View mode\n   506\t\n   507\t### For PATHS Pattern\n   508\tEach path screen has ONE clickable element that advances to next screen:\n   509\t```\n   510\tPath1.1-NewSession"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The \"Component Naming Timing\" section has outdated info that contradicts what I learned. It says:\n- BAD - component.name = \"...\" may not stick\n- GOOD - board.name = \"...\" then createComponent\n\nBut I learned:\n- board.name is READ-ONLY via API\n- component.name = \"...\" DOES work after creation\n\nLet me fix this section."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Fix the Component Naming Timing section with corrected information"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Successfully replaced string in /mnt/user-data/outputs/penpot-conventions.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now let me update the revision history and TODO section."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Check TODO and revision sections"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Here's the content of /mnt/user-data/outputs/penpot-conventions.md (which has 582 lines total) with view_range=(545, 590):\n   545\tWhy: Connected layers between variants match by NAME. Meaningful names = easier debugging.\n   546\t\n   547\t---\n   548\t\n   549\t## TODO / Completed\n   550\t\n   551\t### Completed\n   552\t- [x] Test screen-as-component workflow - works with variants\n   553\t- [x] Clarify text override capabilities - yes, if layer name unchanged\n   554\t- [x] Establish path naming taxonomy - Path{N}.{Step}-{StateName}\n   555\t- [x] Define naming-to-bindings mapping (Intent, State, visibility)\n   556\t- [x] Document two-system architecture (UI Machine + Whole System)\n   557\t- [x] Establish terminology (Intent, State, Command, Event, Projection)\n   558\t- [x] Document screen template component creation process\n   559\t- [x] Document API gotchas (page.findShapes vs root.children, naming timing)\n   560\t- [x] Create Screen.NewSession template component\n   561\t\n   562\t### Still To Do\n   563\t- [ ] Document prototype link setup in detail\n   564\t- [ ] Define fidelity tagging approach\n   565\t- [ ] Create variant-based button components (3 done: Option, Counter, Quarter)\n   566\t- [ ] Test variant switching in path instances\n   567\t- [ ] Build Screen.EntryForm template\n   568\t- [ ] Implement Bindings.fs with compiler-validated mappings\n   569\t- [ ] Create build-time Penpot validation script\n   570\t\n   571\t### Future\n   572\t- [ ] Multi-user session support (husband/wife sharing session)\n   573\t- [ ] Real-time sync between users via push\n   574\t\n   575\t---\n   576\t\n   577\t## Revision History\n   578\t- v1: Initial learnings from Path 1.1 creation\n   579\t- v2: Added component variants, prototype flows, layer naming best practices\n   580\t- v3: Added naming-to-bindings mapping (Intent, State, visibility)\n   581\t- v4: Added screen template component creation process, API gotchas, page structure\n   582"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now let me update the TODO to mark Screen.EntryForm as done and add a note about the new learnings."
+
+[[body.segments]]
+kind = "tool_use"
+text = "Update TODO and revision history"
+
+[[body.segments]]
+kind = "tool_result"
+text = "Successfully replaced string in /mnt/user-data/outputs/penpot-conventions.md"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Now let me verify the current state of the Penpot file after Ivan's cleanup."
+
+[[body.segments]]
+kind = "tool_use"
+text = "execute_code"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"result\": {\n    \"library\": [\n      \"Screen.NewSession\",\n      \"Screen.EntryForm\"\n    ],\n    \"screens\": [\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(0, 0)\"\n      },\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(100, 100)\"\n      },\n      {\n        \"name\": \"Screen.NewSession\",\n        \"position\": \"(100, 1807)\"\n      }\n    ],\n    \"paths\": [\n      {\n        \"name\": \"Screen.EntryForm\",\n        \"position\": \"(460, 112)\"\n      },\n      {\n        \"name\": \"Path1.1-NewSession\",\n        \"position\": \"(35, 112)\"\n      }\n    ],\n    \"pathLabels\": [\n      \"Path1.3-EntryForm\",\n      \"Path1.1-NewSession\"\n    ]\n  },\n  \"log\": \"\"\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "The Screens page still has a duplicate. Ivan said he would delete it. Let me just summarize the final documented state and what's expected."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done. Updated **[penpot-conventions.md](computer:///mnt/user-data/outputs/penpot-conventions.md)** (v5) with:\n\n## Key Corrections Made\n\n### 1. Fixed \"Correct Process\" Section\n- Removed incorrect claim that `board.name` can be set before `createComponent()`\n- Added correct sequence: create component first, then rename via `component.name = \"...\"`\n- Emphasized **navigate to target page BEFORE calling `instance()`**\n\n### 2. Added \"Common Mistakes to Avoid\" Table\n| Mistake | Result | Prevention |\n|---------|--------|------------|\n| Call `instance()` before navigating | Unwanted instance on wrong page at (0,0) | `penpot.openPage(targetPage)` BEFORE `instance()` |\n| Try `board.name = \"...\"` | No effect (read-only) | Rename component after creation |\n| Don't position after creation | Instance stuck at (0,0) | Set x, y immediately |\n\n### 3. Added New API Gotcha: `component.instance()` Creates on Current Page\n\n### 4. Fixed \"Component Naming Timing\" Section\n- Corrected to show `board.name` is read-only\n- Corrected to show `component.name = \"...\"` DOES work\n\n### 5. Added \"Shape Name Property\" Gotcha\n- Existing shapes have read-only names\n- Only newly created shapes can have names set\n\n---\n\n## Current State (after your cleanup needed)\n\n**Library:** Screen.NewSession, Screen.EntryForm ✓\n\n**Screens page:** \n- Screen.EntryForm at (100, 100) - main component ✓\n- Screen.NewSession at (100, 1807) ✓\n- *(you mentioned deleting the duplicate at (0,0))*\n\n**PATHS page:**\n- Path1.1-NewSession at (35, 112) ✓\n- Screen.EntryForm at (460, 112) with label \"Path1.3-EntryForm\" ✓\n\nNote: The PATHS instance is still named \"Screen.EntryForm\" because `instance.name` also appears to be read-only via API. The text label provides the visual identification. You may want to rename it manually to \"Path1.3-EntryForm\" in the UI."
+

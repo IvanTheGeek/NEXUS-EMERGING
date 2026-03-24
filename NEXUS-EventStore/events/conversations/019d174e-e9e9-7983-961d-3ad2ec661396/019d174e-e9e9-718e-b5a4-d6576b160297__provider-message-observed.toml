@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-e9e9-718e-b5a4-d6576b160297"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e9-7983-961d-3ad2ec661396"
+conversation_id = "019d174e-e9e9-7983-961d-3ad2ec661396"
+message_id = "019d174e-e9e9-78f4-ada1-4fcaad3b6468"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-18T21:19:24.918183Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "791955db1e8afa94ad80e59f535b05a5a794c429771861b6faa2d7329456406c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a2d44260-60a5-426b-86bd-30065bafbf08"
+conversation_native_id = "a2d44260-60a5-426b-86bd-30065bafbf08"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a98d6-054e-7743-b904-be331de8ccd8"
+conversation_native_id = "a2d44260-60a5-426b-86bd-30065bafbf08"
+message_native_id = "019a98d6-054e-7743-b904-be331de8ccd8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a98d6-054e-7743-b904-be331de8ccd8"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-18T21:19:16.643850Z\",\"stop_timestamp\":\"2025-11-18T21:19:19.290956Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking a straightforward technical question about vector databases - specifically about the dimensionality of points stored in them.\\n\\nThis is a factual question, not a task requiring work, so I don\\u0027t need to ask clarifying questions. I should be direct and efficient.\\n\\nThe answer is that vector databases store vectors in high-dimensional space (often hundreds or thousands of dimensions), not 2D or 3D. However, they can be visualized in 2D or 3D using dimensionality reduction techniques like t-SNE or UMAP.\\n\\nI should give a clear, direct answer without unnecessary preamble.\",\"summaries\":[{\"summary\":\"Thinking about dimensionality of vector database point representation.\"},{\"summary\":\"Formulating straightforward technical response about vector dimensionality.\"},{\"summary\":\"Identified straightforward technical query and formulated direct answer.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Vector databases store points in **high-dimensional space** - typically hundreds or thousands of dimensions, not 2D or 3D.\n\nFor example:\n- OpenAI's text embeddings: 1536 dimensions\n- Your current setup with `paraphrase-MiniLM-L6-v2`: 384 dimensions\n- Larger models: can be 768, 1024, or even 4096+ dimensions\n\n**Visualization in 2D/3D** is done by projecting these high-dimensional vectors down using techniques like:\n- t-SNE (t-distributed Stochastic Neighbor Embedding)\n- UMAP (Uniform Manifold Approximation and Projection)\n- PCA (Principal Component Analysis)\n\nThe high dimensionality is what allows semantic similarity to work - each dimension captures some aspect of meaning, and similar concepts cluster together in that high-dimensional space. The distance/similarity metrics (cosine similarity, Euclidean distance) operate in the full dimensional space, not the visualized projection.\n\nIn Qdrant specifically, your vectors are stored and searched in their full 384-dimensional space."
+

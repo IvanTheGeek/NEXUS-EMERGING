@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3236-792e-b3c7-4a3d1ae3d156"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c9f-7e1f-9a9f-e13b0a734e1c"
+conversation_id = "019d174f-2c9f-7e1f-9a9f-e13b0a734e1c"
+message_id = "019d174f-2c9f-724f-8142-97c264e57e1f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-08T11:38:19.5148549Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "b861733b3f62e71ad4953d5ee576b32e205ac8a5c7feffee7213b4ba432232cb"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69ad67b1-28e8-8327-879a-ebd3e3870132"
+conversation_native_id = "69ad67b1-28e8-8327-879a-ebd3e3870132"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "883c8c19-d29a-4cd9-86b1-2096b995de65"
+conversation_native_id = "69ad67b1-28e8-8327-879a-ebd3e3870132"
+message_native_id = "883c8c19-d29a-4cd9-86b1-2096b995de65"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "883c8c19-d29a-4cd9-86b1-2096b995de65"
+role = "assistant"
+model_name = "gpt-5-t-mini"
+sequence_hint = 3
+
+[[body.segments]]
+kind = "plain_text"
+text = "Nice — this is a perfect place to start. Below I’ll give a compact, practical event-model-ready breakdown you can drop into Penpot and use to implement a vertical slice. It includes: the screen **states**, the **commands** the UI issues, the **events** the domain emits, sample JSON/TOML payloads, what projections/views update, a simple mermaid flow for the happy path, and a short list of edge-cases & acceptance tests.\n\n# 1) Primary screen states (artboards to create in Penpot)\nCreate one artboard per state (or variations within a single artboard using layers):\n\n1. **Idle / New Entry** — defaults shown (quantity 1, price default, no machine/payment/location selected, submit disabled).\n2. **Entering Location** — text cursor in location field; validation tag updates as typing occurs.\n3. **Machine Selected** — washer/dryer/supplies button highlighted.\n4. **Payment Selected** — payment button highlighted.\n5. **Adjusting Quantity / Price** — numeric keyboard visible; entry total updates live.\n6. **Ready to Submit (Validated)** — all validation tags green, submit enabled (shows “Log Entry”).\n7. **Submitting / Pending** — transient state where command sent; spinner or subtle disabled state.\n8. **Submitted / Success** — session total updated, recent entries list updated, subtle confirmation toast.\n9. **Failed** — error overlay / inline error state for validation or persistence failures.\n\n# 2) Commands (issued by UI / client)\nCommands are imperatives from UI to domain. Keep them small and specific.\n\n- `EnterLocation { correlationId, userId, text }`\n- `ResolveLocationWithGPS { correlationId, userId }`\n- `SelectMachine { correlationId, userId, machineType }`  // washer|dryer|supplies\n- `SelectPayment { correlationId, userId, paymentType }`  // cash|points|card|app\n- `SetQuantity { correlationId, userId, quantity }`\n- `SetUnitPrice { correlationId, userId, price }`\n- `RequestValidateEntry { correlationId, userId }`\n- `SubmitEntry { correlationId, userId }`  // request to create persistent entry\n\n`correlationId` lets the UI reconcile responses for that user-action. `userId` if single-user device can be device id.\n\n# 3) Domain events (emitted by the domain / event store)\nEvents are factual, append-only. They should be idempotent (include event id / timestamp / causation / correlation).\n\n- `LocationEntered { eventId, correlationId, userId, text, timestamp }`\n- `LocationResolved { eventId, correlationId, userId, resolvedPlaceId, lat, lon, timestamp }`\n- `MachineSelected { eventId, correlationId, userId, machineType, timestamp }`\n- `PaymentSelected { eventId, correlationId, userId, paymentType, timestamp }`\n- `QuantitySet { eventId, correlationId, userId, quantity, timestamp }`\n- `UnitPriceSet { eventId, correlationId, userId, price, timestamp }`\n- `EntryValidated { eventId, correlationId, userId, valid: true/false, details, timestamp }`\n- `EntrySubmissionRequested { eventId, correlationId, userId, draftEntry, timestamp }`\n- `EntryCreated { eventId, correlationId, userId, entryId, entryData, timestamp }` ← canonical persisted event for the vertical slice\n- `EntryCreationFailed { eventId, correlationId, userId, reason, timestamp }`\n\n# 4) Example event / command payloads\n\nJSON command:\n```json\n{\n  \"command\": \"SubmitEntry\",\n  \"correlationId\": \"c-7f3a\",\n  \"userId\": \"device-01\"\n}\n```\n\nJSON event (EntryCreated):\n```json\n{\n  \"event\": \"EntryCreated\",\n  \"eventId\": \"e-20260308-0001\",\n  \"correlationId\": \"c-7f3a\",\n  \"userId\": \"device-01\",\n  \"timestamp\": \"2026-03-08T14:12:05Z\",\n  \"entryData\": {\n    \"location\": \"Pilot Travel Center, Exit 42\",\n    \"locationId\": \"place-1234\",\n    \"machineType\": \"washer\",\n    \"quantity\": 3,\n    \"unitPrice\": 3.75,\n    \"paymentType\": \"card\",\n    \"total\": 11.25\n  }\n}\n```\n\nTOML file (if you’re storing a single event as a toml file per event):\n```toml\nevent = \"EntryCreated\"\neventId = \"e-20260308-0001\"\ncorrelationId = \"c-7f3a\"\nuserId = \"device-01\"\ntimestamp = \"2026-03-08T14:12:05Z\"\n\n[entryData]\nlocation = \"Pilot Travel Center, Exit 42\"\nlocationId = \"place-1234\"\nmachineType = \"washer\"\nquantity = 3\nunitPrice = 3.75\npaymentType = \"card\"\ntotal = 11.25\n```\n\n# 5) Projections / Views to update from events\nDesign small projections that are cheap to recompute:\n\n- **CurrentDraftEntry** — a projection of the in-progress entry (location, machine, quantity, price, payment, validation flags).\n- **SessionTotal** — sum of `EntryCreated` events in the session (reset per-app-start if desired).\n- **RecentEntries (Today)** — last N `EntryCreated` events projected into display format.\n- **ValidationState** — derives whether submit button is enabled.\n\nEach projection subscribes to all relevant events and updates deterministically.\n\n# 6) Vertical slice (happy path) — sequence (also useful to implement first)\nMermaid sequence diagram you can paste into Penpot notes or a markdown file:\n\n```mermaid\nsequenceDiagram\n  participant UI\n  participant ClientLogic\n  participant Domain\n  participant EventStore\n  UI->>ClientLogic: user fills location + pick washer + pick card + quantity + price\n  ClientLogic->>Domain: RequestValidateEntry(correlationId)\n  Domain-->>ClientLogic: EntryValidated(valid=true)\n  UI->>ClientLogic: user taps Submit\n  ClientLogic->>Domain: SubmitEntry(correlationId)\n  Domain->>EventStore: append EntryCreated(...)\n  EventStore-->>Domain: appended (ack)\n  Domain-->>ClientLogic: EntryCreated(event)\n  ClientLogic->>UI: show success, update session total & recent entries\n```\n\n# 7) Edge cases & error events (important)\n- **Duplicate submit**: client must dedupe via `correlationId`. Duplicate `SubmitEntry` with same `correlationId` should be idempotent — `EventStore` ignores or returns the existing `EntryCreated`.\n- **Validation failure**: `EntryValidated(valid=false, details=[...])` — UI shows inline errors.\n- **Persistence failure / offline**: `EntryCreationFailed` emitted / or client buffers command and retries — show pending state.\n- **Partial failure**: `EntryCreated` persisted but projection updated failed — reconciliation job or rebuild projection. For prototyping keep projections in-memory so small.\n- **GPS denial**: `ResolveLocationFailed` or user-entered location fallback.\n\n# 8) Acceptance tests for the vertical slice (quick checklist)\n1. Fill location, select washer, select card, set qty 3, set price 3.75 → submit → `EntryCreated` persisted and session total increases by 11.25; recent entries shows new entry.\n2. Submit without location → `EntryValidated(valid=false)` and submit disabled.\n3. Submit twice quickly (same correlationId) → only one `EntryCreated` event emitted.\n4. Simulate offline during submit → client caches `SubmitEntry` and retries; UI shows pending then success when network returns.\n5. GPS click resolves to location and emits `LocationResolved`.\n\n# 9) Penpot artboard checklist (what to design)\n- Base layout (you already have it in HTML): header, location field, machine buttons, quantity controls, price controls, payment buttons, session total, recent entries.\n- Visual variants: validation errors, ready-to-submit, pending spinner, toast success, offline indicator.\n- Micro-interactions: button selected states, quick-fill price states, +/- hold behavior for quantity.\n\n# 10) Implementation notes & tips\n- Keep `correlationId` and `eventId` GUID-like and generated client-side so you can test idempotency easily.\n- For prototyping store each event as a TOML/JSON file (one file per event) — easy to inspect and replay. Use a simple filename like `<timestamp>-<eventId>.toml`.\n- Make projections small and rebuildable: if the projection code is simple, you can always rebuild the view by replaying the events (useful for debugging).\n- Keep validation logic deterministic and in domain code (not only UI) so replays produce the same `EntryValidated` results.\n- For Penpot → export artboards for components: you can reuse icons and selected states for implementation.\n\n---\n\nIf you want, I can:\n- produce a single-page Mermaid state diagram (transitions labeled with commands/events) you can paste into Penpot notes;  \n- or generate ready-to-copy JSON schema examples for `Command` and `Event` types;  \n- or produce a set of test vectors (commands and expected events) you can use for your event-store tests.\n\nWhich of those should I generate now?"
+

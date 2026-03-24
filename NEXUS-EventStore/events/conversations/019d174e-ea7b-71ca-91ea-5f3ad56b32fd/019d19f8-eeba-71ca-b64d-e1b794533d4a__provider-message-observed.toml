@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeba-71ca-b64d-e1b794533d4a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea7f-7c91-a4eb-6f3586810d4c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-27T04:14:05.124323Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "d211203430f7d551217091c3aab8157f4c0d2dd925b616c98ada2f5f6697109c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac384-9348-7200-98a3-e60b15799a2e"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019ac384-9348-7200-98a3-e60b15799a2e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac384-9348-7200-98a3-e60b15799a2e"
+role = "assistant"
+sequence_hint = 26
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants to test what survives SVG export from Penpot before deciding on a naming convention. This is the practical approach - let's find out empirically.\n\nI should outline a quick test they can do in Penpot to see what naming patterns survive in the exported SVG."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good call. Here's a quick test to run in Penpot:\n\n**Create test elements with various names:**\n\n1. `SimpleButton`\n2. `input.userName`\n3. `Input/UserName`\n4. `@input.userName`\n5. `#input-userName`\n6. `bind:input:userName`\n7. `Interactive/Input/userName`\n8. A component with variant: `State=Default`\n\n**Steps:**\n1. Create a frame/artboard\n2. Add a rectangle for each, name it per above\n3. Export as SVG\n4. Check what appears in the SVG (look for `id=` attributes, layer names, etc.)\n\nWant me to look up Penpot's SVG export documentation to see if there's known behavior, or do you want to just run the test directly?"
+

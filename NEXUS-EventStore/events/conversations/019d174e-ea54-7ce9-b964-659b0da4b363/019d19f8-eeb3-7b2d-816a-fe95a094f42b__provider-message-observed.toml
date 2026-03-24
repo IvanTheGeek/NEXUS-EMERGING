@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb3-7b2d-816a-fe95a094f42b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea55-7e1d-a1e8-a5c9666da007"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T14:14:20.713466Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "2f52d8647396e06c72120f5cf148eefcf00192569083e17618651a0219121c3d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca499-7496-7156-bfc7-cb6ec8ee26f3"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca499-7496-7156-bfc7-cb6ec8ee26f3"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca499-7496-7156-bfc7-cb6ec8ee26f3"
+role = "assistant"
+sequence_hint = 100
+
+[[body.segments]]
+kind = "plain_text"
+text = "It is. The full picture is now clear enough to design the F# pipeline properly. Let me summarize what's been decided so the forum has a record of it:\n\n**Import Structure**\n```\nTopic title    → conversation \"name\"\nTopic body     → conversation \"summary\"\nHuman post     → IvanTheGeek user, top level reply\n  └── Claude reply → Claude user, contains:\n        ```thinking``` code block (if present)\n        > summary blockquotes (one per summary)\n        main response text\n```\n\n**Idempotency** — conversation UUID and message UUID prevent duplicates on re-runs\n\n**Organization** — flat under AI CHATS > Claude, tags used for traceability\n\n**Users** — IvanTheGeek for human posts, Claude user for responses\n\n**Pipeline** — F# transformation from conversations.json → Talkyard API calls via `/-/v0/do`\n\nBefore writing any F#, there's one thing worth testing — does the Talkyard API support posting as a different user (the Claude user) from the same API key? The `asWho` field should handle it but worth confirming against your live instance before building the pipeline around it.\n\nShould we document this structure in your forum first as a wiki post, then move to the F# design?"
+

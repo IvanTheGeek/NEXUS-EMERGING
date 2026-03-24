@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3246-7157-b3fd-6cec418efb9b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+conversation_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+message_id = "019d174f-2cb9-74eb-8186-a68ca17d5eb6"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T21:42:39.232814Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "92508df29333d7794daedb229a9ae09b669740419a952b46c59496ec01cd1d5d"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "f7d128c3-59cc-457f-8f77-fba0cc82c8e0"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+message_native_id = "f7d128c3-59cc-457f-8f77-fba0cc82c8e0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "f7d128c3-59cc-457f-8f77-fba0cc82c8e0"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 57
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — that fits perfectly with your **“UI is a snapshot”** rule. The UI file should simply **reference the image that represents the slice at modeling time**. The filesystem then holds both:\n\n- the **behavior model**\n- the **visual evidence of the UI**\n\nThis mirrors the way Event Modeling boards use screenshots or sketches.\n\n---\n\n# 1. Slice Structure\n\nExample slice:\n\n```text\nslices/\n018fa700_log-expense/\n```\n\nContents:\n\n```text\nui.toml\nui.png\ncommand.ref\nevent.ref\n```\n\nor if you want a small media folder:\n\n```text\nslices/\n018fa700_log-expense/\n   ui.toml\n   ui/\n      snapshot.png\n   command.ref\n   event.ref\n```\n\nBoth work; the second scales better later.\n\n---\n\n# 2. UI Snapshot File\n\nExample `ui.toml`:\n\n```toml\ntype = \"ui\"\n\nname = \"LogExpenseForm\"\n\ndescription = \"Snapshot of the UI used to record a laundry expense.\"\n\nimage = \"./ui/snapshot.png\"\n```\n\nThis makes the UI file **metadata about the snapshot**.\n\n---\n\n# 3. Example Slice Directory\n\n```text\nslices/\n018fa700_log-expense/\n\n   ui.toml\n   ui/\n      snapshot.png\n\n   command.ref\n   event.ref\n```\n\nWhere the behavior is:\n\n```\nUI\n ↓\nCommand\n ↓\nEvent\n```\n\n---\n\n# 4. Example References\n\n`command.ref`\n\n```\n../../commands/018fa701_log-laundry-expense.toml\n```\n\n`event.ref`\n\n```\n../../events/018fa702_laundry-expense-logged.toml\n```\n\n---\n\n# 5. Why This Works Well\n\nThis structure gives you three nice properties:\n\n### Visual traceability\n\nYou can see the UI that caused the behavior.\n\n### Git friendliness\n\nUI snapshots evolve naturally with commits.\n\n### Model clarity\n\nThe **UI is not architecture**, just **documentation of interaction**.\n\n---\n\n# 6. Future-Proofing (Optional Fields)\n\nYou might later include extra metadata:\n\n```toml\ntype = \"ui\"\n\nname = \"LogExpenseForm\"\n\nimage = \"./ui/snapshot.png\"\n\ncaptured_at = \"2026-03-12\"\n\nnotes = \"Initial prototype screen.\"\n```\n\nStill simple, but helpful for research logs.\n\n---\n\n# 7. Nice Side Effect\n\nYour slices now contain **three kinds of knowledge**:\n\n| Artifact | Purpose |\n|---|---|\n| UI snapshot | human interaction evidence |\n| command ref | intent |\n| event ref | fact |\n\nSo every slice becomes a **self-contained behavioral story cell**.\n\n---\n\n# 8. A Small Trick That Helps Later\n\nUse a consistent UI filename:\n\n```\nsnapshot.png\n```\n\nThen `ui.toml` can simply say:\n\n```toml\nimage = \"./ui/snapshot.png\"\n```\n\nTools later can easily auto-load UI previews.\n\n---\n\nIf you'd like, the next thing we can design is **the exact filesystem structure for the entire Nexus POC**, because once you add:\n\n- commands\n- events\n- slices\n- UI snapshots\n- domains / contexts / constructs\n\nthere is a **very clean directory structure** that keeps everything navigable even when the model grows large."
+

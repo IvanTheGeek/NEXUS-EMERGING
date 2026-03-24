@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3246-7ea4-a5ec-985c373725b3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+conversation_id = "019d174f-2cb9-7d15-bab3-be1cf20a269a"
+message_id = "019d174f-2cb9-72a5-86da-d1e7be12098f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-12T21:25:12.2490189Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "b715c8287329674670cab09b398a81c78bce17cc7f90b6f158e8377a2e2c0bef"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "6dbda2ba-2b52-4e89-92e9-3a9fa770375b"
+conversation_native_id = "69b1c4e1-6fdc-832a-9d03-001b681b05e2"
+message_native_id = "6dbda2ba-2b52-4e89-92e9-3a9fa770375b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "6dbda2ba-2b52-4e89-92e9-3a9fa770375b"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 45
+
+[[body.segments]]
+kind = "plain_text"
+text = "UI nodes are interesting because they are **not really domain artifacts** like commands, events, and views. They are **interaction surfaces**. In your filesystem model this means you have several options, and the choice affects how well the structure mirrors **Event Modeling slices**.\n\nLet’s explore the three models that work.\n\n---\n\n# 1. UI as First-Class Nodes (Graph Purist Model)\n\nUI lives alongside commands, events, and views.\n\nDirectory:\n\n```text\nmodel/\n  commands/\n  events/\n  views/\n  ui/\n  slices/\n```\n\nExample UI file:\n\n```text\nui/\n018fa120-7b9a-7c52-bf0d-123456789abc_log-expense-form.toml\n```\n\n```toml\nid = \"018fa120-7b9a-7c52-bf0d-123456789abc\"\n\ntype = \"ui\"\nname = \"LogExpenseForm\"\nslug = \"log-expense-form\"\n\ndomain = \"laundry\"\ncontext = \"expense-tracking\"\nconstruct = \"laundrylog\"\n\ndescription = \"Form used to log a laundry expense.\"\n```\n\nThen slices reference it.\n\nCommand slice:\n\n```\nUI → Command → Event\n```\n\nPros\n\n• UI is explicit graph node  \n• full traceability  \n• easier for tooling later  \n\nCons\n\n• lots of files  \n• UI is often tightly coupled to slices\n\n---\n\n# 2. UI Embedded in Slice (Event Modeling Purist)\n\nIn Adam's event models, UI often **exists only inside slices**.\n\nSo instead of making UI a global node, you store it inside the slice.\n\nDirectory:\n\n```text\nslices/\n018fa201-command-log-expense/\n```\n\nFiles:\n\n```text\nui.toml\ncommand.ref\nevent.ref\n```\n\nExample UI:\n\n```toml\ntype = \"ui\"\nname = \"LogExpenseForm\"\nslug = \"log-expense-form\"\n```\n\nThis keeps UI **contextual to the slice**.\n\nPros\n\n• mirrors Event Modeling diagrams  \n• less filesystem noise  \n• UI tied directly to behavior  \n\nCons\n\n• UI reuse is harder  \n• UI not a global graph node\n\n---\n\n# 3. UI as View Substructure (CQRS-Oriented)\n\nHere UI belongs to **views**, not slices.\n\nDirectory:\n\n```\nviews/\n  expense-history/\n     view.toml\n     ui/\n        table.toml\n        filter-bar.toml\n```\n\nMeaning:\n\n```\nEvent → View → UI\n```\n\nCommands still reference UI forms in slices.\n\nPros\n\n• reflects read-side architecture  \n• views become UI composition roots  \n\nCons\n\n• slightly more complex structure\n\n---\n\n# 4. The Model That Fits Your Filesystem Slice Idea Best\n\nGiven your idea that **directories are slice containers**, the cleanest model is:\n\n### Hybrid\n\nUI lives **inside slices**, but views remain global.\n\nStructure:\n\n```text\nmodel/\n\ncommands/\nevents/\nviews/\n\nslices/\n```\n\nCommand slice:\n\n```text\nslices/\n018fa300_log-expense/\n   ui.toml\n   command.ref\n   event.ref\n```\n\nView slice:\n\n```text\nslices/\n018fa301_expense-history/\n   event.ref\n   view.ref\n   ui.toml\n```\n\nThis preserves the event modeling flow:\n\n```\nUI → Command → Event\nUI ← View ← Event\n```\n\n---\n\n# 5. Why This Fits Your Truth Graph Direction\n\nNodes:\n\n```\nCommand\nEvent\nView\n```\n\nEdges from slices:\n\n```\nUI → Command\nCommand → Event\nEvent → View\nView → UI\n```\n\nUI becomes **a slice boundary node**, not a system node.\n\nThat’s very elegant because slices then become **the container of user interaction**.\n\n---\n\n# 6. A Small but Powerful Filesystem Trick\n\nBecause you're using **UUIDv7**, slice directories automatically sort chronologically.\n\nExample:\n\n```\nslices/\n\n018fa300_log-expense/\n018fa301_expense-history/\n018fa302_log-expense-validation/\n```\n\nThis gives you:\n\n• timeline ordering  \n• stable git diffs  \n• readable history\n\nWhich aligns with **Adam's timeline mental model**.\n\n---\n\n# 7. The Hidden Superpower of This Model\n\nYour filesystem is quietly becoming a **graph database encoded in directories**.\n\nNodes:\n\n```\nevents/\ncommands/\nviews/\n```\n\nEdges:\n\n```\nslices/\n```\n\nThat’s extremely close to the **Truth Graph** concept you've been exploring.\n\n---\n\n# 8. One More Idea Worth Considering\n\nEvents might deserve **their own hierarchy** because they are the **anchors of the graph**.\n\nExample:\n\n```\nevents/\n\nlaundry/\n   expense-tracking/\n\n      018f..._laundry-expense-logged.toml\n```\n\nThis lets you organize events by **domain/context** without losing UUID uniqueness.\n\n---\n\nIf you'd like, the next thing we can design is something **very powerful for your POC**:\n\n**How slices reference nodes without fragile relative paths** — a small trick that makes the filesystem behave much more like a graph database."
+

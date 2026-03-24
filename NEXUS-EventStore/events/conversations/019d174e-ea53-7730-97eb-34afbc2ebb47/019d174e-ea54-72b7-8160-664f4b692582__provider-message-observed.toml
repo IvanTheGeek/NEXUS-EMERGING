@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea54-72b7-8160-664f4b692582"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7c50-b14c-d3a1423ea192"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:23:34.187098Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "7cdecf60422868d45b308df9417e48ab282c96b6bfe6c592151a2707de286955"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9269-e794-7648-b582-073ee9668404"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a9269-e794-7648-b582-073ee9668404"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9269-e794-7648-b582-073ee9668404"
+role = "assistant"
+sequence_hint = 42
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T15:23:28.421061Z\",\"stop_timestamp\":\"2025-11-17T15:23:30.838708Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The error is clear - the container can\\u0027t find the \\u0060./nexus\\u0060 binary. This is likely because the Dockerfile wasn\\u0027t configured correctly or the binary wasn\\u0027t copied properly during the build.\\n\\nLet me check what\\u0027s in the container. The issue is probably that:\\n1. The binary wasn\\u0027t copied to the right location\\n2. The ENTRYPOINT is pointing to the wrong path\\n3. The binary doesn\\u0027t have execute permissions\\n\\nWe need to inspect the image to see what\\u0027s actually in it.\",\"summaries\":[{\"summary\":\"Thinking about diagnosing Docker container startup failure and missing executable.\"},{\"summary\":\"Diagnosing missing binary in container initialization.\"},{\"summary\":\"Diagnosed missing binary path and inspected container configuration issues.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "The container can't find the nexus binary. Let's inspect what's in the image:\n\n```bash\n# Check what's actually in the image\ndocker run --rm nexus-mcp:latest ls -la /app\n\n# Or inspect the image layers\ndocker inspect nexus-mcp:latest | grep -A 10 \"Cmd\\|Entrypoint\"\n```\n\nThis will show us what went wrong with the build. The binary might not have been copied correctly or the path is wrong.\n\n---\n\n**Token Usage:**\n- Last response: ~116 tokens\n- Session total: 78,896 tokens used\n- Remaining: 111,104 tokens (58.5% available)"
+

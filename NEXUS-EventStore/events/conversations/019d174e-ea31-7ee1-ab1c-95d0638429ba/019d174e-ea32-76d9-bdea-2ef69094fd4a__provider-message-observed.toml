@@ -1,0 +1,77 @@
+schema_version = 1
+event_id = "019d174e-ea32-76d9-bdea-2ef69094fd4a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea31-7ee1-ab1c-95d0638429ba"
+conversation_id = "019d174e-ea31-7ee1-ab1c-95d0638429ba"
+message_id = "019d174e-ea32-7ccd-a313-837873134665"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-11T19:12:04.494867Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "a87bb5b58de7140cf1d0674f098fb4da4c66ad82b31b48cece34a4abde76e826"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+conversation_native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7454-9c70-74fd-9b72-a73954f63087"
+conversation_native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+message_native_id = "019a7454-9c70-74fd-9b72-a73954f63087"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7454-9c70-74fd-9b72-a73954f63087"
+role = "assistant"
+sequence_hint = 58
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-11T19:11:44.242637Z\",\"stop_timestamp\":\"2025-11-11T19:11:47.862574Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is saying there were errors in Claude Desktop and their computer froze. They want me to verify that all the events I attempted to create were actually successfully created. Let me check by looking at what happened:\\n\\nLooking at my tool calls:\\n1. First event: \\u0022Nexus Data Repository Structure\\u0022 - SUCCESS\\n2. Second event: \\u0022GUID-Based Event Naming\\u0022 - SUCCESS  \\n3. Third event: \\u0022UTC Timestamp Standard\\u0022 - SUCCESS\\n4. Fourth event: \\u0022Project Scoping Reduces Token Consumption\\u0022 - FAILED (Tool execution failed)\\n5. Fifth event (retry): \\u0022Project Scoping Reduces Token Consumption\\u0022 - SUCCESS (shortened version)\\n6. Sixth event: \\u0022Nexus Hierarchy\\u0022 - SUCCESS\\n7. Seventh event: \\u0022New Event Types\\u0022 - SUCCESS\\n8. Eighth event: \\u0022Rename MCP Server to FnMCP.Nexus\\u0022 - SUCCESS\\n\\nSo it looks like 7 events were successfully created (one failed and was retried with success).\\n\\nI should verify by calling the timeline projection to see what actually got written.\",\"summaries\":[{\"summary\":\"Thinking about concerns with this request.\"},{\"summary\":\"Verifying completion of all Nexus tasks.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Let me verify what was actually created by checking the timeline:"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-11T19:11:48.254089Z\",\"stop_timestamp\":\"2025-11-11T19:11:48.254089Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"Nexus:timeline_projection\",\"input\":{},\"message\":\"timeline_projection\",\"integration_name\":\"Nexus\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"Nexus:timeline_projection\",\"content\":[{\"type\":\"text\",\"text\":\"Nexus Timeline:\\n- 2025-11-10 21:59:20 | TechnicalDecision | YAML chosen for events\\n- 2025-11-11 00:00:00 | FrameworkInsight | Phase 1 Already Implemented\\n- 2025-11-11 00:05:00 | TechnicalDecision | Flat Structure Over Nested\\n- 2025-11-11 00:10:00 | ResearchFinding | MCP Tools Already Registered\\n- 2025-11-11 00:46:37 | DesignNote | Event Creation Test Success\\n- 2025-11-11 00:50:00 | FrameworkInsight | Phase 1 Validation Complete\\n- 2025-11-11 00:56:33 | DesignNote | Event Creation Test Success\\n- 2025-11-11 00:57:00 | TechnicalDecision | Refactor To Nested Structure\\n- 2025-11-11 01:00:00 | FrameworkInsight | User Driven Architecture\\n- 2025-11-11 01:03:00 | TechnicalPattern | F# Namespace Module Conflict Resolution\\n- 2025-11-11 01:06:00 | LearningMoment | Refactoring Validates Tests\\n- 2025-11-11 01:09:00 | DesignDecision | Nexus At Project Root\\n- 2025-11-11 01:12:00 | DesignDecision | Added FrameworkInsight and LearningMoment Event Types\\n- 2025-11-11 01:15:00 | FrameworkInsight | Enhance Nexus Workflow Validated\\n- 2025-11-11 01:20:00 | TechnicalDecision | Nexus Back To Context Library\\n- 2025-11-11 02:01:45 | FrameworkInsight | Phase 2 Test Event\\n- 2025-11-11 02:36:15 | FrameworkInsight | Phase 2 Complete - Event-Sourced Knowledge System\\n- 2025-11-11 03:04:16 | FrameworkInsight | Phase 3 Complete - F# Knowledge Base with Event-Sourced Learning\\n- 2025-11-11 03:04:16 | TechnicalDecision | Self-Improving AI Pattern - Event-Sourced Knowledge\\n- 2025-11-11 03:09:39 | TechnicalDecision | Session Summary - Phase 2 \\u0026 3 Complete, Phase 3 Deployment Pending\\n- 2025-11-11 03:09:39 | FrameworkInsight | Next Session Quick Start Guide\\n- 2025-11-11 03:09:39 | DesignNote | Future Enhancements - Post-Phase 3 Roadmap\\n- 2025-11-11 10:24:04 | FrameworkInsight | CLI Mode Test Event\\n- 2025-11-11 10:29:16 | TechnicalDecision | CLI Mode Workaround for MCP Tools Issue\\n- 2025-11-11 10:29:16 | ResearchFinding | Claude Code MCP Tools Not Exposed to AI Assistant\\n- 2025-11-11 10:29:16 | FrameworkInsight | Phase 3.5 Complete - CLI Mode Operational\\n- 2025-11-11 11:19:07 | ResearchFinding | Claude Code MCP Tools Bug Confirmed as Upstream Issue\\n- 2025-11-11 11:30:18 | TechnicalDecision | CLI Tools Testing Session\\n- 2025-11-11 11:30:26 | DesignNote | Phase 3.5 Architecture\\n- 2025-11-11 11:30:33 | FrameworkInsight | Event-Sourced Testing validates CLI implementation\\n- 2025-11-11 11:31:02 | DesignNote | Token Monitoring Format Standardized in Quick Start\\n- 2025-11-11 11:32:14 | FrameworkInsight | Batch Test Event 1\\n- 2025-11-11 11:32:14 | FrameworkInsight | Batch Test Event 2\\n- 2025-11-11 11:32:14 | FrameworkInsight | Batch Test Event 3\\n- 2025-11-11 11:32:56 | FrameworkInsight | Phase 3.5 Complete - All 7 CLI Tools Verified\\n- 2025-11-11 14:01:03 | TechnicalDecision | Nexus Data Repository Structure - CQRS-Based Organization\\n- 2025-11-11 14:01:21 | TechnicalDecision | GUID-Based Event Naming for Distributed Uniqueness\\n- 2025-11-11 14:01:40 | TechnicalDecision | UTC Timestamp Standard for Event Storage\\n- 2025-11-11 14:02:28 | FrameworkInsight | Project Scoping Reduces Token Consumption Exponentially\\n- 2025-11-11 14:02:55 | FrameworkInsight | Nexus Hierarchy - Philosophy, Methodology, Framework, Projects\\n- 2025-11-11 14:03:15 | TechnicalDecision | New Event Types - MethodologyInsight and NexusInsight\\n- 2025-11-11 14:03:41 | TechnicalDecision | Rename MCP Server to FnMCP.Nexus\\n\",\"uuid\":\"92fbc643-93a6-4176-9169-2fe71b1e716d\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":\"Nexus\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-11T19:11:55.922024Z\",\"stop_timestamp\":\"2025-11-11T19:11:58.572489Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Perfect! The timeline shows all 7 events were successfully created from our conversation (the last 7 entries starting at 14:01:03). Let me verify:\\n\\n1. 14:01:03 - Nexus Data Repository Structure \\u2713\\n2. 14:01:21 - GUID-Based Event Naming \\u2713\\n3. 14:01:40 - UTC Timestamp Standard \\u2713\\n4. 14:02:28 - Project Scoping Token Consumption \\u2713\\n5. 14:02:55 - Nexus Hierarchy \\u2713\\n6. 14:03:15 - New Event Types \\u2713\\n7. 14:03:41 - Rename MCP Server to FnMCP.Nexus \\u2713\\n\\nAll 7 events are there! The computer freeze/error must have been a display issue on their end, but the events were successfully written to disk.\",\"summaries\":[{\"summary\":\"Verifying successful completion of seven timeline events.\"},{\"summary\":\"Verifying successful completion of all seven Nexus events.\"},{\"summary\":\"Verified all seven events successfully persisted despite technical glitches.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**✅ All tasks completed successfully!**\n\nThe timeline confirms all **7 events** from our conversation were created:\n\n1. **14:01:03** - Nexus Data Repository Structure (CQRS-Based Organization)\n2. **14:01:21** - GUID-Based Event Naming for Distributed Uniqueness\n3. **14:01:40** - UTC Timestamp Standard for Event Storage\n4. **14:02:28** - Project Scoping Reduces Token Consumption Exponentially\n5. **14:02:55** - Nexus Hierarchy (Philosophy, Methodology, Framework, Projects)\n6. **14:03:15** - New Event Types (MethodologyInsight and NexusInsight)\n7. **14:03:41** - Rename MCP Server to FnMCP.Nexus\n\nDespite the freeze/error on your end, the MCP server successfully wrote all events to disk. The events are all timestamped between 14:01-14:03 UTC (which would be 9:01-9:03 AM EST if that's your timezone).\n\nEverything is safely stored in the Nexus event stream! 🎉\n\nReady to continue with next steps?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [████████████████░░░░] 81,598 / 190,000 tokens (42.9%)\n\nAllocation:\n├─ System Prompts:     ~25,000 tokens  (13.2%)\n├─ Project Knowledge:   ~7,000 tokens   (3.7%)\n├─ Conversation:       ~46,598 tokens  (24.5%)\n│  ├─ Your messages:   ~13,200 tokens\n│  ├─ My responses:    ~25,200 tokens\n│  └─ Tool calls:       ~8,198 tokens\n└─ This Response:       ~3,000 tokens   (1.6%)\n\nRemaining: 108,402 tokens (57.1%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

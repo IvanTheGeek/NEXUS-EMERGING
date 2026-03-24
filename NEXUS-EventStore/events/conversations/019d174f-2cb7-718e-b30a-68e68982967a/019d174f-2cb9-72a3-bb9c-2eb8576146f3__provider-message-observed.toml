@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cb9-72a3-bb9c-2eb8576146f3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cb7-718e-b30a-68e68982967a"
+conversation_id = "019d174f-2cb7-718e-b30a-68e68982967a"
+message_id = "019d174f-2cb9-739c-a64a-348202065821"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-11T12:29:31.036431Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "f1ee19d33c8bb6c229670201a9e2a5445a9c5bf232b004c813388be97d22ec38"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+conversation_native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "13e89ce6-ae36-42ff-ac2d-2a13498ee00d"
+conversation_native_id = "69b17483-4fd4-832e-9e1b-a28ddde73ed2"
+message_native_id = "13e89ce6-ae36-42ff-ac2d-2a13498ee00d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "13e89ce6-ae36-42ff-ac2d-2a13498ee00d"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 190
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is a really good distinction to understand, because **policies and business rules are often confused**, even though they play different roles in a system.\n\nA helpful way to think about it is that **business rules describe how the domain works**, while **policies describe decisions about how the organization chooses to operate within that domain**.\n\n---\n\n# The Core Difference\n\nYou could summarize it like this:\n\n```\nBusiness rules = truths about the business domain\nPolicies       = organizational choices about how to operate\n```\n\nBusiness rules tend to be **stable**.\n\nPolicies tend to **change more frequently**.\n\n---\n\n# Business Rules\n\nA **business rule** describes something that must be true about how the business operates.\n\nThese usually come from:\n\n- the nature of the business\n- legal realities\n- financial realities\n- real-world constraints\n\nExamples:\n\n```\nAn order cannot ship before payment.\nA refund cannot exceed the amount paid.\nInventory cannot go below zero.\nLaundry must be washed before it can be folded.\n```\n\nThese are not arbitrary decisions.\n\nThey are **fundamental truths about the domain**.\n\nIn many cases they become **domain invariants**.\n\n---\n\n# Policies\n\nA **policy** describes how the organization chooses to operate.\n\nPolicies are decisions made by the business and can change without altering the fundamental domain.\n\nExamples:\n\n```\nRefunds allowed within 30 days.\nFree shipping on orders over $50.\nOnly managers can approve refunds above $200.\nPremium customers receive priority support.\n```\n\nThese are **operational decisions**.\n\nThey could change tomorrow.\n\n---\n\n# Example: Online Store\n\nLet's say you run an online store.\n\n### Business rules\n\n```\nA product must exist before it can be purchased.\nAn order must contain at least one item.\nPayment must succeed before an order is shipped.\n```\n\nThese are core truths about the system.\n\n---\n\n### Policies\n\n```\nOrders over $50 receive free shipping.\nReturns allowed within 30 days.\nVIP customers receive 10% discount.\n```\n\nThese could change anytime.\n\n---\n\n# Why This Matters\n\nIf policies are mixed with business rules, the system becomes rigid.\n\nExample:\n\nIf your code hard-codes:\n\n```\nreturnWindow = 30 days\n```\n\nThen changing it to 60 days requires:\n\n- code changes\n- deployments\n- testing\n\nBut if it is modeled as a **policy**, it can be updated without changing the core domain logic.\n\n---\n\n# In Event Modeling Terms\n\nConsider this event:\n\n```\nRefundIssued\n```\n\nBusiness rule:\n\n```\nRefund cannot exceed the payment amount.\n```\n\nPolicy:\n\n```\nRefund must occur within 30 days.\n```\n\nThe event itself stays the same.\n\nOnly the **policy changes**.\n\n---\n\n# In Nexus Terms\n\nYour truth graph might represent this as:\n\n```\nEvent: RefundIssued\n```\n\nBusiness rules:\n\n```\nrefundTotal <= paymentTotal\norder must exist\n```\n\nPolicies:\n\n```\nrefundWindow = 30 days\napprovalRequiredAbove = $200\n```\n\nThe event model captures **truth** while policies capture **decisions**.\n\n---\n\n# Stability vs Flexibility\n\nAnother way to think about it:\n\n| Type | Stability |\n|-----|-----|\n| Business rules | stable |\n| Policies | flexible |\n\nBusiness rules might last **years or decades**.\n\nPolicies might change **every quarter**.\n\n---\n\n# Another Simple Example\n\nConsider a library.\n\nBusiness rules:\n\n```\nA book cannot be loaned to two people at the same time.\nA book must exist in the catalog before it can be loaned.\n```\n\nPolicies:\n\n```\nLoan period is 14 days.\nLate fee is $0.50 per day.\nStudents may borrow up to 10 books.\n```\n\nThe library could change the policy tomorrow.\n\nBut the business rules remain the same.\n\n---\n\n# How This Fits Your Nexus Thinking\n\nYour system could represent:\n\n```\nEvents\nBusiness Rules\nPolicies\nPaths\n```\n\nWhere:\n\n- **events** describe behavior\n- **business rules** protect domain truth\n- **policies** express operational choices\n- **paths** demonstrate real scenarios\n\nThis keeps the **domain model stable** while allowing **operational flexibility**.\n\n---\n\n# A Useful Mental Shortcut\n\nYou can ask two questions:\n\n```\nIf this rule changes, is the nature of the business changing?\n```\n\nIf yes → **business rule**\n\nIf no → **policy**\n\n---\n\n# Why This Is Powerful\n\nSeparating them lets you build systems that are:\n\n- stable in their core logic\n- flexible in business decisions\n\nWhich is exactly what systems designed with **event modeling and domain modeling** aim for.\n\n---\n\nIf you'd like, there's one more distinction that sits right next to this and is extremely relevant to what you're building with Nexus:\n\n**domain rules vs process rules** — which explains why some rules belong in events and others belong in flows or slices."
+

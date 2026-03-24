@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2c82-7feb-85cf-80204f82ad1f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-7569-bff9-6d6aa5a884f0"
+conversation_id = "019d174f-2c81-7569-bff9-6d6aa5a884f0"
+message_id = "019d174f-2c82-7ec2-b427-273f8d6890b8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T05:14:42.431389Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "0ba2085dc25cde9db9e6b2950c61d8983887de1db8d197806b20daecba37b0d0"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a90205-4720-8329-b574-06d419eca40a"
+conversation_native_id = "69a90205-4720-8329-b574-06d419eca40a"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "42d05959-7e02-4ce3-ae76-6478e32cb1ce"
+conversation_native_id = "69a90205-4720-8329-b574-06d419eca40a"
+message_native_id = "42d05959-7e02-4ce3-ae76-6478e32cb1ce"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "42d05959-7e02-4ce3-ae76-6478e32cb1ce"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 23
+
+[[body.segments]]
+kind = "plain_text"
+text = "That makes perfect sense. What you’re referring to is **entity[\"software_architecture\",\"Event Modeling\",\"software design methodology\"]**, which was popularized by **entity[\"people\",\"Adam Dymitruk\",\"software architect\"]**. It’s closely related to **entity[\"software_architecture\",\"Event Sourcing\",\"software architecture pattern\"]**, but it adds a **visual and collaborative modeling process** around it.\n\nSince you’re already working in that space, it’s worth clarifying how the pieces fit together.\n\n---\n\n# Event Modeling vs Event Sourcing\n\n### Event Sourcing (storage pattern)\n\nSystem state is derived from an **append-only log of events**.\n\n```\nOrderPlaced\nPaymentReceived\nOrderShipped\n```\n\nCurrent state = replay events.\n\n---\n\n### Event Modeling (design method)\n\nEvent Modeling is about **how you design the system around those events**.\n\nTypical Event Modeling board:\n\n```\nCommands → Events → Views\n```\n\nExample:\n\n```\nStart Washer → WasherStarted → WasherStatusView\nStop Washer  → WasherStopped → WasherStatusView\n```\n\nIt’s often done visually using timelines of events.\n\n---\n\n# Why Adam emphasizes events\n\nThe idea is that **events represent facts**.\n\nFacts cannot change.\n\nExample:\n\n```\nWasherStarted(machine=washer1)\n```\n\nThat event will always be true.\n\nWhat can change is **interpretation or projections** of the events.\n\n---\n\n# Where your thinking diverges slightly (in an interesting way)\n\nClassic Event Modeling usually stores events as **machine data** like:\n\n```\n{\n  \"type\": \"washer_started\",\n  \"machine\": \"washer1\"\n}\n```\n\nOften in **entity[\"data_format\",\"JSON\",\"data interchange format\"]**.\n\nBut what you’ve been describing is closer to:\n\n```\nHuman narrative\n+\nStructured event block\n```\n\nExample:\n\n````markdown\n# Washer Cycle Started\n\nHeavy cycle started on washer 1.\n\n```toml\n[event]\ntype = \"washer_started\"\nmachine = \"washer1\"\ncycle = \"heavy\"\ntimestamp = 2026-03-04T09:15\n```\n````\n\nThat adds a **human-first artifact layer** on top of event sourcing.\n\n---\n\n# Why that’s interesting\n\nMost event-sourced systems optimize for **machines**.\n\nYou’re leaning toward optimizing for:\n\n```\nhumans\n+\nmachines\n+\nAI\n```\n\nWhich has some real advantages.\n\n### Human debugging\n\nInstead of digging through raw event JSON logs, you read event documents.\n\n### Domain understanding\n\nEvents carry **context and explanation**, not just fields.\n\n### Long-term maintainability\n\nFuture developers understand the system faster.\n\n---\n\n# Event Modeling already hints at this idea\n\nAdam often emphasizes **storytelling through events**.\n\nThe event timeline tells the story of the system.\n\nYou’re basically extending that idea from:\n\n```\nwhiteboard modeling artifact\n```\n\ninto\n\n```\nruntime system artifact\n```\n\nThat’s a subtle but interesting shift.\n\n---\n\n# Your slice idea fits nicely here\n\nIf we combine:\n\n- Event Modeling\n- Event Sourcing\n- Document artifacts\n\nYou get something like:\n\n```\nSlice document\n    ↓\nEvent\n    ↓\nProjection\n```\n\nEach slice might contain:\n\n```\nContext narrative\nEvent data (TOML)\nMetadata\n```\n\nThe system reads slices and builds projections.\n\n---\n\n# Where this gets really powerful\n\nIf those slices are stored in something like **entity[\"software\",\"Git\",\"version control system\"]**, you gain:\n\n- versioned system history\n- human-readable event log\n- reproducible state\n- easy auditing\n\nIt becomes almost like:\n\n```\ngit for system state\n```\n\n---\n\n💡 The reason I find your direction interesting is that you're essentially combining three powerful ideas:\n\n1. Event Modeling (Adam’s methodology)  \n2. Event Sourcing (append-only state)  \n3. Document artifacts (human-readable slices)\n\nMost systems use only the first two.\n\n---\n\nIf you want, there’s also a **very interesting connection between Event Modeling and a concept from functional programming that might align strongly with your “replace slices” principle**. It’s a design idea that many event-sourced systems *almost* use but rarely push all the way."
+

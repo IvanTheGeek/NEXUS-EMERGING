@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea2-781e-95a5-8ffd32fa07f7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea21-7f19-a026-9c8799ccc0f3"
+conversation_id = "019d174e-ea21-7f19-a026-9c8799ccc0f3"
+message_id = "019d174e-ea21-73ed-a33c-153982ae5f20"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-19T13:49:06.257944Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "4cc8bf2d7c2161b40532fe9d052d29ea72483a0dfe792e57ae899342a4febfad"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "d3f615f2-1a27-42ea-89d8-247e1ef1f923"
+conversation_native_id = "d3f615f2-1a27-42ea-89d8-247e1ef1f923"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a9c5f-fea8-7245-ab33-6f44c3c8ec1c"
+conversation_native_id = "d3f615f2-1a27-42ea-89d8-247e1ef1f923"
+message_native_id = "019a9c5f-fea8-7245-ab33-6f44c3c8ec1c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a9c5f-fea8-7245-ab33-6f44c3c8ec1c"
+role = "assistant"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "reasoning"
+text = "That makes sense. The default would be the business-focused view (traditional EM), but then:\n\n1. Users can set preferences for what detail levels they want to see\n2. Users can choose specific filters they want active by default\n3. Option to resume from where they left off in their last session\n\nThis is treating the Event Model viewer itself as a stateful application with user preferences. Which, in Ivan's world, probably means:\n\n- Preferences are events themselves\n- \"UserSetDefaultFilter\", \"UserToggledUIDetail\", etc.\n- The viewer's own state is an event-sourced projection\n\nLet me focus on understanding:\n- How these preferences work\n- How the domain default is determined\n- Whether there are suggested/preset views for different roles/purposes"
+
+[[body.segments]]
+kind = "plain_text"
+text = "That's a sensible UX approach - start with the business-focused view (what stakeholders need to see) but let power users customize and persist their viewing preferences.\n\n**Preference system implications:**\n\n1. **Domain defaults** - Set per bounded context/system. The \"Laundry\" domain might default to hiding UI details, while the \"EventModelViewer\" domain (self-hosted) might default to showing everything.\n\n2. **User preference persistence** - Stored where? Local storage? As events in the user's preference stream? Could be another opt-in to sync across devices if server-side.\n\n3. **Session resume** - \"Open where I left off\" means persisting:\n   - Active filters\n   - Expanded/collapsed sections\n   - Timeline position/zoom level\n   - Selected event for inspection\n\n**Role-based presets?**\n\nAre you thinking about having preset views like:\n- **Stakeholder view** - Business events only, glossed implementation\n- **Developer view** - Full detail, all layers\n- **QA view** - Focus on command→event validation\n- **Support view** - User actions + business outcomes, hide middleware\n\nOr is it purely free-form user customization?\n\nAnd presumably the viewer's own state/preferences would be event-sourced as well, right? \"UserToggledUILayer\", \"UserSetDefaultView\", etc.?"
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1a55-9f4b-70d6-91d6-d4bfb467110b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d1a55-9f4b-7b37-9f3f-ecf5b2ccaf2d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T14:27:32.3Z"
+observed_at = "2026-03-23T10:55:08.8647828Z"
+imported_at = "2026-03-23T10:55:08.8647828Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d1a55-9240-7798-b8fe-9b60775d8c57"
+
+[content_hash]
+algorithm = "sha256"
+value = "e046a9bf38ad14df3d0823b20095b5f4d6152850ff8be071b5dd1c7b40fe6d98"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000225-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000225-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl"
+archived_at = "2026-03-22T16:03:56.6128463Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000225-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 34
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next concrete slice I’d lock is the workspace boundary plus the minimum stable type surface.\n\nI’d structure the workspace like this for now:\n\n- `/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code`\n  F# solution, importer core, adapters, CLI, tests, later GUI\n- `/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects`\n  provider zips, extracted raw payloads, attachments, manually added artifacts\n- `/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore`\n  append-only canonical events, import manifests, projections, later graph assertions\n\nAnd I’d keep the first type boundary this small:\n\n- Identity/provenance types\n  `ProviderKind`, `SourceAcquisitionKind`, `ImportId`, `ConversationId`, `MessageId`, `ArtifactId`, `CanonicalEventId`, `ProviderRef`, `RawObjectRef`, `ContentHash`\n- Time/provenance metadata\n  `OccurredAt`, `ObservedAt`, `ImportedAt`, `FactProvenance`\n- Canonical ingestion events\n  `ProviderArtifactReceived`, `RawSnapshotExtracted`, `ConversationDiscovered`, `MessageObserved`, `MessageRevisionObserved`, `ArtifactReferenced`, `ArtifactPayloadCaptured`, `ImportCompleted`\n- Thin graph overlay only\n  `NodeId`, `NodeKind`, `EdgeId`, `EdgeKind`, `GraphAssertion`\n\nThe important design choice is that conversations/messages/imports live in the canonical history layer now, while the broader graph layer stays thin and evolvable. That lets us re-run normalization later without regretting early ontology decisions.\n\nIf this direction feels right, the next thing I’d draft is the actual `v0` F# module map for those types, for example:\n\n- `Nexus.Domain.Ids`\n- `Nexus.Domain.Provenance`\n- `Nexus.Domain.CanonicalEvents`\n- `Nexus.Domain.Graph`\n- `Nexus.Providers.ChatGpt`\n- `Nexus.Providers.Claude`\n\nOne focused question before I turn that into the draft: do you want the first canonical unit to be called `MessageObserved`, or do you want a more neutral name like `MessageRecorded` or `MessageImported`? That name will set the tone for the rest of the model."
+

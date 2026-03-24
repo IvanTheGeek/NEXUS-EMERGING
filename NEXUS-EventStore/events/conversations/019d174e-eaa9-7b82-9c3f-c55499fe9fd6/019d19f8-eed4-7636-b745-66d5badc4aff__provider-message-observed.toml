@@ -1,0 +1,70 @@
+schema_version = 1
+event_id = "019d19f8-eed4-7636-b745-66d5badc4aff"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-712d-8f99-9e3490b82ba9"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T06:47:09.892204Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "baf696226941e674f6079c62d2f29795f1504f6aa37d8a4e8c1625a510781aa5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf03f-58f1-7717-9a27-81356efc1385"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf03f-58f1-7717-9a27-81356efc1385"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf03f-58f1-7717-9a27-81356efc1385"
+role = "assistant"
+sequence_hint = 96
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user wants to discuss directory structure and file naming conventions for the TOML slice files. Let me think about this.\n\nKey considerations:\n- UUIDv7 provides time-ordering\n- C = CommandSlice, V = ViewSlice (type prefix)\n- Name is human-readable\n- Directory structure should reflect the hierarchy we discussed (system, context)\n- Filesystem = metadata (context from folder, not TOML field)\n\nLet me propose some options."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good call on establishing this now. A few thoughts:\n\n**Filename**: `UUIDv7_C_OpenApp.toml` gives you time-ordering, type at a glance, and readability. For ViewSlices, `UUIDv7_V_CheckSessionStatus.toml`. Clean.\n\nFor directory structure, here's a proposal based on what we landed on earlier — filesystem carries the hierarchy:\n\n```\ntruth-graph/\n  laundrylog/                          # system\n    expenses/                          # context\n      slices/\n        019644a1..._C_OpenApp.toml\n        019644a1..._V_CheckSessionStatus.toml\n        019644a1..._C_RecordExpense.toml\n        019644a1..._V_ViewExpenseHistory.toml\n      screens/\n        app-splash-screen.png\n        expense-entry-screen.png\n      paths/                           # future - concrete journeys\n    snapshots/                         # shared screens across contexts?\n```\n\nQuestions to settle:"
+
+[[body.segments]]
+kind = "tool_use"
+text = "Generating ask_user_input_v0..."
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\n  \"questions\": [\n    {\n      \"type\": \"single_select\",\n      \"options\": [\n        \"Full UUIDv7 in filename\",\n        \"Short prefix (first 8 chars) for readability\",\n        \"Just the timestamp portion of UUIDv7\"\n      ],\n      \"question\": \"UUIDv7 in filename \\u2014 how much of it?\"\n    },\n    {\n      \"type\": \"single_select\",\n      \"options\": [\n        \"Screens alongside slices in context folder\",\n        \"Screens in a separate top-level folder\",\n        \"Screens subfolder per context (as shown above)\"\n      ],\n      \"question\": \"Where do screen snapshot files live?\"\n    }\n  ]\n}"
+
+[[body.segments]]
+kind = "reasoning"
+text = "Waiting for user's response on directory structure questions."
+

@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea2b-73be-bd19-5613edfd1d59"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+conversation_id = "019d174e-ea2b-733c-9cac-518c20924d12"
+message_id = "019d174e-ea2b-7353-bf60-fb66bb097a6e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-27T00:23:51.460744Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "1fa8b0255372a5ed281d749568b2cf730164a81b3e1862439f5db4061918b521"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac2b1-afe4-7166-9c47-48f2ecb01077"
+conversation_native_id = "bba6a6b2-ac29-4ca5-881c-23f0306994c5"
+message_native_id = "019ac2b1-afe4-7166-9c47-48f2ecb01077"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac2b1-afe4-7166-9c47-48f2ecb01077"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-27T00:23:37.883637Z\",\"stop_timestamp\":\"2025-11-27T00:23:42.033764Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking about when in the timeline a branch is created. This is actually a really interesting question because it gets at a common misconception about git branches.\\n\\nLet me think about what they might be asking:\\n1. At what point in time is a branch created (the literal answer)\\n2. What commit does a new branch point to when created\\n3. How does the timing of branch creation affect the branch\\u0027s history\\n\\nI think they\\u0027re asking about #2/#3 - when you create a branch, what\\u0027s its starting point in the commit timeline?\\n\\nThe key insight: A branch is created pointing to whatever commit HEAD is currently at (or another specified commit). The branch doesn\\u0027t have its own separate timeline - it shares history with all other branches up to the point where it diverges.\\n\\nLet me explain this clearly, building up the understanding.\",\"summaries\":[{\"summary\":\"Thinking about when branches are created in version control timelines.\"},{\"summary\":\"Unpacking common misconceptions about git branch creation timing.\"},{\"summary\":\"Unpacked branch creation misconceptions and commit timeline relationships.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "A branch is created pointing to **wherever you are right now** (whatever commit HEAD is pointing to). This is the crucial insight: branches don't have their own separate timeline from birth - they share all history with their parent branch up to the creation point.\n\nWhen you run `git branch feature`, git creates a new pointer called \"feature\" that points to the exact same commit you're currently on. Nothing changes in the commit history - you've just added a new label to an existing commit.\n\nHere's the sequence of what actually happens:\n\nImagine you're on `main` at commit C:\n```\nA---B---C (main, HEAD)\n```\n\nYou create a branch: `git branch feature`\n```\nA---B---C (main, feature, HEAD still on main)\n```\n\nBoth branches point to the same commit. They share the entire history A→B→C. At this moment, they're identical.\n\nYou switch to feature: `git checkout feature` (or `git switch feature`)\n```\nA---B---C (main, HEAD -> feature)\n```\n\nNow HEAD points to the feature branch. Still, nothing has diverged.\n\nYou make a commit on feature:\n```\nA---B---C (main)\n         \\\n          D (feature, HEAD)\n```\n\n**This** is when the timelines diverge. Commit D only exists on feature. But A, B, and C exist on both branches - they're shared history.\n\nThe important realization: branches don't have independent timelines from creation. They share history with their parent until they diverge through new commits. When you create a branch, you're essentially saying \"I want to bookmark this point in history and potentially take a different path from here.\"\n\nThis is why you can create a branch, switch to it later, and pick up exactly where you left off - the branch is just a movable bookmark in the commit graph, not a separate copy of history.\n\nDoes this clarify the timing aspect you were asking about?"
+

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nexus.Curation\Nexus.Curation.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.Kernel\Nexus.Kernel.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.Cli\Nexus.Cli.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.Domain\Nexus.Domain.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.EventStore\Nexus.EventStore.fsproj" />
+    <ProjectReference Include="..\..\src\Nexus.Importers\Nexus.Importers.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="10.2.3" />
+    <PackageReference Include="Expecto.FsCheck" Version="10.2.3" />
+    <PackageReference Include="Verify.Expecto" Version="31.13.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="TestHelpers.fs" />
+    <Compile Include="KernelTests.fs" />
+    <Compile Include="ProviderAdapterTests.fs" />
+    <Compile Include="ExportComparisonTests.fs" />
+    <Compile Include="WorkflowTests.fs" />
+    <Compile Include="GraphAssertionTests.fs" />
+    <Compile Include="GraphWorkingCatalogTests.fs" />
+    <Compile Include="GraphWorkingIndexTests.fs" />
+    <Compile Include="PropertyTests.fs" />
+    <Compile Include="SnapshotTests.fs" />
+    <Compile Include="CliHelpTests.fs" />
+    <Compile Include="GraphvizDotTests.fs" />
+    <Compile Include="ConceptNoteTests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>

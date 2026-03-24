@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee8b-7795-9ba8-5559d5260d3f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e2-748a-869f-9c38a3650f73"
+conversation_id = "019d174e-e9e2-748a-869f-9c38a3650f73"
+message_id = "019d174e-e9e2-7085-9bde-dcdd45677897"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T04:33:12.731964Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "a97ddbf5aa51059f44e181cda40699ad441ff3258b76586f9aa0350c10b6b37f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "8fe0d4f8-0b2e-4354-bb2b-c5580a867097"
+conversation_native_id = "8fe0d4f8-0b2e-4354-bb2b-c5580a867097"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7b7c-f543-7768-b22f-e90ead2e4efa"
+conversation_native_id = "8fe0d4f8-0b2e-4354-bb2b-c5580a867097"
+message_native_id = "019a7b7c-f543-7768-b22f-e90ead2e4efa"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7b7c-f543-7768-b22f-e90ead2e4efa"
+role = "assistant"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about differences between Phi-3 models. This seems like a straightforward technical question about model specifications - not really a learning/teaching scenario where I need to use the Socratic method.\n\nGiven the user's context (software developer working with F#, MCP servers, technical background), this is clearly a technical question where they need practical information to make a decision about which model to use.\n\nThe userStyle mentions: \"For advanced technical questions (PhD-level, research, graduate topics with sophisticated terminology), recognize the expertise level and provide direct, technical responses without excessive pedagogical scaffolding. Skip principles 1-3 below for such queries.\"\n\nThis is a technical question from a developer evaluating hardware/model compatibility. I should provide direct, technical information rather than using Socratic questioning. The user needs specs and practical differences to make an informed decision."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Phi-3 Model Comparison:**\n\n**Phi-3-mini (3.8B parameters)**\n- Context: 4K, 128K, or 256K tokens depending on variant\n- Memory: ~4GB (FP16), ~2GB (4-bit quant)\n- Use case: Fast inference, chat, simple tasks\n- Speed: Fastest of the three\n- Quality: Good for straightforward Q&A, basic reasoning\n\n**Phi-3-small (7B parameters)**\n- Context: 8K or 128K tokens\n- Memory: ~7GB (FP16), ~4GB (4-bit quant)\n- Use case: Better reasoning, more complex tasks\n- Speed: Middle ground\n- Quality: Stronger reasoning, better code generation\n\n**Phi-3-medium (14B parameters)**\n- Context: 4K or 128K tokens\n- Memory: ~14GB (FP16), ~7-8GB (4-bit quant)\n- Use case: Complex reasoning, detailed analysis\n- Speed: Slowest\n- Quality: Most capable, approaches GPT-3.5 on many benchmarks\n\n**Practical differences on RTX 5070:**\n\nWith 12GB VRAM, you can:\n- Run mini with long context (128K+) comfortably\n- Run small at 128K context with 4-bit quant\n- Run medium only at shorter context (4K-8K) with aggressive quantization\n\n**Performance sweet spot:** Phi-3-small with 4-bit quantization gives you the best balance of capability and VRAM efficiency on a 12GB card.\n\nAre you building this for production MCP server use, or experimentation?"
+

@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea43-740d-98f7-129c1b43d648"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea43-71f1-a549-39d5990982f8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T06:25:26.056275Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "4acc5449e70b2209e2c40701d924649287ae4f7d898aa464056cf5b2f2b2b624"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8b56-caf9-7551-beec-5077fda36017"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8b56-caf9-7551-beec-5077fda36017"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8b56-caf9-7551-beec-5077fda36017"
+role = "assistant"
+sequence_hint = 44
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-16T06:25:16.661738Z\",\"stop_timestamp\":\"2025-11-16T06:25:19.514190Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is showing me the Qdrant welcome screen, which means they successfully got Qdrant running. They\\u0027re in Concise Mode now, so I should be brief and direct. \\n\\nThey need to:\\n1. Know that it\\u0027s working\\n2. Understand the next step is to choose an embedding model\\n3. Know what information to save for later MCP configuration\\n\\nI should be concise but still complete on the critical next steps.\",\"summaries\":[{\"summary\":\"Thinking about Qdrant vector database setup and integration guidance.\"},{\"summary\":\"Confirming Qdrant\\u0027s success, charting embedding selection path.\"},{\"summary\":\"Assessed Qdrant setup success and charted concise guidance path.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect - Qdrant is running. That welcome screen confirms it's accessible.\n\n**Save These for MCP Configuration:**\n- VPS IP: Run `hostname -I | awk '{print $1}'` to get it\n- API Key: The value from `$QDRANT_API_KEY` earlier\n- Endpoint: `http://YOUR_VPS_IP:6333`\n\n**Next: Choose Embedding Model**\n\nTwo paths:\n\n**Option 1: Local Model (Recommended)**\n- Runs on your dev machine with GPUs\n- Free, private, no API costs\n- Install: `pip install sentence-transformers`\n- Model: `all-MiniLM-L6-v2` (384 dim, fast) or `all-mpnet-base-v2` (768 dim, better quality)\n\n**Option 2: Cloud API**\n- OpenAI embeddings: `text-embedding-3-small` \n- Costs ~$0.02 per 1M tokens\n- Requires API key, sends data to OpenAI\n\nWhich direction? Local gives you control and works well with your GPU hardware. Cloud is faster to set up initially but has ongoing costs.\n\n**Token Usage:** 111,727 used / 78,273 remaining"
+

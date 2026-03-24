@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7545-9bcd-0c86807ac3e0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+conversation_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+message_id = "019d174e-ea90-78b1-9e38-cc2071591251"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T03:08:48.861471Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "5871c647dfb4be39ca8e126ceae599badd25a40990a1099b27ed2ad4a53734a8"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfeea-d1aa-7977-9c43-7feabfe9fbe1"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+message_native_id = "019cfeea-d1aa-7977-9c43-7feabfe9fbe1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfeea-d1aa-7977-9c43-7feabfe9fbe1"
+role = "human"
+sequence_hint = 19
+
+[[body.segments]]
+kind = "plain_text"
+text = "in ref to:\nopen MailKit.Net.Imap\nopen MailKit.Search\nopen MimeKit\nuse client = new ImapClient()\nclient.Connect(\"imap.example.com\", 993, true)\nclient.Authenticate(\"user@example.com\", \"password\")\nclient.Inbox.Open(MailKit.FolderAccess.ReadOnly) |> ignore\nlet uids = client.Inbox.Search(SearchQuery.All)\nfor uid in uids do\n    let msg = client.Inbox.GetMessage(uid)\n    printfn \"Subject: %s\" msg.Subject\nclient.Disconnect(true)\n\nare there ways to make this more functional and idiomatic F#?"
+

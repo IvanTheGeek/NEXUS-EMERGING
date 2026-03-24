@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee98-760d-9661-9cc9ea287c75"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+conversation_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+message_id = "019d174e-ea10-776a-bd06-92711a17457b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T09:02:34.397797Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "8fb2bef4695c5596d303d684c8d274140b8b5ece2f8fe877320fd463bc0471a2"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7c73-8120-7317-89ba-932f1dc91944"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+message_native_id = "019a7c73-8120-7317-89ba-932f1dc91944"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7c73-8120-7317-89ba-932f1dc91944"
+role = "assistant"
+sequence_hint = 16
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about \"mini-reasoning\" - this is a follow-up question about the Phi-4 model variants. They want to understand what this specific variant means.\n\nLooking at my userStyle, this is a technical question but not PhD-level research. The user (Ivan) is a software developer asking about ML model variants - he has technical sophistication but is learning about this specific domain.\n\nI should provide a direct, clear answer since:\n1. This is factual information about model specifications\n2. Ivan has been asking rapid-fire clarification questions, indicating he wants efficient information gathering\n3. His preferences say \"Be direct and efficient - skip unnecessary preambles\"\n4. This isn't a conceptual learning moment where Socratic method would help\n\nI should explain what \"mini-reasoning\" means as a variant, how it differs from the other variants, and what the trade-offs are."
+
+[[body.segments]]
+kind = "plain_text"
+text = "**mini-reasoning** = mini model trained specifically for **chain-of-thought reasoning**\n\n**Key characteristics:**\n\n1. **Shows its work**: Generates step-by-step reasoning before final answer\n   - Similar to OpenAI's o1/o3 models\n   - Outputs intermediate thinking steps (visible or hidden)\n\n2. **Training approach**: \n   - Trained on problems with full solution paths, not just answers\n   - Learns to break complex problems into sub-steps\n   - Better at multi-hop reasoning, proof generation\n\n3. **Performance vs size trade-off**:\n   - 3.8B params but performs like 7-8B models on math/logic\n   - Achieves this through reasoning scaffolding, not more parameters\n\n**Variant comparison:**\n\n```\nPhi-4-mini-instruct\n└─ General chat, Q&A, instructions\n└─ Fast, broad capabilities\n\nPhi-4-mini-reasoning  \n└─ Math proofs, complex logic, STEM problems\n└─ Slower (generates reasoning steps)\n└─ More accurate on multi-step problems\n\nPhi-4-mini-flash-reasoning\n└─ Same reasoning capability\n└─ Different architecture (hybrid SambaY)\n└─ 2-3x faster inference\n```\n\n**When to use reasoning variants:**\n- Need to verify logic/show work\n- Complex math/coding problems\n- Symbolic computation\n- Trade slower speed for better accuracy on hard problems\n\nFor your MCP server - would you need step-by-step reasoning visibility, or just final answers?"
+

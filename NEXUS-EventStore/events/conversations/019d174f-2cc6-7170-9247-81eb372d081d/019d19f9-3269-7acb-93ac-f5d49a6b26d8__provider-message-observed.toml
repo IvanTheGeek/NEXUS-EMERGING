@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3269-7acb-93ac-f5d49a6b26d8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc6-7170-9247-81eb372d081d"
+conversation_id = "019d174f-2cc6-7170-9247-81eb372d081d"
+message_id = "019d174f-2cc6-7b37-ba38-b8391abb0678"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T18:25:12.655168Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "9e9d25dc47883f3b8251f99dd218beef0a2de62832cabf4b4a80ef2c94e865f2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b99b8c-38e0-8328-b51d-6faf946dc4be"
+conversation_native_id = "69b99b8c-38e0-8328-b51d-6faf946dc4be"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "7ae45a39-1811-408d-847e-6fdf4779ef1f"
+conversation_native_id = "69b99b8c-38e0-8328-b51d-6faf946dc4be"
+message_native_id = "7ae45a39-1811-408d-847e-6fdf4779ef1f"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "7ae45a39-1811-408d-847e-6fdf4779ef1f"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "plain_text"
+text = "You’re converging on something really powerful here—this is no longer just a “cash logger,” it’s becoming a **capture-first personal data system with verifiable artifacts**.\n\nThe receipt idea in particular is a *big unlock*, because it solves the biggest weakness of cash:\n\n> cash = no audit trail  \n> receipt = ground truth\n\n---\n\n# 🧾 Receipt Capture — Make It Native, Not Optional\n\nThe key is: **don’t treat receipt capture as a feature**  \nTreat it as a *parallel input channel* to the same event.\n\n### Your core event becomes:\n\n```fsharp\ntype CashEvent = {\n    Id: Guid\n    Amount: decimal option\n    Timestamp: DateTime\n    Note: string option\n    Location: Geo option\n    ReceiptImageId: string option\n}\n```\n\n👉 Notice:\n- Amount can be `None` initially\n- Receipt becomes the **source of truth later**\n\n---\n\n# ⚡ UX Flow (this is where it wins or loses)\n\n## Option A — “Snap First” Flow\n- Open app\n- Camera auto-opens\n- Snap receipt\n- Done\n\nThen:\n- AI extracts later\n- User confirms later\n\n---\n\n## Option B — Hybrid (best IMO)\n\n1. Enter amount quickly\n2. Tap 📷 (optional, but prominent)\n3. Snap receipt\n4. Done\n\n👉 Important:\n- Camera must feel **instant**\n- No multi-step friction\n\n---\n\n# 🧠 AI Processing Model (don’t do it synchronously)\n\nDo NOT block the user with AI.\n\nInstead:\n\n### Pipeline:\n1. Capture event (fast, offline)\n2. Store image locally\n3. Queue for processing\n4. Later:\n   - OCR\n   - Extract:\n     - amount\n     - merchant\n     - date\n5. Attach as a **derived projection**\n\n---\n\n# 🔁 This fits PERFECTLY with your NEXUS / Immutable Evolution\n\nYou now have:\n\n### Fact (immutable)\n```fsharp\nCashCaptured\nReceiptCaptured\n```\n\n### Derived facts\n```fsharp\nReceiptParsed\nAmountInferred\nMerchantInferred\n```\n\n👉 Nothing mutates  \n👉 Everything evolves through **new facts**\n\nThis is *exactly* your model.\n\n---\n\n# 📦 Storage Architecture (your WASM idea is solid)\n\nYou’re basically describing:\n\n## Client\n- WASM PWA\n- IndexedDB\n- Local-first event store\n- Image blobs stored locally\n\n## Sync Layer\n- Git-based backend (this is very interesting)\n\nLikely:\n- Each event = file (or chunked log)\n- Images = blob storage (Git LFS or external)\n\n---\n\n# ⚠️ Important Constraint (don’t ignore this)\n\nGit + binary images = pain if not handled carefully.\n\n### Options:\n\n#### Option 1 — Git LFS\n- Works\n- But adds complexity\n\n#### Option 2 — Split storage (recommended)\n- Git = event log (text, small)\n- Blob store = images\n  - S3-style\n  - Or even local-first + sync later\n\n#### Option 3 — Content-addressable storage (very NEXUS-aligned)\n- Hash the image\n- Store by hash\n- Reference in event\n\n---\n\n# 🧠 “JavaScript Git” in WASM\n\nYou’re likely thinking of:\n- isomorphic-git\n- or similar\n\nThis can work, but:\n\n### Be aware:\n- IndexedDB performance varies\n- Large repos = slow clones\n- Need **partial sync strategy**\n\n👉 Suggestion:\n- Treat Git as **append-only event log**\n- Not a full repo clone every time\n\n---\n\n# 🔄 Sync Model (this is the real problem to solve)\n\nThink in terms of:\n\n### “Eventually consistent personal ledger”\n\n- Device logs events offline\n- Pushes to remote repo\n- Pulls + merges\n\nConflict strategy:\n- No overwrites\n- Only append\n- Merge = union of events\n\n👉 This works beautifully with your immutable model\n\n---\n\n# 🧩 Where this becomes REALLY interesting\n\nYou now have:\n\n## Multi-modal capture:\n- Manual input\n- Voice\n- Image (receipts)\n\nAll feeding into:\n\n👉 **LOGOS (your knowledge graph)**\n\n---\n\n# 🔍 Future Capability (this is big)\n\nBecause you store images + events:\n\nYou can later:\n- Re-run better AI models on old receipts\n- Improve data quality over time\n\n👉 That’s **compounding intelligence**\n\n---\n\n# 🧱 Suggested Primitive Mapping (your language)\n\n| Concept            | NEXUS Primitive |\n|-------------------|----------------|\n| Cash event        | Fact           |\n| Receipt image     | Artifact       |\n| OCR result        | Derived Fact   |\n| Category          | Projection     |\n| Sync              | Bridge         |\n\n---\n\n# ⚡ One Killer Feature You Should Add\n\n### “Unresolved Receipts Inbox”\n\n- “3 receipts need review”\n- Tap → confirm extracted data\n\nThis turns:\n👉 messy capture → clean data later\n\n---\n\n# 🧭 Reality Check\n\nThe hardest parts are:\n1. **Frictionless capture UX**\n2. **Reliable offline storage**\n3. **Sync without corruption**\n4. **Image handling at scale**\n\nNOT:\n- UI\n- Not even AI\n\n---\n\n# If you want next step\n\nWe can go deeper in one direction:\n\n### 1. Architecture\n- WASM + IndexedDB + Git sync design\n- Conflict resolution model\n\n### 2. F# Domain Model\n- Full event types\n- Projections\n- LOGOS ingestion\n\n### 3. UX Spec\n- Exact tap flows\n- Lock screen / widget design\n\n### 4. Receipt AI Pipeline\n- OCR options\n- On-device vs server\n\nPick one and I’ll go deep."
+

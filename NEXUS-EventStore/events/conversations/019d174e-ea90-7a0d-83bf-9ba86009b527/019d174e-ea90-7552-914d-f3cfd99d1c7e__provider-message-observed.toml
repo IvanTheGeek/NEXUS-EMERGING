@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea90-7552-914d-f3cfd99d1c7e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+conversation_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+message_id = "019d174e-ea90-7122-ac46-8f3740b971d5"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T03:12:50.747172Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "31a2444b39882db51e64b7366f7c447c3363f55d7d60bb822756224cd27e7f72"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfeee-39a4-7b3a-b971-9a459e9e8891"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+message_native_id = "019cfeee-39a4-7b3a-b971-9a459e9e8891"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfeee-39a4-7b3a-b971-9a459e9e8891"
+role = "assistant"
+sequence_hint = 22
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-18T03:12:32.911246Z\",\"stop_timestamp\":\"2026-03-18T03:12:32.911246Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-18T03:12:32.911246Z\",\"stop_timestamp\":\"2026-03-18T03:12:41.934155Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking about whether FsToolkit.ErrorHandling addresses stringly-typed errors, or if they need their own strategy.\\n\\nFsToolkit.ErrorHandling doesn\\u0027t fix the error type problem - it\\u0027s a computation expression / utility library that works with whatever error type you define. The error type is still up to you.\\n\\nThe criticism of \\u0022stringly errors\\u0022 means using \\u0060string\\u0060 as the error type in \\u0060Result\\u003C\\u0027T, string\\u003E\\u0060 - which loses structure, makes pattern matching hard, and is hard to compose.\\n\\nThe fix is discriminated unions for errors, which is what I already showed with \\u0060ImapError\\u0060. FsToolkit just gives you better CE syntax but the error type design is still your responsibility.\\n\\n\\nSo there are a few approaches I could take: domain-specific discriminated unions per module, hierarchical error types with nesting, wrapping exceptions inside DUs, or even using \\u0060exn\\u0060 directly as the error type. But the core insight is that FsToolkit doesn\\u0027t solve this for you\\u2014it just provides cleaner syntax for whatever error strategy you choose. The DU approach I outlined with \\u0060ImapError\\u0060 is really the right path forward, and FsToolkit makes the plumbing around it much nicer.\",\"summaries\":[{\"summary\":\"Thinking about FsToolkit.ErrorHandling\\u0027s approach to string-based error handling limitations.\"},{\"summary\":\"Clarifying that FsToolkit doesn\\u0027t resolve stringly-typed errors fundamentally.\"},{\"summary\":\"Examined FsToolkit\\u0027s role and concluded discriminated unions remain essential.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "FsToolkit doesn't fix it — it's agnostic to your error type. It just makes the plumbing cleaner regardless of what that type is. The error design is still entirely your responsibility.\n\nThe DU approach I already sketched is the right direction, but it can go deeper:\n\n**Shallow DU (what I showed) — still partially stringly:**\n```fsharp\ntype ImapError =\n    | ConnectionFailed of host: string * exn  // exn is unstructured\n    | AuthFailed of exn\n```\n\n**Richer DU — structured, pattern-matchable:**\n```fsharp\ntype AuthError =\n    | InvalidCredentials\n    | AccountLocked\n    | OAuthTokenExpired\n    | OAuthTokenRefreshFailed of innerError: string\n\ntype ConnectionError =\n    | HostUnreachable of host: string\n    | SslHandshakeFailed\n    | PortRefused of port: int\n    | Timeout of afterMs: int\n\ntype ImapError =\n    | Connection of ConnectionError\n    | Authentication of AuthError\n    | FetchFailed of folder: string * uid: uint32\n    | ParseFailed of messageId: string\n```\n\n**The payoff is at the call site:**\n```fsharp\nmatch result with\n| Error (Authentication OAuthTokenExpired) -> refreshToken()\n| Error (Connection (HostUnreachable h)) -> log $\"Can't reach {h}\"\n| Error (Authentication InvalidCredentials) -> alertUser()\n| Ok msgs -> ingestFacts msgs\n```\n\nvs stringly:\n```fsharp\nmatch result with\n| Error msg when msg.Contains(\"expired\") -> ...  // fragile, awful\n```\n\n**Practical LOGOS strategy:**\n\nKeep `exn` for truly unexpected failures (you still want the stack trace), but wrap expected/recoverable failure modes in typed DU cases:\n\n```fsharp\ntype ImapError =\n    | Connection of ConnectionError\n    | Authentication of AuthError\n    | Fetch of FetchError\n    | Unexpected of exn   // escape hatch, not default\n```\n\n`Unexpected of exn` gives you the safety net without making everything stringly. The discipline is: every error you *handle* gets a typed case; only errors you *didn't anticipate* fall through to `Unexpected`.\n\nFsToolkit then just wires it together cleanly — the error quality is all in the DU design."
+

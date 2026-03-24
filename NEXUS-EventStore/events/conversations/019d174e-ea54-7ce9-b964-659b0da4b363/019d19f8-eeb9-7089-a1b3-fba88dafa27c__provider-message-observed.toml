@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb9-7089-a1b3-fba88dafa27c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea61-72d4-876a-73c855eaad1b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-01T17:18:15.812127Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "d0fd9c3d07e13c90529ac8457e44b93b99305bc5da51288c911dcb65b40c2fef"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019caa68-3967-7e2f-8ccf-a2539c9acdfe"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019caa68-3967-7e2f-8ccf-a2539c9acdfe"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019caa68-3967-7e2f-8ccf-a2539c9acdfe"
+role = "assistant"
+sequence_hint = 293
+
+[[body.segments]]
+kind = "plain_text"
+text = "The time-travel aspect is distinct enough from simple \"view history\" that it deserves its own called-out requirement rather than being folded into the previous one. It's not just seeing the history — it's being able to reconstruct and navigate state at any point in time, which implies the underlying storage model, not just a UI feature.\n\nChecklist additions:\n\n- [ ] Update `Event-sourced editing with full revision history` — add a section explicitly calling out time-travel: navigating state at any point in time, not just viewing a list of diffs. The GIT commit analogy is good provenance to include.\n- [ ] New LOGOS Requirement: `Event-sourced storage as the foundation — current state is always a projection` — this is the architectural requirement that makes time-travel possible. It's not a UI feature, it's the storage model. Without this, history viewing is bolted on. With it, time-travel, audit, reconstruction, and revert are all natural consequences.\n\n---\n\nThat second one is important because it separates the *mechanism* (event sourced storage) from the *capability* (time travel, history, revert). The mechanism requirement belongs in LOGOS Requirements as an architectural decision. The capabilities are features that fall out of it.\n\nWant me to draft the update to the existing topic and the new architectural requirement topic now, or continue down the checklist and circle back?"
+

@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea22-7643-bc02-fc3b2ea716ee"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea22-7140-9be3-5b273345bbe0"
+conversation_id = "019d174e-ea22-7140-9be3-5b273345bbe0"
+message_id = "019d174e-ea22-7e59-84a4-74f549ed2d9d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-22T12:08:23.888055Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "ab59eff2cce97d5494ef5851c83cb7479a4b1513db0952e996b7cf4c445170a4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+conversation_native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019aab76-fea1-74c7-8060-060928bc8f6a"
+conversation_native_id = "7a0da48c-f9c6-4e10-93f2-effeb357c5cf"
+message_native_id = "019aab76-fea1-74c7-8060-060928bc8f6a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019aab76-fea1-74c7-8060-060928bc8f6a"
+role = "assistant"
+sequence_hint = 18
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-22T12:08:15.194501Z\",\"stop_timestamp\":\"2025-11-22T12:08:17.539981Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Good, they have disk space. So the strategy is clear:\\n\\n1. VMware Workstation Pro (free now)\\n2. Full clones, not linked clones\\n3. Create base images, snapshot, then full clone for actual test VMs\\n4. Keep base images clean and minimal\\n\\nLet me give them a clear action plan to get started.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Perfect. Here's your setup plan:**\n\n**Phase 1: Install VMware**\n1. Download VMware Workstation Pro 17.x (Broadcom - free account required)\n2. Install on Windows 11 Home host\n\n**Phase 2: Create base images**\n1. **Base Windows 11 VM:**\n   - Minimal install + updates\n   - VMware Tools\n   - Docker Desktop (if you want it in VMs)\n   - Snapshot: \"Clean Windows Base\"\n\n2. **Base Linux Mint VM:**\n   - Minimal install + updates\n   - `open-vm-tools` + `open-vm-tools-desktop`\n   - Common tools (git, build-essential, etc.)\n   - Snapshot: \"Clean Mint Base\"\n\n**Phase 3: Work pattern**\n- Full clone base → \"Test-CrazyIdea-1\"\n- Break things spectacularly\n- Nuke VM or revert to snapshot\n- Clone fresh when needed\n\n**Resource allocation for typical test VM:**\n- 6-8 cores\n- 16-24GB RAM\n- 50-100GB disk\n- Adjust per workload\n\n**Ready to start with VMware download, or need anything clarified first?**"
+

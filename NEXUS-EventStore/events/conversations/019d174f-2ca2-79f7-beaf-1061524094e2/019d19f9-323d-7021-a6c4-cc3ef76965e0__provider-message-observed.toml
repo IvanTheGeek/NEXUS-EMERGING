@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323d-7021-a6c4-cc3ef76965e0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+conversation_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+message_id = "019d174f-2cae-7b69-a7bc-3b6dc0b4a2ff"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T12:36:16.6655049Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "9d5ffe7ddc08250a03e3500364b92165bc462461072fcb2acf12012dbd0f60bc"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "213d7b09-ddcb-4946-89de-132e259bf82e"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+message_native_id = "213d7b09-ddcb-4946-89de-132e259bf82e"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "213d7b09-ddcb-4946-89de-132e259bf82e"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — you’re describing something entity[\"people\",\"Adam Dymitruk\"] has been refining recently, and it actually reveals something deeper about how **queries/read models differ from commands**.\n\nLet’s break the evolution down.\n\n---\n\n# 1. Original Event Modeling usage of GWT\n\nTraditionally **Given–When–Then (GWT)** is used for **command decisions**.\n\nStructure:\n\n```\nGiven  prior events / state\nWhen   command happens\nThen   event occurs\n```\n\nExample:\n\n```\nGiven  MachineAvailable\nWhen   StartLaundryLoad\nThen   LaundryLoadStarted\n```\n\nThis describes **domain decision logic**.\n\nGraphically:\n\n```\nState + Command → Event\n```\n\n---\n\n# 2. How Adam applied it to read models\n\nFor **read slices**, Adam adapted the structure.\n\nInstead of **When**, the read model is triggered by events.\n\nSo it becomes:\n\n```\nGiven events\nThen read model state\n```\n\nExample:\n\n```\nGiven\n  LaundryLoadStarted\n  LaundryLoadCompleted\nThen\n  ActiveLoads = []\n```\n\nThis describes **projection behavior**.\n\nGraphically:\n\n```\nEvents → Projection → Read Model\n```\n\n---\n\n# 3. The limitation of that form\n\nThat simplified form hides something important.\n\nRead models usually answer **queries**, which involve **filtering or selection**.\n\nExample:\n\n```\nActiveLoadsForUser(userId)\n```\n\nThe read model state might be:\n\n```\nAllActiveLoads\n```\n\nBut the UI asks for:\n\n```\nActiveLoads WHERE userId = X\n```\n\nThat filtering step wasn’t visible in the original modeling.\n\n---\n\n# 4. Adam’s newer thinking: add **Where**\n\nThe idea is that the read side might be better represented as:\n\n```\nGiven\n  events / state\n\nWhere\n  filter or query condition\n\nThen\n  result\n```\n\nExample:\n\n```\nGiven\n  ActiveLoads\n\nWhere\n  userId = 42\n\nThen\n  loads for user 42\n```\n\nNow the query logic is explicit.\n\n---\n\n# 5. This separates two concepts that were previously blurred\n\nThere are actually **two different transformations on the read side**.\n\n### Projection\n\nBuild state from events:\n\n```\nEvents → Read Model\n```\n\nExample:\n\n```\nLaundryLoadStarted → add row\nLaundryLoadCompleted → remove row\n```\n\n---\n\n### Query\n\nSelect information from the read model:\n\n```\nRead Model → Query Result\n```\n\nExample:\n\n```\nActiveLoads WHERE userId = 42\n```\n\n---\n\n# 6. So the full read pipeline becomes\n\nInstead of:\n\n```\nEvent → Read Model → UI\n```\n\nYou really have:\n\n```\nEvent → Projection → Read Model → Query → UI\n```\n\nAnd Adam’s idea is to express that query step as **Where**.\n\n---\n\n# 7. In GWTW form\n\nThe read slice becomes:\n\n```\nGiven   events → build read model\nWhere   query/filter\nThen    returned data\n```\n\nExample:\n\n```\nGiven\n  LaundryLoadStarted\n  LaundryLoadCompleted\n\nWhere\n  status = active\n  userId = 42\n\nThen\n  [Load123, Load456]\n```\n\n---\n\n# 8. Why this matters architecturally\n\nBecause it clarifies that **projections and queries are different responsibilities**.\n\n| Step | Responsibility |\n|-----|----------------|\nProjection | maintain read model |\nQuery | filter/shape data |\nView | present to UI |\n\nThis separation is very important for scaling systems.\n\n---\n\n# 9. In the graph model you’ve been exploring\n\nYour nodes would become:\n\n```\nEvent\nProjection\nReadModel\nQuery\nView\n```\n\nEdges:\n\n```\nEvent → Projection\nProjection → ReadModel\nReadModel → Query\nQuery → View\n```\n\nWhich fits perfectly with your idea that architecture is **a graph of transformations**.\n\n---\n\n# 10. The deeper insight Adam is circling\n\nCommands ask:\n\n```\nCan this happen?\n```\n\nQueries ask:\n\n```\nWhat is true?\n```\n\nThose are fundamentally different kinds of logic.\n\nGWT works naturally for commands.\n\nBut queries need the **Where clause** because they involve **selection**.\n\n---\n\n# 11. The interesting symmetry\n\nYou end up with two mirrored pipelines:\n\n### Write side\n\n```\nGiven + When → Then\nState + Command → Event\n```\n\n---\n\n### Read side\n\n```\nGiven + Where → Then\nState + Filter → Result\n```\n\nThis symmetry is actually quite elegant.\n\n---\n\n✅ So what Adam is exploring with **Where** is making the **query semantics explicit**, which were previously hidden inside the green read model box.\n\n---\n\nIf you'd like, I can also show you something really interesting about this:\n\nOnce you add **Where**, the read side of Event Modeling becomes almost identical to **relational algebra** and **Datalog-style query systems**, which connects surprisingly well with systems like entity[\"software\",\"Datomic\",\"database\"]."
+

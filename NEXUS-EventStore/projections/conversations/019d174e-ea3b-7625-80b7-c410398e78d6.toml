@@ -1,0 +1,270 @@
+schema_version = 1
+projection_kind = "conversation_projection"
+conversation_id = "019d174e-ea3b-7625-80b7-c410398e78d6"
+title = "OpenWrt vs Debian for routing"
+message_count = 32
+artifact_reference_count = 0
+revision_count = 0
+first_occurred_at = "2025-11-25T23:33:01.900953Z"
+last_occurred_at = "2025-11-26T00:24:21.346329Z"
+last_observed_at = "2026-03-23T09:13:51.3036512Z"
+providers = ["claude"]
+provider_conversation_ids = ["53da7353-eedb-4418-9d45-531574b2abf3"]
+import_ids = ["019d174e-e953-7e8b-b506-5f1475399fc7", "019d19f8-e74f-76b6-a66c-a035a7cda06c"]
+
+[[messages]]
+message_id = "019d174e-ea3c-7bc7-abec-7ca0c5996d7b"
+role = "human"
+sequence_hint = 1
+occurred_at = "2025-11-25T23:33:03.766671Z"
+excerpt = "is there any advantage to using openwrt vs debian as a router"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-714b-b161-81556ceee914"
+role = "assistant"
+sequence_hint = 2
+occurred_at = "2025-11-25T23:33:23.763622Z"
+excerpt = "OpenWRT advantages:\n\n**Purpose-built efficiency**\n- 50-100MB installed vs Debian's several GB\n- Boots in seconds, minimal resource overhead\n- Optimized kernel …"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7185-af70-c84898581f8b"
+role = "human"
+sequence_hint = 3
+occurred_at = "2025-11-25T23:34:57.979254Z"
+excerpt = "a box just for routing. Is there anything not available in apt for debian concerning routing"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7c35-9ec0-dcd46fbb4c75"
+role = "assistant"
+sequence_hint = 4
+occurred_at = "2025-11-25T23:35:12.668493Z"
+excerpt = "No significant gaps. Debian apt has all the routing functionality:\n\n- **Firewall:** iptables, nftables\n- **Routing protocols:** FRR (BGP, OSPF, etc), BIRD\n- **…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-795f-b11b-78f19b168577"
+role = "human"
+sequence_hint = 5
+occurred_at = "2025-11-25T23:36:16.788678Z"
+excerpt = "wifi would be external access pointds"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7eb5-8936-a1f3c8ba5bcc"
+role = "assistant"
+sequence_hint = 6
+occurred_at = "2025-11-25T23:36:33.261109Z"
+excerpt = "Then Debian makes more sense for you.\n\nWith external APs, you lose OpenWRT's main hardware advantage (WiFi driver support/integration). What remains is:\n- LuCI…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7d78-9184-3fc95562525b"
+role = "human"
+sequence_hint = 7
+occurred_at = "2025-11-25T23:42:33.267657Z"
+excerpt = "edge router for home lab/public facing. I have 1gbit (can expand to 2.5 or 5 gbit) synchronous fiber with 15 static ips from ATT. Also have spectrum with dynam…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-76af-a834-0281d2c1dc22"
+role = "assistant"
+sequence_hint = 8
+occurred_at = "2025-11-25T23:42:52.075103Z"
+excerpt = "Debian is **absolutely** the right choice for this. OpenWRT couldn't handle this sophistication cleanly.\n\nYour requirements:\n\n**Multi-WAN with intelligent rout…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7c4d-a28b-de4d59bb124e"
+role = "human"
+sequence_hint = 9
+occurred_at = "2025-11-25T23:45:53.078863Z"
+excerpt = "1. will be an amd 5 or 7 probabaly, can do 16 or 32 or more ram if needed, will have whatever nics needed to accomplish goal. \n2.  no, new territory\n3. auto wa…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7892-94ac-0c0aa32d7665"
+role = "assistant"
+sequence_hint = 10
+occurred_at = "2025-11-25T23:46:11.594106Z"
+excerpt = "Excellent, plenty of headroom. Here's the architecture:\n\n**House router:**\n- Ryzen 5/7 (any modern one handles multi-gig + encryption easily)\n- 16GB RAM is ove…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7c1c-bcd5-342a503c189a"
+role = "human"
+sequence_hint = 11
+occurred_at = "2025-11-25T23:50:13.414913Z"
+excerpt = "will be debian 13. \n1> yes, that is intent. \n2> we have full 110 power, no issues there. space will be probably like the minipc I just bought.  I have att on g…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7bca-8fff-0f64f53ecbe6"
+role = "assistant"
+sequence_hint = 12
+occurred_at = "2025-11-25T23:50:43.305154Z"
+excerpt = "Good, Debian 13 (trixie) has kernel 6.6+ with mature MPTCP.\n\n**Architecture confirmed:**\n- Truck: 4 separate WAN connections → 4 WireGuard tunnels → single MPT…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7747-b702-0de48e57c034"
+role = "human"
+sequence_hint = 13
+occurred_at = "2025-11-25T23:55:21.82934Z"
+excerpt = "for home IP, should be able to use 1 ipv4. also have ipv6 from att that is a /64 and they say is static. The point of using the mptcp is so there are multiple …"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea3c-7137-93b0-5560e7e2eeb1"
+role = "assistant"
+sequence_hint = 14
+occurred_at = "2025-11-25T23:55:41.68678Z"
+excerpt = "Perfect, that simplifies it.\n\n**House router:**\n- 1 IPv4 from ATT block for WireGuard server\n- WireGuard listens on that IP\n- IPv6 /64 for future use\n\n**Truck …"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-734c-82d2-b240278fc6f7"
+role = "human"
+sequence_hint = 15
+occurred_at = "2025-11-26T00:00:25.389375Z"
+excerpt = "yes, truck router will serve as wifi ap as well. are there alternatives to wireguard? what would `mptcpize` be needed for? could we not add in a double connect…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7f05-b104-c28d45565ac0"
+role = "assistant"
+sequence_hint = 16
+occurred_at = "2025-11-26T00:01:02.403708Z"
+excerpt = "**WireGuard alternatives:**\n\n- **OpenVPN:** Slower (TCP or UDP), more overhead, but rock-solid mature\n- **IPsec (strongSwan):** Standards-based, complex config…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7e7e-8792-b169581ad292"
+role = "human"
+sequence_hint = 17
+occurred_at = "2025-11-26T00:04:49.258999Z"
+excerpt = "yes, that seems to most logical path to me using F#. This should be able to select the best wan for specific traffic. So if one website is showing better metri…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7e99-8ccf-34eedc5d8dfd"
+role = "assistant"
+sequence_hint = 18
+occurred_at = "2025-11-26T00:05:05.549366Z"
+excerpt = "Perfect, you're building intelligent SD-WAN logic in F#.\n\n**Architecture:**\n\nF# service that:\n1. **Monitors both WANs** - latency, packet loss, current bandwid…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7415-86aa-e0cc57df97a6"
+role = "human"
+sequence_hint = 19
+occurred_at = "2025-11-26T00:07:32.135102Z"
+excerpt = "we might have to experiment with all of these points. But doing each of these things is doable right?"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7ee5-80ad-c8a3f3b4e274"
+role = "assistant"
+sequence_hint = 20
+occurred_at = "2025-11-26T00:07:46.993465Z"
+excerpt = "Yes, all doable.\n\n**1. Granularity:**\n- Per IP: Just use destination IP in routing decisions\n- Per /24: Mask to subnet, aggregate metrics\n- Per AS: Query BGP d…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-77aa-8662-12124fc6b74c"
+role = "human"
+sequence_hint = 21
+occurred_at = "2025-11-26T00:10:17.557604Z"
+excerpt = "ok, cool. Also, for the spectrum connection, I should be able to do 1 tunnel per truck wan as well, no?  how many clients can a wireguard server handle and how…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7fe8-b00c-e2eb9347cf69"
+role = "assistant"
+sequence_hint = 22
+occurred_at = "2025-11-26T00:10:35.73068Z"
+excerpt = "**Yes, absolutely!**\n\nYou'd have:\n- **ATT fiber (static IP):** 4 WireGuard tunnels (one per truck WAN)\n- **Spectrum (dynamic IP):** 4 WireGuard tunnels (one pe…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-75d2-ab52-ab6476978ccd"
+role = "human"
+sequence_hint = 23
+occurred_at = "2025-11-26T00:13:18.846731Z"
+excerpt = "so if i add in local wifi access in the truck, say i am parked at an RV park or a truckstop and have wifi available, I should be able to wireguard tunnel over …"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7b08-b4d7-c0233448c8b6"
+role = "assistant"
+sequence_hint = 24
+occurred_at = "2025-11-26T00:13:36.5688Z"
+excerpt = "Yes, exactly!\n\n**When parked with WiFi:**\n- Truck router connects to WiFi as client (becomes WAN interface #5)\n- Establish 2 more WireGuard tunnels over WiFi:\n…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea42-7903-9bdf-13f33315461a"
+role = "human"
+sequence_hint = 25
+occurred_at = "2025-11-26T00:15:15.750367Z"
+excerpt = "i would add a wifi adapter for the local truck wifi options. How well does mptcp handle bad connections, jitter, etc?"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-795b-8d0c-cd25ebd9ed36"
+role = "assistant"
+sequence_hint = 26
+occurred_at = "2025-11-26T00:15:39.708355Z"
+excerpt = "**MPTCP handles variable quality reasonably well, but it's not magic:**\n\n**What it does well:**\n- **Automatic load balancing:** Fast paths get more traffic (AC…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-7aec-b974-6bedb0f10762"
+role = "human"
+sequence_hint = 27
+occurred_at = "2025-11-26T00:20:05.830571Z"
+excerpt = "i would think conservative,  the main goal is to take measurements and usage experiences and define a minimum level of speed that is satisfactory, I am thinkin…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-758e-841e-d0ec03943c28"
+role = "assistant"
+sequence_hint = 28
+occurred_at = "2025-11-26T00:20:23.155098Z"
+excerpt = "**Conservative makes sense for your use case:**\n\n**Target requirements:**\n- **Aggregate bandwidth:** 20-30 Mbps minimum (4K streaming ~25 Mbps)\n- **Latency for…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-7ea4-b822-426f6494cbb5"
+role = "human"
+sequence_hint = 29
+occurred_at = "2025-11-26T00:21:51.555866Z"
+excerpt = "Metrics storage: Event-sourced locally on truck router, sync to home when connected\nAlert mechanisms: When aggregate bandwidth drops below threshold, just log …"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-7415-8115-3508e78a4a3e"
+role = "assistant"
+sequence_hint = 30
+occurred_at = "2025-11-26T00:22:07.310654Z"
+excerpt = "**Perfect fit for your architecture.**\n\n**Truck router F# service:**\n- Event-sources all metrics locally (path measurements, routing decisions, bandwidth usage…"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-706c-aab0-d23d8eef032e"
+role = "human"
+sequence_hint = 31
+occurred_at = "2025-11-26T00:24:06.192106Z"
+excerpt = "seems like Event Modeling this would be perfect"
+artifact_reference_count = 0
+
+[[messages]]
+message_id = "019d174e-ea43-775f-98ef-6f0b4f95ed37"
+role = "assistant"
+sequence_hint = 32
+occurred_at = "2025-11-26T00:24:21.346329Z"
+excerpt = "**Absolutely perfect fit.**\n\nThis system is exactly what Event Modeling excels at:\n\n**Natural event flows:**\n- Path quality measurements → events\n- Routing dec…"
+artifact_reference_count = 0
+

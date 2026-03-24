@@ -1,0 +1,65 @@
+schema_version = 1
+event_id = "019d174e-ea55-76ff-a3e2-8a2394897db2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea55-7ab2-941a-0bed188f9c65"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T13:50:11.569957Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "8d4d9df83dd243696a9f2ecc37af94ad1b9c1e587697ca6377554a0f5ef5a587"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca483-3d53-7f7e-9133-23dc5d5fe6db"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca483-3d53-7f7e-9133-23dc5d5fe6db"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca483-3d53-7f7e-9133-23dc5d5fe6db"
+role = "assistant"
+sequence_hint = 96
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-02-28T13:49:54.565812Z\",\"stop_timestamp\":\"2026-02-28T13:49:54.565812Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-02-28T13:49:54.897652Z\",\"stop_timestamp\":\"2026-02-28T13:49:58.458561Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_012RHwamgwZHkmehGkwoAREi\",\"name\":\"bash_tool\",\"input\":{\"command\":\"python3 -c \\u0022\\nimport json\\nwith open(\\u0027/mnt/user-data/uploads/conversations.json\\u0027) as f:\\n    data = json.load(f)\\n\\n# Check message level for model info\\nmsg_keys = set()\\ncontent_keys = set()\\nfor c in data:\\n    for m in c[\\u0027chat_messages\\u0027]:\\n        msg_keys.update(m.keys())\\n        for block in m.get(\\u0027content\\u0027, []):\\n            content_keys.update(block.keys())\\n\\nprint(\\u0027Message keys:\\u0027, msg_keys)\\nprint(\\u0027Content block keys:\\u0027, content_keys)\\n\\n# Check a few assistant messages for any model field\\nfor c in data[:5]:\\n    for m in c[\\u0027chat_messages\\u0027]:\\n        if m[\\u0027sender\\u0027] == \\u0027assistant\\u0027:\\n            print(\\u0027Assistant msg keys:\\u0027, list(m.keys()))\\n            break\\n    break\\n\\u0022\\n\",\"description\":\"Check if model/version info is present in the export\"},\"message\":\"Check if model/version info is present in the export\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"commandLine\",\"context\":null,\"display_content\":{\"type\":\"json_block\",\"json_block\":\"{\\u0022language\\u0022: \\u0022bash\\u0022, \\u0022code\\u0022: \\u0022python3 -c \\\\\\u0022\\\\nimport json\\\\nwith open(\\u0027/mnt/user-data/uploads/conversations.json\\u0027) as f:\\\\n    data = json.load(f)\\\\n\\\\n# Check message level for model info\\\\nmsg_keys = set()\\\\ncontent_keys = set()\\\\nfor c in data:\\\\n    for m in c[\\u0027chat_messages\\u0027]:\\\\n        msg_keys.update(m.keys())\\\\n        for block in m.get(\\u0027content\\u0027, []):\\\\n            content_keys.update(block.keys())\\\\n\\\\nprint(\\u0027Message keys:\\u0027, msg_keys)\\\\nprint(\\u0027Content block keys:\\u0027, content_keys)\\\\n\\\\n# Check a few assistant messages for any model field\\\\nfor c in data[:5]:\\\\n    for m in c[\\u0027chat_messages\\u0027]:\\\\n        if m[\\u0027sender\\u0027] == \\u0027assistant\\u0027:\\\\n            print(\\u0027Assistant msg keys:\\u0027, list(m.keys()))\\\\n            break\\\\n    break\\\\n\\\\\\u0022\\\\n\\u0022}\"},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_012RHwamgwZHkmehGkwoAREi\",\"name\":\"bash_tool\",\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022returncode\\u0022:0,\\u0022stdout\\u0022:\\u0022Message keys: {\\u0027attachments\\u0027, \\u0027uuid\\u0027, \\u0027text\\u0027, \\u0027updated_at\\u0027, \\u0027files\\u0027, \\u0027sender\\u0027, \\u0027created_at\\u0027, \\u0027content\\u0027}\\\\nContent block keys: {\\u0027flags\\u0027, \\u0027text\\u0027, \\u0027integration_icon_url\\u0027, \\u0027tool_use_id\\u0027, \\u0027summaries\\u0027, \\u0027integration_name\\u0027, \\u0027approval_key\\u0027, \\u0027thinking\\u0027, \\u0027structured_content\\u0027, \\u0027citations\\u0027, \\u0027input\\u0027, \\u0027approval_options\\u0027, \\u0027is_mcp_app\\u0027, \\u0027id\\u0027, \\u0027alternative_display_type\\u0027, \\u0027start_timestamp\\u0027, \\u0027stop_timestamp\\u0027, \\u0027icon_name\\u0027, \\u0027type\\u0027, \\u0027is_error\\u0027, \\u0027message\\u0027, \\u0027display_content\\u0027, \\u0027context\\u0027, \\u0027meta\\u0027, \\u0027cut_off\\u0027, \\u0027content\\u0027, \\u0027name\\u0027}\\\\nAssistant msg keys: [\\u0027uuid\\u0027, \\u0027text\\u0027, \\u0027content\\u0027, \\u0027sender\\u0027, \\u0027created_at\\u0027, \\u0027updated_at\\u0027, \\u0027attachments\\u0027, \\u0027files\\u0027]\\\\n\\u0022,\\u0022stderr\\u0022:\\u0022\\u0022}\",\"uuid\":\"3b9b9df5-7f86-47ac-acd3-138352aea35b\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"commandLine\",\"display_content\":{\"type\":\"json_block\",\"json_block\":\"{\\u0022returncode\\u0022:0,\\u0022stdout\\u0022:\\u0022Message keys: {\\u0027attachments\\u0027, \\u0027uuid\\u0027, \\u0027text\\u0027, \\u0027updated_at\\u0027, \\u0027files\\u0027, \\u0027sender\\u0027, \\u0027created_at\\u0027, \\u0027content\\u0027}\\\\nContent block keys: {\\u0027flags\\u0027, \\u0027text\\u0027, \\u0027integration_icon_url\\u0027, \\u0027tool_use_id\\u0027, \\u0027summaries\\u0027, \\u0027integration_name\\u0027, \\u0027approval_key\\u0027, \\u0027thinking\\u0027, \\u0027structured_content\\u0027, \\u0027citations\\u0027, \\u0027input\\u0027, \\u0027approval_options\\u0027, \\u0027is_mcp_app\\u0027, \\u0027id\\u0027, \\u0027alternative_display_type\\u0027, \\u0027start_timestamp\\u0027, \\u0027stop_timestamp\\u0027, \\u0027icon_name\\u0027, \\u0027type\\u0027, \\u0027is_error\\u0027, \\u0027message\\u0027, \\u0027display_content\\u0027, \\u0027context\\u0027, \\u0027meta\\u0027, \\u0027cut_off\\u0027, \\u0027content\\u0027, \\u0027name\\u0027}\\\\nAssistant msg keys: [\\u0027uuid\\u0027, \\u0027text\\u0027, \\u0027content\\u0027, \\u0027sender\\u0027, \\u0027created_at\\u0027, \\u0027updated_at\\u0027, \\u0027attachments\\u0027, \\u0027files\\u0027]\\\\n\\u0022,\\u0022stderr\\u0022:\\u0022\\u0022}\"}}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "No model or version information in the export. The message schema only has `uuid`, `text`, `content`, `sender`, `created_at`, `updated_at`, `attachments`, `files` — nothing indicating which Claude model generated the response.\n\nAnthropic doesn't include that in the export data currently. So there's no way to automatically tag responses as Sonnet vs Opus from the JSON alone.\n\nThe workaround options are limited — you could potentially infer it roughly from the `created_at` timestamp combined with knowledge of when you were using which model, but that's imprecise and would require a manual mapping of date ranges to models.\n\nWorth noting as a gap for your forum import — model version would be useful metadata for traceability, especially as training data context. Might be worth submitting as a feature request to Anthropic via feedback."
+

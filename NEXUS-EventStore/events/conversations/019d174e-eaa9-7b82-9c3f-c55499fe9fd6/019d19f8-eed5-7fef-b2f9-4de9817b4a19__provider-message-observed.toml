@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed5-7fef-b2f9-4de9817b4a19"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eab7-7c7a-9c6e-0ee5fc9b5b42"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T06:37:43.897128Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "8f6833aa569881b461e70cdbcf0f25960169cb59d17aefed5ccf9a179d180577"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfa83-64d0-778e-97d8-10d2d914291a"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cfa83-64d0-778e-97d8-10d2d914291a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfa83-64d0-778e-97d8-10d2d914291a"
+role = "assistant"
+sequence_hint = 184
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about what graph types/subgraphs might exist in the NEXUS ecosystem and how their naming would work. Let me think through this systematically based on everything we've discussed."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Let me think through this by domain, then naming emerges from what each graph actually captures:\n\n**Business domain** — what the business cares about\n- `business.behavior` — Adam's EM diagram. System behavior from business perspective. Commands, events, views, GWT.\n- `business.rules` — just the GWT layer extracted. Pure rule documentation for stakeholders.\n- `business.process` — the actual workflow between system touches. What the human does. BPMN-like.\n- `business.domain` — bounded contexts, aggregates, entity relationships. DDD strategic design.\n\n**System domain** — how the software works\n- `system.architecture` — services, boundaries, deployment units, communication patterns\n- `system.data` — event schemas, projections, storage decisions\n- `system.integration` — APIs, signals between systems, external events (Martin's automation pattern)\n\n**App domain** — the running application\n- `app.lifecycle` — open, close, suspend, resume, update, error recovery\n- `app.state` — state machines, transitions, what the app \"knows\" at any moment\n- `app.navigation` — routes, screens, page flow\n\n**UI domain** — what gets rendered\n- `ui.visual` — layout, typography, color, spacing. Designer's concern.\n- `ui.interaction` — clicks, gestures, inputs. What the user does physically.\n- `ui.information` — what data appears where, hierarchy, content structure\n- `ui.structure` — components, composition, nesting. Dev's concern.\n- `ui.state` — reactive state, bindings, what drives re-renders\n\n**UX domain** — how it feels\n- `ux.journey` — PATHs live here. Concrete user journeys with data.\n- `ux.persona` — actor definitions, contexts, goals, pain points\n- `ux.accessibility` — WCAG concerns, screen reader flows, keyboard navigation\n\n**FORGE domain** — building\n- `forge.codegen` — spec to source code mapping\n- `forge.test` — GWT to test case generation\n- `forge.build` — compilation, bundling, artifact production\n\n**PAXUS domain** — operating\n- `paxus.deploy` — environments, rollout strategy, rollback\n- `paxus.monitor` — health checks, metrics, alerting\n- `paxus.analytics` — usage patterns, feature adoption\n- `paxus.incident` — error tracking, diagnosis, resolution\n\n**LOGOS domain** — knowing\n- `logos.requirements` — captured needs, feature requests\n- `logos.discussion` — forum threads, Discord, email distilled to facts\n- `logos.support` — tickets, bug reports, user feedback\n- `logos.knowledge` — refined understanding, decisions, rationale\n\nThe naming pattern that emerges: **`domain.concern`** with optional deeper levels like `domain.concern.detail`. Same pattern as `business.emd.gwt`.\n\nNotice how some concerns cross domains. A bug report enters through `logos.support`, links to `paxus.incident`, traces back to `business.behavior` slices, reveals a gap in `forge.test`. The bridge Facts connecting these subgraphs *are* the diagnostic path. The metagraph shows you the full picture.\n\nAlso notice — not all of these need to exist on day one. They emerge as you model. Start with `business.behavior`, add subgraphs when a real need appears. The Truth Graph grows organically.\n\nDoes this naming structure feel right, or should the top-level domains be different?"
+

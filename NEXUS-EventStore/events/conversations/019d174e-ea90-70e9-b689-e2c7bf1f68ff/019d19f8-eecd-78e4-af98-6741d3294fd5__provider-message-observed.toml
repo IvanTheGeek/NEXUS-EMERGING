@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eecd-78e4-af98-6741d3294fd5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+conversation_id = "019d174e-ea90-70e9-b689-e2c7bf1f68ff"
+message_id = "019d174e-ea90-77b1-bb93-2c98f4ddd44e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T12:52:38.820117Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "3938cc3230d2559d3f46f0dac0c8bcad5946ec85b85282376bc38337df92ea1b"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfbda-c983-73c6-873a-3b657fa875b7"
+conversation_native_id = "15b0c30c-96ee-44b6-8edf-cf5e13465088"
+message_native_id = "019cfbda-c983-73c6-873a-3b657fa875b7"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfbda-c983-73c6-873a-3b657fa875b7"
+role = "assistant"
+sequence_hint = 2
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is asking about git concepts: mirroring/cloning a repo to keep a personal copy, and rebasing personal changes on top of upstream updates."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Two separate scenarios, both clear-cut:\n\n**Scenario 1: Personal backup copy, track upstream**\n\nThis is a **mirror clone**. Not a fork — a fork implies intent to diverge. A mirror is just your safety net.\n\n```bash\ngit clone --mirror https://github.com/original/repo.git\n```\n\nTo keep it updated, you just `git remote update` periodically (or automate it). If the original disappears, you have everything — all branches, tags, history.\n\nIf you want a working copy (not just bare backup), clone normally and add the original as `upstream`:\n\n```bash\ngit clone https://github.com/original/repo.git\ngit remote rename origin upstream\n# optionally add your own remote as origin\ngit remote add origin https://your-host/your-copy.git\n```\n\nThen `git fetch upstream` to pull in their changes.\n\n---\n\n**Scenario 2: Your changes on top of latest original**\n\nYes — **rebase**. Not \"debase\" (that's not a term), just rebase. The workflow:\n\n```bash\ngit fetch upstream\ngit rebase upstream/main\n```\n\nThis replays your commits on top of their latest. Your changes stay as a clean layer above theirs. Conflicts are resolved commit-by-commit during the rebase.\n\nThe mental model: your branch is like a patch set that gets re-applied after every upstream update. This is exactly how Linux kernel contributors maintain out-of-tree patches.\n\n---\n\n**Which to use?**\n\n| Goal | Approach |\n|---|---|\n| Pure backup, no changes | `--mirror` clone + periodic fetch |\n| Track upstream + your own changes | fork + `upstream` remote + rebase |\n| Both | Fork on your host, mirror periodically, rebase your branch |\n\nHosting this on your own Forgejo instance would be the natural fit given your setup."
+

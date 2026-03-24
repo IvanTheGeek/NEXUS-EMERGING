@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3264-707f-bc26-eede06b934fa"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc4-7806-9147-9cb040e3b793"
+conversation_id = "019d174f-2cc4-7806-9147-9cb040e3b793"
+message_id = "019d174f-2cc4-7c66-93b8-6598a3dfca9f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T19:23:12.0613238Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "739e05e30cad3136a20b5c876dd8b22a97688f1c55e28a524fa29789ac5b6183"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b7070f-8f98-8333-8bd0-9fd2f063ee1a"
+conversation_native_id = "69b7070f-8f98-8333-8bd0-9fd2f063ee1a"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "293306d7-23b9-4405-8ef6-c798818d126b"
+conversation_native_id = "69b7070f-8f98-8333-8bd0-9fd2f063ee1a"
+message_native_id = "293306d7-23b9-4405-8ef6-c798818d126b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "293306d7-23b9-4405-8ef6-c798818d126b"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 4
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — **but only in controlled, permission-based ways.** A WebAssembly (WASM) app in the browser cannot freely access the computer’s file system like a native program. Browsers enforce strict sandboxing for security. However, modern web APIs provide **several mechanisms that allow limited, user-approved filesystem access.**\n\nBelow are the main approaches.\n\n---\n\n# 1. File System Access API (Direct user-granted access)\nThe most powerful option available today.\n\nA browser can ask the user to grant access to **specific files or directories**. Once granted, the web app can read and write them.\n\n**Supported browsers**\n- Chromium browsers (Chrome, Edge, Brave, etc.)\n- Limited / experimental elsewhere\n\nExample JS used by a WASM host page:\n\n```javascript\nconst dirHandle = await window.showDirectoryPicker()\n\nfor await (const entry of dirHandle.values()) {\n    console.log(entry.name)\n}\n```\n\nA WASM runtime (like Rust, Go, or .NET WASM) can call this through JavaScript interop.\n\nCapabilities once granted:\n\n- read files\n- write files\n- create files\n- iterate directories\n\nRestrictions:\n\n- must be triggered by **user interaction**\n- user chooses the directory/file\n- permission can be revoked\n- access limited to chosen locations\n\nThink of this as:\n\n**User-mounted filesystem.**\n\n---\n\n# 2. File Picker API (single file upload style)\nThis is the traditional browser model.\n\nUser selects files:\n\n```html\n<input type=\"file\">\n```\n\nYour WASM app receives the file contents but **cannot write back to the filesystem**.\n\n---\n\n# 3. Origin Private File System (OPFS)\nModern browsers provide a **sandboxed virtual filesystem** available to WASM.\n\nThis is part of the File System Access API.\n\nProperties:\n\n- persistent storage\n- very fast\n- accessible from WASM\n- **not visible to the user’s normal filesystem**\n\nExample use cases:\n\n- SQLite databases\n- application state\n- caches\n- local documents\n\nThis is what many **in-browser IDEs and databases use**.\n\n---\n\n# 4. WASI Virtual Filesystem\nSome WASM runtimes simulate a filesystem internally.\n\nFor example:\n\n- Emscripten\n- Wasmtime in the browser\n- WASI polyfills\n\nThese often map to:\n\n- memory\n- IndexedDB\n- OPFS\n\nSo the WASM program thinks it has `/home` or `/data`, but it’s really backed by browser storage.\n\n---\n\n# 5. Native-like access via wrappers\nIf you wrap your web app using something like:\n\n- entity[\"software\",\"Electron\",\"desktop runtime\"]  \n- entity[\"software\",\"Tauri\",\"desktop framework\"]  \n- entity[\"software\",\"Neutralinojs\",\"desktop framework\"]  \n\nthen the WASM/web app **can access the full filesystem** through the host runtime.\n\nBut that’s no longer a pure browser app.\n\n---\n\n# 6. Drag-and-drop directory access\nBrowsers can allow dropping a directory into a page.\n\nThis grants temporary read access to the directory contents.\n\n---\n\n# Important Security Model\nBrowsers intentionally prevent:\n\n- scanning arbitrary directories\n- accessing files without user permission\n- background file access\n\nEverything must be **explicitly user-granted**.\n\n---\n\n# Architecture Pattern for WASM Apps\nMost serious WASM apps do this:\n\n```\nWASM app\n     ↓\nVirtual FS layer\n     ↓\nOPFS / IndexedDB\n     ↓\nOptional user mounted directory\n```\n\nExamples:\n\n- entity[\"software\",\"SQLite\",\"database engine\"] compiled to WASM\n- entity[\"software\",\"Figma\",\"design software\"]\n- entity[\"software\",\"VS Code Web\",\"browser IDE\"]\n\n---\n\n# For Your Nexus Idea\nGiven your **file-based truth graph idea**, a browser WASM app could actually work very well:\n\nPossible architecture:\n\n```\nNexus WASM Engine\n      ↓\nGraph Builder\n      ↓\nVirtual File System\n      ↓\nUser Project Directory (via File System Access API)\n```\n\nThis would allow:\n\n- reading event model files\n- generating projections\n- writing compiled artifacts\n- all locally in the browser.\n\nEssentially a **local development environment in the browser**.\n\n---\n\n✅ **Short answer:**  \nYes — a WASM browser app can access the filesystem **if the user grants permission**, typically via the **File System Access API**, but it cannot freely access the whole system like native software.\n\n---\n\nIf you're interested, I can also show you something **extremely relevant to Nexus**:\n\n**A pattern where a WASM app edits a local Git repository directly from the browser.**\n\nThis is how some very advanced web IDEs work — and it might fit your **file-based event model graph builder** idea perfectly."
+

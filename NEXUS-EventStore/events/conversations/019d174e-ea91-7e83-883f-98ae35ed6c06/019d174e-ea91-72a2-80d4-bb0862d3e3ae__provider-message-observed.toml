@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea91-72a2-80d4-bb0862d3e3ae"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea91-792b-bc9c-15d558a2ea35"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T10:56:49.289078Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "0ca11ac51fb0d6e101af96ad63f10d7689bae3e0155ee17189cb296e76207ab9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfb70-c4b9-72dc-bd71-d2178675aa54"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfb70-c4b9-72dc-bd71-d2178675aa54"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfb70-c4b9-72dc-bd71-d2178675aa54"
+role = "assistant"
+sequence_hint = 12
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-17T10:56:38.503280Z\",\"stop_timestamp\":\"2026-03-17T10:56:38.503280Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-17T10:56:38.527738Z\",\"stop_timestamp\":\"2026-03-17T10:56:40.098888Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Ivan is clarifying the semantics of the 3-hour window in LaundryLog. It\\u0027s a UI/projection concern only, not a domain concept. The events themselves are just expense entries - the session window is purely for the RecentExpenses view projection.\",\"summaries\":[{\"summary\":\"Thinking about distinguishing LaundryLog session convenience features from data export requirements.\"},{\"summary\":\"Disambiguated session window as UI projection, not domain logic.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Exactly right — the 3-hour window is a **projection filter**, not a domain concept.\n\n## Clean Separation\n\n**Events (domain):** `LaundryExpenseLogged` — just facts. No session, no window, no grouping. Pure append-only log.\n\n**RecentExpenses view (projection):** Filters to \"last 3 hours\" as a convenience — surfaces what the user logged *this laundry trip* without them having to do anything.\n\n**Export/reporting:** Reads all `LaundryExpenseLogged` events, no filter. Every line item, full history.\n\n## The ViewSlice Stays Correct\n\nThe 3-hour window belongs entirely in the `RecentExpenses` projector's GWT — it's a **given clause condition**, not something baked into the events or the model structure.\n\n```toml\n[[projector.gwt]]\ngiven = \"LaundryExpenseLogged events within last 3 hours\"\nthen = \"RecentExpenses view shows those entries\"\n```\n\nIf the user wants a different window later (2 hours, \"today\", \"this trip\") — that's just a projector change. Events are untouched.\n\n## Data Export Slice\n\nWorth noting — export is its own projection reading the full event stream. No session awareness needed at all. Straightforward aggregate of all `LaundryExpenseLogged` facts.\n\nGood clarity to have before building the projector logic."
+

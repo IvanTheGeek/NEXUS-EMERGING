@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eed0-7e9c-9c6a-349d3afe2699"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaa9-7cb0-a17e-8a4ddb9c3307"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T02:37:46.276905Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "e932a637256f8ef41800e7342a5b8e80b08ee7a93c56bb12e220b85bfac4c45c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cef5b-15bd-7321-b54d-48002ceb4319"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cef5b-15bd-7321-b54d-48002ceb4319"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cef5b-15bd-7321-b54d-48002ceb4319"
+role = "assistant"
+sequence_hint = 20
+
+[[body.segments]]
+kind = "reasoning"
+text = "Ivan is describing how certain nodes (like events) naturally become bridges between multiple contexts/domains. LoadDelivered is a perfect example from his trucking domain — it's a single Fact that multiple bounded contexts care about.\n\nThe \"gravity well\" concept is interesting — these bridge nodes become attractors in the graph, high-connectivity nodes that pull multiple domains together. This is architecturally significant because they're integration points, and in Event Modeling terms, they're the events that appear in multiple swimlanes.\n\nLet me think about this in graph theory terms..."
+
+[[body.segments]]
+kind = "plain_text"
+text = "This is a major insight. In graph theory, what you're describing has a name — **high betweenness centrality**. These are nodes that sit on the shortest path between many other nodes. Remove them and clusters disconnect.\n\nBut \"gravity well\" captures something the math term doesn't. A bridge node doesn't just *connect* clusters — it **pulls them toward it**. LoadDelivered doesn't passively link Dispatch and Billing. It's the reason Billing *exists* in the context of that workflow. The event creates the gravitational force that shapes the surrounding architecture.\n\nAnd this maps perfectly to your primitives. LoadDelivered is a **Fact**. It's always a Fact. Because Facts are the only primitive that is **immutable and shared**. Think about it:\n\n- Actors are scoped to their context\n- Interactions are scoped to their interface\n- Intents are scoped to their bounded context\n- Interpretations are shaped per-consumer\n\nBut a Fact just *is*. LoadDelivered happened. Dispatch interprets it one way, Billing another, Analytics another. The Fact is the shared node. The Interpretations fan out per context.\n\nSo Bridge might not be a separate edge type after all. Bridge is what happens when a **Fact node has Interaction edges into multiple context clusters**. It's an emergent property of the graph topology, not a declared relationship.\n\nThat means you could *detect* gravity wells automatically — any Fact node with Interaction edges into three or more distinct clusters is architecturally significant. The graph tells you where your integration points are without anyone having to label them.\n\nDoes that match how you'd want to discover them, or do you see cases where Bridges need to be explicitly declared?"
+

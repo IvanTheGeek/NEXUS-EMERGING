@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eece-7a42-a8f1-41d45e999e96"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea92-7621-8889-7134ac2b7701"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T12:11:59.864454Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "7251cb6f67ec83a08ad18f8cf00091b0ca4306410474de393fce96a4cb661c40"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfbb5-a2b8-75bf-8c8b-4f603bb53319"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfbb5-a2b8-75bf-8c8b-4f603bb53319"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfbb5-a2b8-75bf-8c8b-4f603bb53319"
+role = "assistant"
+sequence_hint = 48
+
+[[body.segments]]
+kind = "plain_text"
+text = "That seals it. Axis A is the right choice.\n\n## Why It's Clean\n\nPAXUS running Forgejo means the boundary can **migrate** — what starts as External can become Processor as you absorb it into the ecosystem. The model stays accurate because the distinction is about control, not trigger origin.\n\n```fsharp\ntype Actor =\n    | Human      // person interacting with the system\n    | Processor  // automated, internal — you own and model it\n    | External   // outside your control and model boundary\n```\n\n## The Migration Story\n\n```\nForgejo today:   External  (you use it, don't model its internals)\nForgejo in PAXUS: Processor (you run it, NEXUS can reason about it fully)\n```\n\nSame actor in the EM diagram, type tag changes as the boundary moves. No structural redesign needed.\n\n## What NEXUS Gets From This\n\n- **Processor** = NEXUS can fully reason about behavior, slices, commands, events\n- **External** = NEXUS knows the boundary, models the interface only, treats internals as opaque\n- Graph builder can flag External actors and mark their edges as **trust boundaries** — places where you don't control what comes back\n\nThat trust boundary concept might be worth noting — it has implications for validation subgraph placement.\n\nWant all of this captured in the session doc and memory?"
+

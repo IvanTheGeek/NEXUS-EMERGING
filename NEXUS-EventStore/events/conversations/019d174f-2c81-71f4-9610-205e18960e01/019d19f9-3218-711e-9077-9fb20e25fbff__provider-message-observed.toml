@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3218-711e-9077-9fb20e25fbff"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-7915-b136-6f8d01ee38a7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T14:50:54.7750349Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "8b41400e9782bfbb2564ff2cf4c098daf85d948463b29da692ae8f6bfb329930"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "7cf8c34d-b43e-4251-8590-d7d6d934a960"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "7cf8c34d-b43e-4251-8590-d7d6d934a960"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "7cf8c34d-b43e-4251-8590-d7d6d934a960"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 100
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good moment to talk about this, because **naming discipline is what turns a diagram into a machine-readable spec**. If Nexus is eventually going to support **AI reasoning, slice generation, and code generation**, the names must carry **semantic meaning**.\n\nThe goal is that an AI (or generator) can look at a label and immediately know:\n\n- what **type** of thing it is\n- what **domain concept** it refers to\n- what **state transition** it represents\n\nWithout guessing.\n\n---\n\n# The Core Idea\n\nUse **structured names** that encode intent.\n\nThink of them like **lightweight DSL tokens** rather than casual labels.\n\nThe general pattern becomes:\n\n```\n<Type>: <Subject> <Action>\n```\n\nBut each artifact type has its own grammar.\n\n---\n\n# 1️⃣ Events (Past Tense)\n\nEvents represent **facts that already happened**.\n\nSo they should always be **past tense**.\n\nFormat:\n\n```\n<Subject><PastVerb>\n```\n\nExample for LaundryLog:\n\n```\nLaundryStarted\nWashCycleCompleted\nDryCycleCompleted\nLaundryLogged\nLaundryCanceled\n```\n\nImportant rule:\n\nEvents should read like **audit log entries**.\n\nExample:\n\n```\nUserLoggedIn\nOrderPlaced\nPaymentCaptured\n```\n\nThis makes event streams extremely readable.\n\n---\n\n# 2️⃣ Commands (Imperative)\n\nCommands represent **intent**.\n\nFormat:\n\n```\n<Verb><Subject>\n```\n\nExamples:\n\n```\nStartLaundry\nCompleteWashCycle\nLogLaundry\nCancelLaundry\n```\n\nNotice the difference.\n\n```\nCommand: StartLaundry\nEvent:   LaundryStarted\n```\n\nThis symmetry is incredibly helpful for automation.\n\n---\n\n# 3️⃣ Projections (State Description)\n\nProjections represent **read models / UI state**.\n\nThey describe **what the system currently knows**.\n\nFormat:\n\n```\n<Subject><View>\n```\n\nExamples:\n\n```\nLaundryStatusView\nActiveLaundryView\nLaundryHistoryView\nMachineAvailabilityView\n```\n\nThese names map well to UI.\n\nExample relationship:\n\n```\nEvents → Projection → UI Screen\n```\n\nExample:\n\n```\nLaundryStarted\nWashCompleted\nDryCompleted\n        ↓\nLaundryStatusView\n        ↓\nLaundryLogScreen\n```\n\n---\n\n# 4️⃣ UI Screens\n\nUI screens represent **interaction surfaces**.\n\nFormat:\n\n```\n<Subject>Screen\n```\n\nExamples:\n\n```\nLaundryLogScreen\nMachineDetailScreen\nAddLaundryScreen\nLaundryHistoryScreen\n```\n\nScreen **states** can use variants.\n\nExample:\n\n```\nLaundryLogScreen\n ├ Empty\n ├ ActiveCycle\n ├ CompletedCycle\n```\n\nThose states correspond to **projections**.\n\n---\n\n# 5️⃣ Paths\n\nPaths describe **timelines**.\n\nFormat:\n\n```\n<PathType>: <Description>\n```\n\nExample:\n\n```\nPath: NormalLaundryFlow\nPath: LaundryCanceledFlow\nPath: MachineFailureFlow\n```\n\nThese become extremely useful when generating tests.\n\nExample:\n\n```\nNormalLaundryFlow\n  LaundryStarted\n  WashCompleted\n  DryCompleted\n  LaundryLogged\n```\n\n---\n\n# 6️⃣ Policies (Process Managers)\n\nPolicies react to events.\n\nFormat:\n\n```\n<Subject><PolicyAction>Policy\n```\n\nExample:\n\n```\nAutoStartDryPolicy\nLaundryTimeoutPolicy\nMachineMaintenancePolicy\n```\n\n---\n\n# Why this matters for AI and generators\n\nWhen naming is consistent, the system can derive relationships automatically.\n\nExample:\n\n```\nCommand: StartLaundry\nEvent:   LaundryStarted\n```\n\nA generator can infer:\n\n```\nStartLaundry → produces → LaundryStarted\n```\n\nWithout explicit metadata.\n\n---\n\nExample projection inference:\n\n```\nLaundryStarted\nWashCompleted\nDryCompleted\n```\n\nAI can infer that these feed:\n\n```\nLaundryStatusView\n```\n\nBecause they share the **Laundry** subject.\n\n---\n\n# Example: Full Slice Naming\n\nCommand slice:\n\n```\nUI: LaundryLogScreen\nCommand: StartLaundry\nEvent: LaundryStarted\n```\n\nProjection slice:\n\n```\nEvents:\nLaundryStarted\nWashCompleted\nDryCompleted\n\nProjection:\nLaundryStatusView\n\nUI:\nLaundryLogScreen.ActiveCycle\n```\n\nNotice how readable that is.\n\n---\n\n# Why this helps Nexus\n\nBecause eventually your system will want to do things like:\n\n- generate **slice skeleton code**\n- generate **tests**\n- simulate **paths**\n- map **UI states to projections**\n\nConsistent naming dramatically reduces ambiguity.\n\n---\n\n# One subtle trick (very powerful)\n\nAdd **domain prefixes** for larger systems.\n\nExample:\n\n```\nLaundryStarted\nLaundryCanceled\nLaundryLogged\n\nMachineStarted\nMachineStopped\nMachineMaintained\n```\n\nNow events group naturally.\n\n---\n\n# One thing NOT to do\n\nAvoid vague names like:\n\n```\nUpdateLaundry\nProcessLaundry\nHandleLaundry\nDoLaundryThing\n```\n\nThese destroy semantic clarity.\n\nEvent modeling thrives on **precise language**.\n\n---\n\n# How this plays into your Figma setup\n\nInside Figma you would literally name the boxes like this.\n\nExample:\n\nEvent model page:\n\n```\nStartLaundry\n↓\nLaundryStarted\n↓\nWashCompleted\n↓\nDryCompleted\n↓\nLaundryLogged\n```\n\nProjection:\n\n```\nLaundryStatusView\n```\n\nUI:\n\n```\nLaundryLogScreen\n```\n\n---\n\n# One thing that might interest you\n\nYour **Paths idea** becomes extremely powerful when naming is consistent.\n\nBecause a path can be written almost like code:\n\n```\nNormalLaundryFlow\n\nStartLaundry\nLaundryStarted\nWashCompleted\nDryCompleted\nLaundryLogged\n```\n\nThat could literally become a **test scenario**.\n\n---\n\nIf you want, the next thing I can show you is something that might really help your **emIDE vision**:\n\n**How the entire Nexus system could be represented internally as a graph.**\n\nOnce you see that, a lot of your ideas (paths, slices, projections, UI states) suddenly click together very cleanly."
+

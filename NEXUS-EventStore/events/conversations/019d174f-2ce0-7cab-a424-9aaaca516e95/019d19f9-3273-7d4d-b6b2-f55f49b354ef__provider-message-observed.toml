@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3273-7d4d-b6b2-f55f49b354ef"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+conversation_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+message_id = "019d174f-2ce0-749d-8af1-72dd4e451865"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T21:46:23.2514619Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "1e41a4ab1d1a5a6dc14dea4f18e0d20bf591d5c2aab08552b738f756cf4af42e"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "fb365f44-b256-4ead-b9c0-1b37cd72fda5"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+message_native_id = "fb365f44-b256-4ead-b9c0-1b37cd72fda5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "fb365f44-b256-4ead-b9c0-1b37cd72fda5"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 49
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — **that is exactly how Blazor is designed to work.**\n\nYou don’t “replace a child component” manually in the DOM.  \nInstead, you **change state**, and Blazor’s renderer figures out:\n\n> “Only this child component needs to update”\n\n…and the rest of the page stays as-is.\n\n---\n\n## 🧠 What’s really happening\n\nBlazor uses a **diffing render tree**.\n\nSo when something changes:\n\n1. Your component state changes\n2. Blazor re-runs the render logic\n3. It compares (diffs) old vs new UI\n4. It updates **only what changed**\n\n👉 This is why:\n- The page doesn’t reload\n- Only parts of the UI update\n\n---\n\n## 🧱 Simple example\n\n### Parent page\n\n```razor\n@page \"/example\"\n\n<button @onclick=\"Toggle\">Toggle</button>\n\n<ChildComponent Value=\"@value\" />\n\n@code {\n    private int value = 1;\n\n    void Toggle()\n    {\n        value = value == 1 ? 2 : 1;\n    }\n}\n```\n\n---\n\n### Child component\n\n```razor\n<div>\n    Value is @Value\n</div>\n\n@code {\n    [Parameter] public int Value { get; set; }\n}\n```\n\n---\n\n### What happens\n\n- Click button → `value` changes\n- Parent rerenders\n- Blazor sees:\n  - Only `ChildComponent` parameter changed\n- 👉 Only that child updates\n\n---\n\n## 🔄 Replacing a child component entirely\n\nYou can also swap components:\n\n```razor\n@if (showA)\n{\n    <ComponentA />\n}\nelse\n{\n    <ComponentB />\n}\n```\n\n👉 Blazor will:\n- remove A\n- insert B\n- leave everything else alone\n\n---\n\n## ⚠️ Important nuance\n\nBlazor decides “same vs different component” based on:\n\n- **type**\n- **position in tree**\n- optionally: `@key`\n\n---\n\n### 🧩 `@key` (very important for control)\n\nIf you want to force replacement:\n\n```razor\n<ChildComponent @key=\"value\" Value=\"@value\" />\n```\n\n👉 This tells Blazor:\n> “If `value` changes, treat this as a completely new instance”\n\nWithout `@key`:\n- Blazor may reuse the same instance\n\nWith `@key`:\n- Blazor destroys and recreates it\n\n---\n\n## 🧠 In your NEXUS mental model\n\nThink of it like:\n\n- **Page = projection of graph**\n- **Child component = subgraph projection**\n\nWhen state changes:\n- Only affected subgraphs re-project\n- The rest of the projection remains stable\n\n---\n\n## 🔥 Why this is powerful\n\nThis gives you:\n\n- Partial UI updates (no full rerender)\n- Natural composition\n- Localized state changes\n- Performance efficiency\n\n---\n\n## 🧾 Bottom line\n\n- ✅ Yes — you can update or replace just a child component  \n- ✅ The page stays intact  \n- ✅ Blazor handles diffing and updating automatically  \n- ⚠️ Use `@key` when you need precise control over replacement  \n\n---\n\nIf you want next step:\n\n👉 I can show how this maps to **Elmish vs non-Elmish state flows**, or how to design **component boundaries that align with your Slice / Projection model** (this is where it gets really powerful for your system)."
+

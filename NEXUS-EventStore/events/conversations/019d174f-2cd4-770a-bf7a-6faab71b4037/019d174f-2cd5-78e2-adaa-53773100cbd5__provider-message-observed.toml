@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cd5-78e2-adaa-53773100cbd5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd4-770a-bf7a-6faab71b4037"
+conversation_id = "019d174f-2cd4-770a-bf7a-6faab71b4037"
+message_id = "019d174f-2cd5-761e-b6f0-3e0a649c6061"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T14:20:02.177706Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "9ed25ea319843081497a7a691ecc02fb677e91be29789edba3553b36cb35b92b"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bbb8a3-bcf4-832b-a5ba-bd6f22cd89d1"
+conversation_native_id = "69bbb8a3-bcf4-832b-a5ba-bd6f22cd89d1"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "5a348a0d-323d-4a4b-84a1-b76d0b98985d"
+conversation_native_id = "69bbb8a3-bcf4-832b-a5ba-bd6f22cd89d1"
+message_native_id = "5a348a0d-323d-4a4b-84a1-b76d0b98985d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "5a348a0d-323d-4a4b-84a1-b76d0b98985d"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 152
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — this is exactly the right moment to slow down and make the intent **explicit for future you (and others)**.\n\nI’m going to keep your structure intact, but add **meaning-first comments** (not just “what this does”, but *why it exists in NEXUS*).\n\n---\n\n```fsharp\nmodule NEXUS.Core\n\nopen System\n\n// ======================================================\n// IDENTITY\n// ======================================================\n//\n// In NEXUS, identity is fundamental.\n// Everything in the graph must be uniquely identifiable,\n// stable over time, and never ambiguous.\n//\n// We wrap Guid in private types to:\n// - prevent accidental misuse (no mixing NodeId with EdgeId)\n// - force creation through controlled functions (later)\n// - communicate intent in the type system\n//\n\ntype NodeId = private NodeId of Guid\ntype EdgeId = private EdgeId of Guid\ntype GraphId = private GraphId of Guid\n\n\n// ======================================================\n// CLASSIFICATION (SEMANTIC MEANING)\n// ======================================================\n//\n// The graph itself is structurally simple (nodes + edges),\n// but meaning comes from classification.\n//\n// NodeKind answers: \"What *kind of thing* is this node?\"\n// EdgeKind answers: \"What *kind of relationship* is this edge?\"\n//\n// These are intentionally *not exhaustive*.\n// They are a starting ontology that can evolve.\n//\n// IMPORTANT:\n// These are NOT UI concepts.\n// These are domain semantics that lenses will interpret.\n//\n\ntype NodeKind =\n    | Fact        // A known truth (often event-like)\n    | Concept     // An abstract idea or grouping\n    | Actor       // A user, system, or agent\n    | Command     // An intent to change state\n    | Event       // A recorded fact that something occurred\n    | View        // A shaped representation of data\n    | Lens        // A transformation over the graph\n    | Artifact    // A concrete output (UI, file, report, etc.)\n\ntype EdgeKind =\n    | RelatesTo   // General relationship\n    | Produces    // Command → Event\n    | ProjectsTo  // Event → View\n    | Informs     // View → Actor\n    | Contains    // Hierarchical containment\n    | Uses        // Dependency or usage\n    | Refines     // Specialization or evolution\n\n\n// ======================================================\n// CORE GRAPH STRUCTURE\n// ======================================================\n//\n// This is the \"truth layer\" of NEXUS.\n//\n// It is intentionally:\n// - minimal\n// - immutable\n// - UI-agnostic\n//\n// No layout, no rendering, no framework concerns.\n//\n// Everything else in the system is a *lens over this*.\n//\n\ntype Node =\n    { Id: NodeId\n      Kind: NodeKind\n      Name: string } // Human-readable label (not identity)\n\ntype Edge =\n    { Id: EdgeId\n      Kind: EdgeKind\n      Source: NodeId\n      Target: NodeId }\n\ntype Graph =\n    { Id: GraphId\n      Nodes: Map<NodeId, Node>\n      Edges: Map<EdgeId, Edge> }\n\n\n// ======================================================\n// ERROR MODEL\n// ======================================================\n//\n// Instead of throwing exceptions, we model invalid states\n// explicitly as data.\n//\n// This follows Domain Modeling Made Functional:\n// \"Make invalid states unrepresentable (or at least explicit)\"\n//\n// These errors represent violations of graph invariants.\n//\n\ntype GraphError =\n    | EmptyName\n    | DuplicateNodeName of string\n    | MissingSourceNode of NodeId\n    | MissingTargetNode of NodeId\n    | InvalidSelfReference of EdgeKind * NodeId\n\n\n// ======================================================\n// DESIGN INTENT (IMPORTANT FOR HUMANS)\n// ======================================================\n//\n// This module represents the NEXUS \"truth graph\".\n//\n// Key principles:\n//\n// 1. The graph is the source of truth.\n//    - No duplication of meaning elsewhere\n//\n// 2. Everything else is a lens over this graph.\n//    - UI\n//    - Event Modeling diagrams\n//    - APIs\n//    - Reports\n//    - Archives (like your TOML)\n//\n// 3. This layer must remain pure.\n//    - No side effects\n//    - No framework dependencies\n//    - No UI concerns\n//\n// 4. Evolution happens by addition, not mutation.\n//    - New nodes and edges represent change over time\n//\n// 5. Types enforce correctness.\n//    - IDs are strongly typed\n//    - Errors are explicit\n//\n// ------------------------------------------------------\n// What comes next (not in this file):\n//\n// - Smart constructors (createNode, createEdge)\n// - Validation rules (what edges are allowed between kinds)\n// - Graph operations (addNode, addEdge, traversal)\n//\n// - Higher layers:\n//     NEXUS.EventModeling  (lens)\n//     NEXUS.UI             (Bolero)\n//     NEXUS.LOGOS          (archives, ingestion)\n//\n// ======================================================\n```\n\n---\n\n## 🔥 Why this matters\n\nThis is not just comments — this is:\n\n- **onboarding documentation**\n- **design guardrails**\n- **future-you protection**\n\nBecause without this, the next step is always:\n\n> “Let me just add UI stuff here real quick…”\n\n…and suddenly the core is polluted.\n\n---\n\n## 🧠 One subtle but important thing\n\nNotice what we did **not** do:\n\n- No `CommandSlice`\n- No `ViewSlice`\n- No coordinates\n- No HTML\n- No Bolero types\n\n👉 That discipline is what allows:\n\n> EM = lens  \n> UI = lens  \n> Archive = lens  \n\n---\n\n## 🚀 Next Step\n\nNow we make this *alive*:\n\n👉 Add **smart constructors + rules**\n\nThat’s where the real Wlaschin influence kicks in:\n\n- prevent invalid edges\n- enforce allowed relationships\n- control creation of IDs\n\nIf you want, I’ll take this exact file and:\n\n> turn it into a fully usable core (with functions and constraints)\n\nJust say:\n\n**“add constructors and rules”**"
+

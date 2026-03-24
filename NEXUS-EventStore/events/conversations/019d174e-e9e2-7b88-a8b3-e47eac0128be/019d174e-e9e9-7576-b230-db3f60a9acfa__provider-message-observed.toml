@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-e9e9-7576-b230-db3f60a9acfa"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+conversation_id = "019d174e-e9e2-7b88-a8b3-e47eac0128be"
+message_id = "019d174e-e9e9-76b2-99e2-c8b4d33ebf47"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T01:14:18.125398Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "e4f0cc385b228ef252f1e777da5f56f5f6a119008039b1e7baad8eda4ea4b7c3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7ac6-d03e-7596-a278-66363c2fe5ad"
+conversation_native_id = "56603cfd-ca67-4d14-bc3b-63998ba6b681"
+message_native_id = "019a7ac6-d03e-7596-a278-66363c2fe5ad"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7ac6-d03e-7596-a278-66363c2fe5ad"
+role = "assistant"
+sequence_hint = 34
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-13T01:14:06.517709Z\",\"stop_timestamp\":\"2025-11-13T01:14:11.439888Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking about the license for Phi-3. This is a straightforward factual question about licensing terms. Given the userStyle about being a tutor/educator, I should consider whether this warrants a Socratic approach or direct answer.\\n\\nLooking at the guidance: \\u0022For advanced technical questions (PhD-level, research, graduate topics with sophisticated terminology), recognize the expertise level and provide direct, technical responses without excessive pedagogical scaffolding.\\u0022\\n\\nThis user is clearly technically sophisticated based on our conversation - they\\u0027re discussing F# development, MCP servers, event sourcing, hybrid LLM architectures, etc. They\\u0027re asking a specific factual question about licensing, which is important for their production deployment decisions.\\n\\nThis isn\\u0027t a conceptual question where guided exploration would help understanding - it\\u0027s a \\u0022what are the legal terms\\u0022 question that needs a direct, accurate answer. The user needs to know if they can legally use Phi-3 in their Nexus project.\\n\\nI should provide a direct answer about the MIT license, what it allows, and any relevant considerations for their commercial use case.\",\"summaries\":[{\"summary\":\"Thinking about identifying the license being referenced.\"},{\"summary\":\"Weighing pedagogical approach versus direct factual answer.\"},{\"summary\":\"Weighing pedagogical approach for licensing question.\"},{\"summary\":\"Weighed technical sophistication against direct factual response needed.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Phi-3 is released under the MIT License** - one of the most permissive open source licenses.\n\n## What this means for you:\n\n**You can:**\n- Use it commercially (including in Nexus for paid products/services)\n- Modify it however you want\n- Distribute it\n- Sublicense it\n- Use it privately without any obligations\n\n**The only requirements:**\n- Include the original MIT license text and copyright notice in any distributions\n- That's it - no other restrictions\n\n## Important distinction:\n\nThe **model weights** are MIT licensed, but be aware that:\n- Some Phi-3 variants have additional \"acceptable use policies\" from Microsoft (mainly prohibiting harmful uses)\n- Fine-tuning on your own data doesn't change the license\n- Derivative works you create stay under whatever license you choose\n\n## For your Nexus use case:\n\nThis is perfect - you can:\n- Deploy it on your RTX GPUs commercially\n- Fine-tune it on Nexus domain data\n- Package it as part of your framework\n- Sell services/products using it\n- Keep your improvements private or open source them - your choice\n\nThe MIT license is why Phi-3 is such a strong choice for production systems compared to models with restrictive licenses or usage-based pricing."
+

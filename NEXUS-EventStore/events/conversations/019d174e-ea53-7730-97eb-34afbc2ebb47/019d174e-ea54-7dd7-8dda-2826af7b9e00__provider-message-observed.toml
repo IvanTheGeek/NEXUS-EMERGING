@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea54-7dd7-8dda-2826af7b9e00"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7ab7-a64a-75fe92b22e8d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:24:13.133016Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "3f87ecb59f96f9fcd01a78c73555b2c2439b4169e19f2811f24c985bbb337f83"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a926a-7942-74c9-a03e-c3e825a6022f"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a926a-7942-74c9-a03e-c3e825a6022f"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a926a-7942-74c9-a03e-c3e825a6022f"
+role = "assistant"
+sequence_hint = 44
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-17T15:24:06.726647Z\",\"stop_timestamp\":\"2025-11-17T15:24:07.767744Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The entrypoint is \\u0060./nexus\\u0060 but it can\\u0027t find the file. Let\\u0027s check what\\u0027s actually in the /app directory. We need to override the entrypoint to inspect the contents.\",\"summaries\":[{\"summary\":\"Thinking about diagnosing missing executable in Docker container entrypoint.\"},{\"summary\":\"Investigated missing executable and diagnosed container initialization failure.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "The entrypoint is looking for `./nexus` but it's not there. Let's override the entrypoint to see what's in /app:\n\n```bash\n# Override entrypoint to check contents\ndocker run --rm --entrypoint /bin/sh nexus-mcp:latest -c \"ls -la /app\"\n\n# Also check the entire filesystem\ndocker run --rm --entrypoint /bin/sh nexus-mcp:latest -c \"find / -name 'nexus*' -o -name '*.dll' 2>/dev/null | head -20\"\n```\n\nThis will show us what files are actually in the container and where they are.\n\n---\n\n**Token Usage:**\n- Last response: ~137 tokens\n- Session total: 79,033 tokens used\n- Remaining: 110,967 tokens (58.4% available)"
+

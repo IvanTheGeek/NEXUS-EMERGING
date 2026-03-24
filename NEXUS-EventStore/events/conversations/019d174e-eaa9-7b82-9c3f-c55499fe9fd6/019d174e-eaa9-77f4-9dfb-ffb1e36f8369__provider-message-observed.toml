@@ -1,0 +1,73 @@
+schema_version = 1
+event_id = "019d174e-eaa9-77f4-9dfb-ffb1e36f8369"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaa9-769f-899c-c344cbf492ab"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T02:59:40.45976Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "61dc72599f8915ad5a1edde445d521ab5bbc54e802be10946195253f262517a4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cef6f-29b0-77fd-b57b-9366a2c78042"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cef6f-29b0-77fd-b57b-9366a2c78042"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cef6f-29b0-77fd-b57b-9366a2c78042"
+role = "assistant"
+sequence_hint = 26
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T02:59:28.449736Z\",\"stop_timestamp\":\"2026-03-15T02:59:31.704520Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Ivan wants to start with the TOML structure and in-memory graph as a proof of concept. He\\u0027s betting that a well-structured graph in TOML will be something AI can reason about effectively. Let me help him design the TOML schema for the Truth Graph primitives.\\n\\nLet me think about what he needs:\\n1. TOML file structure for the five node types \\u002B edge types\\n2. An in-memory graph that reads these\\n3. Something concrete enough to test the hypothesis that AI can reason over it\\n\\nLet me ask a clarifying question about scope before diving into detailed work, per his preferences.\",\"summaries\":[{\"summary\":\"Thinking about connecting TOML structures, graph-based event models, and AI reasoning capabilities.\"},{\"summary\":\"Architecting TOML schema for Truth Graph primitives.\"},{\"summary\":\"Architected TOML schema and graph framework to validate AI reasoning hypothesis.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Your hypothesis is sound. Graphs are the native structure AI reasons over well — nodes, edges, and traversal are all things that map cleanly to how LLMs process relationships. A well-typed TOML graph with your five primitives would give an AI something to actually *navigate* rather than just pattern-match against flat text.\n\nLet me make sure I scope this right before we design the TOML schema."
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T02:59:34.925840Z\",\"stop_timestamp\":\"2026-03-15T02:59:37.146835Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_01AQF52zgM172zYZTdeEf8Ku\",\"name\":\"ask_user_input_v0\",\"input\":{\"questions\":[{\"type\":\"single_select\",\"options\":[\"LaundryLog (you know it well, small scope)\",\"Trucking/logistics (richer domain, more cross-context)\",\"Abstract/generic example\",\"Other\"],\"question\":\"What domain should we use for the proof-of-concept graph?\"}]},\"message\":\"Generating ask_user_input_v0...\",\"integration_name\":\"Dynamic Widget\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_01AQF52zgM172zYZTdeEf8Ku\",\"name\":\"ask_user_input_v0\",\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\u0022questions\\u0022: [\\n    {\\n      \\u0022question\\u0022: \\u0022What domain should we use for the proof-of-concept graph?\\u0022,\\n      \\u0022type\\u0022: \\u0022single_select\\u0022,\\n      \\u0022options\\u0022: [\\n        \\u0022LaundryLog (you know it well, small scope)\\u0022,\\n        \\u0022Trucking/logistics (richer domain, more cross-context)\\u0022,\\n        \\u0022Abstract/generic example\\u0022,\\n        \\u0022Other\\u0022\\n      ]\\n    }\\n  ]\\n}\",\"uuid\":\"0253ed85-d914-4628-acde-80fd74b17ebf\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Generated ask_user_input_v0 widget\",\"integration_name\":\"Dynamic Widget\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T02:59:39.708752Z\",\"stop_timestamp\":\"2026-03-15T02:59:40.200257Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Waiting for Ivan\\u0027s response on which domain to use for the proof of concept.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-15T02:59:40.200257Z\",\"stop_timestamp\":\"2026-03-15T02:59:40.200257Z\",\"flags\":null,\"type\":\"text\",\"text\":\"\",\"citations\":[]}"
+

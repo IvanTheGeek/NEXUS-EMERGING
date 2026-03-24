@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eecd-7dd3-9b97-f2121edd8d6c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+conversation_id = "019d174e-ea90-7a0d-83bf-9ba86009b527"
+message_id = "019d174e-ea90-783a-8fc0-a7546fbf7109"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-18T03:14:40.315804Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "63fcbcaa5cd3a7376409d4ce107e4ffd3050d1c3ce05c6186b75f2f3445744f0"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfef0-0ab9-78bf-8dde-2e32b0e3b316"
+conversation_native_id = "f2deed2d-a2b5-41a5-a79e-cfdc74348fc9"
+message_native_id = "019cfef0-0ab9-78bf-8dde-2e32b0e3b316"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfef0-0ab9-78bf-8dde-2e32b0e3b316"
+role = "assistant"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "plain_text"
+text = "Exactly. `Unexpected of exn` is essentially a **modeling gap signal**.\n\nWhich fits perfectly with the NEXUS/LOGOS feedback loop:\n\n```\nUnexpected captured at runtime\n    → LOGOS ingests it as a Fact\n    → CORTEX surfaces it\n    → you investigate\n    → promote to typed DU case\n    → model is now more complete\n```\n\nThe `Unexpected` case isn't just an escape hatch — it's a **discovery mechanism**. Every time it fires, it's telling you something about the domain you didn't know yet.\n\nYou could even make this explicit in the type:\n\n```fsharp\ntype ImapError =\n    | Connection of ConnectionError\n    | Authentication of AuthError\n    | Fetch of FetchError\n    | Unexpected of exn  // modeling gap — investigate and promote\n```\n\nThe comment in the type itself becomes a team norm: `Unexpected` is never the final answer, it's always a candidate for promotion to a typed case.\n\nThis is also a good argument for **never swallowing `Unexpected` silently** — log it, surface it to LOGOS, treat it as a first-class event worth examining. A silent catch is a modeling gap you'll never know about.\n\nFits naturally with your Prime Directive too — CORTEX surfaces it, human decides whether it warrants a new DU case and approves the promotion."
+

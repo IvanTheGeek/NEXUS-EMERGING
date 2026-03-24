@@ -1,0 +1,89 @@
+schema_version = 1
+event_id = "019d174e-ea20-7c98-80d1-137febe917a6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+conversation_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+message_id = "019d174e-ea20-7361-b36e-1f3b65c98562"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T15:16:57.006911Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "0dd492e9727380fe4d1eb542e87d9dd8741e8b33bb3c6e7a8caadd0a736b9977"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a78a3-b9ac-72a6-89bf-b168f4a78f71"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+message_native_id = "019a78a3-b9ac-72a6-89bf-b168f4a78f71"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a78a3-b9ac-72a6-89bf-b168f4a78f71"
+role = "assistant"
+sequence_hint = 66
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-12T15:16:31.848986Z\",\"stop_timestamp\":\"2025-11-12T15:16:33.377963Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants me to update their preferences (memory edits) to include guidance about creating descriptively-named zip files instead of generic \\u0022file.zip\\u0022 names. This should apply to all chats at any level (meaning both project chats and non-project chats).\\n\\nLet me add this to their memory edits.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-12T15:16:33.988682Z\",\"stop_timestamp\":\"2025-11-12T15:16:35.518971Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"memory_user_edits\",\"input\":{\"command\":\"add\",\"control\":\"When creating zip files: Use descriptive names reflecting contents (e.g., nexus-migration-files.zip, laundrylog-v7-design.zip), never generic \\u0022file.zip\\u0022.\"},\"message\":\"Managing memory...\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"memory_user_edits\",\"content\":[{\"type\":\"text\",\"text\":\"Added memory #10: When creating zip files: Use descriptive names reflecting contents (e.g., nexus-migration-files.zip, laundrylog-v7-design.zip), never generic \\u0022file.zip\\u0022.\",\"uuid\":\"f4240f01-079a-41ff-b7eb-31034df309e4\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Added memory\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":null,\"display_content\":{\"type\":\"rich_content\",\"content\":[{\"title\":\"Added memory\",\"subtitles\":[\"#10: When creating zip files: Use descriptive names reflecting contents (e.g., nexus-...\"],\"url\":null,\"resource_type\":null,\"icon_url\":null,\"source\":null}]}}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-12T15:16:39.293385Z\",\"stop_timestamp\":\"2025-11-12T15:16:40.264042Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Good, I\\u0027ve added it to memory. Now I should create an event documenting this preference addition since it\\u0027s a user preference update that affects all future interactions.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2025-11-12T15:16:40.728553Z\",\"stop_timestamp\":\"2025-11-12T15:16:47.367376Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":null,\"name\":\"Nexus:create_event\",\"input\":{\"body\":\"## User Preference: Descriptive Zip File Names\\n\\n**Requirement:** All zip files created for download must have descriptive names reflecting their contents.\\n\\n## Examples\\n\\n**Good:**\\n- \\u0060nexus-migration-files.zip\\u0060\\n- \\u0060laundrylog-v7-design.zip\\u0060\\n- \\u0060phase6-completion-checklist.zip\\u0060\\n- \\u0060perdiem-documentation-2025-11.zip\\u0060\\n\\n**Bad:**\\n- \\u0060file.zip\\u0060\\n- \\u0060archive.zip\\u0060\\n- \\u0060download.zip\\u0060\\n\\n## Rationale\\n\\n- User needs to identify files in Downloads folder\\n- Multiple zip files with generic names cause confusion\\n- Descriptive names = better organization\\n- Applies to all chats (project and non-project)\\n\\n## Application\\n\\nThis applies to any zip file creation in any conversation:\\n- Documentation packages\\n- Code bundles\\n- Migration scripts\\n- Design assets\\n- Any downloadable archive\\n\\n**Memory updated:** Added to user preferences as memory edit #10.\",\"tags\":[\"user-preference\",\"file-naming\",\"downloads\",\"organization\"],\"type\":\"DesignNote\",\"title\":\"User Preference: Descriptive Zip File Names Required\",\"project\":\"core\",\"summary\":\"Added user preference: zip files must have descriptive names reflecting contents, never generic \\u0022file.zip\\u0022. Applies to all chats.\"},\"message\":\"create_event\",\"integration_name\":\"Nexus\",\"integration_icon_url\":null,\"icon_name\":null,\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":null,\"name\":\"Nexus:create_event\",\"content\":[{\"type\":\"text\",\"text\":\"Event created: nexus/events/core/domain/active/2025-11/2025-11-12T15-16-47Z_DesignNote_User_Preference_Descriptive_Zip_File_Names_Required_58b2b240.md\",\"uuid\":\"d6b2fe81-5cb4-4ab0-b36f-0ff9eca063ca\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":\"Nexus\",\"integration_icon_url\":null,\"icon_name\":null,\"display_content\":null}"
+
+[[body.segments]]
+kind = "token_budget"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"token_budget\"}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-12T15:16:50.641161Z\",\"stop_timestamp\":\"2025-11-12T15:16:51.638726Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Perfect! I\\u0027ve updated both the memory (which will apply to all future chats) and created an event documenting this preference. Now I should confirm this to the user.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Done! ✓**\n\nAdded to your preferences (memory edit #10):\n```\nWhen creating zip files: Use descriptive names reflecting contents \n(e.g., nexus-migration-files.zip, laundrylog-v7-design.zip), \nnever generic \"file.zip\".\n```\n\n**Applies to:**\n- All future chats (project and non-project)\n- Any zip file I create for download\n- Documentation, code, scripts, assets, anything\n\n**Examples:**\n- ✓ `nexus-migration-2025-11.zip`\n- ✓ `perdiem-phase1-docs.zip`\n- ✗ `file.zip`\n- ✗ `archive.zip`\n\nEvent created documenting this preference. All future Claudes will know! 🎯\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [█████████████████░░░] 130,940 / 190,000 tokens (68.9%)\n\nAllocation:\n├─ System Prompts: ~30,000 tokens (15.8%)\n├─ Project Knowledge: ~510 tokens (0.3%)\n├─ Conversation: ~97,260 tokens (51.2%)\n│  ├─ Your messages: ~2,470 tokens\n│  ├─ My responses: ~42,680 tokens\n│  └─ Tool calls: ~52,110 tokens\n└─ This Response: ~3,170 tokens (1.7%)\n\nRemaining: 59,060 tokens (31.1%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

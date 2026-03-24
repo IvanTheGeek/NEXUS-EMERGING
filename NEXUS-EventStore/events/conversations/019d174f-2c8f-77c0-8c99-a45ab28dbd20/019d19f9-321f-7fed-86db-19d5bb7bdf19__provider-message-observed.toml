@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-321f-7fed-86db-19d5bb7bdf19"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c8f-77c0-8c99-a45ab28dbd20"
+conversation_id = "019d174f-2c8f-77c0-8c99-a45ab28dbd20"
+message_id = "019d174f-2c8f-7f0c-a59e-f4d7b236ff53"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-06T06:37:51.2887899Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "9e6231aedfcddc2ce6a9bc69a9f47139f2b8cf7f6005ae982a3df9d5367e650d"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69aa6a20-4428-832b-ad9f-c071732d30c5"
+conversation_native_id = "69aa6a20-4428-832b-ad9f-c071732d30c5"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "b10f63c1-b238-4a55-b088-8d141712d2bb"
+conversation_native_id = "69aa6a20-4428-832b-ad9f-c071732d30c5"
+message_native_id = "b10f63c1-b238-4a55-b088-8d141712d2bb"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "b10f63c1-b238-4a55-b088-8d141712d2bb"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 16
+
+[[body.segments]]
+kind = "plain_text"
+text = "Got it 👍  \nYour constraints are now:\n\n- **Event format:** **TOML only** (never JSON)\n- **Event store:** **filesystem**\n- **Each event = one file**\n- **Language:** **F# only**\n- **Diagrams:** **Mermaid must compile**\n\nI'll fix the Mermaid error and then show a **complete minimal F# event-sourced system** that stores **TOML event files**.\n\n---\n\n# 1. Fixed Mermaid Diagram (Compiles)\n\nYour error happened because Mermaid doesn’t allow the **cylinder shape inside parentheses**. Use the proper syntax.\n\n```mermaid\nflowchart LR\n\nsubgraph UI\nA[User Action]\nend\n\nA --> B[Command Handler]\nB --> C[(Event Store)]\nC --> D[Event Files]\nD --> E[Projection Updater]\nE --> F[Read Models]\nF --> G[UI Queries]\n\n```\n\nThis compiles in Mermaid.\n\n---\n\n# 2. Event File Format (TOML)\n\nEach event = one file.\n\nExample directory:\n\n```\nevents/\n  2026-03-06T15-12-00_load-created.toml\n  2026-03-06T15-15-00_load-started.toml\n  2026-03-06T16-00-00-reminder-set.toml\n```\n\nExample event:\n\n`2026-03-06T15-12-00_load-created.toml`\n\n```toml\ntype = \"LoadCreated\"\nevent_id = \"9e2f9e6d-78e4-4f55-9c93-73fce76a91a0\"\nload_id = \"2c51d44b-7e54-48b1-a59e-85924f24d899\"\nuser_id = \"user-1\"\n\nlabel = \"Bed Sheets\"\nmachine_id = \"washer-2\"\ncycle = \"whites\"\nestimated_minutes = 45\n\ncreated_at = 2026-03-06T15:12:00Z\n```\n\n---\n\n# 3. Domain Types (F#)\n\n```fsharp\nmodule Domain\n\ntype LoadStatus =\n    | Waiting\n    | Running\n    | Paused\n    | Finished\n    | Collected\n    | Cancelled\n\ntype Load =\n    {\n        LoadId : System.Guid\n        UserId : string\n        Label : string\n        MachineId : string option\n        Status : LoadStatus\n        EstimatedMinutes : int option\n        StartedAt : System.DateTime option\n        FinishedAt : System.DateTime option\n    }\n```\n\n---\n\n# 4. Event Types (F#)\n\n```fsharp\nmodule Events\n\nopen System\n\ntype Event =\n    | LoadCreated of LoadCreated\n    | LoadStarted of LoadStarted\n    | LoadFinished of LoadFinished\n    | MachineAssigned of MachineAssigned\n\nand LoadCreated =\n    {\n        EventId : Guid\n        LoadId : Guid\n        UserId : string\n        Label : string\n        MachineId : string option\n        EstimatedMinutes : int option\n        CreatedAt : DateTime\n    }\n\nand LoadStarted =\n    {\n        EventId : Guid\n        LoadId : Guid\n        StartedAt : DateTime\n    }\n\nand LoadFinished =\n    {\n        EventId : Guid\n        LoadId : Guid\n        FinishedAt : DateTime\n    }\n\nand MachineAssigned =\n    {\n        EventId : Guid\n        LoadId : Guid\n        MachineId : string\n        AssignedAt : DateTime\n    }\n```\n\n---\n\n# 5. Writing Events to TOML (F#)\n\nUse filesystem append-only.\n\n```fsharp\nmodule EventStore\n\nopen System\nopen System.IO\nopen Events\n\nlet eventsDir = \"./events\"\n\nlet ensureDir () =\n    if not (Directory.Exists eventsDir) then\n        Directory.CreateDirectory eventsDir |> ignore\n\nlet writeEvent (filename:string) (content:string) =\n    ensureDir()\n    File.WriteAllText(Path.Combine(eventsDir, filename), content)\n\nlet appendLoadCreated (e:LoadCreated) =\n\n    let filename =\n        $\"{e.CreatedAt:yyyy-MM-ddTHH-mm-ss}_load-created.toml\"\n\n    let toml =\n$\"\"\"\ntype = \"LoadCreated\"\nevent_id = \"{e.EventId}\"\nload_id = \"{e.LoadId}\"\nuser_id = \"{e.UserId}\"\n\nlabel = \"{e.Label}\"\nmachine_id = \"{e.MachineId}\"\nestimated_minutes = {e.EstimatedMinutes}\n\ncreated_at = {e.CreatedAt:O}\n\"\"\"\n\n    writeEvent filename toml\n```\n\n---\n\n# 6. Command Handler (F#)\n\n```fsharp\nmodule Commands\n\nopen System\nopen Events\nopen EventStore\n\nlet createLoad userId label machineId minutes =\n\n    let event =\n        {\n            EventId = Guid.NewGuid()\n            LoadId = Guid.NewGuid()\n            UserId = userId\n            Label = label\n            MachineId = machineId\n            EstimatedMinutes = minutes\n            CreatedAt = DateTime.UtcNow\n        }\n\n    appendLoadCreated event\n    event.LoadId\n```\n\n---\n\n# 7. Event Replay (Projection Builder)\n\nTo rebuild projections, read event files in order.\n\n```fsharp\nmodule Replay\n\nopen System\nopen System.IO\n\nlet loadEvents () =\n    Directory.GetFiles(\"./events\", \"*.toml\")\n    |> Array.sort\n```\n\nA projector can then rebuild state.\n\n---\n\n# 8. Projection Model\n\nExample read model:\n\n```\nprojections/\n   loads-by-user/\n```\n\nExample TOML projection:\n\n```\nprojections/loads-by-user/user-1.toml\n```\n\n```toml\n[[loads]]\nload_id = \"2c51d44b\"\nlabel = \"Bed Sheets\"\nstatus = \"Running\"\nmachine_id = \"washer-2\"\nstarted_at = 2026-03-06T15:15:00Z\n```\n\n---\n\n# 9. Why Filesystem Event Stores Work Well\n\nBenefits:\n\n- Git compatible\n- Diffable\n- Human readable\n- Replayable\n- Easy backups\n- Simple infrastructure\n\nGreat for:\n\n- small systems\n- prototypes\n- local-first apps\n- offline-first architectures\n\n---\n\n# 10. Recommended Folder Layout\n\n```\nLaundryLog/\n\nevents/\n  2026-03-06T15-12-00_load-created.toml\n  2026-03-06T15-15-00_load-started.toml\n\nprojections/\n  loads-by-user/\n  machines/\n\nsrc/\n  Domain.fs\n  Events.fs\n  Commands.fs\n  EventStore.fs\n  Replay.fs\n```\n\n---\n\n# 11. The Big Architectural Advantage\n\nThis architecture gives you:\n\n```\nUI\n ↓\nCommands\n ↓\nEvents (TOML files)\n ↓\nProjections\n ↓\nQueries\n```\n\nWhich means:\n\n- **perfect audit trail**\n- **replayable system**\n- **debuggable history**\n- **time travel debugging**\n\n---\n\n# 12. If you want, I can also generate\n\nA **complete production-ready F# template** including:\n\n- TOML parser\n- event writer\n- projector engine\n- CLI\n- Mermaid diagrams\n- load timer scheduler\n- notification system\n\nBasically a **full event-sourced LaundryLog engine in F#**.\n\nIf you'd like that, I can also show you a **very powerful trick**:\n\n**Git as the event store.**\n\nWhich makes the whole system **versioned, distributed, and conflict-resistant**."
+

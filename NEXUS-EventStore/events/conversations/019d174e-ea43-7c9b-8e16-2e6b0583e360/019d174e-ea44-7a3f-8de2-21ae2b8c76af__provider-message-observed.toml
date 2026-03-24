@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea44-7a3f-8de2-21ae2b8c76af"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea44-79e5-96ac-023244197972"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T11:41:02.064091Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "6666987736109efa4beceffa8ad6dc0b95495763f8b4962c3e0d0bd0094b3aad"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8c77-d4e1-75b6-a9e4-fd14d1162f9f"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8c77-d4e1-75b6-a9e4-fd14d1162f9f"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8c77-d4e1-75b6-a9e4-fd14d1162f9f"
+role = "assistant"
+sequence_hint = 128
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-16T11:40:56.281782Z\",\"stop_timestamp\":\"2025-11-16T11:40:58.517846Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Perfect! The server is running correctly now. It\\u0027s loaded the .env file, found the Nexus-Data directory, and is ready to receive JSON-RPC requests. Now we need to:\\n\\n1. Stop the test (Ctrl\\u002BC)\\n2. Create the systemd service so it runs automatically\\n3. Configure Claude Desktop to connect to it remotely\\n\\nThe user needs to press Ctrl\\u002BC to stop the test run first.\",\"summaries\":[{\"summary\":\"Thinking about successful Nexus-MCP server deployment and initialization verification.\"},{\"summary\":\"Orchestrating systemd service and Claude configuration.\"},{\"summary\":\"Verified server initialization and outlined next configuration steps.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect! Server is running. Press Ctrl+C to stop it, then create the systemd service:\n\n```bash\n# Create the service\ncat > /etc/systemd/system/nexus-mcp.service << 'EOF'\n[Unit]\nDescription=Nexus MCP Server\nAfter=network.target qdrant.service embedding-api.service\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/opt/nexus-mcp\nEnvironmentFile=/opt/nexus-mcp/.env\nExecStart=/opt/nexus-mcp/nexus-mcp\nRestart=always\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target\nEOF\n\n# Start and enable\nsystemctl daemon-reload\nsystemctl start nexus-mcp\nsystemctl enable nexus-mcp\nsystemctl status nexus-mcp\n```\n\nOnce that's running, we'll configure Claude Desktop to connect remotely via SSH tunnel.\n\n**Token Usage:** 144,887 used / 45,113 remaining"
+

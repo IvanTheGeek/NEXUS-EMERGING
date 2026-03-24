@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d174f-2cdf-7aac-bc5e-2060c04868b4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+conversation_id = "019d174f-2cd6-772c-97db-8fdcb16a0050"
+message_id = "019d174f-2cdf-74ca-8c44-19a2865c621b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-20T05:41:17.505743Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "8089c9527cd0beefc92d40733e1d94bd55bdbdbc3318100bc3d30e3a38b36ece"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "d6c362ed-d6f1-48f6-aea4-b34be0667378"
+conversation_native_id = "69bc6941-c27c-8327-bc79-97ebdeb51501"
+message_native_id = "d6c362ed-d6f1-48f6-aea4-b34be0667378"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "d6c362ed-d6f1-48f6-aea4-b34be0667378"
+role = "tool"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 217
+
+[[body.segments]]
+kind = "plain_text"
+text = "Citation Marker: fileciteturn6file0\n"
+
+[[body.segments]]
+kind = "plain_text"
+text = "[L1] {\"content\":\"# NEXUS Base Ontology\\n\\nNodeId: `nexus.core.ontology`\\n\\n## Purpose\\n\\nNEXUS is a graph-centered ontology that stays only slightly above graph theory.\\n\\nIt separates:\\n\\n- Structure — what exists\\n- Relation — how structure connects\\n- Meta — how structure is interpreted\\n- Classification — labels that help keep mental models clear\\n\\nThis separation is important because structure and meaning are not the same.\\n\\n---\\n\\n## Core categories\\n\\n### Structure\\n\\nStructure defines what exists as first-class things in the graph.\\n\\n#### Node\\nCategory: Structure  \\nNodeId: `nexus.node`\\n\\nA distinct thing in the graph.\\n\\nSemantics:\\n- A node is an identifiable unit.\\n- A node has no required meaning by itself.\\n- Meaning is assigned later through meta-layer interpretation.\\n\\nExamples:\\n- a software command node\\n- a biological signal node\\n- a knowledge fact node\\n- a UI view node\\n\\n#### Boundary\\nCategory: Structure  \\nNodeId: `nexus.boundary`\\n\\nA structural point or region where one context hands off to another.\\n\\nSemantics:\\n- A boundary separates contexts while allowing handoff.\\n- A boundary may be represented as a node or as a region depending on lens.\\n- Storage, API surfaces, and interfaces are often boundary realizations in domain-specific lenses.\\n\\nExamples:\\n- event store boundary\\n- API boundary\\n- UI boundary\\n- file system boundary\\n\\n#### Context\\nCategory: Structure  \\nNodeId: `nexus.context`\\n\\nA bounded region of the graph where a subset of nodes and relations operate together under a specific scope.\\n\\nSemantics:\\n- Context is structural, not merely semantic.\\n- Context answers: what belongs together here?\\n- Context may contain nodes, relations, and boundaries.\\n\\nExamples:\\n- Order Processing context\\n- Shipping context\\n- Knowledge Capture context\\n- Cell Signaling context\\n\\n---\\n\\n### Relation\\n\\nRelation defines how structural things connect.\\n\\n#### Relation\\nCategory: Relation  \\nNodeId: `nexus.relation`\\n\\nA connection between nodes.\\n\\nSemantics:\\n- Relation is the generic edge type.\\n- Domain-specific edges refine Relation.\\n- Relation alone does not imply derivation or causation.\\n\\nExamples:\\n- relates_to\\n- connected_to\\n- associated_with\\n\\n#### Derivation\\nCategory: Relation  \\nNodeId: `nexus.derivation`\\n\\nA specialized relation where one node is formed from, based on, or depends on another node.\\n\\nSemantics:\\n- Derivation is directional.\\n- Derivation is the primitive behind projection, transformation, and downstream shaping.\\n- A node may have multiple independent derivations.\\n\\nExamples:\\n- a read model derived from an event\\n- a report derived from source facts\\n- a summary derived from a document\\n\\nLaw:\\n- A node may have multiple independent derivations.\\n\\n---\\n\\n### Meta\\n\\nMeta defines how structure is interpreted.\\n\\n#### Lens\\nCategory: Meta  \\nNodeId: `nexus.lens`\\n\\nA selective view over the graph that reveals only some nodes, relations, or categories.\\n\\nSemantics:\\n- A lens does not change the graph.\\n- A lens changes visibility, emphasis, or interpretation.\\n- Different lenses may reveal different aspects of the same underlying graph.\\n\\nExamples:\\n- node lens\\n- edge lens\\n- timeline lens\\n- runtime lens\\n- storage lens\\n\\n#### Domain\\nCategory: Meta  \\nNodeId: `nexus.domain`\\n\\nA coherent space of meaning applied to graph structure.\\n\\nSemantics:\\n- Domain is not structure.\\n- Domain defines vocabulary and interpretation.\\n- The same graph structure may be interpreted differently in different domains.\\n\\nExamples:\\n- Software Development\\n- Knowledge\\n- Biology\\n- Logistics\\n- Communication\\n\\n#### Meaning\\nCategory: Meta  \\nNodeId: `nexus.meaning`\\n\\nA specific semantic interpretation assigned to a structural element within a domain.\\n\\nSemantics:\\n- Meaning is not structure.\\n- Meaning maps a structural element to a role or interpretation.\\n- The same node may have different meanings in different domains or lenses.\\n\\nExamples:\\n- node interpreted as Event in Software Development\\n- node interpreted as Fact in Knowledge\\n- node interpreted as Signal in Biology\\n\\n---\\n\\n### Classification\\n\\nClassification helps organize structure without changing the graph itself.\\n\\n#### Category\\nCategory: Classification  \\nNodeId: `nexus.category`\\n\\nA high-level grouping used to keep mental models straight.\\n\\nExamples:\\n- Structure\\n- Relation\\n- Meta\\n- Classification\\n\\n#### Kind\\nCategory: Classification  \\nNodeId: `nexus.kind`\\n\\nA category label used to classify a structural or meta element.\\n\\nSemantics:\\n- Kind does not change structure.\\n- Kind is useful for validation, tooling, and readability.\\n\\n#### Role\\nCategory: Classification  \\nNodeId: `nexus.role`\\n\\nA contextual classification of how an element is functioning in a specific lens or context.\\n\\nSemantics:\\n- Role is lens-relative or context-relative.\\n- Role is not necessarily permanent.\\n- The same node may take different roles in different lenses.\\n\\nExamples:\\n- Interface\\n- Command\\n- Event\\n- View\\n- Processor\\n\\n---\\n\\n## Minimal NEXUS laws\\n\\n### Law 1\\nNodeId: `nexus.law.node-may-relate`\\n\\nA node may relate to other nodes.\\n\\n### Law 2\\nNodeId: `nexus.law.multiple-independent-derivations`\\n\\nA node may have multiple independent derivations.\\n\\n### Law 3\\nNodeId: `nexus.law.boundary-separates-contexts`\\n\\nA boundary separates contexts while allowing handoff.\\n\\n### Law 4\\nNodeId: `nexus.law.lens-reveals-partial-graph`\\n\\nA lens reveals only part of the graph.\\n\\n### Law 5\\nNodeId: `nexus.law.meaning-does-not-alter-structure`\\n\\nMeaning does not alter structure.\\n\\n---\\n\\n## Event Modeling and software lens notes\\n\\nAt the software / Event Modeling layer, the canonical node sets are:\\n\\n### Write side\\n- Interface\\n- Command\\n- Event\\n\\n### Read side\\n- Event\\n- View\\n- Interface\\n\\nHard rule:\\nNEXUS modeling is always EITHER write side OR read side, never a combined chain.\\n\\nAnti-pattern:\\n- Interface -> Command -> Event -> View\\n\\nCorrect:\\n- Write side: Interface, Command, Event\\n- Read side: Event, View, Interface\\n\\n---\\n\\n## Event Modeling placement\\n\\nEvent Modeling is better understood as a coordinated set of lenses, not a domain.\\n\\nExamples:\\n- Node lens\\n- Behavior lens\\n- Timeline lens\\n- Example data lens\\n\",\"encoding\":\"utf-8\",\"sha\":\"172080553615477c77b9bccd174669e40c09a122\",\"display_url\":\"https://github.com/IvanTheGeek/NEXUS/blob/main/nexus/core/ontology.md\",\"display_title\":\"ontology.md\"}"
+

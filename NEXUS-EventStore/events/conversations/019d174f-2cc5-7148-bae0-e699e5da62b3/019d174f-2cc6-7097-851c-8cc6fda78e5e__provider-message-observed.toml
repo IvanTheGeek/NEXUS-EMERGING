@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2cc6-7097-851c-8cc6fda78e5e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+conversation_id = "019d174f-2cc5-7148-bae0-e699e5da62b3"
+message_id = "019d174f-2cc6-7426-afbf-0cb57d0776ea"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T01:39:52.1435968Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "c93b4d1e2e5d5b76354376c8d097c9b3e21f787c00e96ab217496da755255f81"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "1137034e-ce06-4eb6-8d20-553a5416720f"
+conversation_native_id = "69b8570f-6100-8329-85dd-d4e8c4fd9572"
+message_native_id = "1137034e-ce06-4eb6-8d20-553a5416720f"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "1137034e-ce06-4eb6-8d20-553a5416720f"
+role = "assistant"
+model_name = "gpt-5-mini"
+sequence_hint = 89
+
+[[body.segments]]
+kind = "plain_text"
+text = "Okay — let’s clarify the distinction first, then map it into F# types.  \n\n---\n\n# 1. Trigger vs Signal\n\n- **Trigger**: a **condition or edge that activates a transformer**.  \n  - Think of it as: “when this happens, run this function.”  \n  - Usually **causal**: Event A → triggers → Transformer B.  \n\n- **Signal**: a **propagation of information** along edges of the graph.  \n  - Think of it as: “notify downstream nodes that something happened.”  \n  - Often carries **data** (event info, context, metadata).  \n\n**Key distinction:**  \n- Triggers are about **activation** (control flow).  \n- Signals are about **propagation of information** (data flow).  \n\nThey’re related: a trigger often fires when a signal is received, but a signal can exist without immediately triggering a transformer.  \n\n---\n\n# 2. F# Mapping\n\nWe can model nodes, events, triggers, signals, and transformers using **types and functional constructs**:\n\n```fsharp\n// Nodes: things or events in the graph\ntype NodeId = string\ntype Node =\n    { Id: NodeId\n      Label: string\n      Properties: Map<string, string> }\n\n// Events: immutable facts\ntype Event =\n    { Node: Node\n      Timestamp: System.DateTime }\n\n// Signals: propagate event data along edges\ntype Signal =\n    { Source: NodeId\n      Payload: Event\n      Target: NodeId list }\n\n// Triggers: condition to fire a transformer\ntype Trigger =\n    { EventNode: NodeId\n      TransformerId: string\n      Condition: Event -> bool }\n\n// Transformer: maps nodes/events to new nodes/events\ntype Transformer = Event -> Node list * Event list\n```\n\n---\n\n# 3. How They Work Together\n\n```fsharp\nlet runTrigger (trigger: Trigger) (evt: Event) (transformer: Transformer) =\n    if trigger.Condition evt then\n        let newNodes, newEvents = transformer evt\n        (newNodes, newEvents)\n    else\n        ([], [])\n\n// Example: a signal carrying event info to downstream transformers\nlet propagateSignal (signal: Signal) (transformers: Map<string, Transformer>) =\n    signal.Target\n    |> List.collect (fun tid ->\n        match transformers.TryFind tid with\n        | Some t -> let nodes, events = t signal.Payload in events\n        | None -> []\n    )\n```\n\n- **Trigger**: decides **whether to run the transformer** based on an event.  \n- **Signal**: carries **event data downstream**, may activate triggers.  \n- **Transformer**: produces **new nodes/events** based on input.  \n\n---\n\n✅ **Key insight in graph terms**:\n\n| Concept       | Graph Role                                           |\n|---------------|-----------------------------------------------------|\n| Node          | Entity, thing, or event                              |\n| Event         | Immutable fact node                                  |\n| Trigger       | Edge that **activates a transformer**               |\n| Signal        | Edge or message that **propagates information**     |\n| Transformer   | Functional mapping: nodes/events → new nodes/events |\n\n---\n\nIf you want, I can **draw a little F#-style diagram showing Nodes → Triggers → Signals → Transformers → new Nodes/Events**, so it’s visually clear how triggers and signals relate.  \n\nDo you want me to do that?"
+

@@ -1,0 +1,53 @@
+schema_version = 1
+event_id = "019d174e-ea82-7f16-8a3a-d33f17aad085"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea82-7a3f-b870-7769175dd3d8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-12-01T23:47:04.780666Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "0f08928a8fbd2f8cd35180f092cff7327dae56038b665f25d4de3b9028c86424"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019adc50-0bc4-71b6-b983-b87daf4aa049"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019adc50-0bc4-71b6-b983-b87daf4aa049"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019adc50-0bc4-71b6-b983-b87daf4aa049"
+role = "human"
+sequence_hint = 156
+
+[[body.segments]]
+kind = "plain_text"
+text = "So we have two systems that we are dealing with here. The whole system which may have UI using elmish, and the entire system that is doing everything, which a command might come from the UI machine, but might also come from external data being processed, or a decision maker like a set of code or even an AI. That top swim lane can be composed of several different \"decision makers\". In the UI machine, it can be considered it's own EventModel but also combined with the same timeline as the whole system EventModel. It's external connector would be through elmish cmd's as they would be outside the UI loop. When I have delt with elmish, I have tended to think of model as state. The msg is ambiguous to me. Maybe in the UI realm, intent or action is more appropriate. We reserve the command for when the UI is actually sending a command out to the whole system. Event is something that happened, and the UI will keep its own event log. Which it then derives state from (which state is a projection)."
+

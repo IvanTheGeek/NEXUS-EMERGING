@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb2-7275-8448-c805b72e5d9e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+conversation_id = "019d174e-ea53-7730-97eb-34afbc2ebb47"
+message_id = "019d174e-ea54-7993-be5f-4dfe2920ab08"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-17T15:43:26.135783Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c3edbf385267a13dbdb471da17c852ef75e9f7bfe8b403a79789196bfcc90405"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a927c-39ad-7081-95b2-a11060e9968d"
+conversation_native_id = "9d404d20-b89f-45ad-aeda-f723211bf76d"
+message_native_id = "019a927c-39ad-7081-95b2-a11060e9968d"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a927c-39ad-7081-95b2-a11060e9968d"
+role = "human"
+sequence_hint = 81
+
+[[body.segments]]
+kind = "plain_text"
+text = "linux@LMDE7:~/FnMCP.Nexus$ # On VPS - Extract the binary from the image\nssh root@66.179.208.238 << 'EOF'\ndocker run --rm -v /tmp:/output nexus-mcp:latest sh -c \"cp /app/FnMCP.Nexus /output/\"\n# Now run it in stdio mode to generate key\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"test\",\"version\":\"1.0\"}}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{\"name\":\"generate_api_key\",\"arguments\":{\"scope\":\"full_access\",\"description\":\"VPS deployment key\"}}}' | /tmp/FnMCP.Nexus /var/lib/nexus/event-store\nEOF\nPseudo-terminal will not be allocated because stdin is not a terminal.\nLinux my-vps 6.12.57+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.57-1 (2025-11-05) x86_64\nThe programs included with the Debian GNU/Linux system are free software;\nthe exact distribution terms for each program are described in the\nindividual files in /usr/share/doc/*/copyright.\nDebian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent\npermitted by applicable law.\ndocker: Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: \"./nexus\": stat ./nexus: no such file or directory\nRun 'docker run --help' for more information\n-bash: line 5: /tmp/FnMCP.Nexus: No such file or directory\nlinux@LMDE7:~/FnMCP.Nexus$"
+

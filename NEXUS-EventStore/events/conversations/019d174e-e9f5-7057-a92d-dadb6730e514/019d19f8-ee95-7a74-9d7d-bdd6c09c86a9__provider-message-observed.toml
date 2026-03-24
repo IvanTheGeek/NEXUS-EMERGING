@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee95-7a74-9d7d-bdd6c09c86a9"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9f5-7057-a92d-dadb6730e514"
+conversation_id = "019d174e-e9f5-7057-a92d-dadb6730e514"
+message_id = "019d174e-e9f6-70cf-89c9-21db3296893b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-09T14:51:00.204582Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "a19b33d716e7089215c9c80e1d42d894c65e3ca4f816184b9bb6407157a78278"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "4ba795df-b769-4ab2-8dfc-67b9312d8c62"
+conversation_native_id = "4ba795df-b769-4ab2-8dfc-67b9312d8c62"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a6919-21d0-7105-9ba9-a0f9f9cd9fe5"
+conversation_native_id = "4ba795df-b769-4ab2-8dfc-67b9312d8c62"
+message_native_id = "019a6919-21d0-7105-9ba9-a0f9f9cd9fe5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a6919-21d0-7105-9ba9-a0f9f9cd9fe5"
+role = "assistant"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "reasoning"
+text = "Right, I misstated that. Let me correct myself. Traditional Event Modeling says the model matches high-level business *information flow*, not implementation. That's an important distinction - they're modeling the flow of information through the business, not necessarily how it's implemented in code.\n\nSo the user is saying:\n- Traditional EM: Models business information flow (staying high-level, business-focused)\n- Their vision: Still models that, but ALSO has layers that drill down into technical implementation, UI states, etc. - all part of one unified model with different views\n\nSo they're not disagreeing with EM's core principle, they're extending it - the business information flow is one view/layer, but there are other views that show technical details, and it's all part of one coherent model."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Right, important correction - **information flow**, not implementation. That's a key EM principle: the model shows how information flows through the business system, staying at that business level.\n\nSo:\n- **Traditional EM**: Business information flow (high-level, intentionally abstract from implementation)\n- **Your vision**: That same business information flow is the *top layer*, but underneath are technical layers (UI states, validation, error handling, implementation details) - all part of one unified model\n\nThe business view stays clean and focused on information flow, but when a developer needs to see \"how does validation work here?\" or \"what UI states exist?\", they can drill into that area and see the technical layers.\n\nThe model isn't trying to match implementation - instead, implementation is just a more detailed view of the same model.\n\nThis keeps EM's core value (business-readable information flow) while solving the developer's problem of \"okay but how do I actually build this?\"\n\nDoes that capture it correctly?\n\nNow - back to my question: **What feels like the right first proof point?** What should we actually try to validate first?"
+

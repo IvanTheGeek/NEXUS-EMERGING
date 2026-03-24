@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-3217-7b6c-86c5-dfe4a28c5ec5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2c81-71f4-9610-205e18960e01"
+conversation_id = "019d174f-2c81-71f4-9610-205e18960e01"
+message_id = "019d174f-2c81-7eb5-86d4-8710d60edb8f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-05T12:21:25.591819Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "6662f7b99108ee870ab4bea386c48dc2269492133745828619d99ea23b9a7e76"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "206ca470-d0f1-43a0-9d7d-9e12ed12d542"
+conversation_native_id = "69a7cf11-666c-8327-a2b3-f22a72bb6965"
+message_native_id = "206ca470-d0f1-43a0-9d7d-9e12ed12d542"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "206ca470-d0f1-43a0-9d7d-9e12ed12d542"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 45
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good idea 👍 — that will make it much faster while you’re building the skeleton.\n\nIn entity[\"company\",\"Figma\",\"design software company\"] you can just press **T (Text tool)** and paste each label.\n\nCreate one text layer for each of these **inside `state/initial`**.\n\n---\n\n### Title\n\n``` id=\"lab01\"\ntitle/LaundryLog\n```\n\n---\n\n### Location Input\n\n``` id=\"lab02\"\ninput/location\n```\n\n---\n\n### Machine Selection\n\n``` id=\"lab03\"\nselect/machine\n```\n\n---\n\n### Payment Selection\n\n``` id=\"lab04\"\nselect/payment\n```\n\n---\n\n### Quantity Input\n\n``` id=\"lab05\"\ninput/quantity\n```\n\n---\n\n### Unit Price Input\n\n``` id=\"lab06\"\ninput/unit-price\n```\n\n---\n\n### Entry Total (Derived)\n\n``` id=\"lab07\"\nderived/entry-total\n```\n\n---\n\n### Submit Button\n\n``` id=\"lab08\"\nbutton/submit[disabled]\n```\n\n---\n\n### Recent Entries List\n\n``` id=\"lab09\"\nlist/recent-entries\n```\n\n---\n\n### Session Total (Derived)\n\n``` id=\"lab10\"\nderived/session-total\n```\n\n---\n\n## What This Gives You\n\nYour frame will look something like:\n\n```\nstate/initial\n  title/LaundryLog\n  input/location\n  select/machine\n  select/payment\n  input/quantity\n  input/unit-price\n  derived/entry-total\n  button/submit[disabled]\n  list/recent-entries\n  derived/session-total\n```\n\nDon’t worry about spacing or styling yet.  \nThis is **structure, not design**.\n\n---\n\n## Small Tip That Helps Later\n\nAfter creating them, **rename the Figma layers to exactly match the text**.\n\nThis matters because when you eventually **export SVG**, the layer names often become the **SVG group IDs**.\n\nThat’s extremely useful for the Nexus pipeline you’re envisioning.\n\n---\n\nOnce you’ve pasted those in, the **next step becomes interesting**:  \nwe’ll duplicate the frame and create the **first real state transition** in the UI model.\n\nIt will take about **15 seconds** but it’s the first moment where the Nexus idea starts to show up visually."
+

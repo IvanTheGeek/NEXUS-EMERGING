@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea10-778f-a7ad-48d6305c0949"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+conversation_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+message_id = "019d174e-ea10-78c1-ab28-e841fcbbaf15"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T09:10:06.958718Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "c12651caa1551ed3d222d7c733d3a31fe4981e448d7596ba3f8217a4a8a05f02"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7c7a-6b5e-7501-a652-a2cbca659dc5"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+message_native_id = "019a7c7a-6b5e-7501-a652-a2cbca659dc5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7c7a-6b5e-7501-a652-a2cbca659dc5"
+role = "assistant"
+sequence_hint = 24
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-13T09:09:51.951784Z\",\"stop_timestamp\":\"2025-11-13T09:09:59.457308Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user liked my first answer better - the one that was more direct and concise. They\\u0027re telling me they found the second answer too technical or unnecessarily detailed for what they needed.\\n\\nNow they\\u0027re asking \\u0022what is unsloth\\u0022 - a straightforward factual question.\\n\\nLooking at the userStyle, I see it\\u0027s a teaching/tutoring style that emphasizes Socratic method and guided exploration. However, there\\u0027s an important exception at the top:\\n\\n\\u0022For advanced technical questions (PhD-level, research, graduate topics with sophisticated terminology), recognize the expertise level and provide direct, technical responses without excessive pedagogical scaffolding. Skip principles 1-3 below for such queries.\\u0022\\n\\nAlso from userPreferences: \\u0022Be direct and efficient - skip unnecessary preambles.\\u0022\\n\\nThe user has demonstrated:\\n1. They\\u0027re a working software developer (F#, .NET, MCP servers)\\n2. They understand data types, memory, precision\\n3. They explicitly said they liked the MORE DIRECT answer better\\n4. They\\u0027re asking a simple factual question: \\u0022what is unsloth\\u0022\\n\\nSo I should:\\n- Give a direct, concise answer\\n- Not use Socratic questioning here\\n- Not ask \\u0022what do you know about optimization libraries?\\u0022 \\n- Just explain what Unsloth is clearly and move on\\n\\nThe user is saying \\u0022I preferred the straightforward explanation, please keep doing that.\\u0022\",\"summaries\":[{\"summary\":\"Thinking about defining unsloth and addressing preference feedback.\"},{\"summary\":\"Fielding straightforward question about unsloth.\"},{\"summary\":\"Recalibrated communication style toward directness and brevity.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Unsloth** = optimization library for faster, more memory-efficient LLM fine-tuning\n\n**What it does:**\n- Custom CUDA kernels (written in Triton) for 2x faster training\n- 70% less VRAM usage vs standard HuggingFace + PyTorch\n- Supports LoRA, QLoRA, full fine-tuning\n- Pre-quantized models optimized for training (the `-bnb-4bit` models)\n\n**Why people use it:**\n- Fine-tune on free Google Colab (16GB T4)\n- Fine-tune larger models on consumer GPUs\n- Faster iteration during experimentation\n\n**Integration:**\n```fsharp\n// Works with standard HuggingFace ecosystem\n// Just faster/lighter underneath\n// F# can call Python libraries via Python.NET if needed\n```\n\n**Alternatives:**\n- Axolotl (more features, heavier)\n- Raw HuggingFace PEFT (standard approach, slower)\n- torchtune (PyTorch-native)\n\nCreated by Daniel Han and team - they collaborate directly with model creators (Meta, Microsoft, etc.) to fix bugs and optimize new models.\n\nDoes this fit what you needed to know?"
+

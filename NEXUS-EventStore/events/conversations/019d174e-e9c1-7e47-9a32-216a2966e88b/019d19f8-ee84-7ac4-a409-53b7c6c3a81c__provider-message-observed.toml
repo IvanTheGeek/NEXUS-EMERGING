@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee84-7ac4-a409-53b7c6c3a81c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9c1-7e47-9a32-216a2966e88b"
+conversation_id = "019d174e-e9c1-7e47-9a32-216a2966e88b"
+message_id = "019d174e-e9c1-71bb-baf3-f89af91615b8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-08T22:10:11.183684Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "ad0d95d16f5dc5a40ac19a7d291689e304c3a38b96c178ff2fcde516ba1d2fc6"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "00617440-5251-444a-a960-fe983113d2f5"
+conversation_native_id = "00617440-5251-444a-a960-fe983113d2f5"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a6584-ed89-70ff-a68f-40d3acddee44"
+conversation_native_id = "00617440-5251-444a-a960-fe983113d2f5"
+message_native_id = "019a6584-ed89-70ff-a68f-40d3acddee44"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a6584-ed89-70ff-a68f-40d3acddee44"
+role = "assistant"
+sequence_hint = 20
+
+[[body.segments]]
+kind = "reasoning"
+text = "Good clarification on #3. So the workflow is:\n- Track days away from home\n- Auto-calculate standard IRS per diem rates (which change annually)\n- Generate reports that work for:\n  - Self-employed drivers: use as tax deductions (reduces taxable income)\n  - Employee drivers: submit to employer for reimbursement (employer pays per diem, which is non-taxable to employee if it's at or below IRS rates)\n\nThis is important because the same data serves different purposes depending on employment status.\n\nStill waiting for #4 (mobile vs desktop) and #5 (integrations)."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Excellent clarification on **#3**:\n\n**Core workflow:**\n- Track trips (start/end dates, away from home >50 miles)\n- Auto-calculate using current IRS standard rates\n- Generate reports suitable for:\n  - **Self-employed:** Tax deduction documentation (lowers taxable income)\n  - **Employees:** Reimbursement requests (employer pays per diem, non-taxable to employee)\n\nSame data, two different use cases. The report needs to serve both purposes clearly.\n\nStill waiting on:\n\n**4. Mobile-first or desktop-first?**\n\n**5. Integration needs?**\n- You mentioned feeding into CheddarBooks - what does that look like?\n- Export formats needed?\n- Any integration with CheddarTax for automatic deduction tracking?"
+

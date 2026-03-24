@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eeab-7928-a913-4ceb6b5fd960"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+conversation_id = "019d174e-ea43-7c9b-8e16-2e6b0583e360"
+message_id = "019d174e-ea44-7bda-94b8-31cf7154228a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-16T11:28:23.009909Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "3d5d8982404912318b3583f1ad4b58f872f14e21472a5b14a274dad5576078ba"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a8c6c-3dad-7196-b545-61c3161a9f1a"
+conversation_native_id = "9fe86790-7b57-4e4e-b4d2-52d382e1d82a"
+message_native_id = "019a8c6c-3dad-7196-b545-61c3161a9f1a"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a8c6c-3dad-7196-b545-61c3161a9f1a"
+role = "assistant"
+sequence_hint = 122
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user has created the .env file with the right configuration. Now they need to move the Nexus-Data directory to /opt/nexus-mcp/Nexus-Data. Let me give them the exact commands to do that."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Move the data now:\n\n```bash\n# On VPS\nmv /root/Nexus-Data /opt/nexus-mcp/\n\n# Verify structure\nls -la /opt/nexus-mcp/Nexus-Data/\n\n# Test the server\ncd /opt/nexus-mcp\n./nexus-mcp\n```\n\nShow me the output. If it starts without warnings about missing directories, we're good.\n\nThen we can:\n1. Create the systemd service to run it automatically\n2. Configure Claude Desktop to connect to it remotely\n\n**Token Usage:** 143,984 used / 46,016 remaining"
+

@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eeb3-7a62-8c19-ee8d263a9b6c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea56-72bd-82ed-9368012779d1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T19:52:08.553146Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "03e8a6314f26c675ee843b555253df7d3d2c0edf7659cf5775493c4f5fa779f3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca5ce-c580-7635-908d-b1b13ac68e16"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca5ce-c580-7635-908d-b1b13ac68e16"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca5ce-c580-7635-908d-b1b13ac68e16"
+role = "assistant"
+sequence_hint = 164
+
+[[body.segments]]
+kind = "plain_text"
+text = "Talkyard has a subcategory depth limit — it only supports one level of subcategories. So you can have:\n\n```\nDEVELOPMENT (top level)\n  └── THE FABRIC (subcategory)\n```\n\nBut not:\n\n```\nDEVELOPMENT (top level)\n  └── THE FABRIC (subcategory)\n        └── Chat Import Pipeline (sub-subcategory) ← not supported\n```\n\nThe workaround options:\n\n1. **Make Chat Import Pipeline a peer subcategory under DEVELOPMENT** alongside THE FABRIC rather than nested inside it\n2. **Keep it flat inside THE FABRIC** — use topic tags and a pinned index wiki post to organize topics within THE FABRIC rather than subcategories\n3. **Make THE FABRIC a top level category** — then it can have its own subcategories including Chat Import Pipeline\n\nGiven how central THE FABRIC is, option 3 actually makes architectural sense — it's arguably as important as DEVELOPMENT itself. That would give you:\n\n```\nDEVELOPMENT\n  └── NEXUS\n  └── Event Modeling\n\nTHE FABRIC\n  └── Chat Import Pipeline\n  └── Structure & Organization\n  └── Talkyard API & Integration\n```\n\nWhich direction feels right?"
+

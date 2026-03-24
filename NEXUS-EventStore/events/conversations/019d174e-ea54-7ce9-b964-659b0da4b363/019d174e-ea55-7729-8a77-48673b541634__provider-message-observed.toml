@@ -1,0 +1,61 @@
+schema_version = 1
+event_id = "019d174e-ea55-7729-8a77-48673b541634"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+conversation_id = "019d174e-ea54-7ce9-b964-659b0da4b363"
+message_id = "019d174e-ea55-74b3-a103-93dbb605f104"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-02-28T14:58:25.199365Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "50c8fa53017e816b2a70506cf38a9602a461a29f79e0ddaf680aac6816c4d19e"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ca4c1-a806-7242-b44d-8eb4cc2bf9a8"
+conversation_native_id = "a80f578f-cfca-46d1-afcf-35b6b89c488c"
+message_native_id = "019ca4c1-a806-7242-b44d-8eb4cc2bf9a8"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ca4c1-a806-7242-b44d-8eb4cc2bf9a8"
+role = "assistant"
+sequence_hint = 126
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-02-28T14:58:06.305946Z\",\"stop_timestamp\":\"2026-02-28T14:58:06.305946Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-02-28T14:58:06.335142Z\",\"stop_timestamp\":\"2026-02-28T14:58:07.181911Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to use option 1 as the title. Let me provide the final complete wiki post with the addition they requested, ready to paste into Talkyard.\",\"summaries\":[{\"summary\":\"Thinking about interpreting a minimal statement.\"},{\"summary\":\"Assembled final wiki post with requested modifications.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Here's the complete final post ready to paste, incorporating everything including the humble beginning section:\n\n---\n\n**\"PRIVATE AI — Start Here: What It Is and Why I'm Building It\"**\n*Type: Wiki — pin to top of PRIVATE AI category*\n\n> **Origin**\n> This understanding emerged from extensive exploration of Claude's limitations — particularly the stateless nature of every conversation, the need to constantly re-establish context, and the inability to retain learned preferences over time. The forum import project crystallized the solution.\n>\n> **The Core Problem**\n> Every conversation with an external AI starts from zero. Context must be re-established, preferences re-explained, history re-summarized. Knowledge accumulated over months of conversation exists nowhere that can be acted upon automatically. The human carries all the continuity burden.\n>\n> **The Architecture**\n> A local AI system trained on your own accumulated knowledge serves as the primary interface. It knows your preferences, methodology, patterns, and history deeply because it was trained on them. It handles most tasks locally and privately. When a task exceeds its capability or alternative perspective is valuable, it reaches out to an external AI like Claude, then learns from that interaction, incorporating it back into its own model over time.\n>\n> ```\n> Local AI (knows you deeply)\n>   ├── Trained on forum, conversations, wikis, decisions\n>   ├── Knows preferences, patterns, methodology\n>   ├── Handles tasks locally and privately\n>   └── Reaches out to Claude when needed\n>         └── Learns from the interaction\n>         └── Updates its own knowledge over time\n> ```\n>\n> **The Humble Beginning**\n> The local AI starts ignorant by design. In its earliest form it makes no attempt to answer prompts itself — its job is to relay questions to external AI, display the responses, and collect human feedback on those responses. It is a student observing before speaking.\n>\n> This feedback loop is the training signal. Human confirms a good response, corrects a bad one, refines an answer — each interaction becomes training data. Over time the balance shifts:\n>\n> ```\n> Day 1:    0% local answers   → 100% relayed to external AI\n> Growing:  20% local answers  → 80% relayed\n> Mature:   80% local answers  → 20% relayed\n> Goal:     answers most itself, reaches out by choice not necessity\n> ```\n>\n> The transition happens organically through use rather than at a defined threshold. The local AI earns its answers through accumulated learning rather than being granted them upfront.\n>\n> **Maturity Stages**\n> The system evolves through three tiers as capability grows:\n>\n> Stage 1 — RAG (Retrieval Augmented Generation). Index the forum and conversations. The local AI retrieves relevant context before responding. Fast to implement, immediately useful.\n>\n> Stage 2 — LoRA fine-tuning. Train a local model on your specific data. The AI begins to internalize your patterns rather than just retrieving them. Responses become genuinely personalized.\n>\n> Stage 3 — Full fine-tuning. The model deeply reflects your methodology, preferences, and accumulated knowledge. Dependency on external AI becomes a choice rather than a necessity.\n>\n> **The Forum as Training Corpus**\n> The forum is not just a communication tool — it is the primary data source that makes the local AI increasingly useful. Every imported conversation, every wiki decision, every discussion feeds it. Richer forum equals better local AI. The import of Claude conversation history is therefore not archiving — it is dataset construction.\n>\n> **The Forum's Dual Role**\n> The forum serves humans and AI simultaneously from the same data. For humans it is the gateway — where ideas spark, help is sought, wishes are explored, plans are made. For the AI it is the knowledge base — continuously updated, event-sourced, traceable to origins. Every human interaction enriches the AI. Every AI improvement serves the humans. The loop is self-reinforcing.\n>\n> **Event Sourcing as the Thread**\n> Everything is grounded in event sourcing. Conversations are events. Decisions are events. Wiki updates are events. The forum is the event store. Traceability, refinement, and evolution all flow from having an immutable, ordered record of how understanding developed. The current state of knowledge is always a projection from that history — auditable, reversible, improvable.\n>\n> **Hardware Foundation**\n> Local AI requires local compute. RTX 3090s and 3070s provide the GPU capacity for inference and fine-tuning without cloud dependency. Private data stays private by architecture, not by policy promise.\n>\n> **Current Status**\n> Architecture defined. Forum infrastructure in progress. Conversation import pipeline being designed. RAG implementation is the next concrete step once the forum corpus is sufficiently populated.\n\n---\n\nGo ahead and create the PRIVATE AI top level category, then paste this in as the first pinned wiki topic. Let me know when done and we can figure out what's next."
+

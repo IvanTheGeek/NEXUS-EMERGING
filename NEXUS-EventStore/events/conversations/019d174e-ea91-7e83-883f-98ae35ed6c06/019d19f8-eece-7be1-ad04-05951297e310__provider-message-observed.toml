@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d19f8-eece-7be1-ad04-05951297e310"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+conversation_id = "019d174e-ea91-7e83-883f-98ae35ed6c06"
+message_id = "019d174e-ea92-7ec7-b94e-55532ce42470"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-17T12:13:18.74922Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "73a64101bd466bdf072243b839cd64f51838fd3560fcfe3435660195da304bd3"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cfbb6-d604-71c9-b865-0f28c92d7d59"
+conversation_native_id = "fb99010a-5466-4636-a30a-05129d2ca322"
+message_native_id = "019cfbb6-d604-71c9-b865-0f28c92d7d59"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cfbb6-d604-71c9-b865-0f28c92d7d59"
+role = "assistant"
+sequence_hint = 50
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good — we parked it and now have enough context to resolve it.\n\n## Revisiting Agent\n\nWith Axis A established, Agent fits cleanly:\n\nAn Agent is a **Processor that operates within the scope of a specific Human actor's context** — not the system in general, but on behalf of a particular user's session or intent.\n\n```fsharp\ntype Actor =\n    | Human      // person interacting\n    | Processor  // automated, internal, system-scoped\n    | Agent      // automated, internal, user-scoped\n    | External   // outside control/model boundary\n```\n\n## The Distinction\n\n```\nProcessor  →  operates on behalf of the system\nAgent      →  operates on behalf of a specific Human actor\n```\n\nForgejo sync = **Processor** — system concern, not tied to a user.\nSessionManager clearing after 3hrs = **Agent** — scoped to the user's laundry session.\nLocation pre-fill = **Agent** — acting on behalf of the user's current context.\n\n## Back to F# — Now It Makes Sense\n\n```fsharp\ntype Actor =\n    | Human    of HumanActor\n    | Processor of ProcessorActor\n    | Agent    of AgentActor * parentId: ActorId  // parent still meaningful here\n    | External of ExternalActor\n```\n\n`parentId` on Agent is now earned — it genuinely operates within a Human actor's context, not the system at large. That's the precise thing that distinguishes it from Processor.\n\nDoes that feel right now?"
+

@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-e9d2-757d-9a4b-80ca64c0bfff"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-e9d2-7c11-8c05-d731f9834aac"
+conversation_id = "019d174e-e9d2-7c11-8c05-d731f9834aac"
+message_id = "019d174e-e9d2-71f8-8a22-590f08ce5df6"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-11T01:25:04.037275Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "8d450670f3d5a47b05afbf11e8d6aca11f4be5b1eeb3341ebc9266405cb83cf4"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+conversation_native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7083-a6d4-762c-b0c9-091f24a842fe"
+conversation_native_id = "dd7f66bf-0ba6-4d22-a24b-5b538a758f4d"
+message_native_id = "019a7083-a6d4-762c-b0c9-091f24a842fe"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7083-a6d4-762c-b0c9-091f24a842fe"
+role = "assistant"
+sequence_hint = 32
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-11T01:24:30.866995Z\",\"stop_timestamp\":\"2025-11-11T01:24:45.610303Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Interesting question! Let me think about markdown vs YAML for event storage.\\n\\n**YAML benefits:**\\n- Structured data\\n- Easy to parse programmatically\\n- Type-safe deserialization to F# types\\n- Standard for configuration/data\\n\\n**Markdown benefits:**\\n- Even more human-readable\\n- Could include narrative context\\n- Natural for git diffs\\n- Could have frontmatter YAML \\u002B markdown body\\n- Browseable in any text editor/viewer\\n- GitHub renders nicely\\n\\nFor event sourcing, events are typically structured data. But... what if we think about this differently?\\n\\nEvents ARE structured (type, timestamp, data). But the \\u0022context\\u0022 and \\u0022reasoning\\u0022 parts are narrative. Could we do frontmatter \\u002B markdown body?\\n\\nActually, this is really interesting. Let me think about what an event really is:\\n1. Structured metadata (type, timestamp, key data)\\n2. Human narrative context (why this happened, what conversation led to it)\\n\\nMarkdown with YAML frontmatter would give us both!\\n\\n\\u0060\\u0060\\u0060markdown\\n---\\ntype: PreferenceDiscovered\\ntimestamp: 2025-11-10T14:30:00Z\\nconcept: DataFormat\\nvalue: YAML\\n---\\n\\n# Discovered Preference for YAML over JSON\\n\\nDuring conversation about event-sourced memory design, realized strong preference for YAML format. Key reasoning:\\n\\n- More human-readable than JSON\\n- Easier to scan visually\\n- Better for configuration files\\n- Natural for documentation\\n\\nThis applies to all data files in the framework - only use JSON when required by external packages or services (like npm, package managers, etc.).\\n\\n**Context:** Chat 2025-11-10 discussing Memory MCP article and Nexus enhancements.\\n\\u0060\\u0060\\u0060\\n\\nThis would be:\\n1. More readable (markdown prose)\\n2. Still parseable (YAML frontmatter)\\n3. Git-friendly (diffs show narrative changes)\\n4. Self-documenting\\n5. Can include rich context that pure YAML misses\\n\\n\\nI\\u0027m weighing the trade-offs between simplicity and comprehensive documentation. Simple events might work best with straightforward YAML, while more complex scenarios benefit from the rich narrative approach of markdown with frontmatter. The key is finding the right balance between structure and context.\",\"summaries\":[{\"summary\":\"Thinking about comparing YAML and Markdown for data format suitability.\"},{\"summary\":\"Weighing YAML\\u0027s structure against markdown\\u0027s readability benefits.\"},{\"summary\":\"Weighed markdown-YAML hybrid against pure YAML for event storage.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Excellent question!** This actually opens up an interesting possibility - what if events had *both* structure and narrative?\n\n## Pure YAML (Current thinking)\n```yaml\n# events/2025-11-10T14-30-00_PreferenceDiscovered_DataFormat.yaml\ntype: PreferenceDiscovered\ntimestamp: 2025-11-10T14:30:00Z\nconcept: DataFormat\nvalue: YAML\ncontext: \"Much easier to read as human than JSON\"\nmetadata:\n  conversation: \"chat-2025-11-10-nexus\"\n```\n\n**Pros:** Clean, parseable, type-safe deserialization to F#  \n**Cons:** Limited narrative context, feels mechanical\n\n## Markdown with YAML Frontmatter (Hybrid)\n```markdown\n---\ntype: PreferenceDiscovered\ntimestamp: 2025-11-10T14:30:00Z\nconcept: DataFormat\nvalue: YAML\n---\n\n# Discovered Preference for YAML over JSON\n\nDuring conversation about event-sourced memory design, realized strong preference for YAML format over JSON for all data files.\n\n**Key reasoning:**\n- More human-readable than JSON\n- Easier to scan visually  \n- Better for configuration\n- Natural for documentation\n\n**Exception:** Only use JSON when required by external packages (npm, package managers, etc.)\n\n**Context:** Chat 2025-11-10 while discussing Memory MCP article and Nexus architecture.\n```\n\n**Pros:** \n- Structured data in frontmatter (parseable)\n- Rich narrative context in markdown body\n- Self-documenting (tells the story)\n- Beautiful in GitHub/viewers\n- Git diffs show narrative changes\n- Better captures \"why\" not just \"what\"\n\n**Cons:** \n- Slightly more complex parsing (frontmatter + body)\n- Overkill for simple events?\n\n## Pure Markdown (Alternative)\n```markdown\n# PreferenceDiscovered: DataFormat → YAML\n\n**When:** 2025-11-10T14:30:00Z  \n**Type:** PreferenceDiscovered  \n**Concept:** DataFormat  \n**Value:** YAML\n\nDuring conversation about event-sourced memory design...\n```\n\n**Pros:** Maximum readability, all narrative  \n**Cons:** Harder to parse reliably, less structured\n\n## My Take\n\n**For event sourcing, I'd lean toward Markdown + YAML frontmatter because:**\n\n1. **Events tell stories** - \"What happened and why\" is richer than just data\n2. **Self-documenting** - Anyone can read events and understand evolution\n3. **Git-friendly** - Diffs show both data changes and narrative\n4. **Best of both worlds** - Structure for parsing, prose for humans\n5. **Dogfooding** - Validates that documentation can be data\n\n**F# Implementation:**\n```fsharp\ntype EventFile = {\n    Metadata: MemoryEvent  // From frontmatter\n    Narrative: string      // Markdown body\n}\n\nlet parseEventFile (content: string) =\n    let parts = content.Split(\"---\", 3)\n    let frontmatter = YamlSerializer.Deserialize<MemoryEvent>(parts.[1])\n    let markdown = parts.[2].Trim()\n    { Metadata = frontmatter; Narrative = markdown }\n\n// Rebuild projection: only need metadata\nlet rebuildProjection() = \n    getAllEventFiles()\n    |> Array.map (fun content -> \n        let parsed = parseEventFile content\n        parsed.Metadata)  // Just use structured data\n    |> Array.fold applyEvent emptyState\n```\n\n**Projection reads only frontmatter (fast), but humans can read full context.**\n\n## The Question\n\n**Do you want events to be:**\n1. **Pure data** (YAML) - Clean, simple, just facts\n2. **Data + Story** (Markdown + frontmatter) - Rich context, self-documenting\n3. **Start simple, evolve later** - YAML now, can convert to markdown later if needed\n\nWhat's your gut feeling? Is the narrative context valuable enough to justify markdown, or is YAML's simplicity better for events?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [██████████░░░░░░░░░░] 88,900 / 190,000 tokens (46.8%)\n\nAllocation:\n├─ System Prompts:     ~5,000 tokens  (2.6%)\n├─ Project Knowledge:  ~2,000 tokens  (1.1%)\n├─ Conversation:      ~78,900 tokens (41.5%)\n│  ├─ Your messages:  ~14,500 tokens\n│  ├─ My responses:   ~59,400 tokens\n│  └─ Tool calls:      ~5,000 tokens\n└─ This Response:      ~3,300 tokens  (1.7%)\n\nRemaining: 101,100 tokens (53.2%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

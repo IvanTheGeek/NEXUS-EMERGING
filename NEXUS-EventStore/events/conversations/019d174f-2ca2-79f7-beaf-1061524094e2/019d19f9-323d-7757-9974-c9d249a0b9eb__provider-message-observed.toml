@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d19f9-323d-7757-9974-c9d249a0b9eb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+conversation_id = "019d174f-2ca2-79f7-beaf-1061524094e2"
+message_id = "019d174f-2cae-7b62-ae3e-7ecb397c82f6"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T12:53:33.704766Z"
+observed_at = "2026-03-23T09:14:09.5045167Z"
+imported_at = "2026-03-23T09:14:09.5045167Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f9-2776-7323-a03d-4f98e30da2ea"
+
+[content_hash]
+algorithm = "sha256"
+value = "df99a864ed214f5ea3d6e21f3e94bd2930098393feecc8611d76d57698f93449"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "1f75648e-5b71-4b1b-adca-31f3eeaffd76"
+conversation_native_id = "69b00837-0158-8330-90a9-4cb2c9aa1b87"
+message_native_id = "1f75648e-5b71-4b1b-adca-31f3eeaffd76"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-23T09-14-09Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:14:09.5045167Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "1f75648e-5b71-4b1b-adca-31f3eeaffd76"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 32
+
+[[body.segments]]
+kind = "plain_text"
+text = "What entity[\"people\",\"Adam Dymitruk\"] says about **expanding the timeline** is actually the key to understanding the deeper structure of Event Modeling.\n\nOnce you follow that rule — *“just keep expanding complex things into workflows”* — something interesting appears:\n\n> The entire system alternates between **state nodes** and **behavior nodes**.\n\nThis is the structural pattern hiding under the board.\n\n---\n\n# 1. The two fundamental node types\n\nAlmost everything on the board can be reduced to one of two categories.\n\n### State nodes (facts or knowledge)\n\nThese represent **what is known**.\n\nExamples:\n\n```\nEvent\nRead Model\n```\n\nThey are **data**.\n\nExamples:\n\n```\nLaundryLoadStarted\nLaundryLoadCompleted\nActiveLoads\nOrdersAwaitingShipment\n```\n\nThese are **snapshots of knowledge**.\n\n---\n\n### Behavior nodes (transformations)\n\nThese represent **logic that transforms state**.\n\nExamples:\n\n```\nCommand handler\nProjection\nProcessor\n```\n\nThey are **functions or rules**.\n\nExamples:\n\n```\nStartLaundryLoad decision\nUpdateActiveLoads projection\nSendNotification processor\n```\n\nThese transform one state into another.\n\n---\n\n# 2. The hidden alternating structure\n\nIf you expand the system fully, it becomes:\n\n```\nState → Behavior → State → Behavior → State\n```\n\nFor example:\n\n```\nCommand\n   ↓\nEvent\n   ↓\nProjection\n   ↓\nRead Model\n   ↓\nProcessor\n   ↓\nCommand\n```\n\nExpanded:\n\n```\nState (Command)\n   ↓\nBehavior (Decision)\n   ↓\nState (Event)\n   ↓\nBehavior (Projection)\n   ↓\nState (Read Model)\n   ↓\nBehavior (Processor)\n   ↓\nState (Command)\n```\n\nSo the architecture **alternates perfectly**.\n\n---\n\n# 3. Why Adam’s “timeline expansion” works\n\nWhen Adam says:\n\n> *expand complex things out into workflows*\n\nhe’s effectively telling you to **keep revealing the hidden behavior nodes**.\n\nExample compressed slice:\n\n```\nEvent → Green Box → UI\n```\n\nExpanded:\n\n```\nEvent\n  ↓\nProjection\n  ↓\nRead Model\n  ↓\nQuery/View\n  ↓\nUI\n```\n\nEach expansion reveals **more transformation steps**.\n\n---\n\n# 4. This is why the green box is a TODO list\n\nThe green box represents **knowledge of work waiting to happen**.\n\nExample:\n\n```\nOrdersAwaitingShipment\nMachinesNeedingMaintenance\nNotificationsPending\n```\n\nProcessors look at those lists.\n\n```\nRead Model\n   ↓\nProcessor\n   ↓\nCommand\n```\n\nSo the read model is basically:\n\n```\nState describing unfinished work\n```\n\n---\n\n# 5. The repeating cycle\n\nIf you follow the whole system you get a loop:\n\n```\nCommand\n   ↓\nDecision\n   ↓\nEvent\n   ↓\nProjection\n   ↓\nRead Model\n   ↓\nProcessor\n   ↓\nCommand\n```\n\nWhich repeats indefinitely.\n\nGraphically:\n\n```\nCommand → Event → Read Model → Command\n```\n\nBut with behavior nodes in between.\n\n---\n\n# 6. Why this pattern scales\n\nBecause each behavior node is **small and deterministic**.\n\nYou can reason about each step independently:\n\n| Step | Responsibility |\n|-----|---------------|\nDecision | validate commands |\nProjection | build state |\nProcessor | trigger work |\n\nEach step is **simple and isolated**.\n\n---\n\n# 7. How this connects to Adam’s timeline\n\nThe **timeline row** of events gives you the **temporal backbone** of the system.\n\n```\nEvent → Event → Event → Event\n```\n\nEverything else hangs off that timeline.\n\n```\nEvent\n   ├── Projection\n   ├── Processor\n   └── UI reaction\n```\n\nSo the board is really:\n\n```\nTime axis + reaction graph\n```\n\n---\n\n# 8. The interesting architectural insight\n\nBecause events are immutable, the system becomes:\n\n```\nHistory\n   ↓\nTransformations\n   ↓\nKnowledge\n   ↓\nActions\n```\n\nThis is why event-sourced systems feel so clean.\n\n---\n\n# 9. In the graph model you’ve been exploring\n\nYou could express the system like this:\n\nNode types:\n\n```\nState nodes\n  Event\n  ReadModel\n\nBehavior nodes\n  Decision\n  Projection\n  Processor\n```\n\nEdges:\n\n```\nState → Behavior → State\n```\n\nThat’s the entire architecture.\n\n---\n\n# 10. Why this fits perfectly with slice replacement\n\nYour **replace slices instead of mutating them** principle works well because slices are basically **small state-behavior-state chains**.\n\nExample slice:\n\n```\nEvent\n   ↓\nProjection\n   ↓\nRead Model\n```\n\nReplacing a slice just swaps that chain out.\n\nThe rest of the graph remains stable.\n\n---\n\n✅ So Adam’s “expand workflows along the timeline” idea is really guiding you to uncover this deeper structure:\n\n```\nState → Behavior → State → Behavior → State\n```\n\nThe Event Modeling board is simply a **human-friendly projection of that alternating transformation graph**.\n\n---\n\nIf you'd like, I can also show you something that tends to make Event Modeling “click” for people who think in graphs like you do:\n\n**the board can be reinterpreted as three orthogonal axes (time, causality, and knowledge)**, and once you see that, it becomes much easier to design large systems without the board getting messy."
+

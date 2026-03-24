@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea80-7724-b2cc-90015e5e8de3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+conversation_id = "019d174e-ea7b-71ca-91ea-5f3ad56b32fd"
+message_id = "019d174e-ea80-7927-9bb2-c1ff4d0b0870"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-27T18:00:24.418291Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "fe5513a225244163c2af97bd9eaae58d67f8d7dc7d923bbae432068b27328672"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019ac678-c113-764d-9c6f-9fb2f4ba36d1"
+conversation_native_id = "3af0f87f-ca11-4a7e-8e9a-d4618a533edd"
+message_native_id = "019ac678-c113-764d-9c6f-9fb2f4ba36d1"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019ac678-c113-764d-9c6f-9fb2f4ba36d1"
+role = "assistant"
+sequence_hint = 60
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-27T17:59:56.689713Z\",\"stop_timestamp\":\"2025-11-27T18:00:03.942872Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"This is a really interesting architectural insight. Let me unpack what Ivan is saying:\\n\\n1. The UI is its own \\u0022machine\\u0022 - a bounded context with its own events\\n2. Elmish\\u0027s \\u0060Cmd\\u0060 is the communication channel to the outside world (like a port)\\n3. The UI events can be kept local (in-memory) OR pushed to backend\\n4. Event Model can show both UI and Domain events on the same timeline at different fidelities\\n5. User approval might gate whether UI events get persisted externally\\n\\nThis aligns with his \\u0022paths\\u0022 concept - the UI has its own event stream that can be:\\n- Purely local (ephemeral)\\n- Synced to backend (persistent)\\n- Or hybrid (some events local, some persisted)\\n\\nLet me think about how to visualize this...\\n\\nThe fidelity levels:\\n- Business: Just domain events (NameEntered domain event)\\n- Domain \\u002B UI: Shows UI events that lead to domain events\\n- Full: Shows every UI micro-event (keystroke, focus, etc.)\\n\\nThe \\u0022machines\\u0022 concept:\\n- UI Machine: Has its own events, state, projections\\n- Domain Machine: Has domain events, aggregates, projections\\n- Communication: UI Cmd \\u2192 API \\u2192 Domain Command \\u2192 Domain Event \\u2192 (possibly back to UI)\\n\\nThe sync decision:\\n- Some UI events stay local (typing in progress, hover states)\\n- Some UI events need to sync (form submitted, user confirmed)\\n- User approval could gate the sync\\n\\nLet me draw this out in a way that maps to Event Modeling.\",\"summaries\":[{\"summary\":\"Thinking about integrating UI event models with domain events into unified timelines.\"},{\"summary\":\"Unpacking UI architecture and event communication patterns.\"},{\"summary\":\"Synthesized UI and domain event architectures across fidelity levels.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "That's a clean separation. Let me map this out:\n\n**Two machines, one timeline:**\n\n```\n┌─────────────────────────────────────────────────────────────────────────┐\n│                              TIMELINE                                    │\n├─────────────────────────────────────────────────────────────────────────┤\n│                                                                         │\n│  UI Machine          │ Cmd boundary │     Domain Machine                │\n│  (Browser/Local)     │    (API)     │     (Backend/Nexus)               │\n│                      │              │                                   │\n│  ┌──────────┐        │              │                                   │\n│  │ UI Event │        │              │                                   │\n│  │ NameTyped│───────▶│              │                                   │\n│  └──────────┘        │              │                                   │\n│       │              │              │                                   │\n│       ▼              │              │                                   │\n│  ┌──────────┐        │              │                                   │\n│  │ UI Event │        │   ┌─────┐   │   ┌──────────────┐                │\n│  │ Submitted│───────▶│───│ Cmd │───│──▶│ Domain Event │                │\n│  └──────────┘        │   └─────┘   │   │ NameEntered  │                │\n│                      │              │   └──────────────┘                │\n│                      │              │         │                         │\n│                      │              │         ▼                         │\n│                      │              │   ┌──────────────┐                │\n│                      │   ┌─────┐   │   │  Projection  │                │\n│  ┌──────────┐◀───────│───│ Sub │◀──│───│ UserGreeting │                │\n│  │ UI Event │        │   └─────┘   │   └──────────────┘                │\n│  │ Received │        │              │                                   │\n│  └──────────┘        │              │                                   │\n│       │              │              │                                   │\n│       ▼              │              │                                   │\n│  ┌──────────┐        │              │                                   │\n│  │ UI View  │        │              │                                   │\n│  │ Greeting │        │              │                                   │\n│  └──────────┘        │              │                                   │\n│                      │              │                                   │\n└─────────────────────────────────────────────────────────────────────────┘\n```\n\n**UI Machine events (local, ephemeral by default):**\n\n```fsharp\ntype UIEvent =\n    | NameFieldFocused of at: DateTimeOffset\n    | NameTyped of value: string * at: DateTimeOffset\n    | NameFieldBlurred of at: DateTimeOffset\n    | ContinueClicked of at: DateTimeOffset\n    | SubmissionRequested of name: string * at: DateTimeOffset\n    | DomainResponseReceived of result: Result<Greeting, Error> * at: DateTimeOffset\n    | ScreenChanged of from: Screen * to: Screen * at: DateTimeOffset\n```\n\n**Domain events (persisted in Nexus):**\n\n```fsharp\ntype DomainEvent =\n    | NameEntered of name: string * enteredAt: DateTimeOffset\n```\n\n**The Cmd boundary:**\n\n```fsharp\n// UI update produces Cmds that cross the boundary\nlet update (event: UIEvent) (model: UIModel) : UIModel * Cmd<UIEvent> =\n    match event with\n    | SubmissionRequested (name, _) ->\n        { model with IsSubmitting = true },\n        Cmd.ofAsync \n            submitName name  // Crosses to domain machine\n            (fun result -> DomainResponseReceived (result, DateTimeOffset.Now))\n    \n    | DomainResponseReceived (Ok greeting, _) ->\n        { model with \n            IsSubmitting = false\n            Screen = Greeting\n            GreetingMessage = greeting.Message },\n        Cmd.none\n    \n    | _ -> ...\n```\n\n---\n\n**Fidelity levels on the Event Model:**\n\n| Fidelity | Shows | Audience |\n|----------|-------|----------|\n| Business | Domain events only | Executives |\n| Domain | Domain events + Commands + Read Models | Domain experts |\n| UI + Domain | UI events + boundary + Domain events | Full team |\n| Debug | Every UI micro-event + timing | Developers |\n\n---\n\n**The sync decision (user approval):**\n\n```fsharp\ntype SyncPolicy =\n    | LocalOnly           // Never sync UI events\n    | SyncOnApproval      // User must approve\n    | SyncAll             // Everything goes to backend\n    | SyncSelective of (UIEvent -> bool)  // Predicate decides\n\n// Some UI events worth syncing for analytics/debugging\nlet worthSyncing = function\n    | SubmissionRequested _ -> true\n    | ScreenChanged _ -> true\n    | NameTyped _ -> false  // Too noisy\n    | _ -> false\n```\n\n---\n\n**Questions:**\n\n1. Does the UI machine maintain its own event log (in-memory list), or is state purely derived from current event?\n\n2. For the Event Model visualization - do UI events appear on the same orange timeline band, or a separate UI-specific band above?"
+

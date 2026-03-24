@@ -1,0 +1,109 @@
+schema_version = 1
+event_id = "019d174e-eaaa-739b-9e0a-bf3feadb1ae6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+conversation_id = "019d174e-eaa9-7b82-9c3f-c55499fe9fd6"
+message_id = "019d174e-eaaa-71dc-9d32-c85e9e50e1c1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-15T12:40:38.762137Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "b4f686701e3c1bdd1f161e629cba818c8ac00950976f5b33ec4324332ed6db8f"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cf182-ba20-740c-83a3-f96acf953dcf"
+conversation_native_id = "5bd0871b-3685-4eeb-95bd-912124b78b59"
+message_native_id = "019cf182-ba20-740c-83a3-f96acf953dcf"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cf182-ba20-740c-83a3-f96acf953dcf"
+role = "assistant"
+sequence_hint = 112
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:05.020177Z\",\"stop_timestamp\":\"2026-03-15T12:40:07.187707Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Good, facets it is. Let me update the OpenApp slice TOML to use facets and then present it. But wait - the user has already modified their own copy of the file. I should work with their version as the base and add facets.\\n\\nLet me think about what the updated file should look like with facets applied.\",\"summaries\":[{\"summary\":\"Thinking about terminology for visibility and concern classification systems.\"},{\"summary\":\"Updating TOML with facets, incorporating user modifications.\"},{\"summary\":\"Reconciled user\\u0027s file version with facets implementation.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Facets it is. Let me update OpenApp with facets applied, using your modified version as the base:"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:07.777961Z\",\"stop_timestamp\":\"2026-03-15T12:40:12.307015Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_017vmveQGQs3WUtmGjCPF3Mo\",\"name\":\"create_file\",\"input\":{\"description\":\"Updated OpenApp CommandSlice with facets property\",\"file_text\":\"# LaundryLog - Open App Command Slice\\n\\n[slice]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000100\\u0022\\ntype = \\u0022CommandSlice\\u0022\\nname = \\u0022OpenApp\\u0022\\nsystem = \\u0022LaundryLog\\u0022\\ndescription = \\u0022Truck driver opens the LaundryLog app\\u0022\\n\\n[[origins]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000110\\u0022\\nname = \\u0022Splash Screen\\u0022\\nswimlane = \\u0022TruckDriver\\u0022\\nsnapshot = \\u0022app-splash-screen.png\\u0022\\nfacets = [\\u0022business\\u0022, \\u0022ui\\u0022]\\n\\n[command]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000120\\u0022\\nname = \\u0022OpenApp\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = []\\n\\n[handler]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000130\\u0022\\nname = \\u0022OpenAppHandler\\u0022\\nfacets = [\\u0022dev\\u0022]\\n\\n[[event]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000140\\u0022\\nname = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = [\\n    { name = \\u0022openedAt\\u0022, type = \\u0022datetime\\u0022, facets = [\\u0022dev\\u0022] },\\n]\\n\\n# GWT rules are match-ordered: first match wins, like F# pattern matching.\\n# Most specific rules first, catch-all last.\\n\\n[[handler.gwt]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000150\\u0022\\nname = \\u0022OpenApp\\u0022\\ngiven = \\u0022Unit\\u0022\\nwhen = \\u0022OpenApp\\u0022\\nthen = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\ndescription = \\u0022No prior state needed. App opened.\\u0022\\n\",\"path\":\"/home/claude/truth-graph/slices/open-app.toml\"},\"message\":\"Updated OpenApp CommandSlice with facets property\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"context\":null,\"display_content\":{\"type\":\"code_block\",\"language\":\"plaintext\",\"code\":\"# LaundryLog - Open App Command Slice\\n\\n[slice]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000100\\u0022\\ntype = \\u0022CommandSlice\\u0022\\nname = \\u0022OpenApp\\u0022\\nsystem = \\u0022LaundryLog\\u0022\\ndescription = \\u0022Truck driver opens the LaundryLog app\\u0022\\n\\n[[origins]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000110\\u0022\\nname = \\u0022Splash Screen\\u0022\\nswimlane = \\u0022TruckDriver\\u0022\\nsnapshot = \\u0022app-splash-screen.png\\u0022\\nfacets = [\\u0022business\\u0022, \\u0022ui\\u0022]\\n\\n[command]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000120\\u0022\\nname = \\u0022OpenApp\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = []\\n\\n[handler]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000130\\u0022\\nname = \\u0022OpenAppHandler\\u0022\\nfacets = [\\u0022dev\\u0022]\\n\\n[[event]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000140\\u0022\\nname = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = [\\n    { name = \\u0022openedAt\\u0022, type = \\u0022datetime\\u0022, facets = [\\u0022dev\\u0022] },\\n]\\n\\n# GWT rules are match-ordered: first match wins, like F# pattern matching.\\n# Most specific rules first, catch-all last.\\n\\n[[handler.gwt]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000150\\u0022\\nname = \\u0022OpenApp\\u0022\\ngiven = \\u0022Unit\\u0022\\nwhen = \\u0022OpenApp\\u0022\\nthen = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\ndescription = \\u0022No prior state needed. App opened.\\u0022\\n\",\"filename\":\"/home/claude/truth-graph/slices/open-app.toml\"},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_017vmveQGQs3WUtmGjCPF3Mo\",\"name\":\"create_file\",\"content\":[{\"type\":\"text\",\"text\":\"File already exists: /home/claude/truth-graph/slices/open-app.toml\",\"uuid\":\"7fc0750d-961c-4659-af23-6c1f088a2d62\"}],\"is_error\":true,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"display_content\":{\"type\":\"text\",\"text\":\"File already exists: /home/claude/truth-graph/slices/open-app.toml\"}}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:17.372825Z\",\"stop_timestamp\":\"2026-03-15T12:40:17.637684Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Need to remove old file first.\",\"summaries\":[{\"summary\":\"Identified prerequisite cleanup task before proceeding.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:17.861143Z\",\"stop_timestamp\":\"2026-03-15T12:40:18.473651Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_01HtNJbte4JMMNWib2cjNGtQ\",\"name\":\"bash_tool\",\"input\":{\"command\":\"rm /home/claude/truth-graph/slices/open-app.toml\",\"description\":\"Remove old file to recreate with facets\"},\"message\":\"Remove old file to recreate with facets\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"commandLine\",\"context\":null,\"display_content\":{\"type\":\"code_block\",\"language\":\"bash\",\"code\":\"rm /home/claude/truth-graph/slices/open-app.toml\",\"filename\":null},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_01HtNJbte4JMMNWib2cjNGtQ\",\"name\":\"bash_tool\",\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022returncode\\u0022:0,\\u0022stdout\\u0022:\\u0022\\u0022,\\u0022stderr\\u0022:\\u0022\\u0022}\",\"uuid\":\"844a356c-30ac-4cce-b106-de133076bf11\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"commandLine\",\"display_content\":{\"type\":\"json_block\",\"json_block\":\"{\\u0022returncode\\u0022:0,\\u0022stdout\\u0022:\\u0022\\u0022,\\u0022stderr\\u0022:\\u0022\\u0022}\"}}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:21.483389Z\",\"stop_timestamp\":\"2026-03-15T12:40:21.671594Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Let me recreate.\",\"summaries\":[{\"summary\":\"Reconsidered terminology for visibility and concern tags.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:21.862802Z\",\"stop_timestamp\":\"2026-03-15T12:40:25.367373Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_012NwUogg4vdKCJoqQ24tqeh\",\"name\":\"create_file\",\"input\":{\"description\":\"Updated OpenApp CommandSlice with facets property\",\"file_text\":\"# LaundryLog - Open App Command Slice\\n\\n[slice]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000100\\u0022\\ntype = \\u0022CommandSlice\\u0022\\nname = \\u0022OpenApp\\u0022\\nsystem = \\u0022LaundryLog\\u0022\\ndescription = \\u0022Truck driver opens the LaundryLog app\\u0022\\n\\n[[origins]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000110\\u0022\\nname = \\u0022Splash Screen\\u0022\\nswimlane = \\u0022TruckDriver\\u0022\\nsnapshot = \\u0022app-splash-screen.png\\u0022\\nfacets = [\\u0022business\\u0022, \\u0022ui\\u0022]\\n\\n[command]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000120\\u0022\\nname = \\u0022OpenApp\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = []\\n\\n[handler]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000130\\u0022\\nname = \\u0022OpenAppHandler\\u0022\\nfacets = [\\u0022dev\\u0022]\\n\\n[[event]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000140\\u0022\\nname = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = [\\n    { name = \\u0022openedAt\\u0022, type = \\u0022datetime\\u0022, facets = [\\u0022dev\\u0022] },\\n]\\n\\n# GWT rules are match-ordered: first match wins, like F# pattern matching.\\n# Most specific rules first, catch-all last.\\n\\n[[handler.gwt]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000150\\u0022\\nname = \\u0022OpenApp\\u0022\\ngiven = \\u0022Unit\\u0022\\nwhen = \\u0022OpenApp\\u0022\\nthen = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\ndescription = \\u0022No prior state needed. App opened.\\u0022\\n\",\"path\":\"/home/claude/truth-graph/slices/open-app.toml\"},\"message\":\"Updated OpenApp CommandSlice with facets property\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"context\":null,\"display_content\":{\"type\":\"code_block\",\"language\":\"plaintext\",\"code\":\"# LaundryLog - Open App Command Slice\\n\\n[slice]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000100\\u0022\\ntype = \\u0022CommandSlice\\u0022\\nname = \\u0022OpenApp\\u0022\\nsystem = \\u0022LaundryLog\\u0022\\ndescription = \\u0022Truck driver opens the LaundryLog app\\u0022\\n\\n[[origins]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000110\\u0022\\nname = \\u0022Splash Screen\\u0022\\nswimlane = \\u0022TruckDriver\\u0022\\nsnapshot = \\u0022app-splash-screen.png\\u0022\\nfacets = [\\u0022business\\u0022, \\u0022ui\\u0022]\\n\\n[command]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000120\\u0022\\nname = \\u0022OpenApp\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = []\\n\\n[handler]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000130\\u0022\\nname = \\u0022OpenAppHandler\\u0022\\nfacets = [\\u0022dev\\u0022]\\n\\n[[event]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000140\\u0022\\nname = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\nfields = [\\n    { name = \\u0022openedAt\\u0022, type = \\u0022datetime\\u0022, facets = [\\u0022dev\\u0022] },\\n]\\n\\n# GWT rules are match-ordered: first match wins, like F# pattern matching.\\n# Most specific rules first, catch-all last.\\n\\n[[handler.gwt]]\\nid = \\u0022019644a1-b1a0-7000-8000-000000000150\\u0022\\nname = \\u0022OpenApp\\u0022\\ngiven = \\u0022Unit\\u0022\\nwhen = \\u0022OpenApp\\u0022\\nthen = \\u0022AppOpened\\u0022\\nfacets = [\\u0022business\\u0022]\\ndescription = \\u0022No prior state needed. App opened.\\u0022\\n\",\"filename\":\"/home/claude/truth-graph/slices/open-app.toml\"},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_012NwUogg4vdKCJoqQ24tqeh\",\"name\":\"create_file\",\"content\":[{\"type\":\"text\",\"text\":\"File created successfully: /home/claude/truth-graph/slices/open-app.toml\",\"uuid\":\"862213d2-d057-4e8c-9e7c-307028573fd3\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":null,\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"display_content\":{\"type\":\"text\",\"text\":\"File created successfully: /home/claude/truth-graph/slices/open-app.toml\"}}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:29.717860Z\",\"stop_timestamp\":\"2026-03-15T12:40:29.843784Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Now present it.\",\"summaries\":[],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:30.087787Z\",\"stop_timestamp\":\"2026-03-15T12:40:30.330714Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_01QKPgomESCUxewtdWFdd6up\",\"name\":\"present_files\",\"input\":{\"filepaths\":[\"/home/claude/truth-graph/slices/open-app.toml\"]},\"message\":\"Presenting file(s)...\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"context\":null,\"display_content\":{\"type\":\"table\",\"table\":[[\"filepaths\",\"[\\u0027/home/claude/truth-graph/slices/open-app.toml\\u0027]\"]]},\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_01QKPgomESCUxewtdWFdd6up\",\"name\":\"present_files\",\"content\":[{\"type\":\"local_resource\",\"file_path\":\"/mnt/user-data/outputs/open-app.toml\",\"name\":\"open-app\",\"mime_type\":null,\"uuid\":\"cc571798-be00-41cf-acfa-5d9b9a5bc6d8\"},{\"type\":\"text\",\"text\":\"Files copied:\\nCopied /home/claude/truth-graph/slices/open-app.toml to /mnt/user-data/outputs/open-app.toml\",\"uuid\":\"bb22945a-b594-47ca-84df-b96a047e5f57\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Presented file\",\"integration_name\":null,\"integration_icon_url\":null,\"icon_name\":\"file\",\"display_content\":null}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-15T12:40:33.592618Z\",\"stop_timestamp\":\"2026-03-15T12:40:33.938788Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"Good. Let me explain the facet assignments.\",\"summaries\":[{\"summary\":\"Prepared to elucidate facet assignment terminology.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "The facet assignments:\n\n- **origins**: `[\"business\", \"ui\"]` — business people see the actor, UI people see the snapshot\n- **command**: `[\"business\"]` — everyone sees the intent\n- **handler**: `[\"dev\"]` — hidden in Adam's LCD diagram, only devs care\n- **event**: `[\"business\"]` — everyone sees what happened, but `openedAt` field is `[\"dev\"]` since the business doesn't care about the timestamp detail\n- **gwt**: `[\"business\"]` — the rule is business-readable\n\nA business lens shows: Splash Screen → OpenApp → AppOpened with the GWT. Handler is invisible. Field details are invisible. Same file, different gem rotation.\n\nDoes the facet assignment logic feel right, or should some of these shift?"
+

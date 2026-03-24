@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d174f-2ce0-7b8e-8fde-079867be00f6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+conversation_id = "019d174f-2ce0-7cab-a424-9aaaca516e95"
+message_id = "019d174f-2ce0-7c36-9a83-0ad8a634c50b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-19T23:06:19.9475829Z"
+observed_at = "2026-03-22T20:49:14.1260264Z"
+imported_at = "2026-03-22T20:49:14.1260264Z"
+source_acquisition = "export_zip"
+import_id = "019d174f-26af-7760-b1cb-adabbd21ca23"
+
+[content_hash]
+algorithm = "sha256"
+value = "68ad70d575c516e2b4c74a51ba23e4f7e5687aeb716382ac9eda85900a311013"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "dedc8a95-b665-4b2e-8cb7-7a1b7e31d11b"
+conversation_native_id = "69bccbad-f4a8-8328-ab91-3a307604c90f"
+message_native_id = "dedc8a95-b665-4b2e-8cb7-7a1b7e31d11b"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-21-00-59-59-9c115c057bfc4f5f9a779548b8846d7d.zip"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-22T20-49-14Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:49:14.1260264Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "dedc8a95-b665-4b2e-8cb7-7a1b7e31d11b"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 111
+
+[[body.segments]]
+kind = "plain_text"
+text = "Perfect—this is the right level to understand what’s really happening.\n\n---\n\n# 🧠 What is a DOM event?\n\n> A **DOM event** is a signal created by the browser when something happens.\n\nExamples:\n- user clicks → `click`\n- mouse moves over element → `mouseover`\n- key pressed → `keydown`\n- input changes → `input`\n\n---\n\n# 🧱 Start from the DOM\n\nThe **DOM (Document Object Model)** is a tree of objects:\n\n```html\n<button>Click</button>\n```\n\nBecomes:\n\n```text\nButtonNode\n```\n\nEach node can:\n- hold data\n- have children\n- **emit events**\n\n---\n\n# 🔥 What “DOM fires mouseover” actually means\n\nWhen your mouse moves over an element:\n\n```text\nMouse enters element\n   ↓\nBrowser detects hit-test (cursor is over element)\n   ↓\nBrowser creates an Event object\n   ↓\nBrowser dispatches it to that element\n```\n\n👉 That’s what “fires an event” means\n\n---\n\n# 🧠 More precise definition\n\n> “Firing an event” =  \n> **creating an event object and dispatching it through the DOM tree**\n\n---\n\n# 🧱 Example: mouseover\n\nWhen you hover:\n\n```text\n1. Browser sees pointer enters element\n2. Creates MouseEvent\n3. Sends it into DOM system\n```\n\nEvent object contains:\n\n```text\ntype: \"mouseover\"\ntarget: button element\nx/y coordinates\nkeyboard state\netc\n```\n\n---\n\n# 🔄 Event propagation (VERY important)\n\nEvents don’t just hit one element—they travel.\n\nThere are **3 phases**:\n\n```text\n1. Capturing phase (top → down)\n2. Target phase (on element)\n3. Bubbling phase (bottom → up)\n```\n\n---\n\n## Example tree\n\n```text\n<body>\n  <div>\n    <button>Click</button>\n  </div>\n</body>\n```\n\n---\n\n## Click button → flow\n\n```text\nCAPTURE:\nbody → div → button\n\nTARGET:\nbutton\n\nBUBBLE:\nbutton → div → body\n```\n\n---\n\n# 🧠 Why this exists\n\nIt allows:\n\n- parent elements to react to child events\n- delegation (one handler for many elements)\n\n---\n\n# 🧱 Event listener\n\nYou attach code like:\n\n```javascript\nbutton.addEventListener(\"click\", handler)\n```\n\nNow:\n\n```text\nEvent reaches button\n   ↓\nhandler runs\n```\n\n---\n\n# 🔌 Where Blazor comes in\n\nBlazor does this for you:\n\n```text\nDOM event\n   ↓\nJS listener (installed by Blazor)\n   ↓\nBlazor runtime\n   ↓\n.NET handler (your code)\n```\n\n---\n\n# 🧬 Mapping to your F# code\n\n```fsharp\nOn.click this (fun () -> ...)\n```\n\nBecomes:\n\n```text\nDOM \"click\"\n   ↓\nBlazor JS listener\n   ↓\nEventCallback\n   ↓\nyour function runs\n```\n\n---\n\n# 🔥 Important distinction\n\n## DOM event = browser-level\n\n- created by browser\n- handled in JS normally\n\n## Blazor event = .NET-level\n\n- wrapper around DOM event\n- converted into typed callback\n\n---\n\n# 🧠 Hover example (step-by-step)\n\n```text\nMouse enters button\n   ↓\nBrowser creates MouseEvent(type=\"mouseover\")\n   ↓\nEvent dispatched to button\n   ↓\nBlazor JS listener catches it\n   ↓\nBlazor calls your .NET handler\n```\n\n---\n\n# ⚠️ Subtle but important\n\nThe DOM itself does NOT “run your code”\n\nIt only:\n\n```text\ncreates event\ndispatches event\n```\n\nCode runs only if:\n\n- a listener is attached\n\n---\n\n# 🧬 In your NEXUS terms\n\n```text\nNode (DOM element)\n   ↓\nEvent occurs\n   ↓\nSignal emitted\n   ↓\nListener (edge)\n   ↓\nHandler / Intent\n```\n\n---\n\n# 🧠 Clean mental model\n\nThink of DOM events like:\n\n> **interrupt signals from the browser**\n\n---\n\n# 🧾 Bottom line\n\n- DOM event = browser-created signal\n- “fires” = event is created and dispatched\n- travels through DOM (capture → target → bubble)\n- listeners handle it\n- Blazor converts it into .NET callbacks\n\n---\n\nIf you want next step:\n\n👉 I can show how event bubbling interacts with Blazor and how you can control it (`stopPropagation`, etc.), which becomes important for complex UIs."
+

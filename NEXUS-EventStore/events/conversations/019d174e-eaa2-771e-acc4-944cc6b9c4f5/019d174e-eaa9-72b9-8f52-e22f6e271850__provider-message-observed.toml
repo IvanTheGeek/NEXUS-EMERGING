@@ -1,0 +1,77 @@
+schema_version = 1
+event_id = "019d174e-eaa9-72b9-8f52-e22f6e271850"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-eaa2-771e-acc4-944cc6b9c4f5"
+conversation_id = "019d174e-eaa2-771e-acc4-944cc6b9c4f5"
+message_id = "019d174e-eaa9-72a3-8687-6262960d5723"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-10T06:50:21.944038Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "563e325fa631fd77b193c88c0e98ad95c3ab15f680d4e4dff9987f618810150c"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "b26ef652-4fbb-493b-a9c7-7cd61bd8c5cf"
+conversation_native_id = "b26ef652-4fbb-493b-a9c7-7cd61bd8c5cf"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019cd682-5ae9-747b-a9be-2aae4d6c57fa"
+conversation_native_id = "b26ef652-4fbb-493b-a9c7-7cd61bd8c5cf"
+message_native_id = "019cd682-5ae9-747b-a9be-2aae4d6c57fa"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019cd682-5ae9-747b-a9be-2aae4d6c57fa"
+role = "assistant"
+sequence_hint = 21
+
+[[body.segments]]
+kind = "plain_text"
+text = "{\"start_timestamp\":\"2026-03-10T06:49:55.232056Z\",\"stop_timestamp\":\"2026-03-10T06:49:55.232056Z\",\"flags\":null,\"type\":\"text\",\"text\":\" \",\"citations\":[]}"
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2026-03-10T06:49:55.232056Z\",\"stop_timestamp\":\"2026-03-10T06:49:57.266364Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user wants to create project instructions (system prompt / project knowledge) that captures what we\\u0027ve learned about creating Penpot-compatible SVGs, so future chats produce correct SVGs without trial and error. They want a copyable block, and want me to update memory if possible.\\n\\nLet me write clear, concise instructions based on what we learned, then update memory.\",\"summaries\":[{\"summary\":\"Thinking about Penpot-compatible SVG creation guidelines and documentation updates.\"},{\"summary\":\"Synthesizing Penpot SVG best practices into copyable instructions.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-10T06:49:57.615036Z\",\"stop_timestamp\":\"2026-03-10T06:49:57.667099Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_0135ktKD8afYooTZQj1b8zHF\",\"name\":\"memory_user_edits\",\"input\":{\"command\":\"view\"},\"message\":\"Managing memory...\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":\"memory\",\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_0135ktKD8afYooTZQj1b8zHF\",\"name\":\"memory_user_edits\",\"content\":[{\"type\":\"text\",\"text\":\"No memory edits exist.\",\"uuid\":\"15556f7e-8b9e-404d-a3e3-0648de6827d2\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Viewed memory edits\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":\"memory\",\"display_content\":null}"
+
+[[body.segments]]
+kind = "tool_use"
+text = "{\"start_timestamp\":\"2026-03-10T06:49:59.129113Z\",\"stop_timestamp\":\"2026-03-10T06:50:02.625615Z\",\"flags\":null,\"type\":\"tool_use\",\"id\":\"toolu_019juYBoH1V5yehFMvzYCNBA\",\"name\":\"memory_user_edits\",\"input\":{\"command\":\"add\",\"control\":\"Penpot SVG rules (LaundryLog project): No feDropShadow shorthand - use full feFlood/feColorMatrix/feOffset/feGaussianBlur/feBlend chain or remove filters entirely. No rgba() in fill/stroke - use hex \\u002B separate fill-opacity/stroke-opacity attributes. No filter on individual elements - wrap in a group first. All colors in hex. Flat structure preferred (direct children of root svg element). Use xmllint to validate before delivering.\"},\"message\":\"Managing memory...\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":\"memory\",\"context\":null,\"display_content\":null,\"approval_options\":null,\"approval_key\":null,\"is_mcp_app\":null}"
+
+[[body.segments]]
+kind = "tool_result"
+text = "{\"start_timestamp\":null,\"stop_timestamp\":null,\"flags\":null,\"type\":\"tool_result\",\"tool_use_id\":\"toolu_019juYBoH1V5yehFMvzYCNBA\",\"name\":\"memory_user_edits\",\"content\":[{\"type\":\"text\",\"text\":\"Added memory #1: Penpot SVG rules (LaundryLog project): No feDropShadow shorthand - use full feFlood/feColorMatrix/feOffset/feGaussianBlur/feBlend chain or remove filters entirely. No rgba() in fill/stroke - use hex \\u002B separate fill-opacity/stroke-opacity attributes. No filter on individual elements - wrap in a group first. All colors in hex. Flat structure preferred (direct children of root svg element). Use xmllint to validate before delivering.\",\"uuid\":\"be604ead-2939-475a-b704-410d75aefb48\"}],\"is_error\":false,\"structured_content\":null,\"meta\":null,\"message\":\"Added memory\",\"integration_name\":\"Memory\",\"integration_icon_url\":\"https://claude.ai/images/icons/conversation_search.png\",\"icon_name\":\"memory\",\"display_content\":{\"type\":\"rich_content\",\"content\":[{\"title\":\"Added memory\",\"subtitles\":[\"#1: Penpot SVG rules (LaundryLog project): No feDropShadow shorthand - use full feFl...\"],\"url\":null,\"resource_type\":null,\"icon_url\":null,\"source\":null}]}}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "Memory updated. Here's the project instructions block to paste into your Penpot project context or a new Claude chat:\n\n---\n\n```\n## LaundryLog SVG — Penpot Compatibility Rules\n\nWhen generating SVG files for use in Penpot (paste/import), follow these rules exactly:\n\n### Structure\n- Flat element structure — all rects, circles, text are direct children of the root <svg>\n- No nested clipPath/frame-container/frame-children wrapper groups (Penpot generates these on export; do not recreate them)\n- Single root <svg> element with width, height, viewBox, and xmlns only\n\n### Colors\n- All colors in hex (#RRGGBB) — never rgb(), rgba(), or hsl()\n- Transparency via fill-opacity or stroke-opacity attributes, not rgba()\n- Example: fill=\"#FFFFFF\" fill-opacity=\"0.25\" NOT fill=\"rgba(255,255,255,0.25)\"\n\n### Filters / Shadows\n- Do NOT use feDropShadow shorthand — Penpot does not support it; elements become invisible\n- Either: remove all filters (preferred for mockups — add shadows in Penpot UI after import)\n- Or: use the full Penpot-style filter primitive chain:\n    <filter id=\"f1\" ...>\n      <feFlood flood-opacity=\"0\" result=\"BackgroundImageFix\"/>\n      <feColorMatrix in=\"SourceAlpha\" type=\"matrix\" values=\"0 0 0 0 0 ...0 0 127 0\"/>\n      <feOffset dx=\"0\" dy=\"1\"/>\n      <feGaussianBlur stdDeviation=\"1.5\"/>\n      <feColorMatrix type=\"matrix\" values=\"0 0 0 0 0 ...0 0 0.2 0\"/>\n      <feBlend mode=\"normal\" in2=\"BackgroundImageFix\" result=\"effect\"/>\n      <feBlend mode=\"normal\" in=\"SourceGraphic\" in2=\"effect\"/>\n    </filter>\n- Apply filters to a <g> wrapper, never directly on a shape element\n\n### Text\n- Font: font-family=\"sourcesanspro, sans-serif\"\n- Always set fill color explicitly on text/tspan elements\n- Use fill-opacity (not opacity) on text when needed\n\n### Validation\n- Run xmllint --noout file.svg before delivering — zero errors required\n- No self-closing tags that could be misread (use explicit close tags for <text>, <g>)\n\n### App Design Reference (LaundryLog by CheddarBooks)\n- Canvas: 375×1384px\n- Primary color: #FFB74D (amber/orange)\n- Selected state: fill #FFF8E1, stroke #FFB74D stroke-width 3\n- Unselected state: fill #FFFFFF, stroke #E2E8F0 stroke-width 3\n- Inactive button: fill #CBD5E1\n- Active button: fill #FFB74D\n- Success/logged: fill #22C55E\n- Card background: #FFFFFF with stroke #E2E8F0 stroke-width 1, rx=12\n- Body text dark: #2D3748\n- Label/secondary text: #64748B or #94A3B8\n- Accent orange text: #F57C00\n- Location confirmed green: #22C55E\n- Session total bar: fill #FFF8E1\n- App background: #F8F9FA\n```\n\n---\n\nThat's everything you need to drop into a new chat's project instructions. The rules are ordered by what caused actual failures — filters first since that's what made elements go invisible, colors second since rgba broke silently."
+

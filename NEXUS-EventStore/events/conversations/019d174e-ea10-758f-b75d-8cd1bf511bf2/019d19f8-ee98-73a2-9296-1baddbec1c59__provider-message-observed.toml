@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-ee98-73a2-9296-1baddbec1c59"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+conversation_id = "019d174e-ea10-758f-b75d-8cd1bf511bf2"
+message_id = "019d174e-ea11-77cb-8b31-e8277d0c9159"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-13T11:05:52.471925Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "c4b934cd06df9109de52f40e8c7e80de680914710f1dc045c36e8cd7c87cf111"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a7ce4-7b1c-74b3-82bc-40d534159a0c"
+conversation_native_id = "e3ddd69d-f2c3-4b46-bc39-065886545795"
+message_native_id = "019a7ce4-7b1c-74b3-82bc-40d534159a0c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a7ce4-7b1c-74b3-82bc-40d534159a0c"
+role = "assistant"
+sequence_hint = 58
+
+[[body.segments]]
+kind = "reasoning"
+text = "The user is asking about remaining tokens. I should check the last system warning for token usage.\n\nFrom the most recent system warning:\nToken usage: 143037/190000; 46963 remaining\n\nSo we have 46,963 tokens remaining out of 190,000 total.\n\nWe're at about 75% usage (143K/190K), with about 25% (47K) left.\n\nI should be direct and clear about this since the user asked a simple question."
+
+[[body.segments]]
+kind = "plain_text"
+text = "We have 46,963 tokens remaining out of our 190,000 token budget.\n\nThat means we've used about 75% of the available context window. We still have roughly 25% left, which should be enough for you to upload several key files from your Nexus project or for us to continue this conversation for a bit longer.\n\nHowever, given that we're discussing the need for me to deeply learn several interconnected topics (Penpot workflow, event modeling methodology, your Nexus implementation, and how they all connect), this is exactly the kind of situation where your distillation and RAG system would be valuable. This conversation is accumulating a lot of context that would be useful in future conversations, but we're burning through tokens to do it.\n\nWould you prefer to continue in this conversation and upload some Nexus files so I can learn directly from your code, or would it make more sense to capture what we've covered so far and continue this learning process in a fresh conversation where we have the full token budget available?"
+

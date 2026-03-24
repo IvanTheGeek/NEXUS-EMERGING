@@ -1,0 +1,57 @@
+schema_version = 1
+event_id = "019d174e-ea12-73cf-b383-c9e8aeecb1e6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+conversation_id = "019d174e-ea12-7bea-b397-c4ca2661f881"
+message_id = "019d174e-ea12-77c1-ab95-5e675dd30857"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-12T11:54:15.639505Z"
+observed_at = "2026-03-22T20:48:56.7418387Z"
+imported_at = "2026-03-22T20:48:56.7418387Z"
+source_acquisition = "export_zip"
+import_id = "019d174e-e953-7e8b-b506-5f1475399fc7"
+
+[content_hash]
+algorithm = "sha256"
+value = "eb15819d108a319f83c34f05f94c802dfca335d2a3811b25b2865994f59e0314"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a77e9-ee31-70c9-afa1-231a9f7b1db0"
+conversation_native_id = "76f2bf53-0f9b-417c-b95b-16b739ea10ac"
+message_native_id = "019a77e9-ee31-70c9-afa1-231a9f7b1db0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-22T20-48-56Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-22T20:48:56.7418387Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a77e9-ee31-70c9-afa1-231a9f7b1db0"
+role = "assistant"
+sequence_hint = 28
+
+[[body.segments]]
+kind = "thinking"
+text = "{\"start_timestamp\":\"2025-11-12T11:54:01.867353Z\",\"stop_timestamp\":\"2025-11-12T11:54:07.274370Z\",\"flags\":null,\"type\":\"thinking\",\"thinking\":\"The user is asking what should go in the Project Instructions field for the PerDiemLog project in Claude. This is different from Project Knowledge.\\n\\nProject Instructions are typically shorter behavioral/contextual instructions that tell Claude how to behave in that specific project. They\\u0027re like custom instructions but project-specific.\\n\\nFor PerDiemLog, the instructions should:\\n- Be concise (there\\u0027s usually a character limit)\\n- Focus on the project scope and what Claude should do\\n- Reference that detailed docs are in MCP/Project Knowledge\\n- Maybe include key context about the user and project\\n\\nLet me think about what\\u0027s most important:\\n1. This is PerDiem development only\\n2. Use MCP for documentation\\n3. Token display requirement (though that\\u0027s also in bootstrap)\\n4. Event sourcing for decisions\\n5. User is truck driver, works in bursts\\n\\nI should keep it brief and focused on behavior/scope.\",\"summaries\":[{\"summary\":\"Thinking about appropriate content for PerDiemLog project instructions section.\"},{\"summary\":\"Distinguishing Project Instructions from Project Knowledge guidance.\"},{\"summary\":\"Synthesized concise behavioral guidelines balancing scope and documentation references.\"}],\"cut_off\":false,\"truncated\":false,\"alternative_display_type\":null}"
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Suggested Project Instructions for PerDiemLog:**\n\n```\nPerDiem per diem tracking app for truck drivers (DOT HOS compliant). Phase 1: manual entry, IRS rate calculations, tax reports.\n\nUse Nexus MCP to access detailed docs in apps/perdiem/. Capture decisions as events. Check recent_chats or use continue-perdiem prompt to resume work.\n\nUser is truck driver developing in scattered bursts. Ask clarifying questions before detailed work. No time estimates - focus on phases and steps.\n```\n\n**Why this content:**\n- Identifies project scope immediately\n- Points Claude to use MCP for details\n- Mentions event sourcing pattern\n- Includes continuation mechanism\n- Key user context (truck driver, burst work style)\n- Communication preference (clarifying questions)\n\n**Keep it brief** - Project Instructions typically have character limits and load in every message.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [████████░░░░░░░░░░░░] 73,320 / 190,000 tokens (38.6%)\n\nAllocation:\n├─ System Prompts: ~30,000 tokens (15.8%)\n├─ Project Knowledge: ~510 tokens (0.3%)\n├─ Conversation: ~40,060 tokens (21.1%)\n│  ├─ Your messages: ~1,320 tokens\n│  ├─ My responses: ~13,580 tokens\n│  └─ Tool calls: ~25,160 tokens\n└─ This Response: ~2,750 tokens (1.4%)\n\nRemaining: 116,680 tokens (61.4%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

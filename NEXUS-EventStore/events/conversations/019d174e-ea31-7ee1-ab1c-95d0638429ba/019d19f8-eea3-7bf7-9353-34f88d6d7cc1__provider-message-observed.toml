@@ -1,0 +1,58 @@
+schema_version = 1
+event_id = "019d19f8-eea3-7bf7-9353-34f88d6d7cc1"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d174e-ea31-7ee1-ab1c-95d0638429ba"
+conversation_id = "019d174e-ea31-7ee1-ab1c-95d0638429ba"
+message_id = "019d174e-ea31-7909-a36a-bbccc090cd33"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2025-11-11T17:16:55.050533Z"
+observed_at = "2026-03-23T09:13:51.3036512Z"
+imported_at = "2026-03-23T09:13:51.3036512Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d19f8-e74f-76b6-a66c-a035a7cda06c"
+
+[content_hash]
+algorithm = "sha256"
+value = "8f9e44356cd0dfaaa0d97483105ab4382f94a1bcb53747a020979c80c81f3d82"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "conversation_object"
+native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+conversation_native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+
+[[provider_refs]]
+provider = "claude"
+object_kind = "message_object"
+native_id = "019a73ea-fb8c-7480-bcd9-8a346eb88d37"
+conversation_native_id = "258d5ea2-18cb-4505-a819-c4c5d3684266"
+message_native_id = "019a73ea-fb8c-7480-bcd9-8a346eb88d37"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/data-2026-03-22-12-13-53-batch-0000.zip"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Archived claude export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/claude/archive/2026-03-23T09-13-51Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-23T09:13:51.3036512Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "019a73ea-fb8c-7480-bcd9-8a346eb88d37"
+role = "assistant"
+sequence_hint = 14
+
+[[body.segments]]
+kind = "reasoning"
+text = "This is a really interesting evolution. Let me break down what Ivan is saying:\n\n1. **Renaming MCP server project**: FnMCP.IvanTheGeek → FnMCP.Nexus\n   - Repository name changes\n   - Solution name changes\n   - Project name changes\n   - All documentation references need updating\n\n2. **\"Dogfooding case\"** - This is perfect! It's using the very system (Nexus event sourcing) to document its own evolution. The rename IS an event that creates a new state.\n\n3. **\"New state is used, but history and story exists\"** - This is the core of event sourcing. The timeline will show:\n   - Old events: References to FnMCP.IvanTheGeek\n   - Migration event: The rename decision\n   - New events: References to FnMCP.Nexus\n   \n   The history isn't lost, it's preserved with context.\n\n4. **\"More to discuss\"** - Ivan is thinking through implications. Let me help explore:\n   - How do we handle existing events that reference old name?\n   - Do we update documentation retroactively or leave historical references?\n   - What about file paths that include the old name?\n   - Binary deployment location changes?\n   - This could be a pattern for ALL renames/refactorings in the future\n\nThis is a great test case for event sourcing philosophy. The question is: Do we:\n- Keep historical events with old references (pure event sourcing)\n- Update some documentation to new name (pragmatic)\n- Create migration events that explain the context\n- Build projections that normalize names across timeline\n\nLet me engage with this thoughtfully and help Ivan explore the implications."
+
+[[body.segments]]
+kind = "plain_text"
+text = "Excellent! This is **perfect dogfooding** - using Nexus to document Nexus's own evolution. Let me explore the implications with you:\n\n## The Rename Decision\n\n**Old:** `FnMCP.IvanTheGeek`\n**New:** `FnMCP.Nexus`\n\n**Rationale:** The MCP server IS the technical implementation of Nexus. The name should reflect that it's the Nexus access mechanism, not just \"Ivan's MCP thing.\"\n\n## Event Sourcing Philosophy Applied\n\nThis demonstrates a core principle:\n\n```\nEvent Timeline:\n├─ 2025-11-10: Events reference \"FnMCP.IvanTheGeek\"\n├─ 2025-11-11: TechnicalDecision \"Rename MCP Server to FnMCP.Nexus\"\n│              Rationale: Name should reflect purpose\n│              Impact: Repo, solution, project, docs, paths\n└─ 2025-11-12+: Events reference \"FnMCP.Nexus\"\n\nThe history shows WHY the name changed, not just THAT it changed.\n```\n\n## Implications to Discuss\n\n### 1. **Historical Events - Keep or Update?**\n\n**Option A: Pure Event Sourcing (Immutable History)**\n```\nKeep all old events unchanged:\n- \"FnMCP.IvanTheGeek Phase 2 Complete\"\n- \"FnMCP.IvanTheGeek binary deployed\"\n\nRationale: Historical accuracy, shows evolution\nProblem: Confusion when reading timeline (two names for same thing)\n```\n\n**Option B: Pragmatic Update (Normalized History)**\n```\nUpdate event narratives to use new name:\n- \"FnMCP.Nexus Phase 2 Complete\"\n- Add note: \"(originally FnMCP.IvanTheGeek)\"\n\nRationale: Clarity, consistency\nProblem: Violates immutability principle\n```\n\n**Option C: Projection Normalization**\n```\nKeep events unchanged, but projections translate:\n- Timeline shows \"FnMCP.Nexus (formerly IvanTheGeek)\"\n- Events preserved as-written\n- Display layer handles name evolution\n\nRationale: Best of both worlds\nComplexity: Requires name mapping in projections\n```\n\n### 2. **File System Paths**\n\n**Current:**\n```\n/home/linux/RiderProjects/FnMCP.IvanTheGeek/\n/home/linux/RiderProjects/FnMCP.IvanTheGeek/context-library/\n```\n\n**New:**\n```\n/home/linux/RiderProjects/FnMCP.Nexus/\n/home/linux/RiderProjects/FnMCP.Nexus/context-library/\n```\n\n**Question:** Do we move the directory now, or keep old path for compatibility?\n\n### 3. **Binary Deployment Location**\n\n**Current:**\n```\n/home/linux/Nexus/nexus (binary)\n```\n\n**Already correct!** You were ahead of yourself - the binary is already called \"nexus\" not \"fnmcp-ivanthegeek\"\n\n### 4. **Documentation Updates**\n\n**Files that reference old name:**\n- context-library files\n- NEXT_SESSION_START_HERE.md\n- README files\n- Technical documentation\n\n**Question:** Update all references? Or create a migration note that explains the rename?\n\n### 5. **Git Repository**\n\n**GitHub/remote:**\n- Repository rename: FnMCP.IvanTheGeek → FnMCP.Nexus\n- GitHub automatically redirects old URLs\n- Clone URLs change, but git preserves history\n\n**Local:**\n- Directory rename\n- Remote URL update: `git remote set-url origin <new-url>`\n\n## Pattern for Future Refactorings\n\nThis establishes a **refactoring pattern** for Nexus:\n\n```yaml\nRefactoringEvent:\n  type: TechnicalDecision\n  title: \"Rename X to Y\"\n  body:\n    Old: X\n    New: Y\n    Rationale: Why the change matters\n    Impact:\n      - Repository structure\n      - File paths\n      - Documentation references\n      - Binary deployment\n      - User-facing names\n    Migration:\n      - Steps to transition\n      - Backward compatibility notes\n      - Timeline implications\n```\n\n## My Recommendation\n\n**Three-phase approach:**\n\n**Phase 1: Create the Event** (Document the decision)\n```\nTechnicalDecision: \"Rename MCP Server to FnMCP.Nexus\"\n- Capture rationale\n- Document impacts\n- Plan migration steps\n```\n\n**Phase 2: Technical Migration** (Actual rename)\n```\n1. Rename Git repository\n2. Update .NET solution/project files\n3. Move directory structure\n4. Update all documentation references\n5. Test binary build/deployment\n```\n\n**Phase 3: Historical Handling** (Choose philosophy)\n```\nOption C (Projection Normalization):\n- Keep all events unchanged (immutable history)\n- Add name mapping to projections\n- Timeline shows: \"FnMCP.Nexus (2025-11+)\"\n- Old events stay authentic to their time\n```\n\n## Questions for You\n\n1. **Name philosophy:** Pure immutability vs. pragmatic updates vs. projection normalization?\n\n2. **When to migrate:** Now (immediate) or after current work completes?\n\n3. **Scope:** Just the MCP project, or also update \"IvanTheGeek\" references elsewhere (like username paths)?\n\n4. **Documentation strategy:** Update all docs now, or create \"as-of\" context notes?\n\n5. **This pattern:** Should we formalize this as the standard refactoring/rename workflow for all future changes?\n\nWhat are your thoughts on these aspects?\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 Context Usage: [███████░░░░░░░░░░░░░] 69,558 / 190,000 tokens (36.6%)\n\nAllocation:\n├─ System Prompts:     ~25,000 tokens  (13.2%)\n├─ Project Knowledge:   ~7,000 tokens   (3.7%)\n├─ Conversation:       ~34,558 tokens  (18.2%)\n│  ├─ Your messages:    ~5,400 tokens\n│  ├─ My responses:    ~27,500 tokens\n│  └─ Tool calls:       ~1,658 tokens\n└─ This Response:       ~3,000 tokens   (1.6%)\n\nRemaining: 120,442 tokens (63.4%) ✓ Comfortable\n\nStatus Legend: ✓ Comfortable (0-75%) | ⚠ Moderate (75-85%) | 🔴 High (85%+)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
