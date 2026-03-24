@@ -35,6 +35,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 
 - `docs/nexus-core-conceptual-layers.md`
 - `docs/nexus-ingestion-architecture.md`
+- `docs/nexus-graph-materialization-plan.md`
 - `docs/nexus-ontology-imprint-alignment.md`
 - `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
@@ -66,6 +67,7 @@ Already established:
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 - A first external graph export exists through Graphviz DOT output over derived graph assertions.
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
+- Full graph rebuilds are now explicitly treated as heavyweight operations, and a secondary graph working layer is planned next.
 
 Not yet established:
 

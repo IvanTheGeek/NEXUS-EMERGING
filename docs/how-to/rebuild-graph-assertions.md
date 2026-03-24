@@ -42,7 +42,9 @@ The first pass currently derives assertions such as:
 
 - Graph assertions are rebuildable derived structure, not source truth.
 - The rebuild deletes and rewrites the existing graph assertion folder.
+- Treat this as a heavyweight full-source operation on real stores, not as the default refresh loop after every import.
 - The CLI now emits progress while scanning canonical events, deriving assertions, and writing graph files.
 - Node and fact IDs in this layer are deterministic so rebuilds remain stable.
 - This is intentionally a thin graph pass. It is meant to create a usable substrate without locking the final NEXUS ontology too early.
 - This layer is also intended to support future graph visualization consumers such as Graphviz and later FnHCI views.
+- Follow-up plan: docs/nexus-graph-materialization-plan.md
