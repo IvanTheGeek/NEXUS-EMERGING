@@ -82,6 +82,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-imports.md" "Expected the working-graph report guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-imports.")
 
+              testCase "Working import conversation help exposes the conversation-centric slice workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-import-conversations" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-working-import-conversations to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-import-conversations" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
+                  Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-import-conversations.md" "Expected the conversation report guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-working-import-conversations.")
+
               testCase "Working graph node search help exposes the indexed discovery workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "find-working-graph-nodes" ]
 

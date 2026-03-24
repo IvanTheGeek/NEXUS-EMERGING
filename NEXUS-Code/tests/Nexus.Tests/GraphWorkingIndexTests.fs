@@ -48,6 +48,24 @@ module GraphWorkingIndexTests =
                       Expect.equal report.PredicateCounts.Head.Predicate "has_node_kind" "Expected the most common fixture predicate to be has_node_kind."
                       Expect.equal report.PredicateCounts.Head.Count 8 "Expected the top predicate count for the fixture slice."))
 
+              testCase "Graph working SQLite index can summarize conversations inside one import slice" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-conversations" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let report =
+                          GraphWorkingIndex.tryBuildImportConversationReport eventStoreRoot importResult.ImportId 10
+                          |> Option.defaultWith (fun () -> failwith "Expected a working-import conversation report for the imported slice.")
+
+                      Expect.equal report.ImportId importResult.ImportId "Expected the report to target the imported slice."
+                      Expect.equal report.Provider (Some "claude") "Expected provider enrichment in the conversation report."
+                      Expect.equal report.Window (Some "full") "Expected window enrichment in the conversation report."
+                      Expect.equal report.ConversationCount 1 "Expected one conversation node in the fixture slice."
+                      Expect.equal report.Items.Length 1 "Expected one conversation summary row."
+                      Expect.equal report.Items.Head.Title (Some "Claude Fixture Conversation") "Expected the fixture conversation title."
+                      Expect.equal report.Items.Head.MessageCount 2 "Expected two fixture messages in the conversation."
+                      Expect.equal report.Items.Head.ArtifactCount 1 "Expected one referenced artifact in the conversation."))
+
               testCase "Graph working SQLite index can find nodes by title text and provider filter" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-find" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
@@ -122,6 +140,28 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Provider: claude" "Expected provider enrichment in the report."
                       Expect.stringContains cliResult.StandardOutput "Graph assertions: 46" "Expected the graph assertion count in the report."
                       Expect.stringContains cliResult.StandardOutput "has_node_kind: 8" "Expected predicate counts in the report."))
+
+              testCase "CLI report-working-import-conversations shows conversation summaries" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-conversations-cli" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "report-working-import-conversations"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--limit"
+                                "5" ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected the working-import conversation report command to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import conversation report command."
+                      Expect.stringContains cliResult.StandardOutput "Working import conversations report." "Expected the conversation report header."
+                      Expect.stringContains cliResult.StandardOutput "Conversations in slice: 1" "Expected the conversation count in the report."
+                      Expect.stringContains cliResult.StandardOutput "Claude Fixture Conversation" "Expected the fixture conversation title in the report."
+                      Expect.stringContains cliResult.StandardOutput "messages=2 artifacts=1" "Expected the message and artifact counts in the report."))
 
               testCase "CLI find-working-graph-nodes shows indexed matches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-find-cli" (fun tempRoot ->

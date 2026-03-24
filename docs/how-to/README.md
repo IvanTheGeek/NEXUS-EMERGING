@@ -26,6 +26,7 @@ Current guides:
 - `rebuild-working-graph-index.md`
 - `report-unresolved-artifacts.md`
 - `report-working-graph-imports.md`
+- `report-working-import-conversations.md`
 - `report-working-graph-neighborhood.md`
 - `report-working-graph-slice.md`
 - `run-tests.md`

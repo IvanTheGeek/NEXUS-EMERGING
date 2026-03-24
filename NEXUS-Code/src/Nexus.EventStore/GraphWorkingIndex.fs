@@ -98,6 +98,32 @@ type WorkingGraphNeighborhoodReport =
       IncomingConnections: WorkingGraphNeighborhoodConnection list }
 
 /// <summary>
+/// Summarizes one conversation node inside an import-local graph working slice.
+/// </summary>
+type WorkingImportConversationSummary =
+    { ConversationNodeId: string
+      Title: string option
+      Slug: string option
+      SemanticRoles: string list
+      MessageCount: int
+      ArtifactCount: int }
+
+/// <summary>
+/// Summarizes the conversation nodes present inside one import-local graph working slice.
+/// </summary>
+type WorkingImportConversationReport =
+    { IndexRelativePath: string
+      ImportId: ImportId
+      Provider: string option
+      Window: string option
+      ImportedAt: DateTimeOffset option
+      MaterializedAt: DateTimeOffset
+      WorkingRootRelativePath: string
+      ManifestRelativePath: string
+      ConversationCount: int
+      Items: WorkingImportConversationSummary list }
+
+/// <summary>
 /// Summarizes one full rebuild of the persisted graph working SQLite index.
 /// </summary>
 type WorkingGraphIndexRebuildResult =
@@ -1044,6 +1070,148 @@ LIMIT $limit;
                           Literals = literals |> Seq.toList
                           OutgoingConnections = outgoingConnections |> Seq.toList
                           IncomingConnections = incomingConnections |> Seq.toList }
+            else
+                None)
+        |> Option.flatten
+
+    /// <summary>
+    /// Builds a conversation-centric summary for one import-local graph working slice from the persisted SQLite index.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="importId">The import batch whose conversation nodes should be summarized.</param>
+    /// <param name="limit">The maximum number of conversation rows to include.</param>
+    /// <returns>The conversation summary when the import exists in the working index.</returns>
+    let tryBuildImportConversationReport eventStoreRoot importId limit =
+        withReadableConnection eventStoreRoot (fun connection ->
+            use batchCommand = connection.CreateCommand()
+            batchCommand.CommandText <-
+                """
+SELECT
+    provider,
+    window_kind,
+    imported_at,
+    materialized_at,
+    working_root_relative_path,
+    manifest_relative_path
+FROM import_batches
+WHERE import_id = $import_id;
+"""
+            batchCommand.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+
+            use batchReader = batchCommand.ExecuteReader()
+
+            if batchReader.Read() then
+                let provider = readOptionalString batchReader 0
+                let window = readOptionalString batchReader 1
+                let importedAt = readOptionalString batchReader 2 |> tryParseTimestamp
+                let materializedAt = parseTimestamp (batchReader.GetString(3))
+                let workingRootRelativePath = batchReader.GetString(4)
+                let manifestRelativePath = batchReader.GetString(5)
+
+                let conversationCount =
+                    scalarCount
+                        connection
+                        """
+SELECT COUNT(*)
+FROM (
+    SELECT subject
+    FROM assertions
+    WHERE import_id = $import_id
+      AND predicate = 'has_node_kind'
+      AND object_kind = 'literal'
+      AND object_value = 'conversation_node'
+    GROUP BY subject
+);
+"""
+                        (fun command ->
+                            command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore)
+
+                use command = connection.CreateCommand()
+                command.CommandText <-
+                    """
+WITH conversation_nodes AS (
+    SELECT
+        a.subject AS conversation_node_id,
+        MAX(CASE WHEN a.predicate = 'has_title' AND a.object_kind = 'literal' THEN a.object_value END) AS title,
+        MAX(CASE WHEN a.predicate = 'has_slug' AND a.object_kind = 'literal' THEN a.object_value END) AS slug,
+        GROUP_CONCAT(DISTINCT CASE WHEN a.predicate = 'has_semantic_role' AND a.object_kind = 'literal' THEN a.object_value END) AS semantic_roles
+    FROM assertions a
+    WHERE a.import_id = $import_id
+    GROUP BY a.subject
+    HAVING SUM(CASE WHEN a.predicate = 'has_node_kind' AND a.object_kind = 'literal' AND a.object_value = 'conversation_node' THEN 1 ELSE 0 END) > 0
+),
+message_counts AS (
+    SELECT
+        belongs.object_value AS conversation_node_id,
+        COUNT(DISTINCT belongs.subject) AS message_count
+    FROM assertions belongs
+    INNER JOIN assertions kinds
+        ON kinds.import_id = belongs.import_id
+       AND kinds.subject = belongs.subject
+    WHERE belongs.import_id = $import_id
+      AND belongs.predicate = 'belongs_to_conversation'
+      AND belongs.object_kind = 'node_ref'
+      AND kinds.predicate = 'has_node_kind'
+      AND kinds.object_kind = 'literal'
+      AND kinds.object_value = 'message_node'
+    GROUP BY belongs.object_value
+),
+artifact_counts AS (
+    SELECT
+        belongs.object_value AS conversation_node_id,
+        COUNT(DISTINCT refs.object_value) AS artifact_count
+    FROM assertions belongs
+    INNER JOIN assertions refs
+        ON refs.import_id = belongs.import_id
+       AND refs.subject = belongs.subject
+    WHERE belongs.import_id = $import_id
+      AND belongs.predicate = 'belongs_to_conversation'
+      AND belongs.object_kind = 'node_ref'
+      AND refs.predicate = 'references_artifact'
+      AND refs.object_kind = 'node_ref'
+    GROUP BY belongs.object_value
+)
+SELECT
+    conversation_nodes.conversation_node_id,
+    conversation_nodes.title,
+    conversation_nodes.slug,
+    conversation_nodes.semantic_roles,
+    COALESCE(message_counts.message_count, 0),
+    COALESCE(artifact_counts.artifact_count, 0)
+FROM conversation_nodes
+LEFT JOIN message_counts
+    ON message_counts.conversation_node_id = conversation_nodes.conversation_node_id
+LEFT JOIN artifact_counts
+    ON artifact_counts.conversation_node_id = conversation_nodes.conversation_node_id
+ORDER BY COALESCE(conversation_nodes.title, conversation_nodes.slug, conversation_nodes.conversation_node_id) ASC
+LIMIT $limit;
+"""
+                command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                command.Parameters.AddWithValue("$limit", limit) |> ignore
+
+                use reader = command.ExecuteReader()
+                let items = ResizeArray<WorkingImportConversationSummary>()
+
+                while reader.Read() do
+                    items.Add
+                        { ConversationNodeId = reader.GetString(0)
+                          Title = readOptionalString reader 1
+                          Slug = readOptionalString reader 2
+                          SemanticRoles = readOptionalString reader 3 |> splitConcatenatedList
+                          MessageCount = reader.GetInt32(4)
+                          ArtifactCount = reader.GetInt32(5) }
+
+                Some
+                    { IndexRelativePath = relativePath
+                      ImportId = importId
+                      Provider = provider
+                      Window = window
+                      ImportedAt = importedAt
+                      MaterializedAt = materializedAt
+                      WorkingRootRelativePath = workingRootRelativePath
+                      ManifestRelativePath = manifestRelativePath
+                      ConversationCount = conversationCount
+                      Items = items |> Seq.toList }
             else
                 None)
         |> Option.flatten
