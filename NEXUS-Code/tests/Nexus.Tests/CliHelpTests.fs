@@ -39,6 +39,7 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "Command: export-graphviz-dot" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--output <path>" "Expected custom output guidance."
                   Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|codex>" "Expected provider slice guidance."
+                  Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import slice guidance."
                   Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."

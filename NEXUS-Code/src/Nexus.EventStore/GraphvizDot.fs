@@ -13,6 +13,7 @@ module GraphvizDot =
     type ExportFilter =
         { Provider: string option
           ProviderConversationId: string option
+          ConversationId: string option
           ImportId: string option }
 
     [<RequireQualifiedAccess>]
@@ -23,6 +24,7 @@ module GraphvizDot =
         let empty =
             { Provider = None
               ProviderConversationId = None
+              ConversationId = None
               ImportId = None }
 
     /// <summary>
@@ -96,6 +98,7 @@ module GraphvizDot =
         let tokens =
             [ filter.Provider |> Option.map (fun value -> $"provider-{sanitizeFileToken value}")
               filter.ProviderConversationId |> Option.map (fun value -> $"conversation-{sanitizeFileToken value}")
+              filter.ConversationId |> Option.map (fun value -> $"canonical-conversation-{sanitizeFileToken value}")
               filter.ImportId |> Option.map (fun value -> $"import-{sanitizeFileToken value}") ]
             |> List.choose id
 
@@ -257,6 +260,27 @@ module GraphvizDot =
 
         providerMatch && providerConversationMatch && importMatch
 
+    let private applyConversationNeighborhoodFilter conversationId assertions =
+        let neighborhoodNodes = HashSet<string>(StringComparer.Ordinal)
+        neighborhoodNodes.Add(conversationId) |> ignore
+
+        assertions
+        |> Array.iter (fun assertion ->
+            if assertion.SubjectNodeId = conversationId || assertion.ObjectNodeId = Some conversationId then
+                neighborhoodNodes.Add(assertion.SubjectNodeId) |> ignore
+
+                assertion.ObjectNodeId
+                |> Option.iter (fun objectNodeId ->
+                    neighborhoodNodes.Add(objectNodeId) |> ignore))
+
+        assertions
+        |> Array.filter (fun assertion ->
+            neighborhoodNodes.Contains(assertion.SubjectNodeId)
+            &&
+            match assertion.ObjectNodeId with
+            | Some objectNodeId -> neighborhoodNodes.Contains(objectNodeId)
+            | None -> true)
+
     let private writeDot absoluteOutputPath assertions =
         let nodes = Dictionary<string, NodeState>(StringComparer.Ordinal)
         let edges = Dictionary<string, EdgeState>(StringComparer.Ordinal)
@@ -324,9 +348,14 @@ module GraphvizDot =
         let destinationPath = outputPath |> Option.defaultWith (fun () -> defaultOutputPath absoluteRoot filter)
         let absoluteOutputPath = Path.GetFullPath(destinationPath)
         let allAssertions = loadAssertions assertionsPath
-        let selectedAssertions =
+        let provenanceFilteredAssertions =
             allAssertions
             |> Array.filter (matchesFilter filter)
+
+        let selectedAssertions =
+            match filter.ConversationId with
+            | Some conversationId -> applyConversationNeighborhoodFilter conversationId provenanceFilteredAssertions
+            | None -> provenanceFilteredAssertions
 
         let nodeCount, edgeCount = writeDot absoluteOutputPath selectedAssertions
 

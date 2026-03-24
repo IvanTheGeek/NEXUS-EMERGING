@@ -28,6 +28,12 @@ Provider slice:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider claude
 ```
 
+Canonical conversation slice:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499
+```
+
 Provider conversation slice:
 
 ```bash
@@ -55,6 +61,7 @@ Unless you override it, the DOT file is written to:
 When you use filters, the default file name becomes filter-aware, for example:
 
 - `nexus-graph__provider-claude.dot`
+- `nexus-graph__canonical-conversation-019d174e-e960-7507-8aa6-06ee0064e499.dot`
 - `nexus-graph__provider-chatgpt__conversation-abc123.dot`
 - `nexus-graph__import-019d....dot`
 
@@ -68,8 +75,9 @@ If the derived graph may be stale:
 For large stores, prefer slices first:
 
 1. `--provider` for a provider-wide view
-2. `--provider-conversation-id` for one provider conversation
-3. `--import-id` for one import batch
+2. `--conversation-id` for one canonical conversation and its immediate neighborhood
+3. `--provider-conversation-id` for one provider-native conversation
+4. `--import-id` for one import batch
 
 ## Rendering
 
@@ -89,5 +97,6 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 
 - This export is derived from `graph/assertions/`, not from canonical history directly.
 - Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
+- `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.
 - The DOT file is an external lens, not the source of truth.
 - It is meant to help surface structure and relationships that may not yet be obvious from inside NEXUS itself.

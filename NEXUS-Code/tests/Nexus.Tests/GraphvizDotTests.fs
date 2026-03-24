@@ -98,4 +98,41 @@ module GraphvizDotTests =
                       Expect.stringContains sliceDot "Codex Fixture Session" "Expected the Codex conversation to appear in the provider slice."
                       Expect.isFalse
                           (sliceDot.Contains("Mermaid sequence diagram for chat", System.StringComparison.Ordinal))
-                          "Did not expect the Claude conversation title in the Codex slice.")) ]
+                          "Did not expect the Claude conversation title in the Codex slice."))
+
+              testCase "Canonical conversation slice keeps a focused local neighborhood" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-conversation-slice" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+                      let _ = GraphAssertions.rebuild eventStoreRoot
+
+                      let projectionPaths = ConversationProjections.rebuild eventStoreRoot
+                      let projectionPath = Path.Combine(eventStoreRoot, projectionPaths.Head)
+                      let projection = TestHelpers.readToml projectionPath
+
+                      let conversationId =
+                          projection
+                          |> TomlDocument.tryScalar "conversation_id"
+                          |> Option.defaultWith (fun () -> failwith "Expected conversation_id in projection.")
+
+                      let conversationTitle =
+                          projection
+                          |> TomlDocument.tryScalar "title"
+                          |> Option.defaultWith (fun () -> failwith "Expected title in projection.")
+
+                      let fullResult = GraphvizDot.export eventStoreRoot None
+
+                      let sliceResult =
+                          GraphvizDot.exportFiltered
+                              eventStoreRoot
+                              None
+                              { GraphvizDot.ExportFilter.empty with
+                                  ConversationId = Some conversationId }
+
+                      let sliceDot = File.ReadAllText(sliceResult.OutputPath)
+
+                      Expect.isLessThan sliceResult.AssertionCount fullResult.AssertionCount "Expected a conversation slice to include fewer assertions than the full graph."
+                      Expect.isLessThan sliceResult.NodeCount fullResult.NodeCount "Expected a conversation slice to include fewer nodes than the full graph."
+                      Expect.stringContains sliceDot conversationTitle "Expected the selected conversation title in the slice."
+                      Expect.stringContains sliceDot "references_artifact" "Expected local relationship edges around the conversation."
+                      Expect.stringContains sliceDot "semantic: imprint" "Expected node metadata for the local neighborhood.")) ]

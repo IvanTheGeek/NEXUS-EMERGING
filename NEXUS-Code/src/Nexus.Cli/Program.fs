@@ -24,7 +24,7 @@ module Program =
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string
-        | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * importId: string option
+        | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
@@ -183,20 +183,24 @@ module Program =
                   Usage =
                     [ sprintf "%s export-graphviz-dot" cliInvocation
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
+                      sprintf "%s export-graphviz-dot --conversation-id <conversation-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --provider-conversation-id <provider-conversation-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --import-id <import-id> --output /tmp/nexus-graph.dot" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
                       "--output <path>", "Optional DOT output path. Defaults to a filter-aware name under <event-store-root>/graph/exports."
                       "--provider <chatgpt|claude|codex>", "Only include assertions whose provenance references the selected provider."
+                      "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
                       "--import-id <uuid>", "Only include assertions whose provenance import_id matches the selected import." ]
                   Examples =
                     [ sprintf "%s export-graphviz-dot" cliInvocation
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
+                      sprintf "%s export-graphviz-dot --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
                       sprintf "%s export-graphviz-dot --provider codex --output /tmp/codex-graph.dot" cliInvocation ]
                   Notes =
                     [ "Run rebuild-graph-assertions first when the derived graph may be stale."
+                      "Canonical conversation slices use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
                       "Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying canonical history."
                       "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
                       "Detailed guide: docs/how-to/export-graphviz-dot.md" ] }
@@ -536,31 +540,33 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "export-graphviz-dot"))
         else
-            let rec loop eventStoreRoot outputPath provider providerConversationId importId remaining =
+            let rec loop eventStoreRoot outputPath provider providerConversationId conversationId importId remaining =
                 match remaining with
-                | [] -> Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, importId))
+                | [] -> Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId))
                 | "--event-store-root" :: value :: rest ->
-                    loop value outputPath provider providerConversationId importId rest
+                    loop value outputPath provider providerConversationId conversationId importId rest
                 | "--output" :: value :: rest ->
-                    loop eventStoreRoot (Some value) provider providerConversationId importId rest
+                    loop eventStoreRoot (Some value) provider providerConversationId conversationId importId rest
                 | "--provider" :: value :: rest ->
                     match ProviderNaming.tryParse value with
                     | Some providerKind ->
-                        loop eventStoreRoot outputPath (Some (ProviderNaming.slug providerKind)) providerConversationId importId rest
+                        loop eventStoreRoot outputPath (Some (ProviderNaming.slug providerKind)) providerConversationId conversationId importId rest
                     | None ->
                         eprintfn "Unsupported provider: %s" value
                         printCommandHelp "export-graphviz-dot"
                         Error 1
+                | "--conversation-id" :: value :: rest ->
+                    loop eventStoreRoot outputPath provider providerConversationId (Some value) importId rest
                 | "--provider-conversation-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider (Some value) importId rest
+                    loop eventStoreRoot outputPath provider (Some value) conversationId importId rest
                 | "--import-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider providerConversationId (Some value) rest
+                    loop eventStoreRoot outputPath provider providerConversationId conversationId (Some value) rest
                 | option :: _ ->
                     eprintfn "Unknown option for export-graphviz-dot: %s" option
                     printCommandHelp "export-graphviz-dot"
                     Error 1
 
-            loop defaultEventStoreRoot None None None None args
+            loop defaultEventStoreRoot None None None None None args
 
     let private parseReportUnresolvedArtifacts (args: string list) =
         if containsHelpSwitch args then
@@ -986,11 +992,12 @@ module Program =
 
         0
 
-    let private exportGraphvizDot eventStoreRoot outputPath provider providerConversationId importId =
+    let private exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId =
         let filter =
             { GraphvizDot.ExportFilter.empty with
                 Provider = provider
                 ProviderConversationId = providerConversationId
+                ConversationId = conversationId
                 ImportId = importId }
 
         let result = GraphvizDot.exportFiltered eventStoreRoot outputPath filter
@@ -1074,8 +1081,8 @@ module Program =
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions eventStoreRoot) ->
             rebuildGraphAssertions eventStoreRoot
-        | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, importId)) ->
-            exportGraphvizDot eventStoreRoot outputPath provider providerConversationId importId
+        | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId)) ->
+            exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
