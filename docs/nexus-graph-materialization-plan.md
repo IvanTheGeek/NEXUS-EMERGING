@@ -195,6 +195,10 @@ Current recommendation:
 - keep the durable TOML layers
 - do not force a heavyweight external service too early
 
+See also:
+
+- `docs/decisions/0006-storage-roles-by-bounded-context.md`
+
 ## Recommended Next Implementation Steps
 
 1. Add explicit heavyweight-language and confirmation flow around full graph rebuilds.
