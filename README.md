@@ -38,6 +38,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - `docs/nexus-ontology-imprint-alignment.md`
 - `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
+- `docs/concepts/`
 - `docs/how-to/`
 - `docs/how-to/cli-commands.md`
 - `docs/decisions/`
@@ -64,6 +65,7 @@ Already established:
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 - A first external graph export exists through Graphviz DOT output over derived graph assertions.
+- A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 
 Not yet established:
 

@@ -61,6 +61,12 @@ The CLI supports both:
 - Use it after imports or reparses when you want the latest conversation summaries.
 - Details: `docs/how-to/rebuild-conversation-projections.md`
 
+`create-concept-note`
+
+- Creates a curated concept-note seed from one or more canonical conversation projections.
+- Use it to promote recurring ideas from chat history into durable repo memory with provenance.
+- Details: `docs/how-to/create-concept-note.md`
+
 `rebuild-artifact-projections`
 
 - Rebuilds artifact read models from canonical artifact events.
@@ -103,6 +109,13 @@ Codex session import:
 2. Run `import-codex-sessions`.
 3. Run `rebuild-conversation-projections`.
 
+Concept harvest:
+
+1. Run `rebuild-conversation-projections` if needed.
+2. Run `create-concept-note` with one or more canonical `conversation_id` values.
+3. Edit the seed note under `docs/concepts/`.
+4. Use `export-graphviz-dot --conversation-id <uuid>` when you want the local graph neighborhood alongside the note.
+
 Manual artifact hydration:
 
 1. Identify a target artifact with `report-unresolved-artifacts`.
@@ -124,6 +137,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/import-codex-sessions.md`
 - `docs/how-to/capture-artifact-payload.md`
 - `docs/how-to/rebuild-conversation-projections.md`
+- `docs/how-to/create-concept-note.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/export-graphviz-dot.md`

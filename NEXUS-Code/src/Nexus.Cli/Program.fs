@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Security.Cryptography
 open System.Text
+open Nexus.Curation
 open Nexus.Domain
 open Nexus.EventStore
 open Nexus.Importers
@@ -28,6 +29,7 @@ module Program =
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | RebuildConversationProjections of eventStoreRoot: string
+        | CreateConceptNote of request: CreateConceptNoteRequest
 
     let private repoRoot =
         Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "..", "..", ".."))
@@ -37,6 +39,9 @@ module Program =
 
     let private defaultObjectsRoot =
         Path.Combine(repoRoot, "NEXUS-Objects")
+
+    let private defaultDocsRoot =
+        Path.Combine(repoRoot, "docs")
 
     let private defaultCodexSnapshotRoot =
         Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
@@ -235,6 +240,28 @@ module Program =
                   Notes =
                     [ "Projection files are rebuildable views that summarize conversation streams for quick inspection."
                       "Detailed guide: docs/how-to/rebuild-conversation-projections.md" ] }
+        | "create-concept-note" ->
+            Some
+                { Name = name
+                  Summary = "Create a curated concept-note seed from one or more canonical conversation projections."
+                  Usage =
+                    [ sprintf "%s create-concept-note --slug <slug> --title <title> --conversation-id <uuid>" cliInvocation
+                      sprintf "%s create-concept-note --slug fnhci --title FnHCI --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation ]
+                  Options =
+                    [ "--slug <slug>", "Required. File-safe note slug. It will be normalized to lowercase kebab-case."
+                      "--title <title>", "Required. Human-readable concept title."
+                      "--conversation-id <uuid>", "Required. Repeat to harvest more than one canonical conversation into the seed note."
+                      "--domain <slug>", "Optional domain hint to record in the note front matter. Repeatable."
+                      "--tag <slug>", "Optional tag to record in the note front matter. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s create-concept-note --slug fnhci --title FnHCI --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
+                      sprintf "%s create-concept-note --slug nexus-graph-lenses --title \"Graph Lenses\" --conversation-id <uuid> --conversation-id <uuid> --domain interaction-design" cliInvocation ]
+                  Notes =
+                    [ "This writes a Markdown note under docs/concepts/ and keeps source provenance back to canonical conversation projections."
+                      "Seed notes are meant to be edited and refined by humans and AI after creation."
+                      "Detailed guide: docs/how-to/create-concept-note.md" ] }
         | _ -> None
 
     let private availableCommands () =
@@ -246,7 +273,8 @@ module Program =
           "export-graphviz-dot"
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
-          "rebuild-conversation-projections" ]
+          "rebuild-conversation-projections"
+          "create-concept-note" ]
         |> List.choose (fun name ->
             commandHelp name
             |> Option.map (fun help -> help.Name, help.Summary))
@@ -297,6 +325,7 @@ module Program =
         printRows
             [ "event store", defaultEventStoreRoot
               "objects", defaultObjectsRoot
+              "docs", defaultDocsRoot
               "codex snapshots", defaultCodexSnapshotRoot ]
         printfn ""
         printfn "Help:"
@@ -504,6 +533,53 @@ module Program =
 
             loop defaultEventStoreRoot args
 
+    let private parseCreateConceptNote (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "create-concept-note"))
+        else
+            let rec loop slug title conversationIds domains tags docsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    match slug, title with
+                    | Some noteSlug, Some noteTitle ->
+                        Ok
+                            (CreateConceptNote
+                                { DocsRoot = docsRoot
+                                  EventStoreRoot = eventStoreRoot
+                                  Slug = noteSlug
+                                  Title = noteTitle
+                                  Domains = List.rev domains
+                                  Tags = List.rev tags
+                                  SourceConversationIds = List.rev conversationIds })
+                    | None, _ ->
+                        eprintfn "Missing required option for create-concept-note: --slug"
+                        printCommandHelp "create-concept-note"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option for create-concept-note: --title"
+                        printCommandHelp "create-concept-note"
+                        Error 1
+                | "--slug" :: value :: rest ->
+                    loop (Some value) title conversationIds domains tags docsRoot eventStoreRoot rest
+                | "--title" :: value :: rest ->
+                    loop slug (Some value) conversationIds domains tags docsRoot eventStoreRoot rest
+                | "--conversation-id" :: value :: rest ->
+                    loop slug title (value :: conversationIds) domains tags docsRoot eventStoreRoot rest
+                | "--domain" :: value :: rest ->
+                    loop slug title conversationIds (value :: domains) tags docsRoot eventStoreRoot rest
+                | "--tag" :: value :: rest ->
+                    loop slug title conversationIds domains (value :: tags) docsRoot eventStoreRoot rest
+                | "--docs-root" :: value :: rest ->
+                    loop slug title conversationIds domains tags value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop slug title conversationIds domains tags docsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for create-concept-note: %s" option
+                    printCommandHelp "create-concept-note"
+                    Error 1
+
+            loop None None [] [] [] defaultDocsRoot defaultEventStoreRoot args
+
     let private parseRebuildArtifactProjections (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-artifact-projections"))
@@ -629,6 +705,8 @@ module Program =
             parseReportUnresolvedArtifacts rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
+        | "create-concept-note" :: rest ->
+            parseCreateConceptNote rest
         | command :: _ ->
             eprintfn "Unknown command: %s" command
             usage ()
@@ -1062,6 +1140,23 @@ module Program =
 
         0
 
+    let private createConceptNote request =
+        match ConceptNotes.create request with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok result ->
+            printfn "Concept note created."
+            printfn "  Output path: %s" result.OutputPath
+            printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Source conversations: %d" result.SourceConversations.Length
+
+            result.SourceConversations
+            |> List.iter (fun source ->
+                printfn "    %s | %s" source.ConversationId source.Title)
+
+            0
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
@@ -1089,5 +1184,7 @@ module Program =
             reportUnresolvedArtifacts eventStoreRoot provider limit
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
+        | Ok (CreateConceptNote request) ->
+            createConceptNote request
         | Error exitCode ->
             exitCode

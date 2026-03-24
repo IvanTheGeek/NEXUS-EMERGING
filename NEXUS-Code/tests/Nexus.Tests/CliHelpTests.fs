@@ -45,6 +45,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help export-graphviz-dot.")
 
+              testCase "Concept note help exposes the curation workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help create-concept-note to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: create-concept-note" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--slug <slug>" "Expected slug guidance."
+                  Expect.stringContains result.StandardOutput "--title <title>" "Expected title guidance."
+                  Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected provenance conversation guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/create-concept-note.md" "Expected the detailed guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help create-concept-note.")
+
               testCase "Unknown help target fails clearly" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "not-a-real-command" ]
 

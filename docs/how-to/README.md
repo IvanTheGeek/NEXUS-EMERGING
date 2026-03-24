@@ -12,6 +12,7 @@ Current guides:
 
 - `capture-artifact-payload.md`
 - `cli-commands.md`
+- `create-concept-note.md`
 - `export-codex-sessions.md`
 - `export-graphviz-dot.md`
 - `git-auth-for-codex.md`

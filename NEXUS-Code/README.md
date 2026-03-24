@@ -23,6 +23,8 @@ The first code scaffold is intentionally small and centered on the canonical ing
   TOML serialization and append-only file writers for canonical events and manifests
 - `src/Nexus.Importers/`
   raw zip intake, provider adapters, event-store dedupe index, and import workflow orchestration
+- `src/Nexus.Curation/`
+  concept-note seeding over conversation projections for durable repo memory
 - `src/Nexus.Cli/`
   manual command-line entry points for smoke tests and provider imports
 - `docs/v0-module-map.md`
@@ -38,6 +40,7 @@ Working commands now include:
 - `capture-artifact-payload`
 - `rebuild-graph-assertions`
 - `export-graphviz-dot`
+- `create-concept-note`
 - `rebuild-artifact-projections`
 - `report-unresolved-artifacts`
 - `rebuild-conversation-projections`
@@ -56,6 +59,7 @@ See:
 - `/docs/how-to/import-codex-sessions.md`
 - `/docs/how-to/rebuild-artifact-projections.md`
 - `/docs/how-to/rebuild-conversation-projections.md`
+- `/docs/how-to/create-concept-note.md`
 - `/docs/how-to/rebuild-graph-assertions.md`
 - `/docs/how-to/export-graphviz-dot.md`
 - `/docs/how-to/report-unresolved-artifacts.md`
