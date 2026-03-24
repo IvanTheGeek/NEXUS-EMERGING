@@ -85,3 +85,16 @@ This repository preserves branch history intentionally.
 - avoid squash merges when the branch history itself is part of the durable record
 
 The goal is to keep implementation branches inspectable later as durable lines of work, thought, and experimentation.
+
+Preferred branch shape:
+
+- start focused work from `main` on a topic branch
+- merge accepted work back with `--no-ff`
+- delete completed topic branches after merge
+- keep longer-lived branches only when a stream truly continues across multiple merges
+- tag milestone merges when the checkpoint itself should stay easy to find in history
+
+Bootstrap milestone:
+
+- `codex/nexus-ingestion-foundation` is the first ingestion-foundation branch
+- it is intended to merge into `main` as an explicit milestone rather than disappearing into a fast-forward line
