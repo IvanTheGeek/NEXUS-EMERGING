@@ -78,6 +78,7 @@ The CLI supports both:
 - Rebuilds the first thin graph-assertion layer from canonical history.
 - Use it when you want a derived graph substrate over the canonical event store.
 - Large stores now require explicit `--yes` approval because full rebuild is treated as a heavyweight operation.
+- Writes a rebuild manifest under `graph/rebuilds/` so timings and counts are durable.
 - Details: `docs/how-to/rebuild-graph-assertions.md`
 
 `export-graphviz-dot`

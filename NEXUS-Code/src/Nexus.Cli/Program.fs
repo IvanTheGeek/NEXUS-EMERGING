@@ -183,6 +183,7 @@ module Program =
                   Notes =
                     [ "Graph assertions are derived and rebuildable, not the canonical source of truth."
                       "Large full-store rebuilds are intentionally guarded because they are heavyweight operations."
+                      "Each full rebuild writes a rebuild manifest under graph/rebuilds/ with counts and timings."
                       "This first pass derives node-kind, relationship, and attribute assertions from canonical history."
                       "Detailed guide: docs/how-to/rebuild-graph-assertions.md" ] }
         | "export-graphviz-dot" ->
@@ -1071,9 +1072,10 @@ module Program =
             eprintfn "  Re-run with --yes to proceed."
             2
         else
-            let assertionPaths =
+            let result =
                 GraphMaterialization.rebuildFullWithStatus
                     (fun message -> printfn "  %s" message)
+                    approved
                     eventStoreRoot
 
             if estimate.RequiresExplicitApproval then
@@ -1081,10 +1083,13 @@ module Program =
 
             printfn "Graph assertions rebuilt."
             printfn "  Event store root: %s" eventStoreRoot
-            printfn "  Canonical event files scanned: %d" estimate.CanonicalEventFileCount
-            printfn "  Assertion files written: %d" assertionPaths.Length
+            printfn "  Canonical event files scanned: %d" result.CanonicalEventFileCount
+            printfn "  Assertion files written: %d" result.GraphAssertionCount
+            printfn "  Derivation elapsed: %O" result.DerivationElapsed
+            printfn "  Total elapsed: %O" result.TotalElapsed
+            printfn "  Rebuild manifest: %s" result.ManifestRelativePath
 
-            assertionPaths
+            result.AssertionPaths
             |> List.truncate 5
             |> List.iter (printfn "    %s")
 

@@ -15,6 +15,16 @@ module GraphAssertions =
     /// </summary>
     type StatusReporter = string -> unit
 
+    /// <summary>
+    /// Describes the result of a full graph-assertion rebuild.
+    /// </summary>
+    type RebuildResult =
+        { CanonicalEventFileCount: int
+          GraphAssertionCount: int
+          DerivationElapsed: TimeSpan
+          TotalElapsed: TimeSpan
+          AssertionPaths: string list }
+
     type private EventDocument =
         { EventId: CanonicalEventId
           EventKind: string
@@ -504,7 +514,8 @@ module GraphAssertions =
                 status
                     $"Scanned {processedCount}/{eventPaths.Length} event files. Current graph assertions: {assertions.Count}")
 
-        status $"Derivation complete after {stopwatch.Elapsed}. Distinct graph assertions: {assertions.Count}"
+        let derivationElapsed = stopwatch.Elapsed
+        status $"Derivation complete after {derivationElapsed}. Distinct graph assertions: {assertions.Count}"
 
         if Directory.Exists(assertionsRoot) then
             status $"Removing previous graph assertion output at {assertionsRoot}"
@@ -531,9 +542,26 @@ module GraphAssertions =
             if writtenCount = orderedAssertions.Length || writtenCount % writeInterval = 0 then
                 status $"Wrote {writtenCount}/{orderedAssertions.Length} graph assertion files.")
 
-        status $"Graph assertion rebuild completed in {stopwatch.Elapsed}"
+        let totalElapsed = stopwatch.Elapsed
+        status $"Graph assertion rebuild completed in {totalElapsed}"
 
-        writtenPaths |> Seq.toList
+        { CanonicalEventFileCount = eventPaths.Length
+          GraphAssertionCount = orderedAssertions.Length
+          DerivationElapsed = derivationElapsed
+          TotalElapsed = totalElapsed
+          AssertionPaths = writtenPaths |> Seq.toList }
+
+    /// <summary>
+    /// Rebuilds graph assertions from canonical history while emitting progress updates and returning detailed rebuild metrics.
+    /// </summary>
+    let rebuildDetailedWithStatus status rootPath =
+        rebuildCore status rootPath
+
+    /// <summary>
+    /// Rebuilds graph assertions from canonical history and returns detailed rebuild metrics.
+    /// </summary>
+    let rebuildDetailed rootPath =
+        rebuildCore ignore rootPath
 
     /// <summary>
     /// Rebuilds graph assertions from canonical history while emitting progress updates.
@@ -546,7 +574,7 @@ module GraphAssertions =
     /// Full conceptual notes: docs/nexus-core-conceptual-layers.md
     /// </remarks>
     let rebuildWithStatus status rootPath =
-        rebuildCore status rootPath
+        rebuildDetailedWithStatus status rootPath |> fun result -> result.AssertionPaths
 
     /// <summary>
     /// Rebuilds graph assertions from canonical history.
@@ -554,4 +582,4 @@ module GraphAssertions =
     /// <param name="rootPath">The root of the event-store workspace to rebuild into.</param>
     /// <returns>The relative paths of all written graph assertion files.</returns>
     let rebuild rootPath =
-        rebuildCore ignore rootPath
+        rebuildDetailed rootPath |> fun result -> result.AssertionPaths

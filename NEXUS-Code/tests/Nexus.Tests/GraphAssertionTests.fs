@@ -152,6 +152,26 @@ module GraphAssertionTests =
                           (messages |> Seq.exists (fun message -> message.Contains("Graph assertion rebuild completed", System.StringComparison.Ordinal)))
                           "Expected a completion status message."))
 
+              testCase "Graph materialization writes a rebuild manifest" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-materialization-manifest" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+
+                      let result = GraphMaterialization.rebuildFullWithStatus ignore true eventStoreRoot
+                      let manifestPath = Path.Combine(eventStoreRoot, result.ManifestRelativePath)
+                      let manifest = TestHelpers.readToml manifestPath
+
+                      Expect.isTrue (File.Exists(manifestPath)) "Expected the rebuild manifest file to exist."
+                      Expect.equal (TomlDocument.tryScalar "mode" manifest) (Some "full") "Expected the full rebuild mode."
+                      Expect.equal (TomlDocument.tryScalar "materializer" manifest) (Some "graph-assertions-v1") "Expected the materializer version."
+                      Expect.equal (TomlDocument.tryScalar "canonical_event_files_scanned" manifest) (Some "7") "Expected the canonical event count from the fixture import."
+                      Expect.equal
+                          (TomlDocument.tryScalar "graph_assertions_written" manifest)
+                          (Some (string result.GraphAssertionCount))
+                          "Expected the graph assertion count to match the rebuild result."
+                      Expect.equal (TomlDocument.tryScalar "approved_by_flag" manifest) (Some "true") "Expected approval state to be recorded."
+                      Expect.equal (TomlDocument.tryScalar "required_explicit_approval" manifest) (Some "false") "Did not expect the tiny fixture store to require explicit approval."))
+
               testCase "CLI refuses heavyweight full rebuild without --yes" (fun () ->
                   TestHelpers.withTempDirectory "nexus-heavyweight-rebuild-guard" (fun tempRoot ->
                       let eventStoreRoot = Path.Combine(tempRoot, "event-store")

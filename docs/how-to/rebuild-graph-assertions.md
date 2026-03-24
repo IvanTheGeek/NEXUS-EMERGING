@@ -30,6 +30,12 @@ The rebuild writes one file per derived fact:
 NEXUS-EventStore/graph/assertions/<fact-id>.toml
 ```
 
+It also writes a rebuild manifest:
+
+```text
+NEXUS-EventStore/graph/rebuilds/<timestamp>__full-rebuild.toml
+```
+
 The first pass currently derives assertions such as:
 
 - node kind facts for conversations, messages, artifacts, imports, domains, and bounded contexts
@@ -48,6 +54,7 @@ The first pass currently derives assertions such as:
 - Treat this as a heavyweight full-source operation on real stores, not as the default refresh loop after every import.
 - The CLI refuses heavyweight full rebuilds without explicit `--yes` approval.
 - The CLI now emits progress while scanning canonical events, deriving assertions, and writing graph files.
+- Each full rebuild writes a small TOML manifest with counts, timings, and approval state.
 - Node and fact IDs in this layer are deterministic so rebuilds remain stable.
 - This is intentionally a thin graph pass. It is meant to create a usable substrate without locking the final NEXUS ontology too early.
 - This layer is also intended to support future graph visualization consumers such as Graphviz and later FnHCI views.

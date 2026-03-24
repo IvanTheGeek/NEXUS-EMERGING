@@ -1,5 +1,7 @@
 namespace Nexus.EventStore
 
+open System
+open System.Globalization
 open System.IO
 
 [<RequireQualifiedAccess>]
@@ -17,10 +19,59 @@ module GraphMaterialization =
           HeavyweightThreshold: int
           RequiresExplicitApproval: bool }
 
+    /// <summary>
+    /// Describes the durable result of a full graph materialization run.
+    /// </summary>
+    type FullRebuildResult =
+        { CanonicalEventFileCount: int
+          GraphAssertionCount: int
+          DerivationElapsed: TimeSpan
+          TotalElapsed: TimeSpan
+          AssertionPaths: string list
+          ManifestRelativePath: string
+          RebuiltAt: DateTimeOffset
+          ApprovedByFlag: bool
+          RequiredExplicitApproval: bool
+          MaterializerVersion: string }
+
     let private heavyweightThreshold = 1000
+    let private materializerVersion = "graph-assertions-v1"
 
     let private canonicalEventsRoot eventStoreRoot =
         Path.Combine(eventStoreRoot, "events")
+
+    let private normalizePath (path: string) =
+        path.Replace('\\', '/')
+
+    let private timestampFileName (timestamp: DateTimeOffset) =
+        timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ssZ", CultureInfo.InvariantCulture)
+
+    let private writeFullRebuildManifest eventStoreRoot (result: FullRebuildResult) =
+        let builder = create ()
+        appendString builder "mode" "full"
+        appendString builder "materializer" result.MaterializerVersion
+        appendTimestamp builder "rebuilt_at" result.RebuiltAt
+        appendInt builder "canonical_event_files_scanned" result.CanonicalEventFileCount
+        appendInt builder "graph_assertions_written" result.GraphAssertionCount
+        appendInt64Option builder "derivation_elapsed_ms" (Some (int64 result.DerivationElapsed.TotalMilliseconds))
+        appendInt64Option builder "total_elapsed_ms" (Some (int64 result.TotalElapsed.TotalMilliseconds))
+        appendBool builder "required_explicit_approval" result.RequiredExplicitApproval
+        appendBool builder "approved_by_flag" result.ApprovedByFlag
+        appendString builder "event_store_root" (Path.GetFullPath(eventStoreRoot))
+        appendString builder "assertions_root" (normalizePath (Path.Combine("graph", "assertions")))
+        appendString builder "manifest_relative_path" result.ManifestRelativePath
+        appendBlank builder
+
+        let rebuildDirectoryAbsolutePath = Path.Combine(eventStoreRoot, "graph", "rebuilds")
+        Directory.CreateDirectory(rebuildDirectoryAbsolutePath) |> ignore
+
+        let manifestAbsolutePath = Path.Combine(eventStoreRoot, result.ManifestRelativePath)
+        let manifestDirectory = Path.GetDirectoryName(manifestAbsolutePath)
+
+        if not (String.IsNullOrWhiteSpace(manifestDirectory)) then
+            Directory.CreateDirectory(manifestDirectory) |> ignore
+
+        File.WriteAllText(manifestAbsolutePath, render builder)
 
     /// <summary>
     /// Estimates the size of a full graph rebuild from the canonical event store.
@@ -51,5 +102,24 @@ module GraphMaterialization =
     /// It is intentionally separated here so future incremental or alternate materializers have a stable boundary to hang from.
     /// Full planning notes: docs/nexus-graph-materialization-plan.md
     /// </remarks>
-    let rebuildFullWithStatus (status: StatusReporter) eventStoreRoot =
-        GraphAssertions.rebuildWithStatus status eventStoreRoot
+    let rebuildFullWithStatus (status: StatusReporter) approvedByFlag eventStoreRoot =
+        let rebuiltAt = DateTimeOffset.UtcNow
+        let estimate = estimateFullRebuild eventStoreRoot
+        let graphResult = GraphAssertions.rebuildDetailedWithStatus status eventStoreRoot
+        let manifestRelativePath =
+            normalizePath (Path.Combine("graph", "rebuilds", $"{timestampFileName rebuiltAt}__full-rebuild.toml"))
+
+        let result =
+            { CanonicalEventFileCount = graphResult.CanonicalEventFileCount
+              GraphAssertionCount = graphResult.GraphAssertionCount
+              DerivationElapsed = graphResult.DerivationElapsed
+              TotalElapsed = graphResult.TotalElapsed
+              AssertionPaths = graphResult.AssertionPaths
+              ManifestRelativePath = manifestRelativePath
+              RebuiltAt = rebuiltAt
+              ApprovedByFlag = approvedByFlag
+              RequiredExplicitApproval = estimate.RequiresExplicitApproval
+              MaterializerVersion = materializerVersion }
+
+        writeFullRebuildManifest eventStoreRoot result
+        result
