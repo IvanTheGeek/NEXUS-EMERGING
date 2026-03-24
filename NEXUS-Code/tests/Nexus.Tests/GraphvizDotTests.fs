@@ -170,6 +170,30 @@ module GraphvizDotTests =
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
                       Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
 
+              testCase "DOT export can target an output root while keeping the generated file name" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-output-root" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+                      let _ = GraphAssertions.rebuild eventStoreRoot
+                      let outputRoot = Path.Combine(tempRoot, "exports")
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "export-graphviz-dot"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--provider"
+                                "claude"
+                                "--output-root"
+                                outputRoot ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected DOT export with --output-root to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from DOT export with --output-root."
+
+                      let expectedPath = Path.Combine(outputRoot, "nexus-graph__provider-claude.dot")
+                      Expect.isTrue (File.Exists(expectedPath)) "Expected the generated DOT file under the requested output root."
+                      Expect.stringContains cliResult.StandardOutput expectedPath "Expected the CLI summary to report the output-root path."))
+
               testCase "Rendered Graphviz output can be produced from an exported DOT file" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-render" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
@@ -203,4 +227,33 @@ module GraphvizDotTests =
                       Expect.stringContains cliResult.StandardOutput "Graphviz DOT rendered." "Expected the render summary header."
                       Expect.stringContains cliResult.StandardOutput "Engine: dot" "Expected the render engine in the summary."
                       Expect.stringContains cliResult.StandardOutput "Format: svg" "Expected the render format in the summary."
-                      Expect.stringContains svgText "<svg" "Expected SVG output from the render command.")) ]
+                      Expect.stringContains svgText "<svg" "Expected SVG output from the render command."))
+
+              testCase "Rendered Graphviz output can target an output root while keeping the generated file name" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-render-output-root" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+                      let _ = GraphAssertions.rebuild eventStoreRoot
+
+                      let dotResult =
+                          GraphvizDot.export
+                              eventStoreRoot
+                              (Some (Path.Combine(tempRoot, "fixture-graph.dot")))
+
+                      let outputRoot = Path.Combine(tempRoot, "rendered")
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "render-graphviz-dot"
+                                "--input"
+                                dotResult.OutputPath
+                                "--output-root"
+                                outputRoot
+                                "--format"
+                                "svg" ]
+
+                      let expectedPath = Path.Combine(outputRoot, "fixture-graph.svg")
+                      Expect.equal cliResult.ExitCode 0 "Expected render with --output-root to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from render with --output-root."
+                      Expect.isTrue (File.Exists(expectedPath)) "Expected the rendered file under the requested output root."
+                      Expect.stringContains cliResult.StandardOutput expectedPath "Expected the CLI summary to report the output-root render path.")) ]

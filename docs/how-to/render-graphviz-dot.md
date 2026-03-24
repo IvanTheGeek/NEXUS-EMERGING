@@ -34,6 +34,15 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --format png
 ```
 
+Output root with generated file name:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  render-graphviz-dot \
+  --input /tmp/nexus-graph.dot \
+  --output-root /tmp/nexus-rendered
+```
+
 ## Allowed Values
 
 Engines:
@@ -53,9 +62,11 @@ These are intentionally explicit allowlists.
 - engine: `dot`
 - format: `svg`
 - output path: the input DOT path with the selected format extension
+- output root: if supplied, NEXUS keeps the generated file name and writes it under that directory
 
 ## Notes
 
 - This command renders an existing DOT file. It does not generate the DOT source.
 - Use `export-graphviz-dot` first if you still need to create the DOT file.
 - `sfdp` is often a better layout choice for larger or more organic graph slices.
+- Use either `--output` or `--output-root`, not both.

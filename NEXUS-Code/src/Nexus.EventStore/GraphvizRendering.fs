@@ -56,6 +56,11 @@ module GraphvizRendering =
         let fileName = Path.GetFileNameWithoutExtension(absoluteInputPath)
         Path.Combine(directory, $"{fileName}.{formatName format}")
 
+    let private defaultOutputFileName inputPath format =
+        let absoluteInputPath = Path.GetFullPath(inputPath)
+        let fileName = Path.GetFileNameWithoutExtension(absoluteInputPath)
+        $"{fileName}.{formatName format}"
+
     /// <summary>
     /// Renders a DOT file into a visual format using an explicitly supported Graphviz engine.
     /// </summary>
@@ -64,16 +69,22 @@ module GraphvizRendering =
     /// <param name="engine">The allowlisted Graphviz engine to use.</param>
     /// <param name="format">The allowlisted output format to emit.</param>
     /// <returns>The rendered output details.</returns>
-    let render inputPath outputPath engine format =
+    let renderWithRoot inputPath outputPath outputRoot engine format =
         let absoluteInputPath = Path.GetFullPath(inputPath)
 
         if not (File.Exists(absoluteInputPath)) then
             raise (FileNotFoundException($"DOT file not found: {absoluteInputPath}", absoluteInputPath))
 
         let absoluteOutputPath =
-            outputPath
-            |> Option.defaultWith (fun () -> defaultOutputPath absoluteInputPath format)
-            |> Path.GetFullPath
+            match outputPath, outputRoot with
+            | Some explicitPath, None
+            | Some explicitPath, Some _ -> Path.GetFullPath(explicitPath)
+            | None, Some outputRootPath ->
+                Path.Combine(Path.GetFullPath(outputRootPath), defaultOutputFileName absoluteInputPath format)
+                |> Path.GetFullPath
+            | None, None ->
+                defaultOutputPath absoluteInputPath format
+                |> Path.GetFullPath
 
         let outputDirectory = Path.GetDirectoryName(absoluteOutputPath)
 
@@ -114,6 +125,9 @@ module GraphvizRendering =
           OutputPath = absoluteOutputPath
           Engine = engine
           Format = format }
+
+    let render inputPath outputPath engine format =
+        renderWithRoot inputPath outputPath None engine format
 
     /// <summary>
     /// Returns the persisted string form of a supported Graphviz engine.

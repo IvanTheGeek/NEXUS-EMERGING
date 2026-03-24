@@ -118,6 +118,9 @@ module GraphvizDot =
         let fileName = $"nexus-working-graph__import-{sanitizeFileToken importId}.dot"
         Path.Combine(Path.GetFullPath(rootPath), "graph", "working", "exports", fileName)
 
+    let private outputPathWithinRoot outputRoot fileName =
+        Path.Combine(Path.GetFullPath(outputRoot), fileName)
+
     let private getOrAddNode (nodes: Dictionary<string, NodeState>) nodeId =
         match nodes.TryGetValue(nodeId) with
         | true, node -> node
@@ -360,10 +363,15 @@ module GraphvizDot =
     /// This is an external lens over derived graph assertions, not a canonical source of truth.
     /// See docs/how-to/export-graphviz-dot.md for usage guidance.
     /// </remarks>
-    let exportFiltered rootPath outputPath filter =
+    let exportFilteredWithRoot rootPath outputPath outputRoot filter =
         let assertionsPath = graphAssertionsRoot rootPath
         let absoluteRoot = Path.GetFullPath(rootPath)
-        let destinationPath = outputPath |> Option.defaultWith (fun () -> defaultOutputPath absoluteRoot filter)
+        let destinationPath =
+            match outputPath, outputRoot with
+            | Some explicitPath, None
+            | Some explicitPath, Some _ -> explicitPath
+            | None, Some rootDirectory -> outputPathWithinRoot rootDirectory (defaultFileName filter)
+            | None, None -> defaultOutputPath absoluteRoot filter
         let absoluteOutputPath = Path.GetFullPath(destinationPath)
         let allAssertions = loadAssertions assertionsPath
         let provenanceFilteredAssertions =
@@ -383,6 +391,9 @@ module GraphvizDot =
           AssertionCount = selectedAssertions.Length
           ScannedAssertionCount = allAssertions.Length }
 
+    let exportFiltered rootPath outputPath filter =
+        exportFilteredWithRoot rootPath outputPath None filter
+
     /// <summary>
     /// Exports one graph working import slice as a Graphviz DOT file without requiring a full durable graph rebuild.
     /// </summary>
@@ -395,11 +406,21 @@ module GraphvizDot =
     /// This reads the secondary graph working layer directly and is useful immediately after imports.
     /// See docs/how-to/export-graphviz-dot.md for usage guidance.
     /// </remarks>
-    let exportWorkingImportBatch rootPath importId outputPath =
+    let exportWorkingImportBatchWithRoot rootPath importId outputPath outputRoot =
         let assertionsPath = graphWorkingImportAssertionsRoot rootPath importId
         let absoluteRoot = Path.GetFullPath(rootPath)
-        let destinationPath = outputPath |> Option.defaultWith (fun () -> defaultWorkingImportOutputPath absoluteRoot importId)
+        let destinationPath =
+            match outputPath, outputRoot with
+            | Some explicitPath, None
+            | Some explicitPath, Some _ -> explicitPath
+            | None, Some rootDirectory ->
+                let fileName = Path.GetFileName(defaultWorkingImportOutputPath absoluteRoot importId)
+                outputPathWithinRoot rootDirectory fileName
+            | None, None -> defaultWorkingImportOutputPath absoluteRoot importId
         exportAssertions assertionsPath destinationPath
+
+    let exportWorkingImportBatch rootPath importId outputPath =
+        exportWorkingImportBatchWithRoot rootPath importId outputPath None
 
     /// <summary>
     /// Exports the full derived graph assertions under an event-store root as a Graphviz DOT file.

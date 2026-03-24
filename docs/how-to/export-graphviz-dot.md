@@ -22,6 +22,12 @@ Custom output path:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --output /tmp/nexus-graph.dot
 ```
 
+Custom output root:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports
+```
+
 Provider slice:
 
 ```bash
@@ -75,6 +81,8 @@ Working import slices default to:
 
 - `graph/working/exports/nexus-working-graph__import-019d....dot`
 
+If you use `--output-root`, NEXUS keeps the generated file name but writes it under the directory you specify.
+
 ## Recommended Sequence
 
 If the derived graph may be stale:
@@ -114,6 +122,7 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 
 - This export is derived from `graph/assertions/`, not from canonical history directly.
 - `--working-import-id` is the exception: it reads `graph/working/imports/<import-id>/assertions/` directly from the secondary working layer.
+- Use either `--output` or `--output-root`, not both.
 - Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
 - `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.
 - `--working-import-id` cannot be combined with the durable-graph filter options because it already selects one explicit working slice.

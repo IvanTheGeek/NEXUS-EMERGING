@@ -25,8 +25,8 @@ module Program =
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string * approved: bool
-        | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option * workingImportId: string option
-        | RenderGraphvizDot of inputPath: string * outputPath: string option * engine: GraphvizEngine * format: GraphvizFormat
+        | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * outputRoot: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option * workingImportId: string option
+        | RenderGraphvizDot of inputPath: string * outputPath: string option * outputRoot: string option * engine: GraphvizEngine * format: GraphvizFormat
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
@@ -198,10 +198,12 @@ module Program =
                       sprintf "%s export-graphviz-dot --conversation-id <conversation-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id <import-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --provider-conversation-id <provider-conversation-id>" cliInvocation
-                      sprintf "%s export-graphviz-dot --import-id <import-id> --output /tmp/nexus-graph.dot" cliInvocation ]
+                      sprintf "%s export-graphviz-dot --import-id <import-id> --output /tmp/nexus-graph.dot" cliInvocation
+                      sprintf "%s export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
                       "--output <path>", "Optional DOT output path. Defaults to a filter-aware name under <event-store-root>/graph/exports."
+                      "--output-root <path>", "Optional output directory root. NEXUS will place the default file name under this directory."
                       "--provider <chatgpt|claude|codex>", "Only include assertions whose provenance references the selected provider."
                       "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
@@ -212,10 +214,12 @@ module Program =
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
                       sprintf "%s export-graphviz-dot --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports" cliInvocation
                       sprintf "%s export-graphviz-dot --provider codex --output /tmp/codex-graph.dot" cliInvocation ]
                   Notes =
                     [ "Run rebuild-graph-assertions first when the derived graph may be stale."
                       "Use --working-import-id when you want the graph working slice from a fresh import batch without a full durable-graph rebuild."
+                      "Use either --output or --output-root, not both."
                       "Canonical conversation slices use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
                       "Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying canonical history."
                       "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
@@ -226,17 +230,21 @@ module Program =
                   Summary = "Render a DOT file into SVG or PNG using an explicitly allowlisted Graphviz engine."
                   Usage =
                     [ sprintf "%s render-graphviz-dot --input <path-to-dot>" cliInvocation
-                      sprintf "%s render-graphviz-dot --input /tmp/nexus-graph.dot --format svg --engine sfdp" cliInvocation ]
+                      sprintf "%s render-graphviz-dot --input /tmp/nexus-graph.dot --format svg --engine sfdp" cliInvocation
+                      sprintf "%s render-graphviz-dot --input /tmp/nexus-graph.dot --output-root /tmp/nexus-rendered" cliInvocation ]
                   Options =
                     [ "--input <path>", "Required. Path to the source DOT file."
                       "--output <path>", "Optional rendered output path. Defaults to the input DOT path with the selected format extension."
+                      "--output-root <path>", "Optional output directory root. NEXUS will place the default rendered file name under this directory."
                       "--engine <dot|sfdp>", "Graphviz engine. Defaults to dot."
                       "--format <svg|png>", "Rendered output format. Defaults to svg." ]
                   Examples =
                     [ sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/exports/nexus-graph.dot" cliInvocation
+                      sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/exports/nexus-graph.dot --output-root /tmp/nexus-rendered" cliInvocation
                       sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/working/exports/nexus-working-graph__import-019d....dot --engine sfdp --format png" cliInvocation ]
                   Notes =
                     [ "This command renders an existing DOT file. Use export-graphviz-dot first if you still need to generate the DOT source."
+                      "Use either --output or --output-root, not both."
                       "Only explicitly allowlisted engines and formats are supported."
                       "Detailed guide: docs/how-to/render-graphviz-dot.md" ] }
         | "report-unresolved-artifacts" ->
@@ -667,47 +675,55 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "export-graphviz-dot"))
         else
-            let rec loop eventStoreRoot outputPath provider providerConversationId conversationId importId workingImportId remaining =
+            let rec loop eventStoreRoot outputPath outputRoot provider providerConversationId conversationId importId workingImportId remaining =
                 match remaining with
                 | [] ->
-                    match workingImportId, provider, providerConversationId, conversationId, importId with
-                    | Some _, Some _, _, _, _
-                    | Some _, _, Some _, _, _
-                    | Some _, _, _, Some _, _
-                    | Some _, _, _, _, Some _ ->
-                        eprintfn "Use either --working-import-id or the durable graph filter options, not both."
+                    match outputPath, outputRoot with
+                    | Some _, Some _ ->
+                        eprintfn "Use either --output or --output-root for export-graphviz-dot, not both."
                         printCommandHelp "export-graphviz-dot"
                         Error 1
-                    | Some workingImportIdValue, None, None, None, None ->
-                        Ok (ExportGraphvizDot(eventStoreRoot, outputPath, None, None, None, None, Some workingImportIdValue))
-                    | None, _, _, _, _ ->
-                        Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId, None))
+                    | _ ->
+                        match workingImportId, provider, providerConversationId, conversationId, importId with
+                        | Some _, Some _, _, _, _
+                        | Some _, _, Some _, _, _
+                        | Some _, _, _, Some _, _
+                        | Some _, _, _, _, Some _ ->
+                            eprintfn "Use either --working-import-id or the durable graph filter options, not both."
+                            printCommandHelp "export-graphviz-dot"
+                            Error 1
+                        | Some workingImportIdValue, None, None, None, None ->
+                            Ok (ExportGraphvizDot(eventStoreRoot, outputPath, outputRoot, None, None, None, None, Some workingImportIdValue))
+                        | None, _, _, _, _ ->
+                            Ok (ExportGraphvizDot(eventStoreRoot, outputPath, outputRoot, provider, providerConversationId, conversationId, importId, None))
                 | "--event-store-root" :: value :: rest ->
-                    loop value outputPath provider providerConversationId conversationId importId workingImportId rest
+                    loop value outputPath outputRoot provider providerConversationId conversationId importId workingImportId rest
                 | "--output" :: value :: rest ->
-                    loop eventStoreRoot (Some value) provider providerConversationId conversationId importId workingImportId rest
+                    loop eventStoreRoot (Some value) outputRoot provider providerConversationId conversationId importId workingImportId rest
+                | "--output-root" :: value :: rest ->
+                    loop eventStoreRoot outputPath (Some value) provider providerConversationId conversationId importId workingImportId rest
                 | "--provider" :: value :: rest ->
                     match ProviderNaming.tryParse value with
                     | Some providerKind ->
-                        loop eventStoreRoot outputPath (Some (ProviderNaming.slug providerKind)) providerConversationId conversationId importId workingImportId rest
+                        loop eventStoreRoot outputPath outputRoot (Some (ProviderNaming.slug providerKind)) providerConversationId conversationId importId workingImportId rest
                     | None ->
                         eprintfn "Unsupported provider: %s" value
                         printCommandHelp "export-graphviz-dot"
                         Error 1
                 | "--conversation-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider providerConversationId (Some value) importId workingImportId rest
+                    loop eventStoreRoot outputPath outputRoot provider providerConversationId (Some value) importId workingImportId rest
                 | "--provider-conversation-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider (Some value) conversationId importId workingImportId rest
+                    loop eventStoreRoot outputPath outputRoot provider (Some value) conversationId importId workingImportId rest
                 | "--import-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider providerConversationId conversationId (Some value) workingImportId rest
+                    loop eventStoreRoot outputPath outputRoot provider providerConversationId conversationId (Some value) workingImportId rest
                 | "--working-import-id" :: value :: rest ->
-                    loop eventStoreRoot outputPath provider providerConversationId conversationId importId (Some value) rest
+                    loop eventStoreRoot outputPath outputRoot provider providerConversationId conversationId importId (Some value) rest
                 | option :: _ ->
                     eprintfn "Unknown option for export-graphviz-dot: %s" option
                     printCommandHelp "export-graphviz-dot"
                     Error 1
 
-            loop defaultEventStoreRoot None None None None None None args
+            loop defaultEventStoreRoot None None None None None None None args
 
     let private parseGraphvizEngine (value: string) =
         match value.Trim().ToLowerInvariant() with
@@ -725,24 +741,30 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "render-graphviz-dot"))
         else
-            let rec loop inputPath outputPath engine format remaining =
+            let rec loop inputPath outputPath outputRoot engine format remaining =
                 match remaining with
                 | [] ->
-                    match inputPath with
-                    | Some inputPathValue ->
-                        Ok (RenderGraphvizDot(inputPathValue, outputPath, engine, format))
-                    | None ->
+                    match outputPath, outputRoot, inputPath with
+                    | Some _, Some _, _ ->
+                        eprintfn "Use either --output or --output-root for render-graphviz-dot, not both."
+                        printCommandHelp "render-graphviz-dot"
+                        Error 1
+                    | _, _, Some inputPathValue ->
+                        Ok (RenderGraphvizDot(inputPathValue, outputPath, outputRoot, engine, format))
+                    | _, _, None ->
                         eprintfn "Missing required option for render-graphviz-dot: --input"
                         printCommandHelp "render-graphviz-dot"
                         Error 1
                 | "--input" :: value :: rest ->
-                    loop (Some value) outputPath engine format rest
+                    loop (Some value) outputPath outputRoot engine format rest
                 | "--output" :: value :: rest ->
-                    loop inputPath (Some value) engine format rest
+                    loop inputPath (Some value) outputRoot engine format rest
+                | "--output-root" :: value :: rest ->
+                    loop inputPath outputPath (Some value) engine format rest
                 | "--engine" :: value :: rest ->
                     match parseGraphvizEngine value with
                     | Some engineValue ->
-                        loop inputPath outputPath engineValue format rest
+                        loop inputPath outputPath outputRoot engineValue format rest
                     | None ->
                         eprintfn "Unsupported Graphviz engine: %s" value
                         printCommandHelp "render-graphviz-dot"
@@ -750,7 +772,7 @@ module Program =
                 | "--format" :: value :: rest ->
                     match parseGraphvizFormat value with
                     | Some formatValue ->
-                        loop inputPath outputPath engine formatValue rest
+                        loop inputPath outputPath outputRoot engine formatValue rest
                     | None ->
                         eprintfn "Unsupported Graphviz format: %s" value
                         printCommandHelp "render-graphviz-dot"
@@ -760,7 +782,7 @@ module Program =
                     printCommandHelp "render-graphviz-dot"
                     Error 1
 
-            loop None None Dot Svg args
+            loop None None None Dot Svg args
 
     let private parseReportUnresolvedArtifacts (args: string list) =
         if containsHelpSwitch args then
@@ -1256,10 +1278,10 @@ module Program =
 
             0
 
-    let private exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId workingImportId =
+    let private exportGraphvizDot eventStoreRoot outputPath outputRoot provider providerConversationId conversationId importId workingImportId =
         match workingImportId with
         | Some workingImportIdValue ->
-            let result = GraphvizDot.exportWorkingImportBatch eventStoreRoot workingImportIdValue outputPath
+            let result = GraphvizDot.exportWorkingImportBatchWithRoot eventStoreRoot workingImportIdValue outputPath outputRoot
             printfn "Graphviz DOT exported."
             printfn "  Event store root: %s" eventStoreRoot
             printfn "  Source: graph working slice"
@@ -1278,7 +1300,7 @@ module Program =
                     ConversationId = conversationId
                     ImportId = importId }
 
-            let result = GraphvizDot.exportFiltered eventStoreRoot outputPath filter
+            let result = GraphvizDot.exportFilteredWithRoot eventStoreRoot outputPath outputRoot filter
             printfn "Graphviz DOT exported."
             printfn "  Event store root: %s" eventStoreRoot
             printfn "  Source: durable graph assertions"
@@ -1289,8 +1311,8 @@ module Program =
             printfn "  Edges written: %d" result.EdgeCount
             0
 
-    let private renderGraphvizDot inputPath outputPath engine format =
-        let result = GraphvizRendering.render inputPath outputPath engine format
+    let private renderGraphvizDot inputPath outputPath outputRoot engine format =
+        let result = GraphvizRendering.renderWithRoot inputPath outputPath outputRoot engine format
         printfn "Graphviz DOT rendered."
         printfn "  Input path: %s" result.InputPath
         printfn "  Output path: %s" result.OutputPath
@@ -1438,10 +1460,10 @@ module Program =
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->
             rebuildGraphAssertions eventStoreRoot approved
-        | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId, workingImportId)) ->
-            exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId workingImportId
-        | Ok (RenderGraphvizDot(inputPath, outputPath, engine, format)) ->
-            renderGraphvizDot inputPath outputPath engine format
+        | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, outputRoot, provider, providerConversationId, conversationId, importId, workingImportId)) ->
+            exportGraphvizDot eventStoreRoot outputPath outputRoot provider providerConversationId conversationId importId workingImportId
+        | Ok (RenderGraphvizDot(inputPath, outputPath, outputRoot, engine, format)) ->
+            renderGraphvizDot inputPath outputPath outputRoot engine format
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
