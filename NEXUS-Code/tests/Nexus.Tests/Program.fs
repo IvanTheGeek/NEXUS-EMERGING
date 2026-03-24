@@ -10,6 +10,7 @@ module Program =
             [ KernelTests.tests
               ProviderAdapterTests.tests
               WorkflowTests.tests
+              ImportSnapshotTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
               GraphWorkingIndexTests.tests

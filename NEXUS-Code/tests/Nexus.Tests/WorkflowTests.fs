@@ -36,10 +36,21 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.MessagesSeen 2 "Expected two Claude messages."
                       Expect.equal firstImport.Counts.ArtifactsReferenced 1 "Expected one Claude artifact reference."
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
+                      Expect.isSome firstImport.ImportSnapshotManifestRelativePath "Expected the import to write a normalized import snapshot manifest."
+                      Expect.isSome firstImport.ImportSnapshotConversationsRelativePath "Expected the import to write a normalized import snapshot conversation file."
                       Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected the import to update the graph working catalog."
                       Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected the import to refresh the SQLite graph working index."
                       Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
+
+                      let importSnapshotManifestPath =
+                          firstImport.ImportSnapshotManifestRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing import snapshot manifest path.")
+
+                      let importSnapshotManifest = TestHelpers.readToml importSnapshotManifestPath
+                      Expect.equal (TomlDocument.tryScalar "snapshot_kind" importSnapshotManifest) (Some "normalized_import_snapshot") "Expected the normalized import snapshot manifest kind."
+                      Expect.equal (TomlDocument.tryTableValue "counts" "conversations_seen" importSnapshotManifest) (Some "1") "Expected one conversation in the normalized import snapshot."
 
                       let workingManifestPath =
                           firstImport.WorkingGraphManifestRelativePath

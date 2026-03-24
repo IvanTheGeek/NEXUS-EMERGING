@@ -187,6 +187,8 @@ type ImportResult =
       ExtractedConversationRelativePath: string option
       EventPaths: string list
       ManifestRelativePath: string
+      ImportSnapshotManifestRelativePath: string option
+      ImportSnapshotConversationsRelativePath: string option
       WorkingGraphManifestRelativePath: string option
       WorkingGraphCatalogRelativePath: string option
       WorkingGraphIndexRelativePath: string option

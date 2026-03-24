@@ -12,6 +12,7 @@ Current guides:
 
 - `capture-artifact-payload.md`
 - `cli-commands.md`
+- `compare-import-snapshots.md`
 - `compare-provider-exports.md`
 - `compare-working-import-conversations.md`
 - `create-concept-note.md`

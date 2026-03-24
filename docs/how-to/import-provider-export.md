@@ -42,9 +42,10 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 4. Parses provider conversations and messages
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
-7. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
-8. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
-9. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
+7. Writes a normalized import snapshot under `NEXUS-EventStore/snapshots/imports/<import-id>/...`
+8. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
+9. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
+10. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
 
 ## Progress Output
 
@@ -59,11 +60,12 @@ Typical phases:
 - processing conversations into canonical history
 - writing canonical events
 - writing the import manifest
+- writing the normalized import snapshot
 - completion summary with elapsed time and counts
 
 Larger imports also emit periodic conversation-processing updates with running message, artifact, duplicate, revision, and reparse counts.
 
-The import summary also reports the graph-working manifest path, the graph working catalog path, the SQLite working-index path, and the assertion count for the batch-local materialization.
+The import summary also reports the normalized import-snapshot paths, the graph-working manifest path, the graph working catalog path, the SQLite working-index path, and the assertion count for the batch-local materialization.
 
 ## Current v0 Scope
 
@@ -109,6 +111,7 @@ Optional overrides:
 - The raw object layer is ignored by Git in this repo for now.
 - The canonical event store is intended to be committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
+- Each provider import now also records a normalized per-import snapshot so later full exports and rolling windows can be compared without confusing additive dedupe behavior for snapshot truth.
 - The current importer baseline is `provider-export-v1`. Earlier history without explicit versioning is treated as the legacy `provider-export-v0` baseline for reparse comparisons.
 - Re-importing the same provider objects under the same normalization version will skip duplicates and emit revision events only when a known provider message is observed with changed canonical content.
 - Re-importing the same provider objects under a different normalization version appends new message observations instead of pretending the provider message itself changed.

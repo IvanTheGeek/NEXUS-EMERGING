@@ -26,6 +26,7 @@ module Program =
         | ShowHelp of commandName: string option
         | WriteSampleEventStore of eventStoreRoot: string
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
+        | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
@@ -152,6 +153,27 @@ module Program =
                       "It does not import, archive, or append anything to canonical history."
                       "Use it when you want to reason about export-window behavior before canonical import."
                       "Detailed guide: docs/how-to/compare-provider-exports.md" ] }
+        | "compare-import-snapshots" ->
+            Some
+                { Name = name
+                  Summary = "Compare two normalized import snapshots keyed by provider-native conversation identity."
+                  Usage =
+                    [ sprintf "%s compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>" cliInvocation
+                      sprintf "%s compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--base-import-id <uuid>", "Required. The older or reference import snapshot."
+                      "--current-import-id <uuid>", "Required. The newer or comparison import snapshot."
+                      "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s compare-import-snapshots --base-import-id 019d21d6-5036-732d-973a-ef40df7f9003 --current-import-id 019d21df-d8b9-7a0a-a7c0-36686a412d40" cliInvocation
+                      sprintf "%s compare-import-snapshots --event-store-root /tmp/nexus-event-store --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This compares normalized per-import snapshots derived from parsed provider payloads before canonical dedupe."
+                      "Use it when you want snapshot semantics at the normalized layer, rather than additive batch-local working slices."
+                      "Absence from the current snapshot means absence from that import payload only; it does not imply canonical deletion."
+                      "Older imports may predate snapshot materialization and will need re-import or backfill before this command can compare them."
+                      "Detailed guide: docs/how-to/compare-import-snapshots.md" ] }
         | "import-provider-export" ->
             Some
                 { Name = name
@@ -524,6 +546,7 @@ module Program =
     let private availableCommands () =
         [ "write-sample-event-store"
           "compare-provider-exports"
+          "compare-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
           "capture-artifact-payload"
@@ -1276,6 +1299,57 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
+    let private parseCompareImportSnapshots (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "compare-import-snapshots"))
+        else
+            let rec loop eventStoreRoot baseImportId currentImportId limit remaining =
+                match remaining with
+                | [] ->
+                    match baseImportId, currentImportId with
+                    | Some baseImportIdValue, Some currentImportIdValue ->
+                        Ok (CompareImportSnapshots(eventStoreRoot, baseImportIdValue, currentImportIdValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option: --base-import-id"
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option: --current-import-id"
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value baseImportId currentImportId limit rest
+                | "--base-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) currentImportId limit rest
+                    | false, _ ->
+                        eprintfn "Invalid base import ID: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--current-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot baseImportId (Some (ImportId.parse value)) limit rest
+                    | false, _ ->
+                        eprintfn "Invalid current import ID: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot baseImportId currentImportId parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for compare-import-snapshots: %s" option
+                    printCommandHelp "compare-import-snapshots"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
+
     let private parseFindWorkingGraphNodes (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "find-working-graph-nodes"))
@@ -1508,6 +1582,8 @@ module Program =
             parseWriteSampleEventStore rest
         | "compare-provider-exports" :: rest ->
             parseCompareProviderExports rest
+        | "compare-import-snapshots" :: rest ->
+            parseCompareImportSnapshots rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
         | "import-codex-sessions" :: rest ->
@@ -1572,6 +1648,15 @@ module Program =
 
         match assertionCount with
         | Some value -> printfn "  Working graph assertions written: %d" value
+        | None -> ()
+
+    let private printImportSnapshotArtifacts manifestPath conversationsPath =
+        match manifestPath with
+        | Some value -> printfn "  Import snapshot manifest: %s" value
+        | None -> ()
+
+        match conversationsPath with
+        | Some value -> printfn "  Import snapshot conversations: %s" value
         | None -> ()
 
     let private buildSampleData () =
@@ -1860,6 +1945,81 @@ module Program =
 
         0
 
+    let private compareImportSnapshots eventStoreRoot baseImportId currentImportId limit =
+        match ImportSnapshots.tryBuildComparisonReport eventStoreRoot baseImportId currentImportId limit with
+        | Some report ->
+            printfn "Normalized import snapshot comparison."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Base import ID: %s" (ImportId.format report.BaseImportId)
+            printfn "  Current import ID: %s" (ImportId.format report.CurrentImportId)
+            printfn "  Base provider: %s" report.BaseProvider
+            printfn "  Current provider: %s" report.CurrentProvider
+
+            match report.BaseWindow with
+            | Some value -> printfn "  Base window: %s" value
+            | None -> ()
+
+            match report.CurrentWindow with
+            | Some value -> printfn "  Current window: %s" value
+            | None -> ()
+
+            printfn "  Base imported at: %s" (report.BaseImportedAt.ToUniversalTime().ToString("O"))
+            printfn "  Current imported at: %s" (report.CurrentImportedAt.ToUniversalTime().ToString("O"))
+            printfn "  Added conversations: %d" report.AddedConversationCount
+            printfn "  Removed conversations: %d" report.RemovedConversationCount
+            printfn "  Changed conversations: %d" report.ChangedConversationCount
+            printfn "  Unchanged conversations: %d" report.UnchangedConversationCount
+
+            if not report.AddedConversations.IsEmpty then
+                printfn "  Added:"
+
+                report.AddedConversations
+                |> List.iter (fun item ->
+                    let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn "      canonical_conversation_id=%s" item.CanonicalConversationId
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+            if not report.RemovedConversations.IsEmpty then
+                printfn "  Removed:"
+
+                report.RemovedConversations
+                |> List.iter (fun item ->
+                    let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn "      canonical_conversation_id=%s" item.CanonicalConversationId
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+            if not report.ChangedConversations.IsEmpty then
+                printfn "  Changed:"
+
+                report.ChangedConversations
+                |> List.iter (fun item ->
+                    let label =
+                        item.CurrentTitle
+                        |> Option.orElse item.BaseTitle
+                        |> Option.defaultValue item.ProviderConversationId
+
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn
+                        "      canonical_conversation_id=%s -> %s"
+                        item.BaseCanonicalConversationId
+                        item.CurrentCanonicalConversationId
+                    printfn "      messages=%d -> %d" item.BaseMessageCount item.CurrentMessageCount
+                    printfn
+                        "      artifacts=%d -> %d"
+                        item.BaseArtifactReferenceCount
+                        item.CurrentArtifactReferenceCount)
+
+            0
+        | None ->
+            eprintfn "Missing normalized import snapshot files for one or both imports."
+            eprintfn "These snapshots are written during provider import and may be absent for older imports."
+            1
+
     let private importProviderExport request =
         let result = ImportWorkflow.runWithStatus (fun message -> printfn "  %s" message) request
 
@@ -1874,6 +2034,7 @@ module Program =
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath
+        printImportSnapshotArtifacts result.ImportSnapshotManifestRelativePath result.ImportSnapshotConversationsRelativePath
         printWorkingGraphArtifacts
             result.WorkingGraphManifestRelativePath
             result.WorkingGraphCatalogRelativePath
@@ -2613,6 +2774,8 @@ module Program =
             writeSampleEventStore eventStoreRoot
         | Ok (CompareProviderExports(provider, baseZipPath, currentZipPath, limit)) ->
             compareProviderExports provider baseZipPath currentZipPath limit
+        | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
+            compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
         | Ok (ImportProviderExport request) ->
             importProviderExport request
         | Ok (ImportCodexSessions request) ->

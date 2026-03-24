@@ -29,6 +29,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/compare-provider-exports.md" "Expected the raw comparison guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help compare-provider-exports.")
 
+              testCase "Normalized snapshot comparison help exposes the snapshot workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "compare-import-snapshots" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help compare-import-snapshots to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: compare-import-snapshots" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--base-import-id <uuid>" "Expected base-import guidance."
+                  Expect.stringContains result.StandardOutput "--current-import-id <uuid>" "Expected current-import guidance."
+                  Expect.stringContains result.StandardOutput "snapshot semantics" "Expected the normalized snapshot note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/compare-import-snapshots.md" "Expected the normalized snapshot guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help compare-import-snapshots.")
+
               testCase "Command help works through both help forms" (fun () ->
                   let helpCommandResult = TestHelpers.runCli [ "help"; "import-provider-export" ]
                   let switchResult = TestHelpers.runCli [ "import-provider-export"; "--help" ]

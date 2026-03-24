@@ -70,6 +70,7 @@ That means the same provider-native conversation ID appeared in both zips, but i
 
 ## Related Commands
 
+- `compare-import-snapshots`
 - `import-provider-export`
 - `report-working-import-conversations`
 - `compare-working-import-conversations`

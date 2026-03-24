@@ -357,6 +357,7 @@ module ImportWorkflow =
         emitStatus status "Loading event-store index for dedupe and revision checks."
         let index = EventStoreIndex.load eventStoreRoot
         let events = ResizeArray<CanonicalEvent>()
+        let snapshotConversations = ResizeArray<NormalizedImportSnapshotConversation>()
         let mutable conversationsSeen = 0
         let mutable messagesSeen = 0
         let mutable artifactsReferenced = 0
@@ -423,8 +424,19 @@ module ImportWorkflow =
                             { ConversationId = conversationId
                               ProviderConversation = conversationRef
                               Title = conversation.Title
-                              IsArchived = conversation.IsArchived
-                              MessageCountHint = conversation.MessageCountHint } }
+                                      IsArchived = conversation.IsArchived
+                                      MessageCountHint = conversation.MessageCountHint } }
+
+            snapshotConversations.Add
+                { CanonicalConversationId = ConversationId.format conversationId
+                  ProviderConversationId = conversation.ProviderConversationId
+                  Title = conversation.Title
+                  IsArchived = conversation.IsArchived
+                  OccurredAt = conversation.OccurredAt
+                  MessageCount = conversation.Messages.Length
+                  ArtifactReferenceCount =
+                    conversation.Messages
+                    |> List.sumBy (fun value -> value.ArtifactReferences.Length) }
 
             for message in conversation.Messages do
                 messagesSeen <- messagesSeen + 1
@@ -614,6 +626,17 @@ module ImportWorkflow =
         let eventPaths = CanonicalStore.writeCanonicalEvents eventStoreRoot eventList
         emitStatus status "Writing import manifest."
         let manifestPath = CanonicalStore.writeImportManifest eventStoreRoot manifest
+        emitStatus status "Writing normalized import snapshot."
+        let importSnapshot =
+            { ImportId = importId
+              Provider = providerSlug
+              Window = request.Window |> Option.map ImportWindowNaming.value
+              ImportedAt = importedAtValue intake.ImportedAt
+              NormalizationVersion = Some (NormalizationNaming.value currentNormalizationVersion)
+              SourceArtifactRelativePath = Some intake.ArchivedZipRelativePath
+              Conversations = snapshotConversations |> Seq.toList }
+
+        let importSnapshotResult = ImportSnapshots.write eventStoreRoot importSnapshot
         emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
         let workingGraph =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
@@ -634,6 +657,8 @@ module ImportWorkflow =
           ExtractedConversationRelativePath = intake.ConversationsJsonRelativePath
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
+          ImportSnapshotManifestRelativePath = Some importSnapshotResult.ManifestRelativePath
+          ImportSnapshotConversationsRelativePath = Some importSnapshotResult.ConversationsRelativePath
           WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
           WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
           WorkingGraphIndexRelativePath = Some workingGraphIndexRelativePath
