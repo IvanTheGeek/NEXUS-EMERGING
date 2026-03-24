@@ -81,6 +81,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-imports.md" "Expected the working-graph report guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-imports.")
 
+              testCase "Working graph node search help exposes the indexed discovery workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "find-working-graph-nodes" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help find-working-graph-nodes to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: find-working-graph-nodes" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--match <text>" "Expected title/slug match guidance."
+                  Expect.stringContains result.StandardOutput "--semantic-role <slug>" "Expected semantic-role guidance."
+                  Expect.stringContains result.StandardOutput "--message-role <slug>" "Expected message-role guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/find-working-graph-nodes.md" "Expected the node-search guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help find-working-graph-nodes.")
+
               testCase "Working graph slice help exposes the SQLite index workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "report-working-graph-slice" ]
 
@@ -90,6 +101,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "SQLite" "Expected the SQLite working-index note."
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-slice.md" "Expected the working-slice guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-slice.")
+
+              testCase "Working graph neighborhood help exposes the local neighborhood workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-graph-neighborhood" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-working-graph-neighborhood to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-graph-neighborhood" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
+                  Expect.stringContains result.StandardOutput "--node-id <node-id>" "Expected node-id guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-neighborhood.md" "Expected the neighborhood guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-neighborhood.")
 
               testCase "Working graph index rebuild help exposes the rebuild workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "rebuild-working-graph-index" ]

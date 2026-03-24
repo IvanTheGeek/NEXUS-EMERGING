@@ -48,6 +48,58 @@ module GraphWorkingIndexTests =
                       Expect.equal report.PredicateCounts.Head.Predicate "has_node_kind" "Expected the most common fixture predicate to be has_node_kind."
                       Expect.equal report.PredicateCounts.Head.Count 8 "Expected the top predicate count for the fixture slice."))
 
+              testCase "Graph working SQLite index can find nodes by title text and provider filter" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-index-find" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+
+                      let matches =
+                          GraphWorkingIndex.findNodes
+                              eventStoreRoot
+                              None
+                              (Some "claude")
+                              (Some "fixture")
+                              None
+                              None
+                              10
+
+                      Expect.equal matches.Length 1 "Expected one fixture conversation node match."
+                      Expect.equal matches.Head.Provider (Some "claude") "Expected provider enrichment on the node match."
+                      Expect.equal matches.Head.Title (Some "Claude Fixture Conversation") "Expected the fixture conversation title."
+                      Expect.equal matches.Head.NodeKind (Some "conversation_node") "Expected the conversation node kind."
+                      Expect.contains matches.Head.MatchReasons "title_or_slug" "Expected a title/slug match reason."))
+
+              testCase "Graph working SQLite index can report a node neighborhood inside one import slice" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-index-neighborhood" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let nodeMatch =
+                          GraphWorkingIndex.findNodes
+                              eventStoreRoot
+                              (Some importResult.ImportId)
+                              (Some "claude")
+                              (Some "fixture")
+                              None
+                              None
+                              10
+                          |> List.head
+
+                      let report =
+                          GraphWorkingIndex.tryBuildNeighborhoodReport eventStoreRoot importResult.ImportId nodeMatch.NodeId 10
+                          |> Option.defaultWith (fun () -> failwith "Expected a neighborhood report for the fixture conversation node.")
+
+                      Expect.equal report.Title (Some "Claude Fixture Conversation") "Expected the neighborhood to target the fixture conversation."
+                      Expect.isGreaterThan report.TotalLiteralAssertionCount 0 "Expected literal assertions for the node."
+                      Expect.isGreaterThan report.TotalOutgoingConnectionCount 0 "Expected outgoing graph connections for the node."
+                      Expect.isGreaterThan report.TotalIncomingConnectionCount 0 "Expected incoming graph connections for the node."
+                      Expect.isTrue
+                          (report.OutgoingConnections |> List.exists (fun item -> item.Predicate = "located_in_domain"))
+                          "Expected the conversation to connect to its domain."
+                      Expect.isTrue
+                          (report.IncomingConnections |> List.exists (fun item -> item.Predicate = "belongs_to_conversation"))
+                          "Expected messages to point into the conversation neighborhood."))
+
               testCase "CLI report-working-graph-slice shows SQLite working-index details" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-cli" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
@@ -70,6 +122,64 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Provider: claude" "Expected provider enrichment in the report."
                       Expect.stringContains cliResult.StandardOutput "Graph assertions: 46" "Expected the graph assertion count in the report."
                       Expect.stringContains cliResult.StandardOutput "has_node_kind: 8" "Expected predicate counts in the report."))
+
+              testCase "CLI find-working-graph-nodes shows indexed matches" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-index-find-cli" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "find-working-graph-nodes"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--provider"
+                                "claude"
+                                "--match"
+                                "fixture" ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected node search to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the node search."
+                      Expect.stringContains cliResult.StandardOutput "Graph working node search." "Expected the search header."
+                      Expect.stringContains cliResult.StandardOutput "Matches: 1" "Expected one fixture node match."
+                      Expect.stringContains cliResult.StandardOutput "Claude Fixture Conversation" "Expected the fixture conversation title in the search output."
+                      Expect.stringContains cliResult.StandardOutput "matched_on=title_or_slug" "Expected the match reason in the search output."))
+
+              testCase "CLI report-working-graph-neighborhood shows local graph structure" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-index-neighborhood-cli" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let nodeMatch =
+                          GraphWorkingIndex.findNodes
+                              eventStoreRoot
+                              (Some importResult.ImportId)
+                              (Some "claude")
+                              (Some "fixture")
+                              None
+                              None
+                              10
+                          |> List.head
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "report-working-graph-neighborhood"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--node-id"
+                                nodeMatch.NodeId
+                                "--limit"
+                                "10" ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected the neighborhood report to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the neighborhood report."
+                      Expect.stringContains cliResult.StandardOutput "Graph working neighborhood report." "Expected the neighborhood header."
+                      Expect.stringContains cliResult.StandardOutput "Title: Claude Fixture Conversation" "Expected the node title in the neighborhood output."
+                      Expect.stringContains cliResult.StandardOutput "Outgoing:" "Expected outgoing neighborhood rows."
+                      Expect.stringContains cliResult.StandardOutput "Incoming:" "Expected incoming neighborhood rows."
+                      Expect.stringContains cliResult.StandardOutput "belongs_to_conversation" "Expected relationship detail in the neighborhood output."))
 
               testCase "CLI rebuild-working-graph-index recreates the SQLite index from working slices" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-rebuild" (fun tempRoot ->

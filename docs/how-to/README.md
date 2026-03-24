@@ -15,6 +15,7 @@ Current guides:
 - `create-concept-note.md`
 - `export-codex-sessions.md`
 - `export-graphviz-dot.md`
+- `find-working-graph-nodes.md`
 - `git-auth-for-codex.md`
 - `import-codex-sessions.md`
 - `import-provider-export.md`
@@ -25,6 +26,7 @@ Current guides:
 - `rebuild-working-graph-index.md`
 - `report-unresolved-artifacts.md`
 - `report-working-graph-imports.md`
+- `report-working-graph-neighborhood.md`
 - `report-working-graph-slice.md`
 - `run-tests.md`
 - `verify-working-graph-slice.md`

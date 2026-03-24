@@ -33,6 +33,71 @@ type WorkingGraphSliceReport =
       PredicateCounts: WorkingGraphSlicePredicateCount list }
 
 /// <summary>
+/// Summarizes one graph node match discovered through the persisted SQLite working index.
+/// </summary>
+type WorkingGraphNodeMatch =
+    { ImportId: ImportId
+      Provider: string option
+      Window: string option
+      ImportedAt: DateTimeOffset option
+      MaterializedAt: DateTimeOffset
+      NodeId: string
+      NodeKind: string option
+      Title: string option
+      Slug: string option
+      SemanticRoles: string list
+      MessageRoles: string list
+      MatchReasons: string list }
+
+/// <summary>
+/// Describes one literal assertion attached directly to a node inside a graph working slice.
+/// </summary>
+type WorkingGraphNeighborhoodLiteral =
+    { FactId: FactId
+      Predicate: string
+      ValueType: string option
+      Value: string }
+
+/// <summary>
+/// Describes one node-to-node connection inside a graph working slice neighborhood.
+/// </summary>
+type WorkingGraphNeighborhoodConnection =
+    { FactId: FactId
+      Direction: string
+      Predicate: string
+      RelatedNodeId: string
+      RelatedNodeKind: string option
+      RelatedTitle: string option
+      RelatedSlug: string option
+      RelatedSemanticRoles: string list
+      RelatedMessageRoles: string list }
+
+/// <summary>
+/// Summarizes the local neighborhood of one node inside a graph working import slice.
+/// </summary>
+type WorkingGraphNeighborhoodReport =
+    { IndexRelativePath: string
+      ImportId: ImportId
+      Provider: string option
+      Window: string option
+      ImportedAt: DateTimeOffset option
+      MaterializedAt: DateTimeOffset
+      NodeId: string
+      NodeKind: string option
+      Title: string option
+      Slug: string option
+      SemanticRoles: string list
+      MessageRoles: string list
+      WorkingRootRelativePath: string
+      ManifestRelativePath: string
+      TotalLiteralAssertionCount: int
+      TotalOutgoingConnectionCount: int
+      TotalIncomingConnectionCount: int
+      Literals: WorkingGraphNeighborhoodLiteral list
+      OutgoingConnections: WorkingGraphNeighborhoodConnection list
+      IncomingConnections: WorkingGraphNeighborhoodConnection list }
+
+/// <summary>
 /// Summarizes one full rebuild of the persisted graph working SQLite index.
 /// </summary>
 type WorkingGraphIndexRebuildResult =
@@ -56,6 +121,14 @@ type private IndexedAssertionRow =
       DomainId: string option
       BoundedContextId: string option
       LensId: string option }
+
+type private NodeSummary =
+    { NodeId: string
+      NodeKind: string option
+      Title: string option
+      Slug: string option
+      SemanticRoles: string list
+      MessageRoles: string list }
 
 /// <summary>
 /// Maintains a persisted SQLite index over graph working import slices.
@@ -97,6 +170,19 @@ module GraphWorkingIndex =
             match DateTimeOffset.TryParse(rawValue, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal) with
             | true, parsedValue -> Some parsedValue
             | false, _ -> None)
+
+    let private readOptionalString (reader: SqliteDataReader) index =
+        if reader.IsDBNull(index) then None else Some (reader.GetString(index))
+
+    let private splitConcatenatedList (value: string option) =
+        value
+        |> Option.map (fun rawValue ->
+            rawValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            |> Array.toList
+            |> List.map (fun item -> item.Trim())
+            |> List.filter (fun item -> not (String.IsNullOrWhiteSpace(item)))
+            |> List.distinct)
+        |> Option.defaultValue []
 
     let private loadImportManifestMetadata eventStoreRoot importId =
         let absolutePath = importManifestAbsolutePath eventStoreRoot importId
@@ -223,6 +309,8 @@ CREATE TABLE IF NOT EXISTS assertions (
         executeNonQuery connection "CREATE INDEX IF NOT EXISTS idx_assertions_import_id ON assertions(import_id);"
         executeNonQuery connection "CREATE INDEX IF NOT EXISTS idx_assertions_subject ON assertions(import_id, subject);"
         executeNonQuery connection "CREATE INDEX IF NOT EXISTS idx_assertions_predicate ON assertions(import_id, predicate);"
+        executeNonQuery connection "CREATE INDEX IF NOT EXISTS idx_assertions_object_value ON assertions(import_id, object_kind, object_value);"
+        executeNonQuery connection "CREATE INDEX IF NOT EXISTS idx_assertions_literal_lookup ON assertions(import_id, predicate, object_kind, object_value);"
 
     let private withWritableConnection eventStoreRoot action =
         let absolutePath = indexAbsolutePath eventStoreRoot
@@ -275,6 +363,58 @@ CREATE TABLE IF NOT EXISTS assertions (
               MaterializerVersion = entry.MaterializerVersion }
 
         result
+
+    let private scalarCount (connection: SqliteConnection) (sql: string) (parameterSetter: SqliteCommand -> unit) =
+        use command = connection.CreateCommand()
+        command.CommandText <- sql
+        parameterSetter command
+
+        match command.ExecuteScalar() with
+        | null
+        | :? DBNull -> 0
+        | :? int64 as value -> int value
+        | :? int as value -> value
+        | value -> Convert.ToInt32(value, CultureInfo.InvariantCulture)
+
+    let private tryLoadNodeSummary (connection: SqliteConnection) importId nodeId =
+        use command = connection.CreateCommand()
+        command.CommandText <-
+            """
+SELECT
+    COUNT(*),
+    MAX(CASE WHEN predicate = 'has_node_kind' AND object_kind = 'literal' THEN object_value END),
+    MAX(CASE WHEN predicate = 'has_title' AND object_kind = 'literal' THEN object_value END),
+    MAX(CASE WHEN predicate = 'has_slug' AND object_kind = 'literal' THEN object_value END),
+    GROUP_CONCAT(DISTINCT CASE WHEN predicate = 'has_semantic_role' AND object_kind = 'literal' THEN object_value END),
+    GROUP_CONCAT(DISTINCT CASE WHEN predicate = 'has_role' AND object_kind = 'literal' THEN object_value END)
+FROM assertions
+WHERE import_id = $import_id
+  AND subject = $node_id;
+"""
+        command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+        command.Parameters.AddWithValue("$node_id", nodeId) |> ignore
+
+        use reader = command.ExecuteReader()
+
+        if reader.Read() then
+            let rowCount =
+                if reader.IsDBNull(0) then
+                    0
+                else
+                    int (reader.GetInt64(0))
+
+            if rowCount > 0 then
+                Some
+                    { NodeId = nodeId
+                      NodeKind = readOptionalString reader 1
+                      Title = readOptionalString reader 2
+                      Slug = readOptionalString reader 3
+                      SemanticRoles = readOptionalString reader 4 |> splitConcatenatedList
+                      MessageRoles = readOptionalString reader 5 |> splitConcatenatedList }
+            else
+                None
+        else
+            None
 
     /// <summary>
     /// Returns the stable relative path for the persisted graph working SQLite index.
@@ -552,6 +692,358 @@ LIMIT $limit;
                       WorkingRootRelativePath = workingRootRelativePath
                       ManifestRelativePath = manifestRelativePath
                       PredicateCounts = predicateCounts |> Seq.toList }
+            else
+                None)
+        |> Option.flatten
+
+    /// <summary>
+    /// Finds graph nodes in the SQLite working index by title/slug text and explicit role filters.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="importId">Optional import-batch filter.</param>
+    /// <param name="provider">Optional provider filter.</param>
+    /// <param name="matchText">Optional text filter applied to node titles and slugs.</param>
+    /// <param name="semanticRole">Optional semantic-role filter.</param>
+    /// <param name="messageRole">Optional message-role filter.</param>
+    /// <param name="limit">The maximum number of matches to return.</param>
+    /// <returns>The matching graph nodes from the persisted working index.</returns>
+    let findNodes eventStoreRoot importId provider matchText semanticRole messageRole limit =
+        withReadableConnection eventStoreRoot (fun connection ->
+            use command = connection.CreateCommand()
+            command.CommandText <-
+                """
+WITH node_matches AS (
+    SELECT
+        b.import_id,
+        b.provider,
+        b.window_kind,
+        b.imported_at,
+        b.materialized_at,
+        a.subject AS node_id,
+        MAX(CASE WHEN a.predicate = 'has_node_kind' AND a.object_kind = 'literal' THEN a.object_value END) AS node_kind,
+        MAX(CASE WHEN a.predicate = 'has_title' AND a.object_kind = 'literal' THEN a.object_value END) AS title,
+        MAX(CASE WHEN a.predicate = 'has_slug' AND a.object_kind = 'literal' THEN a.object_value END) AS slug,
+        GROUP_CONCAT(DISTINCT CASE WHEN a.predicate = 'has_semantic_role' AND a.object_kind = 'literal' THEN a.object_value END) AS semantic_roles,
+        GROUP_CONCAT(DISTINCT CASE WHEN a.predicate = 'has_role' AND a.object_kind = 'literal' THEN a.object_value END) AS message_roles,
+        SUM(CASE WHEN a.predicate IN ('has_title', 'has_slug') AND a.object_kind = 'literal' AND lower(a.object_value) LIKE '%' || lower($match_text) || '%' THEN 1 ELSE 0 END) AS text_matches,
+        SUM(CASE WHEN a.predicate = 'has_semantic_role' AND a.object_kind = 'literal' AND lower(a.object_value) = lower($semantic_role) THEN 1 ELSE 0 END) AS semantic_matches,
+        SUM(CASE WHEN a.predicate = 'has_role' AND a.object_kind = 'literal' AND lower(a.object_value) = lower($message_role) THEN 1 ELSE 0 END) AS message_matches
+    FROM assertions a
+    INNER JOIN import_batches b ON b.import_id = a.import_id
+    WHERE ($import_id IS NULL OR a.import_id = $import_id)
+      AND ($provider IS NULL OR b.provider = $provider)
+    GROUP BY
+        b.import_id,
+        b.provider,
+        b.window_kind,
+        b.imported_at,
+        b.materialized_at,
+        a.subject
+)
+SELECT
+    import_id,
+    provider,
+    window_kind,
+    imported_at,
+    materialized_at,
+    node_id,
+    node_kind,
+    title,
+    slug,
+    semantic_roles,
+    message_roles,
+    text_matches,
+    semantic_matches,
+    message_matches
+FROM node_matches
+WHERE ($match_text IS NULL OR text_matches > 0)
+  AND ($semantic_role IS NULL OR semantic_matches > 0)
+  AND ($message_role IS NULL OR message_matches > 0)
+ORDER BY materialized_at DESC, COALESCE(title, slug, node_id) ASC
+LIMIT $limit;
+"""
+            command.Parameters.AddWithValue("$import_id", dbValue (importId |> Option.map ImportId.format)) |> ignore
+            command.Parameters.AddWithValue("$provider", dbValue provider) |> ignore
+            command.Parameters.AddWithValue("$match_text", dbValue matchText) |> ignore
+            command.Parameters.AddWithValue("$semantic_role", dbValue semanticRole) |> ignore
+            command.Parameters.AddWithValue("$message_role", dbValue messageRole) |> ignore
+            command.Parameters.AddWithValue("$limit", limit) |> ignore
+
+            use reader = command.ExecuteReader()
+            let matches = ResizeArray<WorkingGraphNodeMatch>()
+
+            while reader.Read() do
+                let textMatchCount =
+                    if reader.IsDBNull(11) then
+                        0
+                    else
+                        int (reader.GetInt64(11))
+
+                let semanticMatchCount =
+                    if reader.IsDBNull(12) then
+                        0
+                    else
+                        int (reader.GetInt64(12))
+
+                let messageMatchCount =
+                    if reader.IsDBNull(13) then
+                        0
+                    else
+                        int (reader.GetInt64(13))
+
+                let matchReasons =
+                    [ match matchText with
+                      | Some _ when textMatchCount > 0 -> Some "title_or_slug"
+                      | _ -> None
+                      match semanticRole with
+                      | Some _ when semanticMatchCount > 0 -> Some "semantic_role"
+                      | _ -> None
+                      match messageRole with
+                      | Some _ when messageMatchCount > 0 -> Some "message_role"
+                      | _ -> None ]
+                    |> List.choose id
+
+                matches.Add
+                    { ImportId = ImportId.parse (reader.GetString(0))
+                      Provider = readOptionalString reader 1
+                      Window = readOptionalString reader 2
+                      ImportedAt = readOptionalString reader 3 |> tryParseTimestamp
+                      MaterializedAt = parseTimestamp (reader.GetString(4))
+                      NodeId = reader.GetString(5)
+                      NodeKind = readOptionalString reader 6
+                      Title = readOptionalString reader 7
+                      Slug = readOptionalString reader 8
+                      SemanticRoles = readOptionalString reader 9 |> splitConcatenatedList
+                      MessageRoles = readOptionalString reader 10 |> splitConcatenatedList
+                      MatchReasons = matchReasons }
+
+            matches |> Seq.toList)
+        |> Option.defaultValue []
+
+    /// <summary>
+    /// Builds the local neighborhood of one node from the persisted SQLite working index.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="importId">The import batch whose working slice should be explored.</param>
+    /// <param name="nodeId">The node whose local neighborhood should be reported.</param>
+    /// <param name="limit">The maximum number of literals, incoming connections, and outgoing connections to include.</param>
+    /// <returns>The local neighborhood report when both the slice and node exist in the working index.</returns>
+    let tryBuildNeighborhoodReport eventStoreRoot importId nodeId limit =
+        withReadableConnection eventStoreRoot (fun connection ->
+            use batchCommand = connection.CreateCommand()
+            batchCommand.CommandText <-
+                """
+SELECT
+    provider,
+    window_kind,
+    imported_at,
+    materialized_at,
+    working_root_relative_path,
+    manifest_relative_path
+FROM import_batches
+WHERE import_id = $import_id;
+"""
+            batchCommand.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+
+            use batchReader = batchCommand.ExecuteReader()
+
+            if batchReader.Read() then
+                let provider = readOptionalString batchReader 0
+                let window = readOptionalString batchReader 1
+                let importedAt = readOptionalString batchReader 2 |> tryParseTimestamp
+                let materializedAt = parseTimestamp (batchReader.GetString(3))
+                let workingRootRelativePath = batchReader.GetString(4)
+                let manifestRelativePath = batchReader.GetString(5)
+
+                match tryLoadNodeSummary connection importId nodeId with
+                | None -> None
+                | Some summary ->
+                    let totalLiteralAssertionCount =
+                        scalarCount
+                            connection
+                            """
+SELECT COUNT(*)
+FROM assertions
+WHERE import_id = $import_id
+  AND subject = $node_id
+  AND object_kind = 'literal';
+"""
+                            (fun command ->
+                                command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                                command.Parameters.AddWithValue("$node_id", nodeId) |> ignore)
+
+                    let totalOutgoingConnectionCount =
+                        scalarCount
+                            connection
+                            """
+SELECT COUNT(*)
+FROM assertions
+WHERE import_id = $import_id
+  AND subject = $node_id
+  AND object_kind = 'node_ref';
+"""
+                            (fun command ->
+                                command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                                command.Parameters.AddWithValue("$node_id", nodeId) |> ignore)
+
+                    let totalIncomingConnectionCount =
+                        scalarCount
+                            connection
+                            """
+SELECT COUNT(*)
+FROM assertions
+WHERE import_id = $import_id
+  AND object_kind = 'node_ref'
+  AND object_value = $node_id;
+"""
+                            (fun command ->
+                                command.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                                command.Parameters.AddWithValue("$node_id", nodeId) |> ignore)
+
+                    let summaryCache = System.Collections.Generic.Dictionary<string, NodeSummary>(StringComparer.Ordinal)
+                    summaryCache[nodeId] <- summary
+
+                    let getNodeSummary currentNodeId =
+                        match summaryCache.TryGetValue(currentNodeId) with
+                        | true, cached -> Some cached
+                        | false, _ ->
+                            let loaded = tryLoadNodeSummary connection importId currentNodeId
+
+                            loaded
+                            |> Option.iter (fun currentSummary -> summaryCache[currentNodeId] <- currentSummary)
+
+                            loaded
+
+                    use literalCommand = connection.CreateCommand()
+                    literalCommand.CommandText <-
+                        """
+SELECT fact_id, predicate, object_value_type, object_value
+FROM assertions
+WHERE import_id = $import_id
+  AND subject = $node_id
+  AND object_kind = 'literal'
+ORDER BY predicate ASC, object_value ASC
+LIMIT $limit;
+"""
+                    literalCommand.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                    literalCommand.Parameters.AddWithValue("$node_id", nodeId) |> ignore
+                    literalCommand.Parameters.AddWithValue("$limit", limit) |> ignore
+
+                    use literalReader = literalCommand.ExecuteReader()
+                    let literals = ResizeArray<WorkingGraphNeighborhoodLiteral>()
+
+                    while literalReader.Read() do
+                        literals.Add
+                            { FactId = FactId.parse (literalReader.GetString(0))
+                              Predicate = literalReader.GetString(1)
+                              ValueType = readOptionalString literalReader 2
+                              Value = literalReader.GetString(3) }
+
+                    use outgoingCommand = connection.CreateCommand()
+                    outgoingCommand.CommandText <-
+                        """
+SELECT fact_id, predicate, object_value
+FROM assertions
+WHERE import_id = $import_id
+  AND subject = $node_id
+  AND object_kind = 'node_ref'
+ORDER BY predicate ASC, object_value ASC
+LIMIT $limit;
+"""
+                    outgoingCommand.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                    outgoingCommand.Parameters.AddWithValue("$node_id", nodeId) |> ignore
+                    outgoingCommand.Parameters.AddWithValue("$limit", limit) |> ignore
+
+                    use outgoingReader = outgoingCommand.ExecuteReader()
+                    let outgoingConnections = ResizeArray<WorkingGraphNeighborhoodConnection>()
+
+                    while outgoingReader.Read() do
+                        let relatedNodeId = outgoingReader.GetString(2)
+
+                        let relatedSummary =
+                            getNodeSummary relatedNodeId
+                            |> Option.defaultValue
+                                { NodeId = relatedNodeId
+                                  NodeKind = None
+                                  Title = None
+                                  Slug = None
+                                  SemanticRoles = []
+                                  MessageRoles = [] }
+
+                        outgoingConnections.Add
+                            { FactId = FactId.parse (outgoingReader.GetString(0))
+                              Direction = "outgoing"
+                              Predicate = outgoingReader.GetString(1)
+                              RelatedNodeId = relatedNodeId
+                              RelatedNodeKind = relatedSummary.NodeKind
+                              RelatedTitle = relatedSummary.Title
+                              RelatedSlug = relatedSummary.Slug
+                              RelatedSemanticRoles = relatedSummary.SemanticRoles
+                              RelatedMessageRoles = relatedSummary.MessageRoles }
+
+                    use incomingCommand = connection.CreateCommand()
+                    incomingCommand.CommandText <-
+                        """
+SELECT fact_id, subject, predicate
+FROM assertions
+WHERE import_id = $import_id
+  AND object_kind = 'node_ref'
+  AND object_value = $node_id
+ORDER BY predicate ASC, subject ASC
+LIMIT $limit;
+"""
+                    incomingCommand.Parameters.AddWithValue("$import_id", ImportId.format importId) |> ignore
+                    incomingCommand.Parameters.AddWithValue("$node_id", nodeId) |> ignore
+                    incomingCommand.Parameters.AddWithValue("$limit", limit) |> ignore
+
+                    use incomingReader = incomingCommand.ExecuteReader()
+                    let incomingConnections = ResizeArray<WorkingGraphNeighborhoodConnection>()
+
+                    while incomingReader.Read() do
+                        let relatedNodeId = incomingReader.GetString(1)
+
+                        let relatedSummary =
+                            getNodeSummary relatedNodeId
+                            |> Option.defaultValue
+                                { NodeId = relatedNodeId
+                                  NodeKind = None
+                                  Title = None
+                                  Slug = None
+                                  SemanticRoles = []
+                                  MessageRoles = [] }
+
+                        incomingConnections.Add
+                            { FactId = FactId.parse (incomingReader.GetString(0))
+                              Direction = "incoming"
+                              Predicate = incomingReader.GetString(2)
+                              RelatedNodeId = relatedNodeId
+                              RelatedNodeKind = relatedSummary.NodeKind
+                              RelatedTitle = relatedSummary.Title
+                              RelatedSlug = relatedSummary.Slug
+                              RelatedSemanticRoles = relatedSummary.SemanticRoles
+                              RelatedMessageRoles = relatedSummary.MessageRoles }
+
+                    Some
+                        { IndexRelativePath = relativePath
+                          ImportId = importId
+                          Provider = provider
+                          Window = window
+                          ImportedAt = importedAt
+                          MaterializedAt = materializedAt
+                          NodeId = summary.NodeId
+                          NodeKind = summary.NodeKind
+                          Title = summary.Title
+                          Slug = summary.Slug
+                          SemanticRoles = summary.SemanticRoles
+                          MessageRoles = summary.MessageRoles
+                          WorkingRootRelativePath = workingRootRelativePath
+                          ManifestRelativePath = manifestRelativePath
+                          TotalLiteralAssertionCount = totalLiteralAssertionCount
+                          TotalOutgoingConnectionCount = totalOutgoingConnectionCount
+                          TotalIncomingConnectionCount = totalIncomingConnectionCount
+                          Literals = literals |> Seq.toList
+                          OutgoingConnections = outgoingConnections |> Seq.toList
+                          IncomingConnections = incomingConnections |> Seq.toList }
             else
                 None)
         |> Option.flatten

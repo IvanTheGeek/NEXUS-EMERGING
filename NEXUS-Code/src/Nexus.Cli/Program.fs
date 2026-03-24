@@ -44,7 +44,9 @@ module Program =
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
+        | FindWorkingGraphNodes of eventStoreRoot: string * importId: ImportId option * provider: string option * matchText: string option * semanticRole: string option * messageRole: string option * limit: int
         | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
+        | ReportWorkingGraphNeighborhood of eventStoreRoot: string * importId: ImportId * nodeId: string * limit: int
         | VerifyWorkingGraphSlice of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
@@ -84,6 +86,16 @@ module Program =
         | "none" -> Some NoVerification
         | "traceable" -> Some TraceableWorkingSlice
         | _ -> None
+
+    let private tryNormalizeGraphSlugFilter (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if String.IsNullOrWhiteSpace(normalized) then
+            None
+        elif normalized |> Seq.forall (fun character -> Char.IsLetterOrDigit(character) || character = '-' || character = '_') then
+            Some normalized
+        else
+            None
 
     let private printRows (rows: (string * string) list) =
         match rows with
@@ -311,6 +323,30 @@ module Program =
                     [ "This report prefers the graph working catalog under graph/working/catalog/ and falls back to manifest scanning if needed."
                       "The detail list joins each working-slice entry back to the canonical import manifest when present."
                       "Detailed guide: docs/how-to/report-working-graph-imports.md" ] }
+        | "find-working-graph-nodes" ->
+            Some
+                { Name = name
+                  Summary = "Find graph nodes in the SQLite working index by title/slug text plus explicit role and batch filters."
+                  Usage =
+                    [ sprintf "%s find-working-graph-nodes --match fixture" cliInvocation
+                      sprintf "%s find-working-graph-nodes --semantic-role imprint --provider claude" cliInvocation
+                      sprintf "%s find-working-graph-nodes --message-role assistant --import-id <uuid>" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--match <text>", "Optional title/slug substring match."
+                      "--semantic-role <slug>", "Optional semantic-role slug filter."
+                      "--message-role <slug>", "Optional message-role slug filter."
+                      "--provider <chatgpt|claude|codex>", "Optional provider filter."
+                      "--import-id <uuid>", "Optional import-batch filter."
+                      "--limit <n>", "Limit matches. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s find-working-graph-nodes --match fixture" cliInvocation
+                      sprintf "%s find-working-graph-nodes --semantic-role imprint --provider claude" cliInvocation
+                      sprintf "%s find-working-graph-nodes --message-role assistant --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation ]
+                  Notes =
+                    [ "At least one of --match, --semantic-role, or --message-role is required."
+                      "Use this to discover candidate node IDs before running report-working-graph-neighborhood."
+                      "Detailed guide: docs/how-to/find-working-graph-nodes.md" ] }
         | "report-working-graph-slice" ->
             Some
                 { Name = name
@@ -329,6 +365,25 @@ module Program =
                     [ "This report reads the SQLite working index under graph/working/index/."
                       "Working slices remain derived and rebuildable from canonical history."
                       "Detailed guide: docs/how-to/report-working-graph-slice.md" ] }
+        | "report-working-graph-neighborhood" ->
+            Some
+                { Name = name
+                  Summary = "Show the local neighborhood of one node inside an import-local graph working slice."
+                  Usage =
+                    [ sprintf "%s report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>" cliInvocation
+                      sprintf "%s report-working-graph-neighborhood --import-id <uuid> --node-id <node-id> --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--import-id <uuid>", "Required. Select the graph working import slice to inspect."
+                      "--node-id <node-id>", "Required. Select the node to inspect."
+                      "--limit <n>", "Limit outgoing, incoming, and literal rows. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-working-graph-neighborhood --import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --node-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
+                      sprintf "%s report-working-graph-neighborhood --event-store-root /tmp/nexus-event-store --import-id <uuid> --node-id <node-id> --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This report reads the SQLite working index and stays scoped to one import-local working slice."
+                      "Use find-working-graph-nodes first if you need help locating node IDs."
+                      "Detailed guide: docs/how-to/report-working-graph-neighborhood.md" ] }
         | "verify-working-graph-slice" ->
             Some
                 { Name = name
@@ -412,7 +467,9 @@ module Program =
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
           "report-working-graph-imports"
+          "find-working-graph-nodes"
           "report-working-graph-slice"
+          "report-working-graph-neighborhood"
           "verify-working-graph-slice"
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
@@ -987,6 +1044,78 @@ module Program =
 
             loop defaultEventStoreRoot 20 args
 
+    let private parseFindWorkingGraphNodes (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "find-working-graph-nodes"))
+        else
+            let rec loop eventStoreRoot importId provider matchText semanticRole messageRole limit remaining =
+                match remaining with
+                | [] ->
+                    match matchText, semanticRole, messageRole with
+                    | None, None, None ->
+                        eprintfn "At least one of --match, --semantic-role, or --message-role is required."
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                    | _ ->
+                        Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit))
+                | "--event-store-root" :: value :: rest ->
+                    loop value importId provider matchText semanticRole messageRole limit rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) provider matchText semanticRole messageRole limit rest
+                    | false, _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some providerKind ->
+                        loop eventStoreRoot importId (Some (ProviderNaming.slug providerKind)) matchText semanticRole messageRole limit rest
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                | "--match" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid match text: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                    else
+                        loop eventStoreRoot importId provider (Some normalized) semanticRole messageRole limit rest
+                | "--semantic-role" :: value :: rest ->
+                    match tryNormalizeGraphSlugFilter value with
+                    | Some normalized ->
+                        loop eventStoreRoot importId provider matchText (Some normalized) messageRole limit rest
+                    | None ->
+                        eprintfn "Invalid semantic-role filter: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                | "--message-role" :: value :: rest ->
+                    match tryNormalizeGraphSlugFilter value with
+                    | Some normalized ->
+                        loop eventStoreRoot importId provider matchText semanticRole (Some normalized) limit rest
+                    | None ->
+                        eprintfn "Invalid message-role filter: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot importId provider matchText semanticRole messageRole parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "find-working-graph-nodes"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for find-working-graph-nodes: %s" option
+                    printCommandHelp "find-working-graph-nodes"
+                    Error 1
+
+            loop defaultEventStoreRoot None None None None None 20 args
+
     let private parseReportWorkingGraphSlice (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-working-graph-slice"))
@@ -1025,6 +1154,58 @@ module Program =
                     Error 1
 
             loop defaultEventStoreRoot None 10 args
+
+    let private parseReportWorkingGraphNeighborhood (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-working-graph-neighborhood"))
+        else
+            let rec loop eventStoreRoot importId nodeId limit remaining =
+                match remaining with
+                | [] ->
+                    match importId, nodeId with
+                    | Some importIdValue, Some nodeIdValue ->
+                        Ok (ReportWorkingGraphNeighborhood(eventStoreRoot, importIdValue, nodeIdValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option: --import-id"
+                        printCommandHelp "report-working-graph-neighborhood"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option: --node-id"
+                        printCommandHelp "report-working-graph-neighborhood"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value importId nodeId limit rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) nodeId limit rest
+                    | false, _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "report-working-graph-neighborhood"
+                        Error 1
+                | "--node-id" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid node ID: %s" value
+                        printCommandHelp "report-working-graph-neighborhood"
+                        Error 1
+                    else
+                        loop eventStoreRoot importId (Some normalized) limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot importId nodeId parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-working-graph-neighborhood"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-working-graph-neighborhood: %s" option
+                    printCommandHelp "report-working-graph-neighborhood"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
 
     let private parseVerifyWorkingGraphSlice (args: string list) =
         if containsHelpSwitch args then
@@ -1111,8 +1292,12 @@ module Program =
             parseReportUnresolvedArtifacts rest
         | "report-working-graph-imports" :: rest ->
             parseReportWorkingGraphImports rest
+        | "find-working-graph-nodes" :: rest ->
+            parseFindWorkingGraphNodes rest
         | "report-working-graph-slice" :: rest ->
             parseReportWorkingGraphSlice rest
+        | "report-working-graph-neighborhood" :: rest ->
+            parseReportWorkingGraphNeighborhood rest
         | "verify-working-graph-slice" :: rest ->
             parseVerifyWorkingGraphSlice rest
         | "rebuild-working-graph-index" :: rest ->
@@ -1708,6 +1893,69 @@ module Program =
 
         0
 
+    let private findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit =
+        let matches =
+            GraphWorkingIndex.findNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
+
+        printfn "Graph working node search."
+        printfn "  Event store root: %s" eventStoreRoot
+
+        match importId with
+        | Some value -> printfn "  Import filter: %s" (ImportId.format value)
+        | None -> ()
+
+        match provider with
+        | Some value -> printfn "  Provider filter: %s" value
+        | None -> ()
+
+        match matchText with
+        | Some value -> printfn "  Match text: %s" value
+        | None -> ()
+
+        match semanticRole with
+        | Some value -> printfn "  Semantic role: %s" value
+        | None -> ()
+
+        match messageRole with
+        | Some value -> printfn "  Message role: %s" value
+        | None -> ()
+
+        printfn "  Matches: %d" matches.Length
+
+        if not matches.IsEmpty then
+            printfn "  Nodes:"
+
+            matches
+            |> List.iter (fun item ->
+                let label =
+                    item.Title
+                    |> Option.orElse item.Slug
+                    |> Option.defaultValue item.NodeId
+
+                printfn "    %s" item.NodeId
+                printfn
+                    "      label=%s import_id=%s provider=%s"
+                    label
+                    (ImportId.format item.ImportId)
+                    (item.Provider |> Option.defaultValue "unknown")
+
+                item.NodeKind
+                |> Option.iter (printfn "      kind=%s")
+
+                item.Slug
+                |> Option.iter (printfn "      slug=%s")
+
+                if not item.SemanticRoles.IsEmpty then
+                    printfn "      semantic_roles=%s" (String.concat ", " item.SemanticRoles)
+
+                if not item.MessageRoles.IsEmpty then
+                    printfn "      message_roles=%s" (String.concat ", " item.MessageRoles)
+
+                if not item.MatchReasons.IsEmpty then
+                    printfn "      matched_on=%s" (String.concat ", " item.MatchReasons))
+
+        0
+
     let private reportWorkingGraphSlice eventStoreRoot importId limit =
         match GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importId limit with
         | Some report ->
@@ -1748,6 +1996,83 @@ module Program =
         | None ->
             eprintfn "No graph working slice found in the SQLite index for import %s." (ImportId.format importId)
             eprintfn "Import a batch first or refresh the working index from a new import."
+            1
+
+    let private reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit =
+        match GraphWorkingIndex.tryBuildNeighborhoodReport eventStoreRoot importId nodeId limit with
+        | Some report ->
+            printfn "Graph working neighborhood report."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Index: %s" report.IndexRelativePath
+            printfn "  Import ID: %s" (ImportId.format report.ImportId)
+            printfn "  Node ID: %s" report.NodeId
+
+            match report.Provider with
+            | Some value -> printfn "  Provider: %s" value
+            | None -> ()
+
+            match report.Window with
+            | Some value -> printfn "  Window: %s" value
+            | None -> ()
+
+            match report.ImportedAt with
+            | Some value -> printfn "  Imported at: %s" (value.ToUniversalTime().ToString("O"))
+            | None -> ()
+
+            printfn "  Materialized at: %s" (report.MaterializedAt.ToUniversalTime().ToString("O"))
+
+            report.Title
+            |> Option.iter (printfn "  Title: %s")
+
+            report.Slug
+            |> Option.iter (printfn "  Slug: %s")
+
+            report.NodeKind
+            |> Option.iter (printfn "  Kind: %s")
+
+            if not report.SemanticRoles.IsEmpty then
+                printfn "  Semantic roles: %s" (String.concat ", " report.SemanticRoles)
+
+            if not report.MessageRoles.IsEmpty then
+                printfn "  Message roles: %s" (String.concat ", " report.MessageRoles)
+
+            printfn "  Working root: %s" report.WorkingRootRelativePath
+            printfn "  Manifest: %s" report.ManifestRelativePath
+            printfn "  Total literal assertions: %d" report.TotalLiteralAssertionCount
+            printfn "  Total outgoing connections: %d" report.TotalOutgoingConnectionCount
+            printfn "  Total incoming connections: %d" report.TotalIncomingConnectionCount
+
+            if not report.Literals.IsEmpty then
+                printfn "  Literals:"
+
+                report.Literals
+                |> List.iter (fun item ->
+                    match item.ValueType with
+                    | Some valueType ->
+                        printfn "    %s = %s (%s)" item.Predicate item.Value valueType
+                    | None ->
+                        printfn "    %s = %s" item.Predicate item.Value)
+
+            if not report.OutgoingConnections.IsEmpty then
+                printfn "  Outgoing:"
+
+                report.OutgoingConnections
+                |> List.iter (fun item ->
+                    let label = item.RelatedTitle |> Option.orElse item.RelatedSlug |> Option.defaultValue item.RelatedNodeId
+                    printfn "    %s -> %s | %s" item.Predicate item.RelatedNodeId label)
+
+            if not report.IncomingConnections.IsEmpty then
+                printfn "  Incoming:"
+
+                report.IncomingConnections
+                |> List.iter (fun item ->
+                    let label = item.RelatedTitle |> Option.orElse item.RelatedSlug |> Option.defaultValue item.RelatedNodeId
+                    printfn "    %s <- %s | %s" item.Predicate item.RelatedNodeId label)
+
+            0
+        | None ->
+            eprintfn "No graph working neighborhood found for import %s and node %s." (ImportId.format importId) nodeId
+            eprintfn "Use find-working-graph-nodes to discover node IDs in the selected working slice."
             1
 
     let private verifyWorkingGraphSlice eventStoreRoot objectsRoot importId =
@@ -1852,8 +2177,12 @@ module Program =
             reportUnresolvedArtifacts eventStoreRoot provider limit
         | Ok (ReportWorkingGraphImports(eventStoreRoot, limit)) ->
             reportWorkingGraphImports eventStoreRoot limit
+        | Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit)) ->
+            findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
         | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
             reportWorkingGraphSlice eventStoreRoot importId limit
+        | Ok (ReportWorkingGraphNeighborhood(eventStoreRoot, importId, nodeId, limit)) ->
+            reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit
         | Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importId)) ->
             verifyWorkingGraphSlice eventStoreRoot objectsRoot importId
         | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
