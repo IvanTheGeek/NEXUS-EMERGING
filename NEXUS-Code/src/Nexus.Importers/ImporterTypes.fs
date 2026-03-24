@@ -187,6 +187,8 @@ type ImportResult =
       ExtractedConversationRelativePath: string option
       EventPaths: string list
       ManifestRelativePath: string
+      WorkingGraphManifestRelativePath: string option
+      WorkingGraphAssertionCount: int option
       Counts: ImportCounts }
 
 /// <summary>

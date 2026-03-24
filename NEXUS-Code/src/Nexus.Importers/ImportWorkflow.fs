@@ -614,6 +614,9 @@ module ImportWorkflow =
         let eventPaths = CanonicalStore.writeCanonicalEvents eventStoreRoot eventList
         emitStatus status "Writing import manifest."
         let manifestPath = CanonicalStore.writeImportManifest eventStoreRoot manifest
+        emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
+        let workingGraph =
+            GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
         stopwatch.Stop()
         emitStatus
             status
@@ -626,6 +629,8 @@ module ImportWorkflow =
           ExtractedConversationRelativePath = intake.ConversationsJsonRelativePath
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
+          WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
+          WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
           Counts = importCompletedCounts }
 
     /// <summary>

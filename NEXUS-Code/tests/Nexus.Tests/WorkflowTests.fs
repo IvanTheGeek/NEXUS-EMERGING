@@ -29,13 +29,24 @@ module WorkflowTests =
             "import workflows"
             [ testCase "Provider export import dedupes on second Claude import" (fun () ->
                   TestHelpers.withTempDirectory "nexus-claude-import" (fun tempRoot ->
-                      let request, _, _ = buildClaudeImportRequest tempRoot
+                      let request, _, eventStoreRoot = buildClaudeImportRequest tempRoot
 
                       let firstImport = ImportWorkflow.run request
                       Expect.equal firstImport.Counts.ConversationsSeen 1 "Expected one Claude conversation."
                       Expect.equal firstImport.Counts.MessagesSeen 2 "Expected two Claude messages."
                       Expect.equal firstImport.Counts.ArtifactsReferenced 1 "Expected one Claude artifact reference."
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
+                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
+                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
+
+                      let workingManifestPath =
+                          firstImport.WorkingGraphManifestRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing working graph manifest path.")
+
+                      let workingManifest = TestHelpers.readToml workingManifestPath
+                      Expect.equal (TomlDocument.tryScalar "mode" workingManifest) (Some "incremental_import_batch") "Expected the incremental graph working manifest."
+                      Expect.equal (TomlDocument.tryScalar "graph_assertions_written" workingManifest) (Some "46") "Expected the working graph assertion count in the manifest."
 
                       let secondImport = ImportWorkflow.run request
                       Expect.equal secondImport.Counts.NewEventsAppended 3 "Expected only import-stream events on duplicate import."

@@ -42,6 +42,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 4. Parses provider conversations and messages
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
+7. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
 
 ## Progress Output
 
@@ -59,6 +60,8 @@ Typical phases:
 - completion summary with elapsed time and counts
 
 Larger imports also emit periodic conversation-processing updates with running message, artifact, duplicate, revision, and reparse counts.
+
+The import summary also reports the graph-working manifest path and assertion count for the batch-local materialization.
 
 ## Current v0 Scope
 

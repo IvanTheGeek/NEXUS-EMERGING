@@ -25,6 +25,15 @@ module GraphAssertions =
           TotalElapsed: TimeSpan
           AssertionPaths: string list }
 
+    /// <summary>
+    /// Describes the result of deriving graph assertions from an in-memory canonical event batch.
+    /// </summary>
+    type DerivationResult =
+        { CanonicalEventCount: int
+          GraphAssertionCount: int
+          DerivationElapsed: TimeSpan
+          Assertions: GraphAssertion list }
+
     type private EventDocument =
         { EventId: CanonicalEventId
           EventKind: string
@@ -243,9 +252,7 @@ module GraphAssertions =
             | _ -> None)
         |> sortRawObjects
 
-    let private parseEventDocument path =
-        let document = File.ReadAllText(path) |> TomlDocument.parse
-
+    let private eventDocumentFromDocument (document: TomlDocument) =
         { EventId = TomlDocument.tryScalar "event_id" document |> Option.map CanonicalEventId.parse |> Option.defaultWith CanonicalEventId.create
           EventKind = TomlDocument.tryScalar "event_kind" document |> Option.defaultValue ""
           ConversationId = TomlDocument.tryScalar "conversation_id" document |> Option.map conversationNodeId
@@ -261,6 +268,16 @@ module GraphAssertions =
           ProviderRefs = parseProviderRefs document
           RawObjects = parseRawObjects document
           Document = document }
+
+    let private parseEventDocument path =
+        let document = File.ReadAllText(path) |> TomlDocument.parse
+        eventDocumentFromDocument document
+
+    let private eventDocumentFromCanonicalEvent (event: CanonicalEvent) =
+        event
+        |> CanonicalStore.serializeCanonicalEvent
+        |> TomlDocument.parse
+        |> eventDocumentFromDocument
 
     let private buildProvenance eventDocument =
         { ImportId = eventDocument.Document |> TomlDocument.tryScalar "import_id" |> Option.map ImportId.parse
@@ -483,9 +500,37 @@ module GraphAssertions =
         else
             max 1 (min 500 (totalCount / 20))
 
+    let private deriveCore (status: StatusReporter) (eventDocuments: EventDocument array) =
+        let assertions = Dictionary<string, GraphAssertion>(StringComparer.Ordinal)
+        let stopwatch = Diagnostics.Stopwatch.StartNew()
+
+        let scanInterval = progressInterval eventDocuments.Length
+
+        eventDocuments
+        |> Array.iteri (fun index eventDocument ->
+            eventDocument |> processEvent assertions
+
+            let processedCount = index + 1
+
+            if processedCount = eventDocuments.Length || processedCount % scanInterval = 0 then
+                status
+                    $"Scanned {processedCount}/{eventDocuments.Length} event files. Current graph assertions: {assertions.Count}")
+
+        let derivationElapsed = stopwatch.Elapsed
+        status $"Derivation complete after {derivationElapsed}. Distinct graph assertions: {assertions.Count}"
+
+        let orderedAssertions =
+            assertions.Values
+            |> Seq.sortBy (fun assertion -> FactId.format assertion.FactId)
+            |> Seq.toList
+
+        { CanonicalEventCount = eventDocuments.Length
+          GraphAssertionCount = orderedAssertions.Length
+          DerivationElapsed = derivationElapsed
+          Assertions = orderedAssertions }
+
     let private rebuildCore (status: StatusReporter) rootPath =
         let absoluteRoot = Path.GetFullPath(rootPath)
-        let assertions = Dictionary<string, GraphAssertion>(StringComparer.Ordinal)
         let eventsRoot = Path.Combine(absoluteRoot, "events")
         let assertionsRoot = Path.Combine(absoluteRoot, "graph", "assertions")
         let stopwatch = Diagnostics.Stopwatch.StartNew()
@@ -500,22 +545,10 @@ module GraphAssertions =
 
         status $"Scanning {eventPaths.Length} canonical event files from {eventsRoot}"
 
-        let scanInterval = progressInterval eventPaths.Length
-
-        eventPaths
-        |> Array.iteri (fun index path ->
-            path
-            |> parseEventDocument
-            |> processEvent assertions
-
-            let processedCount = index + 1
-
-            if processedCount = eventPaths.Length || processedCount % scanInterval = 0 then
-                status
-                    $"Scanned {processedCount}/{eventPaths.Length} event files. Current graph assertions: {assertions.Count}")
-
-        let derivationElapsed = stopwatch.Elapsed
-        status $"Derivation complete after {derivationElapsed}. Distinct graph assertions: {assertions.Count}"
+        let derivation =
+            eventPaths
+            |> Array.map parseEventDocument
+            |> deriveCore status
 
         if Directory.Exists(assertionsRoot) then
             status $"Removing previous graph assertion output at {assertionsRoot}"
@@ -523,10 +556,7 @@ module GraphAssertions =
 
         Directory.CreateDirectory(assertionsRoot) |> ignore
 
-        let orderedAssertions =
-            assertions.Values
-            |> Seq.sortBy (fun assertion -> FactId.format assertion.FactId)
-            |> Seq.toArray
+        let orderedAssertions = derivation.Assertions |> List.toArray
 
         status $"Writing {orderedAssertions.Length} graph assertion files to {assertionsRoot}"
 
@@ -545,11 +575,26 @@ module GraphAssertions =
         let totalElapsed = stopwatch.Elapsed
         status $"Graph assertion rebuild completed in {totalElapsed}"
 
-        { CanonicalEventFileCount = eventPaths.Length
+        { CanonicalEventFileCount = derivation.CanonicalEventCount
           GraphAssertionCount = orderedAssertions.Length
-          DerivationElapsed = derivationElapsed
+          DerivationElapsed = derivation.DerivationElapsed
           TotalElapsed = totalElapsed
           AssertionPaths = writtenPaths |> Seq.toList }
+
+    /// <summary>
+    /// Derives graph assertions from an in-memory canonical event batch while emitting progress updates.
+    /// </summary>
+    let deriveFromCanonicalEventsWithStatus status (events: CanonicalEvent list) =
+        events
+        |> List.toArray
+        |> Array.map eventDocumentFromCanonicalEvent
+        |> deriveCore status
+
+    /// <summary>
+    /// Derives graph assertions from an in-memory canonical event batch.
+    /// </summary>
+    let deriveFromCanonicalEvents (events: CanonicalEvent list) =
+        deriveFromCanonicalEventsWithStatus ignore events
 
     /// <summary>
     /// Rebuilds graph assertions from canonical history while emitting progress updates and returning detailed rebuild metrics.

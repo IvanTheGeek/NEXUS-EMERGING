@@ -41,6 +41,7 @@ The CLI supports both:
 
 - Archives a ChatGPT or Claude export zip.
 - Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
+- Also materializes a batch-local graph working slice under `graph/working/imports/<import-id>/`.
 - Details: `docs/how-to/import-provider-export.md`
 
 `import-codex-sessions`

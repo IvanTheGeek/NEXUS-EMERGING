@@ -964,6 +964,11 @@ module Program =
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath
+        match result.WorkingGraphManifestRelativePath, result.WorkingGraphAssertionCount with
+        | Some manifestPath, Some assertionCount ->
+            printfn "  Working graph manifest: %s" manifestPath
+            printfn "  Working graph assertions written: %d" assertionCount
+        | _ -> ()
         printfn "  Events written: %d" result.EventPaths.Length
         printfn "  Conversations seen: %d" result.Counts.ConversationsSeen
         printfn "  Messages seen: %d" result.Counts.MessagesSeen
