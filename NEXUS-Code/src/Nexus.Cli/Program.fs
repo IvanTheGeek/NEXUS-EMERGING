@@ -24,7 +24,7 @@ module Program =
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
-        | RebuildGraphAssertions of eventStoreRoot: string
+        | RebuildGraphAssertions of eventStoreRoot: string * approved: bool
         | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
@@ -172,14 +172,17 @@ module Program =
                 { Name = name
                   Summary = "Rebuild the first thin graph-assertion layer from canonical history."
                   Usage =
-                    [ sprintf "%s rebuild-graph-assertions" cliInvocation
+                    [ sprintf "%s rebuild-graph-assertions --yes" cliInvocation
                       sprintf "%s rebuild-graph-assertions --event-store-root /tmp/nexus-event-store" cliInvocation ]
                   Options =
-                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot ]
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--yes", "Required for heavyweight full rebuilds when the canonical store is large." ]
                   Examples =
-                    [ sprintf "%s rebuild-graph-assertions" cliInvocation ]
+                    [ sprintf "%s rebuild-graph-assertions --yes" cliInvocation
+                      sprintf "%s rebuild-graph-assertions --event-store-root /tmp/nexus-event-store" cliInvocation ]
                   Notes =
                     [ "Graph assertions are derived and rebuildable, not the canonical source of truth."
+                      "Large full-store rebuilds are intentionally guarded because they are heavyweight operations."
                       "This first pass derives node-kind, relationship, and attribute assertions from canonical history."
                       "Detailed guide: docs/how-to/rebuild-graph-assertions.md" ] }
         | "export-graphviz-dot" ->
@@ -601,17 +604,19 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-graph-assertions"))
         else
-            let rec loop eventStoreRoot remaining =
+            let rec loop eventStoreRoot approved remaining =
                 match remaining with
-                | [] -> Ok (RebuildGraphAssertions eventStoreRoot)
+                | [] -> Ok (RebuildGraphAssertions(eventStoreRoot, approved))
                 | "--event-store-root" :: value :: rest ->
-                    loop value rest
+                    loop value approved rest
+                | "--yes" :: rest ->
+                    loop eventStoreRoot true rest
                 | option :: _ ->
                     eprintfn "Unknown option for rebuild-graph-assertions: %s" option
                     printCommandHelp "rebuild-graph-assertions"
                     Error 1
 
-            loop defaultEventStoreRoot args
+            loop defaultEventStoreRoot false args
 
     let private parseExportGraphvizDot (args: string list) =
         if containsHelpSwitch args then
@@ -1055,21 +1060,35 @@ module Program =
 
         0
 
-    let private rebuildGraphAssertions eventStoreRoot =
-        let assertionPaths =
-            GraphAssertions.rebuildWithStatus
-                (fun message -> printfn "  %s" message)
-                eventStoreRoot
+    let private rebuildGraphAssertions eventStoreRoot approved =
+        let estimate = GraphMaterialization.estimateFullRebuild eventStoreRoot
 
-        printfn "Graph assertions rebuilt."
-        printfn "  Event store root: %s" eventStoreRoot
-        printfn "  Assertion files written: %d" assertionPaths.Length
+        if estimate.RequiresExplicitApproval && not approved then
+            eprintfn "Heavyweight graph rebuild refused without explicit approval."
+            eprintfn "  Event store root: %s" eventStoreRoot
+            eprintfn "  Canonical event files: %d" estimate.CanonicalEventFileCount
+            eprintfn "  Threshold: %d" estimate.HeavyweightThreshold
+            eprintfn "  Re-run with --yes to proceed."
+            2
+        else
+            let assertionPaths =
+                GraphMaterialization.rebuildFullWithStatus
+                    (fun message -> printfn "  %s" message)
+                    eventStoreRoot
 
-        assertionPaths
-        |> List.truncate 5
-        |> List.iter (printfn "    %s")
+            if estimate.RequiresExplicitApproval then
+                printfn "  Heavyweight full graph rebuild approved with --yes."
 
-        0
+            printfn "Graph assertions rebuilt."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Canonical event files scanned: %d" estimate.CanonicalEventFileCount
+            printfn "  Assertion files written: %d" assertionPaths.Length
+
+            assertionPaths
+            |> List.truncate 5
+            |> List.iter (printfn "    %s")
+
+            0
 
     let private exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId =
         let filter =
@@ -1175,8 +1194,8 @@ module Program =
             importCodexSessions request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
-        | Ok (RebuildGraphAssertions eventStoreRoot) ->
-            rebuildGraphAssertions eventStoreRoot
+        | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->
+            rebuildGraphAssertions eventStoreRoot approved
         | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId)) ->
             exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId
         | Ok (RebuildArtifactProjections eventStoreRoot) ->

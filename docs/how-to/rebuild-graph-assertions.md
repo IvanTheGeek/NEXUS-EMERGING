@@ -8,7 +8,8 @@ It does not change canonical event history. It rewrites the derived graph assert
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
-  rebuild-graph-assertions
+  rebuild-graph-assertions \
+  --yes
 ```
 
 Optional override:
@@ -18,6 +19,8 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   rebuild-graph-assertions \
   --event-store-root /some/other/event-store-root
 ```
+
+Large stores now require `--yes` before the CLI will perform a full rebuild.
 
 ## What It Produces
 
@@ -43,6 +46,7 @@ The first pass currently derives assertions such as:
 - Graph assertions are rebuildable derived structure, not source truth.
 - The rebuild deletes and rewrites the existing graph assertion folder.
 - Treat this as a heavyweight full-source operation on real stores, not as the default refresh loop after every import.
+- The CLI refuses heavyweight full rebuilds without explicit `--yes` approval.
 - The CLI now emits progress while scanning canonical events, deriving assertions, and writing graph files.
 - Node and fact IDs in this layer are deterministic so rebuilds remain stable.
 - This is intentionally a thin graph pass. It is meant to create a usable substrate without locking the final NEXUS ontology too early.

@@ -150,4 +150,24 @@ module GraphAssertionTests =
                           "Expected a writing status message."
                       Expect.isTrue
                           (messages |> Seq.exists (fun message -> message.Contains("Graph assertion rebuild completed", System.StringComparison.Ordinal)))
-                          "Expected a completion status message.")) ]
+                          "Expected a completion status message."))
+
+              testCase "CLI refuses heavyweight full rebuild without --yes" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-heavyweight-rebuild-guard" (fun tempRoot ->
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      let eventsRoot = Path.Combine(eventStoreRoot, "events", "synthetic")
+                      Directory.CreateDirectory(eventsRoot) |> ignore
+
+                      for index in 1 .. 1000 do
+                          let path = Path.Combine(eventsRoot, sprintf "synthetic-%04i.toml" index)
+                          File.WriteAllText(path, "")
+
+                      let result =
+                          TestHelpers.runCli
+                              [ "rebuild-graph-assertions"
+                                "--event-store-root"
+                                eventStoreRoot ]
+
+                      Expect.equal result.ExitCode 2 "Expected heavyweight rebuild refusal without explicit approval."
+                      Expect.stringContains result.StandardError "Heavyweight graph rebuild refused without explicit approval." "Expected the refusal message."
+                      Expect.stringContains result.StandardError "Re-run with --yes to proceed." "Expected clear remediation guidance.")) ]

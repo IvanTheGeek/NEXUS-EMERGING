@@ -45,6 +45,16 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help export-graphviz-dot.")
 
+              testCase "Graph rebuild help exposes the heavyweight approval flag" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "rebuild-graph-assertions" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help rebuild-graph-assertions to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: rebuild-graph-assertions" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--yes" "Expected explicit approval guidance."
+                  Expect.stringContains result.StandardOutput "heavyweight" "Expected the heavyweight-operation warning."
+                  Expect.stringContains result.StandardOutput "docs/how-to/rebuild-graph-assertions.md" "Expected the graph rebuild guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-graph-assertions.")
+
               testCase "Concept note help exposes the curation workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-concept-note" ]
 
