@@ -168,4 +168,39 @@ module GraphvizDotTests =
 
                       Expect.equal cliResult.ExitCode 0 "Expected working-import Graphviz export through the CLI to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
-                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind.")) ]
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
+
+              testCase "Rendered Graphviz output can be produced from an exported DOT file" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-render" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let _ = ImportWorkflow.run request
+                      let _ = GraphAssertions.rebuild eventStoreRoot
+
+                      let dotResult =
+                          GraphvizDot.export
+                              eventStoreRoot
+                              (Some (Path.Combine(tempRoot, "fixture-graph.dot")))
+
+                      let outputPath = Path.Combine(tempRoot, "fixture-graph.svg")
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "render-graphviz-dot"
+                                "--input"
+                                dotResult.OutputPath
+                                "--output"
+                                outputPath
+                                "--engine"
+                                "dot"
+                                "--format"
+                                "svg" ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected Graphviz render through the CLI to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the Graphviz render command."
+                      Expect.isTrue (File.Exists(outputPath)) "Expected the rendered SVG file to exist."
+
+                      let svgText = File.ReadAllText(outputPath)
+                      Expect.stringContains cliResult.StandardOutput "Graphviz DOT rendered." "Expected the render summary header."
+                      Expect.stringContains cliResult.StandardOutput "Engine: dot" "Expected the render engine in the summary."
+                      Expect.stringContains cliResult.StandardOutput "Format: svg" "Expected the render format in the summary."
+                      Expect.stringContains svgText "<svg" "Expected SVG output from the render command.")) ]

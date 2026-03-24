@@ -89,6 +89,12 @@ The CLI supports both:
 - It now supports provider, provider-conversation, and import slices so you do not have to render the whole graph every time.
 - Details: `docs/how-to/export-graphviz-dot.md`
 
+`render-graphviz-dot`
+
+- Renders an existing DOT file into SVG or PNG using an explicitly allowlisted Graphviz engine.
+- Use it after `export-graphviz-dot` when you want a directly viewable file.
+- Details: `docs/how-to/render-graphviz-dot.md`
+
 `report-unresolved-artifacts`
 
 - Summarizes artifact references whose payloads are still unresolved.
@@ -110,8 +116,9 @@ Provider import:
 3. Run `rebuild-artifact-projections`.
 4. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
 5. Run `export-graphviz-dot` if you want an external graph view.
-6. Run `report-unresolved-artifacts` if you want to identify missing payloads.
-7. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
+6. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
+7. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
 
 Codex session import:
 
@@ -146,6 +153,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/import-provider-export.md`
 - `docs/how-to/import-codex-sessions.md`
 - `docs/how-to/capture-artifact-payload.md`
+- `docs/how-to/render-graphviz-dot.md`
 - `docs/how-to/rebuild-conversation-projections.md`
 - `docs/how-to/create-concept-note.md`
 - `docs/how-to/rebuild-artifact-projections.md`

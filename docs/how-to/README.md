@@ -18,6 +18,7 @@ Current guides:
 - `git-auth-for-codex.md`
 - `import-codex-sessions.md`
 - `import-provider-export.md`
+- `render-graphviz-dot.md`
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
 - `rebuild-graph-assertions.md`

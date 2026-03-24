@@ -46,6 +46,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/export-graphviz-dot.md" "Expected the Graphviz guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help export-graphviz-dot.")
 
+              testCase "Graphviz render help exposes allowlisted engines and formats" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "render-graphviz-dot" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help render-graphviz-dot to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: render-graphviz-dot" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--input <path>" "Expected input path guidance."
+                  Expect.stringContains result.StandardOutput "--engine <dot|sfdp>" "Expected engine allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--format <svg|png>" "Expected format allowlist guidance."
+                  Expect.stringContains result.StandardOutput "docs/how-to/render-graphviz-dot.md" "Expected the render guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help render-graphviz-dot.")
+
               testCase "Graph rebuild help exposes the heavyweight approval flag" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "rebuild-graph-assertions" ]
 

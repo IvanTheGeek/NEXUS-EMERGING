@@ -26,6 +26,7 @@ module Program =
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string * approved: bool
         | ExportGraphvizDot of eventStoreRoot: string * outputPath: string option * provider: string option * providerConversationId: string option * conversationId: string option * importId: string option * workingImportId: string option
+        | RenderGraphvizDot of inputPath: string * outputPath: string option * engine: GraphvizEngine * format: GraphvizFormat
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
@@ -219,6 +220,25 @@ module Program =
                       "Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying canonical history."
                       "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
                       "Detailed guide: docs/how-to/export-graphviz-dot.md" ] }
+        | "render-graphviz-dot" ->
+            Some
+                { Name = name
+                  Summary = "Render a DOT file into SVG or PNG using an explicitly allowlisted Graphviz engine."
+                  Usage =
+                    [ sprintf "%s render-graphviz-dot --input <path-to-dot>" cliInvocation
+                      sprintf "%s render-graphviz-dot --input /tmp/nexus-graph.dot --format svg --engine sfdp" cliInvocation ]
+                  Options =
+                    [ "--input <path>", "Required. Path to the source DOT file."
+                      "--output <path>", "Optional rendered output path. Defaults to the input DOT path with the selected format extension."
+                      "--engine <dot|sfdp>", "Graphviz engine. Defaults to dot."
+                      "--format <svg|png>", "Rendered output format. Defaults to svg." ]
+                  Examples =
+                    [ sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/exports/nexus-graph.dot" cliInvocation
+                      sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/working/exports/nexus-working-graph__import-019d....dot --engine sfdp --format png" cliInvocation ]
+                  Notes =
+                    [ "This command renders an existing DOT file. Use export-graphviz-dot first if you still need to generate the DOT source."
+                      "Only explicitly allowlisted engines and formats are supported."
+                      "Detailed guide: docs/how-to/render-graphviz-dot.md" ] }
         | "report-unresolved-artifacts" ->
             Some
                 { Name = name
@@ -298,6 +318,7 @@ module Program =
           "capture-artifact-payload"
           "rebuild-graph-assertions"
           "export-graphviz-dot"
+          "render-graphviz-dot"
           "rebuild-artifact-projections"
           "report-unresolved-artifacts"
           "report-working-graph-imports"
@@ -688,6 +709,59 @@ module Program =
 
             loop defaultEventStoreRoot None None None None None None args
 
+    let private parseGraphvizEngine (value: string) =
+        match value.Trim().ToLowerInvariant() with
+        | "dot" -> Some Dot
+        | "sfdp" -> Some Sfdp
+        | _ -> None
+
+    let private parseGraphvizFormat (value: string) =
+        match value.Trim().ToLowerInvariant() with
+        | "svg" -> Some Svg
+        | "png" -> Some Png
+        | _ -> None
+
+    let private parseRenderGraphvizDot (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "render-graphviz-dot"))
+        else
+            let rec loop inputPath outputPath engine format remaining =
+                match remaining with
+                | [] ->
+                    match inputPath with
+                    | Some inputPathValue ->
+                        Ok (RenderGraphvizDot(inputPathValue, outputPath, engine, format))
+                    | None ->
+                        eprintfn "Missing required option for render-graphviz-dot: --input"
+                        printCommandHelp "render-graphviz-dot"
+                        Error 1
+                | "--input" :: value :: rest ->
+                    loop (Some value) outputPath engine format rest
+                | "--output" :: value :: rest ->
+                    loop inputPath (Some value) engine format rest
+                | "--engine" :: value :: rest ->
+                    match parseGraphvizEngine value with
+                    | Some engineValue ->
+                        loop inputPath outputPath engineValue format rest
+                    | None ->
+                        eprintfn "Unsupported Graphviz engine: %s" value
+                        printCommandHelp "render-graphviz-dot"
+                        Error 1
+                | "--format" :: value :: rest ->
+                    match parseGraphvizFormat value with
+                    | Some formatValue ->
+                        loop inputPath outputPath engine formatValue rest
+                    | None ->
+                        eprintfn "Unsupported Graphviz format: %s" value
+                        printCommandHelp "render-graphviz-dot"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for render-graphviz-dot: %s" option
+                    printCommandHelp "render-graphviz-dot"
+                    Error 1
+
+            loop None None Dot Svg args
+
     let private parseReportUnresolvedArtifacts (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-unresolved-artifacts"))
@@ -768,6 +842,8 @@ module Program =
             parseRebuildGraphAssertions rest
         | "export-graphviz-dot" :: rest ->
             parseExportGraphvizDot rest
+        | "render-graphviz-dot" :: rest ->
+            parseRenderGraphvizDot rest
         | "rebuild-artifact-projections" :: rest ->
             parseRebuildArtifactProjections rest
         | "report-unresolved-artifacts" :: rest ->
@@ -1213,6 +1289,15 @@ module Program =
             printfn "  Edges written: %d" result.EdgeCount
             0
 
+    let private renderGraphvizDot inputPath outputPath engine format =
+        let result = GraphvizRendering.render inputPath outputPath engine format
+        printfn "Graphviz DOT rendered."
+        printfn "  Input path: %s" result.InputPath
+        printfn "  Output path: %s" result.OutputPath
+        printfn "  Engine: %s" (GraphvizRendering.engineValue result.Engine)
+        printfn "  Format: %s" (GraphvizRendering.formatValue result.Format)
+        0
+
     let private reportUnresolvedArtifacts eventStoreRoot provider limit =
         let report = ArtifactProjectionReports.buildUnresolvedReport eventStoreRoot provider limit
 
@@ -1355,6 +1440,8 @@ module Program =
             rebuildGraphAssertions eventStoreRoot approved
         | Ok (ExportGraphvizDot(eventStoreRoot, outputPath, provider, providerConversationId, conversationId, importId, workingImportId)) ->
             exportGraphvizDot eventStoreRoot outputPath provider providerConversationId conversationId importId workingImportId
+        | Ok (RenderGraphvizDot(inputPath, outputPath, engine, format)) ->
+            renderGraphvizDot inputPath outputPath engine format
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
             rebuildArtifactProjections eventStoreRoot
         | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
