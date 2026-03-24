@@ -115,6 +115,13 @@ The CLI supports both:
 - Use it when you want to understand a fresh import batch in conversation terms before drilling into graph details.
 - Details: `docs/how-to/report-working-import-conversations.md`
 
+`compare-working-import-conversations`
+
+- Compares the conversation contributions present in two import-local graph working slices.
+- Use it when you want a fast batch-to-batch view of added, removed, and changed conversation contributions in the working layer.
+- This is intentionally about batch-local derived contributions, not full provider snapshot truth.
+- Details: `docs/how-to/compare-working-import-conversations.md`
+
 `find-working-graph-nodes`
 
 - Finds candidate nodes from the SQLite working index by title/slug text plus explicit role and batch filters.
@@ -158,12 +165,13 @@ Provider import:
 7. Run `report-unresolved-artifacts` if you want to identify missing payloads.
 8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
 9. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
-10. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
-11. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
-12. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
-13. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
-14. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
-15. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
+10. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
+11. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
+12. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
+13. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
+14. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
+15. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
+16. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
 
 Codex session import:
 
@@ -209,6 +217,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/report-working-graph-imports.md`
 - `docs/how-to/report-working-import-conversations.md`
+- `docs/how-to/compare-working-import-conversations.md`
 - `docs/how-to/find-working-graph-nodes.md`
 - `docs/how-to/report-working-graph-slice.md`
 - `docs/how-to/report-working-graph-neighborhood.md`

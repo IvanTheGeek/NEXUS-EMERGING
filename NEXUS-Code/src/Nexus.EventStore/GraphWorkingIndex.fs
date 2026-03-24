@@ -124,6 +124,49 @@ type WorkingImportConversationReport =
       Items: WorkingImportConversationSummary list }
 
 /// <summary>
+/// Describes one conversation whose contribution counts differ between two import-local graph working slices.
+/// </summary>
+type WorkingImportConversationDelta =
+    { ConversationNodeId: string
+      BaseTitle: string option
+      CurrentTitle: string option
+      BaseSlug: string option
+      CurrentSlug: string option
+      BaseSemanticRoles: string list
+      CurrentSemanticRoles: string list
+      BaseMessageCount: int
+      CurrentMessageCount: int
+      BaseArtifactCount: int
+      CurrentArtifactCount: int }
+
+/// <summary>
+/// Compares the conversation contributions present in two import-local graph working slices.
+/// </summary>
+/// <remarks>
+/// This compares batch-local working-slice contributions, not full provider snapshot truth.
+/// Use it to understand what changed between two import batches inside the derived working layer.
+/// </remarks>
+type WorkingImportConversationComparisonReport =
+    { IndexRelativePath: string
+      BaseImportId: ImportId
+      CurrentImportId: ImportId
+      BaseProvider: string option
+      CurrentProvider: string option
+      BaseWindow: string option
+      CurrentWindow: string option
+      BaseImportedAt: DateTimeOffset option
+      CurrentImportedAt: DateTimeOffset option
+      BaseMaterializedAt: DateTimeOffset
+      CurrentMaterializedAt: DateTimeOffset
+      AddedConversationCount: int
+      RemovedConversationCount: int
+      ChangedConversationCount: int
+      UnchangedConversationCount: int
+      AddedConversations: WorkingImportConversationSummary list
+      RemovedConversations: WorkingImportConversationSummary list
+      ChangedConversations: WorkingImportConversationDelta list }
+
+/// <summary>
 /// Summarizes one full rebuild of the persisted graph working SQLite index.
 /// </summary>
 type WorkingGraphIndexRebuildResult =
@@ -209,6 +252,18 @@ module GraphWorkingIndex =
             |> List.filter (fun item -> not (String.IsNullOrWhiteSpace(item)))
             |> List.distinct)
         |> Option.defaultValue []
+
+    let private conversationSummaryLabel (value: WorkingImportConversationSummary) =
+        value.Title
+        |> Option.orElse value.Slug
+        |> Option.defaultValue value.ConversationNodeId
+
+    let private conversationDeltaLabel (value: WorkingImportConversationDelta) =
+        value.CurrentTitle
+        |> Option.orElse value.BaseTitle
+        |> Option.orElse value.CurrentSlug
+        |> Option.orElse value.BaseSlug
+        |> Option.defaultValue value.ConversationNodeId
 
     let private loadImportManifestMetadata eventStoreRoot importId =
         let absolutePath = importManifestAbsolutePath eventStoreRoot importId
@@ -1215,3 +1270,89 @@ LIMIT $limit;
             else
                 None)
         |> Option.flatten
+
+    /// <summary>
+    /// Compares the conversation contributions present in two import-local graph working slices.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="baseImportId">The older or reference import batch.</param>
+    /// <param name="currentImportId">The newer or comparison import batch.</param>
+    /// <param name="limit">The maximum number of detailed rows to include in each result bucket.</param>
+    /// <returns>The comparison report when both import-local working slices exist in the SQLite index.</returns>
+    let tryBuildImportConversationComparisonReport eventStoreRoot baseImportId currentImportId limit =
+        match
+            tryBuildImportConversationReport eventStoreRoot baseImportId Int32.MaxValue,
+            tryBuildImportConversationReport eventStoreRoot currentImportId Int32.MaxValue
+            with
+        | Some baseReport, Some currentReport ->
+            let baseByConversation =
+                baseReport.Items
+                |> List.map (fun item -> item.ConversationNodeId, item)
+                |> Map.ofList
+
+            let currentByConversation =
+                currentReport.Items
+                |> List.map (fun item -> item.ConversationNodeId, item)
+                |> Map.ofList
+
+            let addedConversations =
+                currentReport.Items
+                |> List.filter (fun item -> not (baseByConversation.ContainsKey item.ConversationNodeId))
+                |> List.sortBy conversationSummaryLabel
+
+            let removedConversations =
+                baseReport.Items
+                |> List.filter (fun item -> not (currentByConversation.ContainsKey item.ConversationNodeId))
+                |> List.sortBy conversationSummaryLabel
+
+            let changedConversations =
+                baseReport.Items
+                |> List.choose (fun baseItem ->
+                    match currentByConversation.TryFind baseItem.ConversationNodeId with
+                    | Some currentItem
+                        when baseItem.MessageCount <> currentItem.MessageCount
+                             || baseItem.ArtifactCount <> currentItem.ArtifactCount
+                             || baseItem.Title <> currentItem.Title
+                             || baseItem.Slug <> currentItem.Slug
+                             || baseItem.SemanticRoles <> currentItem.SemanticRoles ->
+                        Some
+                            { ConversationNodeId = baseItem.ConversationNodeId
+                              BaseTitle = baseItem.Title
+                              CurrentTitle = currentItem.Title
+                              BaseSlug = baseItem.Slug
+                              CurrentSlug = currentItem.Slug
+                              BaseSemanticRoles = baseItem.SemanticRoles
+                              CurrentSemanticRoles = currentItem.SemanticRoles
+                              BaseMessageCount = baseItem.MessageCount
+                              CurrentMessageCount = currentItem.MessageCount
+                              BaseArtifactCount = baseItem.ArtifactCount
+                              CurrentArtifactCount = currentItem.ArtifactCount }
+                    | Some _
+                    | None -> None)
+                |> List.sortBy conversationDeltaLabel
+
+            let sharedConversationCount =
+                baseByConversation.Keys
+                |> Seq.filter (fun conversationNodeId -> currentByConversation.ContainsKey conversationNodeId)
+                |> Seq.length
+
+            Some
+                { IndexRelativePath = relativePath
+                  BaseImportId = baseImportId
+                  CurrentImportId = currentImportId
+                  BaseProvider = baseReport.Provider
+                  CurrentProvider = currentReport.Provider
+                  BaseWindow = baseReport.Window
+                  CurrentWindow = currentReport.Window
+                  BaseImportedAt = baseReport.ImportedAt
+                  CurrentImportedAt = currentReport.ImportedAt
+                  BaseMaterializedAt = baseReport.MaterializedAt
+                  CurrentMaterializedAt = currentReport.MaterializedAt
+                  AddedConversationCount = addedConversations.Length
+                  RemovedConversationCount = removedConversations.Length
+                  ChangedConversationCount = changedConversations.Length
+                  UnchangedConversationCount = sharedConversationCount - changedConversations.Length
+                  AddedConversations = addedConversations |> List.truncate limit
+                  RemovedConversations = removedConversations |> List.truncate limit
+                  ChangedConversations = changedConversations |> List.truncate limit }
+        | _ -> None

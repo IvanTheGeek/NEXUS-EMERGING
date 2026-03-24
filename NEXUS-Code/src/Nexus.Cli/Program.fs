@@ -46,6 +46,7 @@ module Program =
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
         | ReportWorkingGraphImports of eventStoreRoot: string * limit: int
         | ReportWorkingImportConversations of eventStoreRoot: string * importId: ImportId * limit: int
+        | CompareWorkingImportConversations of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | FindWorkingGraphNodes of eventStoreRoot: string * importId: ImportId option * provider: string option * matchText: string option * semanticRole: string option * messageRole: string option * limit: int
         | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
         | ReportWorkingGraphNeighborhood of eventStoreRoot: string * importId: ImportId * nodeId: string * limit: int
@@ -347,6 +348,25 @@ module Program =
                     [ "This report reads the SQLite working index and presents the import slice in conversation terms rather than graph-node terms."
                       "It is useful for understanding what a fresh provider export contributed before you dive into individual neighborhoods."
                       "Detailed guide: docs/how-to/report-working-import-conversations.md" ] }
+        | "compare-working-import-conversations" ->
+            Some
+                { Name = name
+                  Summary = "Compare the conversation contributions present in two import-local graph working slices."
+                  Usage =
+                    [ sprintf "%s compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>" cliInvocation
+                      sprintf "%s compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--base-import-id <uuid>", "Required. Select the older or reference import-local graph working slice."
+                      "--current-import-id <uuid>", "Required. Select the newer or comparison import-local graph working slice."
+                      "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s compare-working-import-conversations --base-import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --current-import-id 019d1f70-b326-7d1e-a106-73dbd399f911" cliInvocation
+                      sprintf "%s compare-working-import-conversations --event-store-root /tmp/nexus-event-store --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This compares batch-local working-slice conversation contributions, not full provider snapshot truth."
+                      "Use it to understand what changed between two import batches before deciding whether you need deeper canonical or raw-layer inspection."
+                      "Detailed guide: docs/how-to/compare-working-import-conversations.md" ] }
         | "find-working-graph-nodes" ->
             Some
                 { Name = name
@@ -492,6 +512,7 @@ module Program =
           "report-unresolved-artifacts"
           "report-working-graph-imports"
           "report-working-import-conversations"
+          "compare-working-import-conversations"
           "find-working-graph-nodes"
           "report-working-graph-slice"
           "report-working-graph-neighborhood"
@@ -1123,6 +1144,57 @@ module Program =
 
             loop defaultEventStoreRoot None 20 args
 
+    let private parseCompareWorkingImportConversations (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "compare-working-import-conversations"))
+        else
+            let rec loop eventStoreRoot baseImportId currentImportId limit remaining =
+                match remaining with
+                | [] ->
+                    match baseImportId, currentImportId with
+                    | Some baseImportIdValue, Some currentImportIdValue ->
+                        Ok (CompareWorkingImportConversations(eventStoreRoot, baseImportIdValue, currentImportIdValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option: --base-import-id"
+                        printCommandHelp "compare-working-import-conversations"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option: --current-import-id"
+                        printCommandHelp "compare-working-import-conversations"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value baseImportId currentImportId limit rest
+                | "--base-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) currentImportId limit rest
+                    | false, _ ->
+                        eprintfn "Invalid base import ID: %s" value
+                        printCommandHelp "compare-working-import-conversations"
+                        Error 1
+                | "--current-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot baseImportId (Some (ImportId.parse value)) limit rest
+                    | false, _ ->
+                        eprintfn "Invalid current import ID: %s" value
+                        printCommandHelp "compare-working-import-conversations"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot baseImportId currentImportId parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "compare-working-import-conversations"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for compare-working-import-conversations: %s" option
+                    printCommandHelp "compare-working-import-conversations"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
+
     let private parseFindWorkingGraphNodes (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "find-working-graph-nodes"))
@@ -1373,6 +1445,8 @@ module Program =
             parseReportWorkingGraphImports rest
         | "report-working-import-conversations" :: rest ->
             parseReportWorkingImportConversations rest
+        | "compare-working-import-conversations" :: rest ->
+            parseCompareWorkingImportConversations rest
         | "find-working-graph-nodes" :: rest ->
             parseFindWorkingGraphNodes rest
         | "report-working-graph-slice" :: rest ->
@@ -2034,6 +2108,97 @@ module Program =
             eprintfn "Import a batch first or refresh the working index from existing slices."
             1
 
+    let private compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit =
+        match GraphWorkingIndex.tryBuildImportConversationComparisonReport eventStoreRoot baseImportId currentImportId limit with
+        | Some report ->
+            printfn "Working import conversation comparison report."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Index: %s" report.IndexRelativePath
+            printfn "  Base import ID: %s" (ImportId.format report.BaseImportId)
+            printfn "  Current import ID: %s" (ImportId.format report.CurrentImportId)
+
+            match report.BaseProvider with
+            | Some value -> printfn "  Base provider: %s" value
+            | None -> ()
+
+            match report.CurrentProvider with
+            | Some value -> printfn "  Current provider: %s" value
+            | None -> ()
+
+            match report.BaseWindow with
+            | Some value -> printfn "  Base window: %s" value
+            | None -> ()
+
+            match report.CurrentWindow with
+            | Some value -> printfn "  Current window: %s" value
+            | None -> ()
+
+            match report.BaseImportedAt with
+            | Some value -> printfn "  Base imported at: %s" (value.ToUniversalTime().ToString("O"))
+            | None -> ()
+
+            match report.CurrentImportedAt with
+            | Some value -> printfn "  Current imported at: %s" (value.ToUniversalTime().ToString("O"))
+            | None -> ()
+
+            printfn "  Base materialized at: %s" (report.BaseMaterializedAt.ToUniversalTime().ToString("O"))
+            printfn "  Current materialized at: %s" (report.CurrentMaterializedAt.ToUniversalTime().ToString("O"))
+            printfn "  Added conversations: %d" report.AddedConversationCount
+            printfn "  Removed conversations: %d" report.RemovedConversationCount
+            printfn "  Changed conversations: %d" report.ChangedConversationCount
+            printfn "  Unchanged conversations: %d" report.UnchangedConversationCount
+
+            if not report.AddedConversations.IsEmpty then
+                printfn "  Added:"
+
+                report.AddedConversations
+                |> List.iter (fun item ->
+                    let label =
+                        item.Title
+                        |> Option.orElse item.Slug
+                        |> Option.defaultValue item.ConversationNodeId
+
+                    printfn "    %s" item.ConversationNodeId
+                    printfn "      label=%s" label
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactCount)
+
+            if not report.RemovedConversations.IsEmpty then
+                printfn "  Removed:"
+
+                report.RemovedConversations
+                |> List.iter (fun item ->
+                    let label =
+                        item.Title
+                        |> Option.orElse item.Slug
+                        |> Option.defaultValue item.ConversationNodeId
+
+                    printfn "    %s" item.ConversationNodeId
+                    printfn "      label=%s" label
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactCount)
+
+            if not report.ChangedConversations.IsEmpty then
+                printfn "  Changed:"
+
+                report.ChangedConversations
+                |> List.iter (fun item ->
+                    let label =
+                        item.CurrentTitle
+                        |> Option.orElse item.BaseTitle
+                        |> Option.orElse item.CurrentSlug
+                        |> Option.orElse item.BaseSlug
+                        |> Option.defaultValue item.ConversationNodeId
+
+                    printfn "    %s" item.ConversationNodeId
+                    printfn "      label=%s" label
+                    printfn "      messages=%d -> %d" item.BaseMessageCount item.CurrentMessageCount
+                    printfn "      artifacts=%d -> %d" item.BaseArtifactCount item.CurrentArtifactCount)
+
+            0
+        | None ->
+            eprintfn "No working-import conversation comparison could be built for the selected imports."
+            eprintfn "Import the batches first or refresh the working index from existing slices."
+            1
+
     let private findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit =
         let matches =
             GraphWorkingIndex.findNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
@@ -2320,6 +2485,8 @@ module Program =
             reportWorkingGraphImports eventStoreRoot limit
         | Ok (ReportWorkingImportConversations(eventStoreRoot, importId, limit)) ->
             reportWorkingImportConversations eventStoreRoot importId limit
+        | Ok (CompareWorkingImportConversations(eventStoreRoot, baseImportId, currentImportId, limit)) ->
+            compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit
         | Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit)) ->
             findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
         | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->

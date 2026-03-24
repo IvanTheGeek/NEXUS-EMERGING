@@ -92,6 +92,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-import-conversations.md" "Expected the conversation report guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-import-conversations.")
 
+              testCase "Working import comparison help exposes the batch-delta workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "compare-working-import-conversations" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help compare-working-import-conversations to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: compare-working-import-conversations" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--base-import-id <uuid>" "Expected base-import guidance."
+                  Expect.stringContains result.StandardOutput "--current-import-id <uuid>" "Expected current-import guidance."
+                  Expect.stringContains result.StandardOutput "batch-local" "Expected the batch-local contribution note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/compare-working-import-conversations.md" "Expected the comparison guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help compare-working-import-conversations.")
+
               testCase "Working graph node search help exposes the indexed discovery workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "find-working-graph-nodes" ]
 

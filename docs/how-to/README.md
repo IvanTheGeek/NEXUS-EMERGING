@@ -12,6 +12,7 @@ Current guides:
 
 - `capture-artifact-payload.md`
 - `cli-commands.md`
+- `compare-working-import-conversations.md`
 - `create-concept-note.md`
 - `export-codex-sessions.md`
 - `export-graphviz-dot.md`

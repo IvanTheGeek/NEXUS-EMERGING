@@ -9,12 +9,12 @@ open Nexus.Importers
 
 [<RequireQualifiedAccess>]
 module GraphWorkingIndexTests =
-    let private buildClaudeImportRequest tempRoot =
+    let private buildClaudeImportRequest (fixtureRelativePath: string) (tempRoot: string) =
         let objectsRoot = Path.Combine(tempRoot, "objects")
         let eventStoreRoot = Path.Combine(tempRoot, "event-store")
-        let zipPath = Path.Combine(tempRoot, "claude-fixture.zip")
+        let zipPath = Path.Combine(tempRoot, $"{fixtureRelativePath.Replace('/', '-')}.zip")
 
-        TestHelpers.createZipFromFixture "provider-export/claude" zipPath
+        TestHelpers.createZipFromFixture fixtureRelativePath zipPath
 
         { Provider = Claude
           SourceZipPath = zipPath
@@ -23,12 +23,18 @@ module GraphWorkingIndexTests =
           EventStoreRoot = eventStoreRoot },
         eventStoreRoot
 
+    let private buildClaudeFixtureImportRequest tempRoot =
+        buildClaudeImportRequest "provider-export/claude" tempRoot
+
+    let private buildClaudeFollowOnImportRequest tempRoot =
+        buildClaudeImportRequest "provider-export/claude-follow-on" tempRoot
+
     let tests =
         testList
             "graph working index"
             [ testCase "Graph working SQLite index summarizes one imported slice" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report =
@@ -50,7 +56,7 @@ module GraphWorkingIndexTests =
 
               testCase "Graph working SQLite index can summarize conversations inside one import slice" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-conversations" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report =
@@ -68,7 +74,7 @@ module GraphWorkingIndexTests =
 
               testCase "Graph working SQLite index can find nodes by title text and provider filter" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-find" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let _ = ImportWorkflow.run request
 
                       let matches =
@@ -89,7 +95,7 @@ module GraphWorkingIndexTests =
 
               testCase "Graph working SQLite index can report a node neighborhood inside one import slice" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-neighborhood" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let nodeMatch =
@@ -120,7 +126,7 @@ module GraphWorkingIndexTests =
 
               testCase "CLI report-working-graph-slice shows SQLite working-index details" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-cli" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let cliResult =
@@ -143,7 +149,7 @@ module GraphWorkingIndexTests =
 
               testCase "CLI report-working-import-conversations shows conversation summaries" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-conversations-cli" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let cliResult =
@@ -163,9 +169,42 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Claude Fixture Conversation" "Expected the fixture conversation title in the report."
                       Expect.stringContains cliResult.StandardOutput "messages=2 artifacts=1" "Expected the message and artifact counts in the report."))
 
+              testCase "Graph working SQLite index can compare conversation contributions between two imports" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-conversation-compare" (fun tempRoot ->
+                      let baseRequest, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
+                      let baseResult = ImportWorkflow.run baseRequest
+
+                      let followOnRequest, _ = buildClaudeFollowOnImportRequest tempRoot
+                      let currentResult = ImportWorkflow.run followOnRequest
+
+                      let report =
+                          GraphWorkingIndex.tryBuildImportConversationComparisonReport
+                              eventStoreRoot
+                              baseResult.ImportId
+                              currentResult.ImportId
+                              10
+                          |> Option.defaultWith (fun () -> failwith "Expected a working-import conversation comparison report.")
+
+                      Expect.equal report.BaseImportId baseResult.ImportId "Expected the base import ID in the comparison report."
+                      Expect.equal report.CurrentImportId currentResult.ImportId "Expected the current import ID in the comparison report."
+                      Expect.equal report.AddedConversationCount 1 "Expected one newly contributed conversation in the follow-on slice."
+                      Expect.equal report.RemovedConversationCount 0 "Expected no removed conversations in this fixture progression."
+                      Expect.equal report.ChangedConversationCount 1 "Expected the existing fixture conversation contribution to differ."
+                      Expect.equal report.UnchangedConversationCount 0 "Expected no unchanged shared conversations in the fixture progression."
+                      Expect.equal report.AddedConversations.Length 1 "Expected one detailed added conversation row."
+                      Expect.equal report.RemovedConversations.Length 0 "Expected no removed conversation rows."
+                      Expect.equal report.ChangedConversations.Length 1 "Expected one changed conversation row."
+                      Expect.equal report.AddedConversations.Head.Title (Some "Claude Follow-on Conversation") "Expected the follow-on conversation title."
+                      Expect.equal report.AddedConversations.Head.MessageCount 1 "Expected the new follow-on conversation contribution count."
+                      Expect.equal report.ChangedConversations.Head.BaseTitle (Some "Claude Fixture Conversation") "Expected the shared fixture conversation label."
+                      Expect.equal report.ChangedConversations.Head.BaseMessageCount 2 "Expected the base conversation contribution to include two messages."
+                      Expect.equal report.ChangedConversations.Head.CurrentMessageCount 1 "Expected the follow-on slice to contribute one new message."
+                      Expect.equal report.ChangedConversations.Head.BaseArtifactCount 1 "Expected one artifact in the base slice contribution."
+                      Expect.equal report.ChangedConversations.Head.CurrentArtifactCount 0 "Expected no new artifact references in the follow-on slice contribution."))
+
               testCase "CLI find-working-graph-nodes shows indexed matches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-find-cli" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let _ = ImportWorkflow.run request
 
                       let cliResult =
@@ -185,9 +224,38 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Claude Fixture Conversation" "Expected the fixture conversation title in the search output."
                       Expect.stringContains cliResult.StandardOutput "matched_on=title_or_slug" "Expected the match reason in the search output."))
 
+              testCase "CLI compare-working-import-conversations shows added and changed batch-local contributions" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graph-working-conversation-compare-cli" (fun tempRoot ->
+                      let baseRequest, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
+                      let baseResult = ImportWorkflow.run baseRequest
+
+                      let followOnRequest, _ = buildClaudeFollowOnImportRequest tempRoot
+                      let currentResult = ImportWorkflow.run followOnRequest
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "compare-working-import-conversations"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--base-import-id"
+                                (ImportId.format baseResult.ImportId)
+                                "--current-import-id"
+                                (ImportId.format currentResult.ImportId)
+                                "--limit"
+                                "10" ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected the conversation comparison command to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the conversation comparison command."
+                      Expect.stringContains cliResult.StandardOutput "Working import conversation comparison report." "Expected the comparison header."
+                      Expect.stringContains cliResult.StandardOutput "Added conversations: 1" "Expected the added count."
+                      Expect.stringContains cliResult.StandardOutput "Changed conversations: 1" "Expected the changed count."
+                      Expect.stringContains cliResult.StandardOutput "Claude Follow-on Conversation" "Expected the added conversation label."
+                      Expect.stringContains cliResult.StandardOutput "messages=2 -> 1" "Expected the changed message contribution counts."
+                      Expect.stringContains cliResult.StandardOutput "artifacts=1 -> 0" "Expected the changed artifact contribution counts."))
+
               testCase "CLI report-working-graph-neighborhood shows local graph structure" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-neighborhood-cli" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let nodeMatch =
@@ -223,7 +291,7 @@ module GraphWorkingIndexTests =
 
               testCase "CLI rebuild-working-graph-index recreates the SQLite index from working slices" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-rebuild" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let indexPath =
@@ -255,7 +323,7 @@ module GraphWorkingIndexTests =
 
               testCase "CLI verify-working-graph-slice succeeds for a clean fixture import" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-verify-clean" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let objectsRoot = Path.Combine(tempRoot, "objects")
                       let importResult = ImportWorkflow.run request
 
@@ -277,7 +345,7 @@ module GraphWorkingIndexTests =
 
               testCase "CLI verify-working-graph-slice fails when a canonical event is missing" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-verify-broken" (fun tempRoot ->
-                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let objectsRoot = Path.Combine(tempRoot, "objects")
                       let importResult = ImportWorkflow.run request
 
