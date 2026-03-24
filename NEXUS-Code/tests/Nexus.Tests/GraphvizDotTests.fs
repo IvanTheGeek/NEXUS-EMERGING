@@ -170,6 +170,61 @@ module GraphvizDotTests =
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
                       Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
 
+              testCase "Working import slice export can require traceable verification before writing DOT output" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-working-import-verified" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+                      let outputPath = Path.Combine(tempRoot, "working-import-verified.dot")
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "export-graphviz-dot"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--objects-root"
+                                request.ObjectsRoot
+                                "--working-import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--verification"
+                                "traceable"
+                                "--output"
+                                outputPath ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected traceable working-import export to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the traceable working-import export."
+                      Expect.isTrue (File.Exists(outputPath)) "Expected the verified DOT file to exist."
+                      Expect.stringContains cliResult.StandardOutput "Verification: traceable" "Expected the CLI to report successful traceable verification."
+                      Expect.stringContains cliResult.StandardOutput "Supporting events verified:" "Expected the CLI to report canonical verification counts."
+                      Expect.stringContains cliResult.StandardOutput "Raw objects verified:" "Expected the CLI to report raw-object verification counts."))
+
+              testCase "Traceable working import export refuses broken provenance" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-working-import-broken" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+                      let archivedZipPath = Path.Combine(request.ObjectsRoot, importResult.ArchivedZipRelativePath)
+                      let outputPath = Path.Combine(tempRoot, "working-import-broken.dot")
+
+                      File.Delete(archivedZipPath)
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "export-graphviz-dot"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--objects-root"
+                                request.ObjectsRoot
+                                "--working-import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--verification"
+                                "traceable"
+                                "--output"
+                                outputPath ]
+
+                      Expect.equal cliResult.ExitCode 2 "Expected broken traceable verification to refuse export."
+                      Expect.stringContains cliResult.StandardError "Working-slice traceability verification failed." "Expected a clear verification failure."
+                      Expect.stringContains cliResult.StandardError "Missing raw object refs:" "Expected the missing raw object count in stderr."
+                      Expect.isFalse (File.Exists(outputPath)) "Did not expect a DOT file after verification failure."))
+
               testCase "DOT export can target an output root while keeping the generated file name" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-output-root" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot

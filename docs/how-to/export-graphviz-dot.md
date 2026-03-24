@@ -58,6 +58,12 @@ Working import slice:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id>
 ```
 
+Traceably verified working import slice:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id> --verification traceable
+```
+
 Custom event-store root:
 
 ```bash
@@ -96,6 +102,12 @@ If you just finished an import and want the batch-local working slice instead:
 2. Run `report-working-graph-imports` if you want to confirm the available working slices
 3. Run `export-graphviz-dot --working-import-id <import-id>`
 
+If that working slice is important enough to verify before export:
+
+1. Run `import-provider-export`
+2. Run `export-graphviz-dot --working-import-id <import-id> --verification traceable`
+3. Add `--objects-root <path>` only when the preserved objects live somewhere other than the repository default
+
 For large stores, prefer slices first:
 
 1. `--provider` for a provider-wide view
@@ -122,6 +134,9 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 
 - This export is derived from `graph/assertions/`, not from canonical history directly.
 - `--working-import-id` is the exception: it reads `graph/working/imports/<import-id>/assertions/` directly from the secondary working layer.
+- `--verification traceable` is currently supported only with `--working-import-id`.
+- When `--verification traceable` is enabled, the command verifies the working slice back to canonical events and raw object refs before writing the DOT file.
+- Use `--objects-root` only with `--verification traceable` when the preserved objects are not under the repository default.
 - Use either `--output` or `--output-root`, not both.
 - Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
 - `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.

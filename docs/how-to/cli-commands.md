@@ -87,6 +87,7 @@ The CLI supports both:
 - Exports the derived graph assertions as a Graphviz DOT file.
 - Use it when you want an external visual lens over the graph to spot structure, clusters, and relationships.
 - It now supports provider, provider-conversation, and import slices so you do not have to render the whole graph every time.
+- It can also traceably verify a `--working-import-id` slice back to canonical events and raw object refs before writing the DOT file.
 - Details: `docs/how-to/export-graphviz-dot.md`
 
 `render-graphviz-dot`
@@ -140,6 +141,7 @@ Provider import:
 9. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
 10. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
 11. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
+12. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
 
 Codex session import:
 
