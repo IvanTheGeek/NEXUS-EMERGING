@@ -22,6 +22,33 @@ module GraphvizDotTests =
           EventStoreRoot = eventStoreRoot },
         eventStoreRoot
 
+    let private buildMixedGraphStore tempRoot =
+        let objectsRoot = Path.Combine(tempRoot, "objects")
+        let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+
+        let claudeZipPath = Path.Combine(tempRoot, "claude-fixture.zip")
+        TestHelpers.createZipFromFixture "provider-export/claude" claudeZipPath
+
+        let _ =
+            ImportWorkflow.run
+                { Provider = Claude
+                  SourceZipPath = claudeZipPath
+                  Window = Some Full
+                  ObjectsRoot = objectsRoot
+                  EventStoreRoot = eventStoreRoot }
+
+        let codexSnapshotRoot = Path.Combine(objectsRoot, "providers", "codex", "latest")
+        TestHelpers.copyFixtureDirectory "codex/latest" codexSnapshotRoot
+
+        let _ =
+            CodexImportWorkflow.run
+                { SnapshotRoot = codexSnapshotRoot
+                  ObjectsRoot = objectsRoot
+                  EventStoreRoot = eventStoreRoot }
+
+        let _ = GraphAssertions.rebuild eventStoreRoot
+        eventStoreRoot
+
     let tests =
         testList
             "graphviz dot"
@@ -46,4 +73,29 @@ module GraphvizDotTests =
                       Expect.stringContains firstDot "belongs_to_conversation" "Expected message-to-conversation edges in the DOT export."
                       Expect.stringContains firstDot "references_artifact" "Expected message-to-artifact edges in the DOT export."
                       Expect.stringContains firstDot "semantic: imprint" "Expected semantic role annotations in the node labels."
-                      Expect.stringContains firstDot "message: assistant" "Expected message role annotations in the node labels.")) ]
+                      Expect.stringContains firstDot "message: assistant" "Expected message role annotations in the node labels."))
+
+              testCase "Provider slice export reduces the graph to a practical subgraph" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-dot-slice" (fun tempRoot ->
+                      let eventStoreRoot = buildMixedGraphStore tempRoot
+                      let outputPath = Path.Combine(tempRoot, "codex-slice.dot")
+
+                      let fullResult = GraphvizDot.export eventStoreRoot None
+
+                      let sliceResult =
+                          GraphvizDot.exportFiltered
+                              eventStoreRoot
+                              (Some outputPath)
+                              { GraphvizDot.ExportFilter.empty with
+                                  Provider = Some "codex" }
+
+                      let sliceDot = File.ReadAllText(sliceResult.OutputPath)
+
+                      Expect.isTrue (File.Exists(sliceResult.OutputPath)) "Expected the provider slice DOT file to exist."
+                      Expect.equal sliceResult.ScannedAssertionCount fullResult.ScannedAssertionCount "Expected the slice to scan the same assertion corpus."
+                      Expect.isLessThan sliceResult.AssertionCount fullResult.AssertionCount "Expected the provider slice to include fewer assertions than the full graph."
+                      Expect.isLessThan sliceResult.NodeCount fullResult.NodeCount "Expected the provider slice to include fewer nodes than the full graph."
+                      Expect.stringContains sliceDot "Codex Fixture Session" "Expected the Codex conversation to appear in the provider slice."
+                      Expect.isFalse
+                          (sliceDot.Contains("Mermaid sequence diagram for chat", System.StringComparison.Ordinal))
+                          "Did not expect the Claude conversation title in the Codex slice.")) ]

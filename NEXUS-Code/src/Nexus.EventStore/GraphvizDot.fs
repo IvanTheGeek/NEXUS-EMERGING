@@ -8,6 +8,24 @@ open System.Text
 [<RequireQualifiedAccess>]
 module GraphvizDot =
     /// <summary>
+    /// Narrows a Graphviz DOT export to a practical slice of the derived graph.
+    /// </summary>
+    type ExportFilter =
+        { Provider: string option
+          ProviderConversationId: string option
+          ImportId: string option }
+
+    [<RequireQualifiedAccess>]
+    module ExportFilter =
+        /// <summary>
+        /// The full derived graph with no additional filtering.
+        /// </summary>
+        let empty =
+            { Provider = None
+              ProviderConversationId = None
+              ImportId = None }
+
+    /// <summary>
     /// Describes the result of exporting graph assertions into a Graphviz DOT file.
     /// </summary>
     /// <remarks>
@@ -17,7 +35,8 @@ module GraphvizDot =
         { OutputPath: string
           NodeCount: int
           EdgeCount: int
-          AssertionCount: int }
+          AssertionCount: int
+          ScannedAssertionCount: int }
 
     type private NodeState =
         { NodeId: string
@@ -34,11 +53,60 @@ module GraphvizDot =
           ToNodeId: string
           Predicate: string }
 
+    type private AssertionRecord =
+        { SubjectNodeId: string
+          Predicate: string
+          ObjectNodeId: string option
+          LiteralValue: string option
+          Providers: Set<string>
+          ProviderConversationIds: Set<string>
+          ImportId: string option }
+
     let private graphAssertionsRoot rootPath =
         Path.Combine(Path.GetFullPath(rootPath), "graph", "assertions")
 
-    let private defaultOutputPath rootPath =
-        Path.Combine(Path.GetFullPath(rootPath), "graph", "exports", "nexus-graph.dot")
+    let private normalizeFilterValue (value: string) =
+        value.Trim().ToLowerInvariant()
+
+    let private sanitizeFileToken (value: string) =
+        let normalized = normalizeFilterValue value
+
+        let builder = StringBuilder(normalized.Length)
+
+        normalized
+        |> Seq.iter (fun ch ->
+            if Char.IsLetterOrDigit(ch) then
+                builder.Append(ch) |> ignore
+            elif ch = '-' || ch = '_' then
+                builder.Append(ch) |> ignore
+            else
+                builder.Append('-') |> ignore)
+
+        let sanitized =
+            builder.ToString().Trim('-')
+
+        if String.IsNullOrWhiteSpace(sanitized) then
+            "slice"
+        elif sanitized.Length <= 40 then
+            sanitized
+        else
+            sanitized.Substring(0, 40)
+
+    let private defaultFileName filter =
+        let tokens =
+            [ filter.Provider |> Option.map (fun value -> $"provider-{sanitizeFileToken value}")
+              filter.ProviderConversationId |> Option.map (fun value -> $"conversation-{sanitizeFileToken value}")
+              filter.ImportId |> Option.map (fun value -> $"import-{sanitizeFileToken value}") ]
+            |> List.choose id
+
+        match tokens with
+        | [] -> "nexus-graph.dot"
+        | _ ->
+            let suffix = String.concat "__" tokens
+            $"nexus-graph__{suffix}.dot"
+
+    let private defaultOutputPath rootPath filter =
+        Path.Combine(Path.GetFullPath(rootPath), "graph", "exports", defaultFileName filter)
 
     let private getOrAddNode (nodes: Dictionary<string, NodeState>) nodeId =
         match nodes.TryGetValue(nodeId) with
@@ -88,14 +156,11 @@ module GraphvizDot =
             |> Seq.map (fun value -> $"{prefix}{value}")
             |> Seq.toList
 
-        let details =
-            [ node.NodeKind |> Option.map (fun kind -> $"kind: {kind}")
-              append "semantic: " node.SemanticRoles |> List.tryHead
-              append "message: " node.MessageRoles |> List.tryHead
-              append "media: " node.MediaTypes |> List.tryHead ]
-            |> List.choose id
-
-        details
+        [ node.NodeKind |> Option.map (fun kind -> $"kind: {kind}")
+          append "semantic: " node.SemanticRoles |> List.tryHead
+          append "message: " node.MessageRoles |> List.tryHead
+          append "media: " node.MediaTypes |> List.tryHead ]
+        |> List.choose id
 
     let private nodeShapeAndColor nodeKind =
         match nodeKind with
@@ -125,56 +190,96 @@ module GraphvizDot =
         | "has_media_type" -> node.MediaTypes.Add(value) |> ignore
         | _ -> ()
 
-    /// <summary>
-    /// Exports the derived graph assertions under an event-store root as a Graphviz DOT file.
-    /// </summary>
-    /// <param name="rootPath">Event-store root containing graph/assertions.</param>
-    /// <param name="outputPath">
-    /// Optional DOT output path. When omitted, the exporter writes to graph/exports/nexus-graph.dot under the event-store root.
-    /// </param>
-    /// <remarks>
-    /// This is an external lens over derived graph assertions, not a canonical source of truth.
-    /// See docs/how-to/export-graphviz-dot.md for usage guidance.
-    /// </remarks>
-    let export rootPath outputPath =
-        let assertionsPath = graphAssertionsRoot rootPath
-        let destinationPath = outputPath |> Option.defaultWith (fun () -> defaultOutputPath rootPath)
-        let absoluteOutputPath = Path.GetFullPath(destinationPath)
-        let nodes = Dictionary<string, NodeState>(StringComparer.Ordinal)
-        let edges = Dictionary<string, EdgeState>(StringComparer.Ordinal)
-        let mutable assertionCount = 0
+    let private parseProviders document =
+        TomlDocument.tableArray "provider_refs" document
+        |> List.choose (fun table ->
+            match table.TryGetValue("provider") with
+            | true, value -> Some (normalizeFilterValue value)
+            | false, _ -> None)
+        |> Set.ofList
 
+    let private parseProviderConversationIds document =
+        TomlDocument.tableArray "provider_refs" document
+        |> List.choose (fun table ->
+            match table.TryGetValue("conversation_native_id") with
+            | true, value when not (String.IsNullOrWhiteSpace(value)) -> Some value
+            | _ -> None)
+        |> Set.ofList
+
+    let private tryParseAssertion document =
+        match TomlDocument.tryScalar "subject_node_id" document, TomlDocument.tryScalar "predicate" document with
+        | Some subjectNodeId, Some predicate ->
+            let objectNodeId, literalValue =
+                match TomlDocument.tryTableValue "object" "kind" document with
+                | Some "node_ref" ->
+                    TomlDocument.tryTableValue "object" "node_id" document, None
+                | Some "literal" ->
+                    None, TomlDocument.tryTableValue "object" "value" document
+                | _ -> None, None
+
+            Some
+                { SubjectNodeId = subjectNodeId
+                  Predicate = predicate
+                  ObjectNodeId = objectNodeId
+                  LiteralValue = literalValue
+                  Providers = parseProviders document
+                  ProviderConversationIds = parseProviderConversationIds document
+                  ImportId = TomlDocument.tryTableValue "provenance" "import_id" document }
+        | _ -> None
+
+    let private loadAssertions assertionsPath =
         if Directory.Exists(assertionsPath) then
             Directory.EnumerateFiles(assertionsPath, "*.toml", SearchOption.AllDirectories)
             |> Seq.sort
-            |> Seq.iter (fun path ->
-                let document = File.ReadAllText(path) |> TomlDocument.parse
+            |> Seq.choose (fun path ->
+                File.ReadAllText(path)
+                |> TomlDocument.parse
+                |> tryParseAssertion)
+            |> Seq.toArray
+        else
+            [||]
 
-                match TomlDocument.tryScalar "subject_node_id" document, TomlDocument.tryScalar "predicate" document with
-                | Some subjectNodeId, Some predicate ->
-                    assertionCount <- assertionCount + 1
-                    let subjectNode = getOrAddNode nodes subjectNodeId
+    let private matchesFilter filter assertion =
+        let providerMatch =
+            match filter.Provider with
+            | None -> true
+            | Some provider -> assertion.Providers.Contains(normalizeFilterValue provider)
 
-                    match TomlDocument.tryTableValue "object" "kind" document with
-                    | Some "node_ref" ->
-                        match TomlDocument.tryTableValue "object" "node_id" document with
-                        | Some objectNodeId ->
-                            let _ = getOrAddNode nodes objectNodeId
-                            let edge =
-                                { FromNodeId = subjectNodeId
-                                  ToNodeId = objectNodeId
-                                  Predicate = predicate }
+        let providerConversationMatch =
+            match filter.ProviderConversationId with
+            | None -> true
+            | Some conversationId -> assertion.ProviderConversationIds.Contains(conversationId)
 
-                            edges[edgeKey edge] <- edge
-                        | None -> ()
-                    | Some "literal" ->
-                        match TomlDocument.tryTableValue "object" "value" document with
-                        | Some value -> addLiteralAssertion subjectNode predicate value
-                        | None -> ()
-                    | _ -> ()
-                | _ -> ())
+        let importMatch =
+            match filter.ImportId with
+            | None -> true
+            | Some importId -> assertion.ImportId = Some importId
 
-        Directory.CreateDirectory(Path.GetDirectoryName(absoluteOutputPath)) |> ignore
+        providerMatch && providerConversationMatch && importMatch
+
+    let private writeDot absoluteOutputPath assertions =
+        let nodes = Dictionary<string, NodeState>(StringComparer.Ordinal)
+        let edges = Dictionary<string, EdgeState>(StringComparer.Ordinal)
+
+        assertions
+        |> Array.iter (fun assertion ->
+            let subjectNode = getOrAddNode nodes assertion.SubjectNodeId
+
+            match assertion.ObjectNodeId, assertion.LiteralValue with
+            | Some objectNodeId, _ ->
+                let _ = getOrAddNode nodes objectNodeId
+                let edge =
+                    { FromNodeId = assertion.SubjectNodeId
+                      ToNodeId = objectNodeId
+                      Predicate = assertion.Predicate }
+
+                edges[edgeKey edge] <- edge
+            | None, Some value ->
+                addLiteralAssertion subjectNode assertion.Predicate value
+            | None, None -> ())
+
+        let outputDirectory = Path.GetDirectoryName(absoluteOutputPath : string)
+        Directory.CreateDirectory(outputDirectory) |> ignore
 
         let builder = StringBuilder()
         builder.AppendLine("digraph nexus_graph {") |> ignore
@@ -190,7 +295,7 @@ module GraphvizDot =
             |> ignore)
 
         edges.Values
-        |> Seq.sortBy (fun edge -> edgeKey edge)
+        |> Seq.sortBy edgeKey
         |> Seq.iter (fun edge ->
             builder.AppendLine($"  \"{dotEscape edge.FromNodeId}\" -> \"{dotEscape edge.ToNodeId}\" [label=\"{dotEscape edge.Predicate}\"];")
             |> ignore)
@@ -199,7 +304,44 @@ module GraphvizDot =
 
         File.WriteAllText(absoluteOutputPath, builder.ToString())
 
+        nodes.Count, edges.Count
+
+    /// <summary>
+    /// Exports a filtered slice of the derived graph assertions under an event-store root as a Graphviz DOT file.
+    /// </summary>
+    /// <param name="rootPath">Event-store root containing graph/assertions.</param>
+    /// <param name="outputPath">
+    /// Optional DOT output path. When omitted, the exporter writes to graph/exports using a filter-aware file name.
+    /// </param>
+    /// <param name="filter">Optional provenance-aware filter for narrowing the exported graph.</param>
+    /// <remarks>
+    /// This is an external lens over derived graph assertions, not a canonical source of truth.
+    /// See docs/how-to/export-graphviz-dot.md for usage guidance.
+    /// </remarks>
+    let exportFiltered rootPath outputPath filter =
+        let assertionsPath = graphAssertionsRoot rootPath
+        let absoluteRoot = Path.GetFullPath(rootPath)
+        let destinationPath = outputPath |> Option.defaultWith (fun () -> defaultOutputPath absoluteRoot filter)
+        let absoluteOutputPath = Path.GetFullPath(destinationPath)
+        let allAssertions = loadAssertions assertionsPath
+        let selectedAssertions =
+            allAssertions
+            |> Array.filter (matchesFilter filter)
+
+        let nodeCount, edgeCount = writeDot absoluteOutputPath selectedAssertions
+
         { OutputPath = absoluteOutputPath
-          NodeCount = nodes.Count
-          EdgeCount = edges.Count
-          AssertionCount = assertionCount }
+          NodeCount = nodeCount
+          EdgeCount = edgeCount
+          AssertionCount = selectedAssertions.Length
+          ScannedAssertionCount = allAssertions.Length }
+
+    /// <summary>
+    /// Exports the full derived graph assertions under an event-store root as a Graphviz DOT file.
+    /// </summary>
+    /// <param name="rootPath">Event-store root containing graph/assertions.</param>
+    /// <param name="outputPath">
+    /// Optional DOT output path. When omitted, the exporter writes to graph/exports/nexus-graph.dot under the event-store root.
+    /// </param>
+    let export rootPath outputPath =
+        exportFiltered rootPath outputPath ExportFilter.empty
