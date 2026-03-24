@@ -37,6 +37,13 @@ The CLI supports both:
 - Use it to smoke-test event writing, layout, and projection rebuilds without touching real imports.
 - Details: `docs/how-to/write-sample-event-store.md`
 
+`compare-provider-exports`
+
+- Compares two raw ChatGPT or Claude export zips before canonical import.
+- Use it when you want a source-layer view of added, removed, and changed provider-native conversations or messages.
+- It also reports whether the two zip artifacts are byte-identical.
+- Details: `docs/how-to/compare-provider-exports.md`
+
 `import-provider-export`
 
 - Archives a ChatGPT or Claude export zip.
@@ -156,22 +163,23 @@ The CLI supports both:
 
 Provider import:
 
-1. Run `import-provider-export`.
-2. Run `rebuild-conversation-projections`.
-3. Run `rebuild-artifact-projections`.
-4. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
-5. Run `export-graphviz-dot` if you want an external graph view.
-6. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
-7. Run `report-unresolved-artifacts` if you want to identify missing payloads.
-8. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
-9. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
-10. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
-11. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
-12. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
-13. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
-14. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
-15. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
-16. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
+1. Run `compare-provider-exports` if you want to understand raw export-window deltas before import.
+2. Run `import-provider-export`.
+3. Run `rebuild-conversation-projections`.
+4. Run `rebuild-artifact-projections`.
+5. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
+6. Run `export-graphviz-dot` if you want an external graph view.
+7. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
+8. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+9. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
+10. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
+11. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
+12. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
+13. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
+14. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
+15. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
+16. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
+17. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
 
 Codex session import:
 
@@ -204,6 +212,7 @@ Unless overridden, the CLI uses repository-local defaults:
 ## Related Guides
 
 - `docs/how-to/export-codex-sessions.md`
+- `docs/how-to/compare-provider-exports.md`
 - `docs/how-to/import-provider-export.md`
 - `docs/how-to/import-codex-sessions.md`
 - `docs/how-to/capture-artifact-payload.md`

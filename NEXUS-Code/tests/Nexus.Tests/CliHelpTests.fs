@@ -17,6 +17,18 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/cli-commands.md" "Expected the CLI guide reference in global help."
                   Expect.equal result.StandardError "" "Did not expect stderr output for global help.")
 
+              testCase "Raw export comparison help exposes the source-layer workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "compare-provider-exports" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help compare-provider-exports to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: compare-provider-exports" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--base-zip <path>" "Expected base-zip guidance."
+                  Expect.stringContains result.StandardOutput "--current-zip <path>" "Expected current-zip guidance."
+                  Expect.stringContains result.StandardOutput "source-layer" "Expected source-layer comparison note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/compare-provider-exports.md" "Expected the raw comparison guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help compare-provider-exports.")
+
               testCase "Command help works through both help forms" (fun () ->
                   let helpCommandResult = TestHelpers.runCli [ "help"; "import-provider-export" ]
                   let switchResult = TestHelpers.runCli [ "import-provider-export"; "--help" ]

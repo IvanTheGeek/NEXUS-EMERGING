@@ -25,6 +25,7 @@ module Program =
     type private Command =
         | ShowHelp of commandName: string option
         | WriteSampleEventStore of eventStoreRoot: string
+        | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
@@ -131,6 +132,26 @@ module Program =
                   Notes =
                     [ "Useful for validating TOML output, stream layout, and projection rebuilds without touching real imports."
                       "Detailed guide: docs/how-to/write-sample-event-store.md" ] }
+        | "compare-provider-exports" ->
+            Some
+                { Name = name
+                  Summary = "Compare two raw ChatGPT or Claude export zips before canonical import."
+                  Usage =
+                    [ sprintf "%s compare-provider-exports --provider <chatgpt|claude> --base-zip <path> --current-zip <path>" cliInvocation
+                      sprintf "%s compare-provider-exports --provider chatgpt --base-zip RawDataExports/older.zip --current-zip RawDataExports/newer.zip --limit 10" cliInvocation ]
+                  Options =
+                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter used to parse both zips."
+                      "--base-zip <path>", "Required. The older or reference raw export zip."
+                      "--current-zip <path>", "Required. The newer or comparison raw export zip."
+                      "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s compare-provider-exports --provider chatgpt --base-zip RawDataExports/chatgpt-older.zip --current-zip RawDataExports/chatgpt-newer.zip" cliInvocation
+                      sprintf "%s compare-provider-exports --provider claude --base-zip RawDataExports/claude-export-a.zip --current-zip RawDataExports/claude-export-b.zip --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This is a raw source-layer comparison over provider-native conversations and messages."
+                      "It does not import, archive, or append anything to canonical history."
+                      "Use it when you want to reason about export-window behavior before canonical import."
+                      "Detailed guide: docs/how-to/compare-provider-exports.md" ] }
         | "import-provider-export" ->
             Some
                 { Name = name
@@ -502,6 +523,7 @@ module Program =
 
     let private availableCommands () =
         [ "write-sample-event-store"
+          "compare-provider-exports"
           "import-provider-export"
           "import-codex-sessions"
           "capture-artifact-payload"
@@ -591,6 +613,65 @@ module Program =
                     Error 1
 
             loop defaultEventStoreRoot args
+
+    let private parseCompareProviderExports (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "compare-provider-exports"))
+        else
+            let rec loop provider baseZipPath currentZipPath limit remaining =
+                match remaining with
+                | [] ->
+                    match provider, baseZipPath, currentZipPath with
+                    | Some providerKind, Some baseZipPathValue, Some currentZipPathValue ->
+                        Ok (CompareProviderExports(providerKind, baseZipPathValue, currentZipPathValue, limit))
+                    | None, _, _ ->
+                        eprintfn "Missing required option for compare-provider-exports: --provider"
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                    | _, None, _ ->
+                        eprintfn "Missing required option for compare-provider-exports: --base-zip"
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                    | _, _, None ->
+                        eprintfn "Missing required option for compare-provider-exports: --current-zip"
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some ChatGpt ->
+                        loop (Some ChatGpt) baseZipPath currentZipPath limit rest
+                    | Some Claude ->
+                        loop (Some Claude) baseZipPath currentZipPath limit rest
+                    | Some Codex ->
+                        eprintfn "Codex sessions are not compared through raw export zips."
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                    | Some (OtherProvider _) ->
+                        eprintfn "Unsupported provider for compare-provider-exports: %s" value
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                | "--base-zip" :: value :: rest ->
+                    loop provider (Some value) currentZipPath limit rest
+                | "--current-zip" :: value :: rest ->
+                    loop provider baseZipPath (Some value) limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop provider baseZipPath currentZipPath parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "compare-provider-exports"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for compare-provider-exports: %s" option
+                    printCommandHelp "compare-provider-exports"
+                    Error 1
+
+            loop None None None 20 args
 
     let private parseImportProviderExport (args: string list) =
         if containsHelpSwitch args then
@@ -1425,6 +1506,8 @@ module Program =
                 Error 1
         | "write-sample-event-store" :: rest ->
             parseWriteSampleEventStore rest
+        | "compare-provider-exports" :: rest ->
+            parseCompareProviderExports rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
         | "import-codex-sessions" :: rest ->
@@ -1712,6 +1795,69 @@ module Program =
             printfn "    %s" relativePath
 
         printfn "  Manifest written: %s" manifestPath
+        0
+
+    let private compareProviderExports provider baseZipPath currentZipPath limit =
+        let report = ExportComparison.compare provider baseZipPath currentZipPath limit
+
+        printfn "Provider export comparison."
+        printfn "  Provider: %s" (ProviderNaming.slug report.Provider)
+        printfn "  Base zip: %s" report.BaseZipPath
+        printfn "  Current zip: %s" report.CurrentZipPath
+        printfn "  Base SHA-256: %s" report.BaseZipSha256
+        printfn "  Current SHA-256: %s" report.CurrentZipSha256
+        printfn "  Zip artifacts identical: %b" report.ZipArtifactsIdentical
+        printfn "  Base conversations: %d" report.BaseConversationCount
+        printfn "  Current conversations: %d" report.CurrentConversationCount
+        printfn "  Base messages: %d" report.BaseMessageCount
+        printfn "  Current messages: %d" report.CurrentMessageCount
+        printfn "  Base artifact refs: %d" report.BaseArtifactReferenceCount
+        printfn "  Current artifact refs: %d" report.CurrentArtifactReferenceCount
+        printfn "  Added conversations: %d" report.AddedConversationCount
+        printfn "  Removed conversations: %d" report.RemovedConversationCount
+        printfn "  Changed conversations: %d" report.ChangedConversationCount
+        printfn "  Unchanged conversations: %d" report.UnchangedConversationCount
+
+        if not report.AddedConversations.IsEmpty then
+            printfn "  Added:"
+
+            report.AddedConversations
+            |> List.iter (fun item ->
+                let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                printfn "    %s" item.ProviderConversationId
+                printfn "      label=%s" label
+                printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+        if not report.RemovedConversations.IsEmpty then
+            printfn "  Removed:"
+
+            report.RemovedConversations
+            |> List.iter (fun item ->
+                let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                printfn "    %s" item.ProviderConversationId
+                printfn "      label=%s" label
+                printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+        if not report.ChangedConversations.IsEmpty then
+            printfn "  Changed:"
+
+            report.ChangedConversations
+            |> List.iter (fun item ->
+                let label =
+                    item.CurrentTitle
+                    |> Option.orElse item.BaseTitle
+                    |> Option.defaultValue item.ProviderConversationId
+
+                printfn "    %s" item.ProviderConversationId
+                printfn "      label=%s" label
+                printfn "      messages=%d -> %d (added=%d removed=%d)" item.BaseMessageCount item.CurrentMessageCount item.AddedMessageCount item.RemovedMessageCount
+                printfn
+                    "      artifacts=%d -> %d (added=%d removed=%d)"
+                    item.BaseArtifactReferenceCount
+                    item.CurrentArtifactReferenceCount
+                    item.AddedArtifactReferenceCount
+                    item.RemovedArtifactReferenceCount)
+
         0
 
     let private importProviderExport request =
@@ -2465,6 +2611,8 @@ module Program =
             0
         | Ok (WriteSampleEventStore eventStoreRoot) ->
             writeSampleEventStore eventStoreRoot
+        | Ok (CompareProviderExports(provider, baseZipPath, currentZipPath, limit)) ->
+            compareProviderExports provider baseZipPath currentZipPath limit
         | Ok (ImportProviderExport request) ->
             importProviderExport request
         | Ok (ImportCodexSessions request) ->
