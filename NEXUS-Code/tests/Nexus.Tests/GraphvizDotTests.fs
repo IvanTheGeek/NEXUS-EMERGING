@@ -170,6 +170,79 @@ module GraphvizDotTests =
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
                       Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
 
+              testCase "Working node neighborhood export scopes one node inside a working import slice" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-working-node" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let nodeMatch =
+                          GraphWorkingIndex.findNodes
+                              eventStoreRoot
+                              (Some importResult.ImportId)
+                              (Some "claude")
+                              (Some "fixture")
+                              None
+                              None
+                              10
+                          |> List.head
+
+                      let fullResult =
+                          GraphvizDot.exportWorkingImportBatch
+                              eventStoreRoot
+                              (ImportId.format importResult.ImportId)
+                              None
+
+                      let neighborhoodResult =
+                          GraphvizDot.exportWorkingNodeNeighborhood
+                              eventStoreRoot
+                              (ImportId.format importResult.ImportId)
+                              nodeMatch.NodeId
+                              (Some (Path.Combine(tempRoot, "working-node.dot")))
+
+                      let dotText = File.ReadAllText(neighborhoodResult.OutputPath)
+
+                      Expect.isTrue (File.Exists(neighborhoodResult.OutputPath)) "Expected the working-node DOT file to exist."
+                      Expect.isLessThan neighborhoodResult.AssertionCount fullResult.AssertionCount "Expected the node neighborhood to export fewer assertions than the full working slice."
+                      Expect.isLessThan neighborhoodResult.NodeCount fullResult.NodeCount "Expected the node neighborhood to export fewer nodes than the full working slice."
+                      Expect.stringContains dotText "Claude Fixture Conversation" "Expected the selected working node to remain in the neighborhood export."
+                      Expect.stringContains dotText "belongs_to_conversation" "Expected local neighborhood edges around the selected node."))
+
+              testCase "CLI working node neighborhood export reports the scoped source kind" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-working-node-cli" (fun tempRoot ->
+                      let request, eventStoreRoot = buildClaudeImportRequest tempRoot
+                      let importResult = ImportWorkflow.run request
+
+                      let nodeMatch =
+                          GraphWorkingIndex.findNodes
+                              eventStoreRoot
+                              (Some importResult.ImportId)
+                              (Some "claude")
+                              (Some "fixture")
+                              None
+                              None
+                              10
+                          |> List.head
+
+                      let outputPath = Path.Combine(tempRoot, "working-node-cli.dot")
+
+                      let cliResult =
+                          TestHelpers.runCli
+                              [ "export-graphviz-dot"
+                                "--event-store-root"
+                                eventStoreRoot
+                                "--working-import-id"
+                                (ImportId.format importResult.ImportId)
+                                "--working-node-id"
+                                nodeMatch.NodeId
+                                "--output"
+                                outputPath ]
+
+                      Expect.equal cliResult.ExitCode 0 "Expected working-node Graphviz export through the CLI to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-node Graphviz export."
+                      Expect.isTrue (File.Exists(outputPath)) "Expected the CLI working-node DOT file to exist."
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice neighborhood" "Expected the CLI to report the neighborhood source kind."
+                      Expect.stringContains cliResult.StandardOutput nodeMatch.NodeId "Expected the CLI summary to report the selected working node.")) 
+
               testCase "Working import slice export can require traceable verification before writing DOT output" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-import-verified" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot

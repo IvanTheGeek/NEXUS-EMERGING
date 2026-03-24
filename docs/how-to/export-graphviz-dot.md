@@ -58,6 +58,12 @@ Working import slice:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id>
 ```
 
+Working node neighborhood slice:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id> --working-node-id <node-id>
+```
+
 Traceably verified working import slice:
 
 ```bash
@@ -87,6 +93,10 @@ Working import slices default to:
 
 - `graph/working/exports/nexus-working-graph__import-019d....dot`
 
+Working node neighborhoods default to:
+
+- `graph/working/exports/nexus-working-graph__import-019d....__node-....dot`
+
 If you use `--output-root`, NEXUS keeps the generated file name but writes it under the directory you specify.
 
 ## Recommended Sequence
@@ -102,6 +112,11 @@ If you just finished an import and want the batch-local working slice instead:
 2. Run `report-working-graph-imports` if you want to confirm the available working slices
 3. Run `export-graphviz-dot --working-import-id <import-id>`
 
+If you want just one local working-node neighborhood instead:
+
+1. Run `find-working-graph-nodes` or `report-working-graph-neighborhood` to identify a node ID
+2. Run `export-graphviz-dot --working-import-id <import-id> --working-node-id <node-id>`
+
 If that working slice is important enough to verify before export:
 
 1. Run `import-provider-export`
@@ -115,6 +130,7 @@ For large stores, prefer slices first:
 3. `--provider-conversation-id` for one provider-native conversation
 4. `--import-id` for one import batch
 5. `--working-import-id` for one fresh graph working slice without a full durable-graph rebuild
+6. `--working-import-id` + `--working-node-id` for one local working neighborhood
 
 ## Rendering
 
@@ -134,6 +150,8 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 
 - This export is derived from `graph/assertions/`, not from canonical history directly.
 - `--working-import-id` is the exception: it reads `graph/working/imports/<import-id>/assertions/` directly from the secondary working layer.
+- `--working-node-id` is supported only together with `--working-import-id`.
+- `--working-node-id` narrows the working-slice export to the selected node plus its immediate neighborhood.
 - `--verification traceable` is currently supported only with `--working-import-id`.
 - When `--verification traceable` is enabled, the command verifies the working slice back to canonical events and raw object refs before writing the DOT file.
 - Use `--objects-root` only with `--verification traceable` when the preserved objects are not under the repository default.

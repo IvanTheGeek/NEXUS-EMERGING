@@ -118,6 +118,12 @@ module GraphvizDot =
         let fileName = $"nexus-working-graph__import-{sanitizeFileToken importId}.dot"
         Path.Combine(Path.GetFullPath(rootPath), "graph", "working", "exports", fileName)
 
+    let private defaultWorkingNeighborhoodOutputPath rootPath importId nodeId =
+        let fileName =
+            $"nexus-working-graph__import-{sanitizeFileToken importId}__node-{sanitizeFileToken nodeId}.dot"
+
+        Path.Combine(Path.GetFullPath(rootPath), "graph", "working", "exports", fileName)
+
     let private outputPathWithinRoot outputRoot fileName =
         Path.Combine(Path.GetFullPath(outputRoot), fileName)
 
@@ -270,18 +276,21 @@ module GraphvizDot =
 
         providerMatch && providerConversationMatch && importMatch
 
-    let private applyConversationNeighborhoodFilter conversationId assertions =
+    let private applyNodeNeighborhoodFilter rootNodeId assertions =
         let neighborhoodNodes = HashSet<string>(StringComparer.Ordinal)
-        neighborhoodNodes.Add(conversationId) |> ignore
+        neighborhoodNodes.Add(rootNodeId) |> ignore
 
         assertions
         |> Array.iter (fun assertion ->
-            if assertion.SubjectNodeId = conversationId || assertion.ObjectNodeId = Some conversationId then
+            if assertion.SubjectNodeId = rootNodeId || assertion.ObjectNodeId = Some rootNodeId then
                 neighborhoodNodes.Add(assertion.SubjectNodeId) |> ignore
 
                 assertion.ObjectNodeId
-                |> Option.iter (fun objectNodeId ->
-                    neighborhoodNodes.Add(objectNodeId) |> ignore))
+                    |> Option.iter (fun objectNodeId ->
+                        neighborhoodNodes.Add(objectNodeId) |> ignore))
+
+        if neighborhoodNodes.Count = 1 then
+            invalidArg "rootNodeId" $"No graph neighborhood found for node {rootNodeId}."
 
         assertions
         |> Array.filter (fun assertion ->
@@ -380,7 +389,7 @@ module GraphvizDot =
 
         let selectedAssertions =
             match filter.ConversationId with
-            | Some conversationId -> applyConversationNeighborhoodFilter conversationId provenanceFilteredAssertions
+            | Some conversationId -> applyNodeNeighborhoodFilter conversationId provenanceFilteredAssertions
             | None -> provenanceFilteredAssertions
 
         let nodeCount, edgeCount = writeDot absoluteOutputPath selectedAssertions
@@ -421,6 +430,45 @@ module GraphvizDot =
 
     let exportWorkingImportBatch rootPath importId outputPath =
         exportWorkingImportBatchWithRoot rootPath importId outputPath None
+
+    /// <summary>
+    /// Exports the immediate neighborhood of one node from a graph working import slice as a Graphviz DOT file.
+    /// </summary>
+    /// <param name="rootPath">Event-store root containing graph/working/imports/&lt;import-id&gt;/assertions.</param>
+    /// <param name="importId">The import batch whose working graph slice should be inspected.</param>
+    /// <param name="nodeId">The node whose immediate working-slice neighborhood should be exported.</param>
+    /// <param name="outputPath">
+    /// Optional DOT output path. When omitted, the exporter writes to graph/working/exports using an import-and-node-aware file name.
+    /// </param>
+    /// <remarks>
+    /// This is a scoped visualization helper over the secondary graph working layer.
+    /// See docs/how-to/export-graphviz-dot.md for usage guidance.
+    /// </remarks>
+    let exportWorkingNodeNeighborhoodWithRoot rootPath importId nodeId outputPath outputRoot =
+        let assertionsPath = graphWorkingImportAssertionsRoot rootPath importId
+        let absoluteRoot = Path.GetFullPath(rootPath)
+        let destinationPath =
+            match outputPath, outputRoot with
+            | Some explicitPath, None
+            | Some explicitPath, Some _ -> explicitPath
+            | None, Some rootDirectory ->
+                let fileName = Path.GetFileName(defaultWorkingNeighborhoodOutputPath absoluteRoot importId nodeId)
+                outputPathWithinRoot rootDirectory fileName
+            | None, None -> defaultWorkingNeighborhoodOutputPath absoluteRoot importId nodeId
+
+        let absoluteOutputPath = Path.GetFullPath(destinationPath)
+        let allAssertions = loadAssertions assertionsPath
+        let selectedAssertions = applyNodeNeighborhoodFilter nodeId allAssertions
+        let nodeCount, edgeCount = writeDot absoluteOutputPath selectedAssertions
+
+        { OutputPath = absoluteOutputPath
+          NodeCount = nodeCount
+          EdgeCount = edgeCount
+          AssertionCount = selectedAssertions.Length
+          ScannedAssertionCount = allAssertions.Length }
+
+    let exportWorkingNodeNeighborhood rootPath importId nodeId outputPath =
+        exportWorkingNodeNeighborhoodWithRoot rootPath importId nodeId outputPath None
 
     /// <summary>
     /// Exports the full derived graph assertions under an event-store root as a Graphviz DOT file.

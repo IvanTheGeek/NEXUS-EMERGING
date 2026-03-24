@@ -39,7 +39,8 @@ module Program =
             providerConversationId: string option *
             conversationId: string option *
             importId: string option *
-            workingImportId: string option
+            workingImportId: string option *
+            workingNodeId: string option
         | RenderGraphvizDot of inputPath: string * outputPath: string option * outputRoot: string option * engine: GraphvizEngine * format: GraphvizFormat
         | RebuildArtifactProjections of eventStoreRoot: string
         | ReportUnresolvedArtifacts of eventStoreRoot: string * provider: string option * limit: int
@@ -234,6 +235,7 @@ module Program =
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
                       sprintf "%s export-graphviz-dot --conversation-id <conversation-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id <import-id>" cliInvocation
+                      sprintf "%s export-graphviz-dot --working-import-id <import-id> --working-node-id <node-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id <import-id> --verification traceable" cliInvocation
                       sprintf "%s export-graphviz-dot --provider-conversation-id <provider-conversation-id>" cliInvocation
                       sprintf "%s export-graphviz-dot --import-id <import-id> --output /tmp/nexus-graph.dot" cliInvocation
@@ -248,18 +250,21 @@ module Program =
                       "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
                       "--import-id <uuid>", "Only include assertions whose provenance import_id matches the selected import."
-                      "--working-import-id <uuid>", "Export one graph working import slice directly, without reading graph/assertions/." ]
+                      "--working-import-id <uuid>", "Export one graph working import slice directly, without reading graph/assertions/."
+                      "--working-node-id <node-id>", "When used with --working-import-id, export only that node's immediate neighborhood from the working slice." ]
                   Examples =
                     [ sprintf "%s export-graphviz-dot" cliInvocation
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
                       sprintf "%s export-graphviz-dot --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s export-graphviz-dot --working-import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --working-node-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
                       sprintf "%s export-graphviz-dot --working-import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --verification traceable" cliInvocation
                       sprintf "%s export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports" cliInvocation
                       sprintf "%s export-graphviz-dot --provider codex --output /tmp/codex-graph.dot" cliInvocation ]
                   Notes =
                     [ "Run rebuild-graph-assertions first when the derived graph may be stale."
                       "Use --working-import-id when you want the graph working slice from a fresh import batch without a full durable-graph rebuild."
+                      "Use --working-node-id together with --working-import-id when you want just one node's immediate neighborhood from the working slice."
                       "Traceable verification currently applies only to --working-import-id exports and checks the working slice back to canonical events and raw object refs before writing DOT output."
                       "Use either --output or --output-root, not both."
                       "Canonical conversation slices use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
@@ -817,7 +822,7 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "export-graphviz-dot"))
         else
-            let rec loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId remaining =
+            let rec loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId remaining =
                 match remaining with
                 | [] ->
                     match outputPath, outputRoot with
@@ -853,18 +858,23 @@ module Program =
                                         None,
                                         None,
                                         None,
-                                        Some workingImportIdValue))
+                                        Some workingImportIdValue,
+                                        workingNodeId))
                         | None, _, _, _, _ ->
-                            match verification, objectsRootOverride with
-                            | TraceableWorkingSlice, _ ->
+                            match verification, objectsRootOverride, workingNodeId with
+                            | TraceableWorkingSlice, _, _ ->
                                 eprintfn "Traceable verification for export-graphviz-dot is currently supported only with --working-import-id."
                                 printCommandHelp "export-graphviz-dot"
                                 Error 1
-                            | NoVerification, Some _ ->
+                            | NoVerification, Some _, _ ->
                                 eprintfn "Use --objects-root only together with --verification traceable and --working-import-id."
                                 printCommandHelp "export-graphviz-dot"
                                 Error 1
-                            | NoVerification, None ->
+                            | NoVerification, None, Some _ ->
+                                eprintfn "Use --working-node-id only together with --working-import-id."
+                                printCommandHelp "export-graphviz-dot"
+                                Error 1
+                            | NoVerification, None, None ->
                                 Ok
                                     (ExportGraphvizDot(
                                         eventStoreRoot,
@@ -876,19 +886,20 @@ module Program =
                                         providerConversationId,
                                         conversationId,
                                         importId,
+                                        None,
                                         None))
                 | "--event-store-root" :: value :: rest ->
-                    loop value objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId rest
+                    loop value objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId rest
                 | "--objects-root" :: value :: rest ->
-                    loop eventStoreRoot (Some value) outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId rest
+                    loop eventStoreRoot (Some value) outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId rest
                 | "--output" :: value :: rest ->
-                    loop eventStoreRoot objectsRootOverride (Some value) outputRoot verification provider providerConversationId conversationId importId workingImportId rest
+                    loop eventStoreRoot objectsRootOverride (Some value) outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId rest
                 | "--output-root" :: value :: rest ->
-                    loop eventStoreRoot objectsRootOverride outputPath (Some value) verification provider providerConversationId conversationId importId workingImportId rest
+                    loop eventStoreRoot objectsRootOverride outputPath (Some value) verification provider providerConversationId conversationId importId workingImportId workingNodeId rest
                 | "--verification" :: value :: rest ->
                     match parseGraphvizExportVerification value with
                     | Some verificationValue ->
-                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verificationValue provider providerConversationId conversationId importId workingImportId rest
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verificationValue provider providerConversationId conversationId importId workingImportId workingNodeId rest
                     | None ->
                         eprintfn "Unsupported verification mode: %s" value
                         printCommandHelp "export-graphviz-dot"
@@ -896,7 +907,7 @@ module Program =
                 | "--provider" :: value :: rest ->
                     match ProviderNaming.tryParse value with
                     | Some providerKind ->
-                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification (Some (ProviderNaming.slug providerKind)) providerConversationId conversationId importId workingImportId rest
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification (Some (ProviderNaming.slug providerKind)) providerConversationId conversationId importId workingImportId workingNodeId rest
                     | None ->
                         eprintfn "Unsupported provider: %s" value
                         printCommandHelp "export-graphviz-dot"
@@ -904,17 +915,17 @@ module Program =
                 | "--conversation-id" :: value :: rest ->
                     match Guid.TryParse(value) with
                     | true, _ ->
-                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId (Some value) importId workingImportId rest
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId (Some value) importId workingImportId workingNodeId rest
                     | false, _ ->
                         eprintfn "Invalid canonical conversation ID: %s" value
                         printCommandHelp "export-graphviz-dot"
                         Error 1
                 | "--provider-conversation-id" :: value :: rest ->
-                    loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider (Some value) conversationId importId workingImportId rest
+                    loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider (Some value) conversationId importId workingImportId workingNodeId rest
                 | "--import-id" :: value :: rest ->
                     match Guid.TryParse(value) with
                     | true, _ ->
-                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId (Some value) workingImportId rest
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId (Some value) workingImportId workingNodeId rest
                     | false, _ ->
                         eprintfn "Invalid import ID: %s" value
                         printCommandHelp "export-graphviz-dot"
@@ -922,17 +933,26 @@ module Program =
                 | "--working-import-id" :: value :: rest ->
                     match Guid.TryParse(value) with
                     | true, _ ->
-                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId (Some value) rest
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId (Some value) workingNodeId rest
                     | false, _ ->
                         eprintfn "Invalid working import ID: %s" value
                         printCommandHelp "export-graphviz-dot"
                         Error 1
+                | "--working-node-id" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid working node ID: %s" value
+                        printCommandHelp "export-graphviz-dot"
+                        Error 1
+                    else
+                        loop eventStoreRoot objectsRootOverride outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId (Some normalized) rest
                 | option :: _ ->
                     eprintfn "Unknown option for export-graphviz-dot: %s" option
                     printCommandHelp "export-graphviz-dot"
                     Error 1
 
-            loop defaultEventStoreRoot None None None NoVerification None None None None None args
+            loop defaultEventStoreRoot None None None NoVerification None None None None None None args
 
     let private parseGraphvizEngine (value: string) =
         match value.Trim().ToLowerInvariant() with
@@ -1714,7 +1734,7 @@ module Program =
 
             0
 
-    let private exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId =
+    let private exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId =
         match workingImportId with
         | Some workingImportIdValue ->
             let verificationResult =
@@ -1741,11 +1761,23 @@ module Program =
                 eprintfn "  Re-run verify-working-graph-slice for the full verification report."
                 2
             | Ok verificationReport ->
-                let result = GraphvizDot.exportWorkingImportBatchWithRoot eventStoreRoot workingImportIdValue outputPath outputRoot
+                let result =
+                    match workingNodeId with
+                    | Some workingNodeIdValue ->
+                        GraphvizDot.exportWorkingNodeNeighborhoodWithRoot eventStoreRoot workingImportIdValue workingNodeIdValue outputPath outputRoot
+                    | None ->
+                        GraphvizDot.exportWorkingImportBatchWithRoot eventStoreRoot workingImportIdValue outputPath outputRoot
+
                 printfn "Graphviz DOT exported."
                 printfn "  Event store root: %s" eventStoreRoot
-                printfn "  Source: graph working slice"
+                match workingNodeId with
+                | Some _ -> printfn "  Source: graph working slice neighborhood"
+                | None -> printfn "  Source: graph working slice"
                 printfn "  Working import ID: %s" workingImportIdValue
+
+                match workingNodeId with
+                | Some workingNodeIdValue -> printfn "  Working node ID: %s" workingNodeIdValue
+                | None -> ()
 
                 match verificationReport with
                 | Some report ->
@@ -2167,8 +2199,8 @@ module Program =
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->
             rebuildGraphAssertions eventStoreRoot approved
-        | Ok (ExportGraphvizDot(eventStoreRoot, objectsRoot, outputPath, outputRoot, verification, provider, providerConversationId, conversationId, importId, workingImportId)) ->
-            exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId
+        | Ok (ExportGraphvizDot(eventStoreRoot, objectsRoot, outputPath, outputRoot, verification, provider, providerConversationId, conversationId, importId, workingImportId, workingNodeId)) ->
+            exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId
         | Ok (RenderGraphvizDot(inputPath, outputPath, outputRoot, engine, format)) ->
             renderGraphvizDot inputPath outputPath outputRoot engine format
         | Ok (RebuildArtifactProjections eventStoreRoot) ->
