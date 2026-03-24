@@ -2,6 +2,7 @@ namespace Nexus.Importers
 
 open System
 open System.Collections.Generic
+open System.Diagnostics
 open System.Globalization
 open System.IO
 open System.IO.Compression
@@ -12,6 +13,11 @@ open Nexus.EventStore
 
 [<RequireQualifiedAccess>]
 module ImportWorkflow =
+    /// <summary>
+    /// Emits human-readable provider import progress.
+    /// </summary>
+    type StatusReporter = string -> unit
+
     let private currentNormalizationVersion = NormalizationNaming.current
 
     type private RawIntake =
@@ -40,6 +46,17 @@ module ImportWorkflow =
     let private contentHashForSignature signature =
         { Algorithm = "sha256"
           Value = sha256ForText signature }
+
+    let private importWindowLabel =
+        function
+        | Some window -> ImportWindowNaming.value window
+        | None -> "full"
+
+    let private formatElapsed (elapsed: TimeSpan) =
+        elapsed.ToString(@"hh\:mm\:ss")
+
+    let private emitStatus (status: StatusReporter) message =
+        status message
 
     let private timestampFolderName (timestamp: DateTimeOffset) =
         timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ssZ", CultureInfo.InvariantCulture)
@@ -282,28 +299,36 @@ module ImportWorkflow =
           ReparseObservationsAppended = reparses }
 
     /// <summary>
-    /// Imports a provider export zip into the object layer and canonical event store.
+    /// Imports a provider export zip into the object layer and canonical event store, emitting phase and progress messages.
     /// </summary>
+    /// <param name="status">Receives human-readable workflow progress messages.</param>
     /// <param name="request">Locations and provider metadata for the import run.</param>
     /// <returns>A summary of archived raw artifacts, appended events, and import counts.</returns>
     /// <remarks>
     /// Preserves raw input, appends canonical history, and distinguishes duplicates from reparses.
     /// Full workflow notes: docs/how-to/import-provider-export.md
     /// </remarks>
-    let run (request: ImportRequest) =
+    let runWithStatus (status: StatusReporter) (request: ImportRequest) =
+        let stopwatch = Stopwatch.StartNew()
         let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
         let eventStoreRoot = Path.GetFullPath(request.EventStoreRoot)
+        let providerSlug = ProviderNaming.slug request.Provider
+        let windowLabel = importWindowLabel request.Window
 
+        emitStatus status $"Preparing provider import for {providerSlug} ({windowLabel})."
         Directory.CreateDirectory(objectsRoot) |> ignore
         Directory.CreateDirectory(eventStoreRoot) |> ignore
 
+        emitStatus status "Archiving raw export zip into NEXUS-Objects."
         let intake = archiveRawImport { request with ObjectsRoot = objectsRoot }
+        emitStatus status $"Raw archive complete: {intake.SourceFileName} copied and {intake.ExtractedEntries} extracted entries staged."
 
         let conversationsJsonPath =
             match intake.ConversationsJsonAbsolutePath with
             | Some value -> value
             | None -> failwith "The provider export did not contain conversations.json."
 
+        emitStatus status "Parsing provider payload from conversations.json."
         let parsedImport =
             ProviderAdapters.parse
                 request.Provider
@@ -314,9 +339,22 @@ module ImportWorkflow =
                 intake.ExtractedFileNames
                 conversationsJsonPath
 
+        let parsedConversationCount = parsedImport.Conversations.Length
+        let parsedMessageCount = parsedImport.Conversations |> List.sumBy (fun conversation -> conversation.Messages.Length)
+        let parsedArtifactCount =
+            parsedImport.Conversations
+            |> List.sumBy (fun conversation ->
+                conversation.Messages
+                |> List.sumBy (fun message -> message.ArtifactReferences.Length))
+
+        emitStatus
+            status
+            $"Provider payload parsed: {parsedConversationCount} conversations, {parsedMessageCount} messages, {parsedArtifactCount} artifact references."
+
         let importId = ImportId.create ()
         let importArtifactId = ArtifactId.create ()
         let exportProviderRef = providerExportRef request.Provider intake.SourceFileName
+        emitStatus status "Loading event-store index for dedupe and revision checks."
         let index = EventStoreIndex.load eventStoreRoot
         let events = ResizeArray<CanonicalEvent>()
         let mutable conversationsSeen = 0
@@ -325,6 +363,12 @@ module ImportWorkflow =
         let mutable duplicatesSkipped = 0
         let mutable revisionsObserved = 0
         let mutable reparseObservationsAppended = 0
+        let progressInterval =
+            match parsedConversationCount with
+            | count when count <= 10 -> 1
+            | count when count <= 50 -> 5
+            | count when count <= 200 -> 10
+            | _ -> 25
 
         appendEvent
             events
@@ -352,7 +396,9 @@ module ImportWorkflow =
                       ExtractedEntries = Some intake.ExtractedEntries
                       Notes = Some "Provider export extracted into working raw snapshot." } }
 
-        for conversation in parsedImport.Conversations do
+        emitStatus status $"Processing {parsedConversationCount} conversations into canonical history."
+
+        for conversationIndex, conversation in parsedImport.Conversations |> List.indexed do
             conversationsSeen <- conversationsSeen + 1
 
             let conversationId, conversationAlreadyKnown =
@@ -519,6 +565,14 @@ module ImportWorkflow =
                                         artifact.ProviderArtifactId
                                         |> Option.map (artifactProviderRef request.Provider conversation.ProviderConversationId message.ProviderMessageId) } }
 
+            let processedConversations = conversationIndex + 1
+
+            if processedConversations = parsedConversationCount
+               || processedConversations % progressInterval = 0 then
+                emitStatus
+                    status
+                    $"Processed {processedConversations}/{parsedConversationCount} conversations; {messagesSeen} messages, {artifactsReferenced} artifact references, {events.Count} pending events, {duplicatesSkipped} duplicates, {revisionsObserved} revisions, {reparseObservationsAppended} reparses."
+
         let importCompletedCounts =
             importCounts
                 conversationsSeen
@@ -556,8 +610,14 @@ module ImportWorkflow =
               NewCanonicalEventIds = eventList |> List.map (fun event -> event.Envelope.EventId)
               Notes = parsedImport.Notes }
 
+        emitStatus status $"Writing {eventList.Length} canonical events to the event store."
         let eventPaths = CanonicalStore.writeCanonicalEvents eventStoreRoot eventList
+        emitStatus status "Writing import manifest."
         let manifestPath = CanonicalStore.writeImportManifest eventStoreRoot manifest
+        stopwatch.Stop()
+        emitStatus
+            status
+            $"Provider import completed in {formatElapsed stopwatch.Elapsed}: {importCompletedCounts.NewEventsAppended} new events appended, {importCompletedCounts.DuplicatesSkipped} duplicates skipped, {importCompletedCounts.RevisionsObserved} revisions, {importCompletedCounts.ReparseObservationsAppended} reparses."
 
         { Provider = request.Provider
           ImportId = importId
@@ -567,3 +627,14 @@ module ImportWorkflow =
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
           Counts = importCompletedCounts }
+
+    /// <summary>
+    /// Imports a provider export zip into the object layer and canonical event store.
+    /// </summary>
+    /// <param name="request">Locations and provider metadata for the import run.</param>
+    /// <returns>A summary of archived raw artifacts, appended events, and import counts.</returns>
+    /// <remarks>
+    /// Use <c>runWithStatus</c> when you want human-readable progress messages during larger imports.
+    /// Full workflow notes: docs/how-to/import-provider-export.md
+    /// </remarks>
+    let run (request: ImportRequest) = runWithStatus ignore request

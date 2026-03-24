@@ -43,6 +43,25 @@ module WorkflowTests =
                       Expect.equal secondImport.Counts.RevisionsObserved 0 "Did not expect revisions from an unchanged duplicate import."
                       Expect.equal secondImport.Counts.ReparseObservationsAppended 0 "Did not expect reparses from an unchanged duplicate import."))
 
+              testCase "Provider export import emits phase and completion status" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-claude-import-status" (fun tempRoot ->
+                      let request, _, _ = buildClaudeImportRequest tempRoot
+                      let messages = ResizeArray<string>()
+
+                      let result = ImportWorkflow.runWithStatus messages.Add request
+
+                      Expect.equal result.Counts.ConversationsSeen 1 "Expected the status-bearing import to still complete normally."
+                      Expect.isGreaterThan messages.Count 0 "Expected status messages to be emitted."
+
+                      let combined = String.concat "\n" messages
+                      Expect.stringContains combined "Preparing provider import for claude" "Expected the initial import-preparation status."
+                      Expect.stringContains combined "Archiving raw export zip into NEXUS-Objects." "Expected the raw archive phase."
+                      Expect.stringContains combined "Parsing provider payload from conversations.json." "Expected the parser phase."
+                      Expect.stringContains combined "Loading event-store index for dedupe and revision checks." "Expected the dedupe-index phase."
+                      Expect.stringContains combined "Processing 1 conversations into canonical history." "Expected the canonical processing phase."
+                      Expect.stringContains combined "Writing 7 canonical events to the event store." "Expected the write phase."
+                      Expect.stringContains combined "Provider import completed in" "Expected the completion status."))
+
               testCase "Manual artifact capture hydrates once and skips duplicate content" (fun () ->
                   TestHelpers.withTempDirectory "nexus-artifact-capture" (fun tempRoot ->
                       let request, objectsRoot, eventStoreRoot = buildClaudeImportRequest tempRoot

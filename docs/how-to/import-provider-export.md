@@ -43,6 +43,23 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
 
+## Progress Output
+
+The CLI prints import phases as it works so you can tell the difference between a quiet wait and active processing.
+
+Typical phases:
+
+- preparing the import request
+- archiving the raw export zip
+- parsing `conversations.json`
+- loading the event-store dedupe index
+- processing conversations into canonical history
+- writing canonical events
+- writing the import manifest
+- completion summary with elapsed time and counts
+
+Larger imports also emit periodic conversation-processing updates with running message, artifact, duplicate, revision, and reparse counts.
+
 ## Current v0 Scope
 
 The importer currently normalizes:

@@ -107,6 +107,7 @@ module Program =
                       sprintf "%s import-provider-export --provider chatgpt --zip RawDataExports/chatgpt-export.zip --window full" cliInvocation ]
                   Notes =
                     [ "Overlapping imports are deduped by provider identity and canonical content hash."
+                      "The CLI emits phase progress plus periodic conversation-processing updates during larger imports."
                       "Parser-version changes append reparse observations instead of fake provider revisions."
                       "Detailed guide: docs/how-to/import-provider-export.md" ] }
         | "import-codex-sessions" ->
@@ -944,7 +945,7 @@ module Program =
         0
 
     let private importProviderExport request =
-        let result = ImportWorkflow.run request
+        let result = ImportWorkflow.runWithStatus (fun message -> printfn "  %s" message) request
 
         printfn "Provider export imported."
         printfn "  Provider: %s" (ProviderNaming.slug result.Provider)
