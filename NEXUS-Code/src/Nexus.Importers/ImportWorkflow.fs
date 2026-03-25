@@ -293,7 +293,7 @@ module ImportWorkflow =
                 fallbackKey |> Option.iter (fun key -> index.ArtifactsByFallbackKey[key] <- artifactId)
                 artifactId, false
 
-    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses =
+    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses : ImportCounts =
         { ConversationsSeen = conversationsSeen
           MessagesSeen = messagesSeen
           ArtifactsReferenced = artifactsReferenced

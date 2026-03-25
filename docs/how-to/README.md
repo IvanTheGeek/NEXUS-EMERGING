@@ -28,6 +28,7 @@ Current guides:
 - `rebuild-graph-assertions.md`
 - `rebuild-import-snapshots.md`
 - `rebuild-working-graph-index.md`
+- `report-current-ingestion.md`
 - `report-unresolved-artifacts.md`
 - `report-provider-import-history.md`
 - `report-working-graph-imports.md`

@@ -12,6 +12,7 @@ module Program =
               WorkflowTests.tests
               ImportSnapshotTests.tests
               ImportSnapshotHistoryTests.tests
+              CurrentIngestionTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
               GraphWorkingIndexTests.tests

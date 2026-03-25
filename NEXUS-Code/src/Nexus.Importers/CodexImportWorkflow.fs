@@ -78,7 +78,7 @@ module CodexImportWorkflow =
     let private envelopeRawObjectsForConversation intake (conversation: ParsedConversation) =
         intake.SnapshotRawObjects @ conversation.RawObjects
 
-    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses =
+    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses : ImportCounts =
         { ConversationsSeen = conversationsSeen
           MessagesSeen = messagesSeen
           ArtifactsReferenced = artifactsReferenced

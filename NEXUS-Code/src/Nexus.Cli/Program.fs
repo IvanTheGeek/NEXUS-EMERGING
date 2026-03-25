@@ -28,6 +28,7 @@ module Program =
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
+        | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
@@ -201,6 +202,24 @@ module Program =
                       "Each row shows one import snapshot plus the delta from the previous snapshot for that provider."
                       "If older imports are missing snapshot files, run rebuild-import-snapshots first."
                       "Detailed guide: docs/how-to/report-provider-import-history.md" ] }
+        | "report-current-ingestion" ->
+            Some
+                { Name = name
+                  Summary = "Report the latest known import state across providers from canonical import manifests."
+                  Usage =
+                    [ sprintf "%s report-current-ingestion" cliInvocation
+                      sprintf "%s report-current-ingestion --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot ]
+                  Examples =
+                    [ sprintf "%s report-current-ingestion" cliInvocation
+                      sprintf "%s report-current-ingestion --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation ]
+                  Notes =
+                    [ "This reads the newest import manifest for each provider and augments it with normalized snapshot totals when available."
+                      "Providers like Codex currently report from import-manifest counts because they do not yet write normalized import snapshots."
+                      "When the preserved root artifact still exists, the report also prints its SHA-256."
+                      "Detailed guide: docs/how-to/report-current-ingestion.md" ] }
         | "rebuild-import-snapshots" ->
             Some
                 { Name = name
@@ -598,6 +617,7 @@ module Program =
           "compare-provider-exports"
           "compare-import-snapshots"
           "report-provider-import-history"
+          "report-current-ingestion"
           "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
@@ -1444,6 +1464,24 @@ module Program =
 
             loop defaultEventStoreRoot defaultObjectsRoot None 20 args
 
+    let private parseReportCurrentIngestion (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-current-ingestion"))
+        else
+            let rec loop eventStoreRoot objectsRoot remaining =
+                match remaining with
+                | [] -> Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot))
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for report-current-ingestion: %s" option
+                    printCommandHelp "report-current-ingestion"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot args
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -1731,6 +1769,8 @@ module Program =
             parseCompareImportSnapshots rest
         | "report-provider-import-history" :: rest ->
             parseReportProviderImportHistory rest
+        | "report-current-ingestion" :: rest ->
+            parseReportCurrentIngestion rest
         | "rebuild-import-snapshots" :: rest ->
             parseRebuildImportSnapshots rest
         | "import-provider-export" :: rest ->
@@ -1972,7 +2012,7 @@ module Program =
 
         let appendedEventCount = 7
 
-        let counts =
+        let counts : ImportCounts =
             { ConversationsSeen = 1
               MessagesSeen = 2
               ArtifactsReferenced = 1
@@ -2250,6 +2290,77 @@ module Program =
             eprintfn "No normalized import snapshots found for provider %s." provider
             eprintfn "Run provider imports first, or use rebuild-import-snapshots if older imports predate snapshot materialization."
             1
+
+    let private reportCurrentIngestion eventStoreRoot objectsRoot =
+        let report = CurrentIngestion.buildReport eventStoreRoot objectsRoot
+
+        printfn "Current ingestion status."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Objects root: %s" objectsRoot
+        printfn "  Import manifests available: %d" report.ImportManifestCount
+        printfn "  Providers with imports: %d" report.ProviderCount
+
+        match report.MissingKnownProviders with
+        | [] ->
+            printfn "  Missing known providers: none"
+        | values ->
+            printfn "  Missing known providers: %s" (String.concat ", " values)
+
+        if report.Entries.IsEmpty then
+            printfn "  Latest imports: none"
+        else
+            printfn "  Latest imports:"
+
+            report.Entries
+            |> List.iteri (fun index entry ->
+                let acquisitionLabel = entry.SourceAcquisition |> Option.defaultValue "unknown"
+                let windowLabel = entry.Window |> Option.defaultValue "unknown"
+
+                printfn
+                    "    %d. %s | import_id=%s | imported_at=%s | acquisition=%s | window=%s"
+                    (index + 1)
+                    entry.Provider
+                    (ImportId.format entry.ImportId)
+                    (entry.ImportedAt.ToUniversalTime().ToString("O"))
+                    acquisitionLabel
+                    windowLabel
+
+                match entry.NormalizationVersion with
+                | Some value -> printfn "      normalization_version=%s" value
+                | None -> ()
+
+                match entry.RootArtifactRelativePath with
+                | Some value ->
+                    printfn "      root_artifact_relative_path=%s" value
+
+                    match entry.RootArtifactExists, entry.RootArtifactSha256 with
+                    | Some true, Some sha256 -> printfn "      root_artifact_sha256=%s" sha256
+                    | Some false, _ -> printfn "      root_artifact_sha256=missing"
+                    | _ -> ()
+                | None -> ()
+
+                printfn
+                    "      counts conversations=%d messages=%d artifacts=%d new_events=%d duplicates=%d revisions=%d reparses=%d"
+                    entry.Counts.ConversationsSeen
+                    entry.Counts.MessagesSeen
+                    entry.Counts.ArtifactsReferenced
+                    entry.Counts.NewEventsAppended
+                    entry.Counts.DuplicatesSkipped
+                    entry.Counts.RevisionsObserved
+                    entry.Counts.ReparseObservationsAppended
+
+                printfn "      normalized_snapshot_available=%b" entry.SnapshotAvailable
+
+                match entry.SnapshotConversationCount, entry.SnapshotMessageCount, entry.SnapshotArtifactReferenceCount with
+                | Some conversations, Some messages, Some artifacts ->
+                    printfn
+                        "      snapshot conversations=%d messages=%d artifacts=%d"
+                        conversations
+                        messages
+                        artifacts
+                | _ -> ())
+
+        0
 
     let private backfillOutcomeLabel =
         function
@@ -3065,6 +3176,8 @@ module Program =
             compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
         | Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, provider, limit)) ->
             reportProviderImportHistory eventStoreRoot objectsRoot provider limit
+        | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
+            reportCurrentIngestion eventStoreRoot objectsRoot
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
             rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->
