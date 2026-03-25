@@ -63,6 +63,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-current-ingestion.md" "Expected the current-ingestion guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-current-ingestion.")
 
+              testCase "Conversation overlap help exposes the explicit candidate workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-conversation-overlap-candidates" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-conversation-overlap-candidates to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-conversation-overlap-candidates" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--left-provider <chatgpt|claude|grok|codex>" "Expected left-provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--right-provider <chatgpt|claude|grok|codex>" "Expected right-provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "heuristic candidate report only" "Expected the explicit candidate warning."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-conversation-overlap-candidates.md" "Expected the overlap guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-conversation-overlap-candidates.")
+
               testCase "Snapshot rebuild help exposes the backfill workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "rebuild-import-snapshots" ]
 

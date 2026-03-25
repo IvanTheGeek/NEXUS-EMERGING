@@ -29,6 +29,7 @@ Current guides:
 - `rebuild-import-snapshots.md`
 - `rebuild-working-graph-index.md`
 - `report-current-ingestion.md`
+- `report-conversation-overlap-candidates.md`
 - `report-unresolved-artifacts.md`
 - `report-provider-import-history.md`
 - `report-working-graph-imports.md`

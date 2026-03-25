@@ -29,6 +29,7 @@ module Program =
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
         | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
+        | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
@@ -220,6 +221,26 @@ module Program =
                       "Providers like Codex currently report from import-manifest counts because they do not yet write normalized import snapshots."
                       "When the preserved root artifact still exists, the report also prints its SHA-256."
                       "Detailed guide: docs/how-to/report-current-ingestion.md" ] }
+        | "report-conversation-overlap-candidates" ->
+            Some
+                { Name = name
+                  Summary = "Report conservative conversation-level overlap candidates between two providers' projection sets."
+                  Usage =
+                    [ sprintf "%s report-conversation-overlap-candidates --left-provider <chatgpt|claude|grok|codex> --right-provider <chatgpt|claude|grok|codex>" cliInvocation
+                      sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt --limit 10" cliInvocation ]
+                  Options =
+                    [ "--left-provider <chatgpt|claude|grok|codex>", "Required. The first provider projection set to inspect."
+                      "--right-provider <chatgpt|claude|grok|codex>", "Required. The second provider projection set to inspect."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--limit <n>", "Limit reported candidates. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt" cliInvocation
+                      sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider claude --event-store-root /tmp/nexus-event-store --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This is a heuristic candidate report only. It does not reconcile, merge, or delete anything."
+                      "Candidates are based on explainable signals such as normalized title similarity, time overlap, and message-count closeness."
+                      "Use it to spot likely cross-source overlap before any explicit reconciliation workflow exists."
+                      "Detailed guide: docs/how-to/report-conversation-overlap-candidates.md" ] }
         | "rebuild-import-snapshots" ->
             Some
                 { Name = name
@@ -618,6 +639,7 @@ module Program =
           "compare-import-snapshots"
           "report-provider-import-history"
           "report-current-ingestion"
+          "report-conversation-overlap-candidates"
           "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
@@ -769,6 +791,68 @@ module Program =
                     Error 1
 
             loop None None None 20 args
+
+    let private parseProviderSlugOption commandName optionName value =
+        match ProviderNaming.tryParse value with
+        | Some ChatGpt -> Ok "chatgpt"
+        | Some Claude -> Ok "claude"
+        | Some Grok -> Ok "grok"
+        | Some Codex -> Ok "codex"
+        | Some (OtherProvider _) ->
+            eprintfn "Unsupported provider for %s: %s" commandName value
+            printCommandHelp commandName
+            Error 1
+        | None ->
+            eprintfn "Unsupported value for %s: %s" optionName value
+            printCommandHelp commandName
+            Error 1
+
+    let private parseReportConversationOverlapCandidates (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-conversation-overlap-candidates"))
+        else
+            let rec loop eventStoreRoot leftProvider rightProvider limit remaining =
+                match remaining with
+                | [] ->
+                    match leftProvider, rightProvider with
+                    | Some leftProviderValue, Some rightProviderValue when leftProviderValue = rightProviderValue ->
+                        eprintfn "Left and right providers must be different for report-conversation-overlap-candidates."
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                    | Some leftProviderValue, Some rightProviderValue ->
+                        Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProviderValue, rightProviderValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option for report-conversation-overlap-candidates: --left-provider"
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option for report-conversation-overlap-candidates: --right-provider"
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value leftProvider rightProvider limit rest
+                | "--left-provider" :: value :: rest ->
+                    match parseProviderSlugOption "report-conversation-overlap-candidates" "--left-provider" value with
+                    | Ok parsedValue -> loop eventStoreRoot (Some parsedValue) rightProvider limit rest
+                    | Error code -> Error code
+                | "--right-provider" :: value :: rest ->
+                    match parseProviderSlugOption "report-conversation-overlap-candidates" "--right-provider" value with
+                    | Ok parsedValue -> loop eventStoreRoot leftProvider (Some parsedValue) limit rest
+                    | Error code -> Error code
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot leftProvider rightProvider parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-conversation-overlap-candidates: %s" option
+                    printCommandHelp "report-conversation-overlap-candidates"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
 
     let private parseImportProviderExport (args: string list) =
         if containsHelpSwitch args then
@@ -1771,6 +1855,8 @@ module Program =
             parseReportProviderImportHistory rest
         | "report-current-ingestion" :: rest ->
             parseReportCurrentIngestion rest
+        | "report-conversation-overlap-candidates" :: rest ->
+            parseReportConversationOverlapCandidates rest
         | "rebuild-import-snapshots" :: rest ->
             parseRebuildImportSnapshots rest
         | "import-provider-export" :: rest ->
@@ -2372,6 +2458,56 @@ module Program =
                         messages
                         artifacts
                 | _ -> ())
+
+        0
+
+    let private timestampLabel (value: DateTimeOffset option) =
+        value
+        |> Option.map (fun timestamp -> timestamp.ToUniversalTime().ToString("O"))
+        |> Option.defaultValue "unknown"
+
+    let private reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit =
+        let report = ConversationOverlap.buildReport eventStoreRoot leftProvider rightProvider limit
+
+        printfn "Conversation overlap candidates."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Left provider: %s" report.LeftProvider
+        printfn "  Right provider: %s" report.RightProvider
+        printfn "  Left conversations inspected: %d" report.LeftConversationCount
+        printfn "  Right conversations inspected: %d" report.RightConversationCount
+        printfn "  Candidate count: %d" report.CandidateCount
+        printfn "  Reported candidates: %d" report.ReportedCount
+        printfn "  These are heuristic candidates only. They do not reconcile or merge history."
+
+        match report.Candidates with
+        | [] ->
+            printfn "  Candidates: none"
+        | values ->
+            printfn "  Candidates:"
+
+            values
+            |> List.iteri (fun index value ->
+                printfn
+                    "    %d. score=%d | %s -> %s"
+                    (index + 1)
+                    value.Score
+                    value.LeftConversationId
+                    value.RightConversationId
+                printfn
+                    "      left provider=%s title=%s messages=%d first=%s last=%s"
+                    value.LeftProvider
+                    (value.LeftTitle |> Option.defaultValue "(untitled)")
+                    value.LeftMessageCount
+                    (timestampLabel value.LeftFirstOccurredAt)
+                    (timestampLabel value.LeftLastOccurredAt)
+                printfn
+                    "      right provider=%s title=%s messages=%d first=%s last=%s"
+                    value.RightProvider
+                    (value.RightTitle |> Option.defaultValue "(untitled)")
+                    value.RightMessageCount
+                    (timestampLabel value.RightFirstOccurredAt)
+                    (timestampLabel value.RightLastOccurredAt)
+                printfn "      signals=%s" (String.concat ", " value.Signals))
 
         0
 
@@ -3191,6 +3327,8 @@ module Program =
             reportProviderImportHistory eventStoreRoot objectsRoot provider limit
         | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
             reportCurrentIngestion eventStoreRoot objectsRoot
+        | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
+            reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
             rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->

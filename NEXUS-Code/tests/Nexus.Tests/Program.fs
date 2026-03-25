@@ -14,6 +14,7 @@ module Program =
               ImportSnapshotTests.tests
               ImportSnapshotHistoryTests.tests
               CurrentIngestionTests.tests
+              ConversationOverlapTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
               GraphWorkingIndexTests.tests
