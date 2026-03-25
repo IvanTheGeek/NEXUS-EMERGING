@@ -66,6 +66,21 @@ module CodexSessions =
 
         builder.ToString()
 
+    let private isJsonPaddingCharacter character =
+        match character with
+        | ' '
+        | '\t'
+        | '\r'
+        | '\n'
+        | '\000' -> true
+        | _ -> false
+
+    let private trimJsonLinePadding (line: string) =
+        line.Trim([| ' '; '\t'; '\r'; '\n'; '\000' |])
+
+    let private isSkippableJsonLine (line: string) =
+        line |> Seq.forall isJsonPaddingCharacter
+
     module private Json =
         let private tryAsValue<'T> (node: JsonNode) =
             if isNull node then
@@ -119,10 +134,10 @@ module CodexSessions =
         else
             File.ReadLines(path)
             |> Seq.choose (fun line ->
-                if String.IsNullOrWhiteSpace(line) then
+                if isSkippableJsonLine line then
                     None
                 else
-                    let node = JsonNode.Parse(line)
+                    let node = JsonNode.Parse(trimJsonLinePadding line)
                     let sessionId =
                         Json.tryProperty "id" node
                         |> Option.bind Json.tryString
@@ -159,8 +174,8 @@ module CodexSessions =
         let mutable nextSequence = 1
 
         for (lineIndex, line) in File.ReadLines(transcriptPath) |> Seq.indexed do
-            if not (String.IsNullOrWhiteSpace(line)) then
-                let node = JsonNode.Parse(line)
+            if not (isSkippableJsonLine line) then
+                let node = JsonNode.Parse(trimJsonLinePadding line)
                 let recordType =
                     Json.tryProperty "type" node
                     |> Option.bind Json.tryString

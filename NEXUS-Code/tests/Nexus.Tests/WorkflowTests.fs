@@ -229,4 +229,28 @@ module WorkflowTests =
                       let projection = TestHelpers.readToml projectionPath
 
                       Expect.equal (TomlDocument.tryScalar "title" projection) (Some "Codex Fixture Session") "Expected the Codex projection title."
-                      Expect.equal (TomlDocument.tryScalar "message_count" projection) (Some "2") "Expected the Codex projection message count.")) ]
+                      Expect.equal (TomlDocument.tryScalar "message_count" projection) (Some "2") "Expected the Codex projection message count."))
+
+              testCase "Codex import skips null-padding lines in transcript JSONL" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-codex-import-null-padding" (fun tempRoot ->
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      let snapshotRoot = Path.Combine(objectsRoot, "providers", "codex", "latest")
+
+                      TestHelpers.copyFixtureDirectory "codex/latest" snapshotRoot
+
+                      let transcriptPath =
+                          Path.Combine(snapshotRoot, "sessions", "2026", "03", "21", "rollout-codex-session-1.jsonl")
+
+                      File.AppendAllText(transcriptPath, "\n" + String('\000', 48) + "\n")
+
+                      let request =
+                          { SnapshotRoot = snapshotRoot
+                            ObjectsRoot = objectsRoot
+                            EventStoreRoot = eventStoreRoot }
+
+                      let importResult = CodexImportWorkflow.run request
+
+                      Expect.equal importResult.Counts.ConversationsSeen 1 "Expected the Codex conversation to remain importable with null-padding lines."
+                      Expect.equal importResult.Counts.MessagesSeen 2 "Expected null-padding lines to be ignored rather than counted as messages."
+                      Expect.equal importResult.Counts.NewEventsAppended 5 "Expected the canonical event count to remain unchanged when null-padding lines are skipped.")) ]
