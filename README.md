@@ -71,6 +71,8 @@ Already established:
 - A first external graph export exists through Graphviz DOT output over derived graph assertions.
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 - A first LOGOS source-model scaffold exists for source systems, intake channels, and signal kinds.
+- Concrete non-chat LOGOS source systems now exist for forum, email, issue-tracker, and app-feedback surfaces.
+- A first LOGOS intake-note workflow exists for seeding non-chat intake into durable repo memory.
 - A first explicit overlap-candidate report exists without collapsing acquisition history automatically.
 - Full graph rebuilds are now explicitly treated as heavyweight operations, and a secondary graph working layer is planned next.
 

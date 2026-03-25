@@ -8,6 +8,7 @@ open Nexus.Curation
 open Nexus.Domain
 open Nexus.EventStore
 open Nexus.Importers
+open Nexus.Logos
 
 module Program =
     type private CommandHelp =
@@ -29,6 +30,7 @@ module Program =
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
         | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
+        | ReportLogosCatalog
         | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
@@ -59,6 +61,7 @@ module Program =
         | VerifyWorkingGraphSlice of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
+        | CreateLogosIntakeNote of request: CreateLogosIntakeNoteRequest
         | CreateConceptNote of request: CreateConceptNoteRequest
 
     let private repoRoot =
@@ -221,6 +224,17 @@ module Program =
                       "Providers like Codex currently report from import-manifest counts because they do not yet write normalized import snapshots."
                       "When the preserved root artifact still exists, the report also prints its SHA-256."
                       "Detailed guide: docs/how-to/report-current-ingestion.md" ] }
+        | "report-logos-catalog" ->
+            Some
+                { Name = name
+                  Summary = "Report the explicit allowlisted LOGOS source systems, intake channels, and signal kinds."
+                  Usage = [ sprintf "%s report-logos-catalog" cliInvocation ]
+                  Options = []
+                  Examples = [ sprintf "%s report-logos-catalog" cliInvocation ]
+                  Notes =
+                    [ "This is the concrete LOGOS intake vocabulary currently recognized by the codebase."
+                      "Use it before seeding intake notes so source-system, intake-channel, and signal-kind choices stay explicit."
+                      "Detailed guide: docs/how-to/report-logos-catalog.md" ] }
         | "report-conversation-overlap-candidates" ->
             Some
                 { Name = name
@@ -631,6 +645,35 @@ module Program =
                     [ "This writes a Markdown note under docs/concepts/ and keeps source provenance back to canonical conversation projections."
                       "Seed notes are meant to be edited and refined by humans and AI after creation."
                       "Detailed guide: docs/how-to/create-concept-note.md" ] }
+        | "create-logos-intake-note" ->
+            Some
+                { Name = name
+                  Summary = "Create a durable LOGOS intake seed note from explicit source, channel, signal, and locator metadata."
+                  Usage =
+                    [ sprintf "%s create-logos-intake-note --slug <slug> --title <title> --source-system <slug> --intake-channel <slug> --signal-kind <slug> --source-uri <uri>" cliInvocation
+                      sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation ]
+                  Options =
+                    [ "--slug <slug>", "Required. Explicit file-safe slug using lowercase ascii letters, digits, and '-'."
+                      "--title <title>", "Required. Human-readable title for the intake note."
+                      "--source-system <slug>", "Required. Explicit allowlisted source system. Run report-logos-catalog to inspect values."
+                      "--intake-channel <slug>", "Required. Explicit allowlisted intake channel."
+                      "--signal-kind <slug>", "Required. Explicit allowlisted signal kind."
+                      "--native-item-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--native-thread-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--native-message-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--source-uri <uri>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--captured-at <iso-8601>", "Optional capture timestamp."
+                      "--summary <text>", "Optional seed summary."
+                      "--tag <slug>", "Optional explicit tag slug. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
+                  Examples =
+                    [ sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation
+                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --intake-channel app-feedback --signal-kind feedback --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
+                  Notes =
+                    [ "This writes a Markdown seed note under docs/logos-intake/."
+                      "Use it to represent early LOGOS intake before a full ingestion pipeline exists for that source type."
+                      "At least one explicit locator is required."
+                      "Detailed guide: docs/how-to/create-logos-intake-note.md" ] }
         | _ -> None
 
     let private availableCommands () =
@@ -639,6 +682,7 @@ module Program =
           "compare-import-snapshots"
           "report-provider-import-history"
           "report-current-ingestion"
+          "report-logos-catalog"
           "report-conversation-overlap-candidates"
           "rebuild-import-snapshots"
           "import-provider-export"
@@ -658,6 +702,7 @@ module Program =
           "verify-working-graph-slice"
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
+          "create-logos-intake-note"
           "create-concept-note" ]
         |> List.choose (fun name ->
             commandHelp name
@@ -1566,6 +1611,17 @@ module Program =
 
             loop defaultEventStoreRoot defaultObjectsRoot args
 
+    let private parseReportLogosCatalog (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-logos-catalog"))
+        else
+            match args with
+            | [] -> Ok ReportLogosCatalog
+            | option :: _ ->
+                eprintfn "Unknown option for report-logos-catalog: %s" option
+                printCommandHelp "report-logos-catalog"
+                Error 1
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -1828,6 +1884,131 @@ module Program =
 
             loop defaultEventStoreRoot args
 
+    let private parseCreateLogosIntakeNote (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "create-logos-intake-note"))
+        else
+            let rec loop docsRoot slug title sourceSystem intakeChannel signalKind locators capturedAt summary tags remaining =
+                match remaining with
+                | [] ->
+                    match slug, title, sourceSystem, intakeChannel, signalKind with
+                    | None, _, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --slug"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, None, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --title"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, None, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --source-system"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, _, None, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --intake-channel"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, _, _, None ->
+                        eprintfn "Missing required option for create-logos-intake-note: --signal-kind"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | Some slugValue, Some titleValue, Some sourceSystemValue, Some intakeChannelValue, Some signalKindValue ->
+                        match locators with
+                        | [] ->
+                            eprintfn "At least one explicit locator is required."
+                            printCommandHelp "create-logos-intake-note"
+                            Error 1
+                        | _ ->
+                            Ok
+                                (CreateLogosIntakeNote
+                                    { DocsRoot = docsRoot
+                                      Slug = slugValue
+                                      Title = titleValue
+                                      SourceSystemId = sourceSystemValue
+                                      IntakeChannelId = intakeChannelValue
+                                      SignalKindId = signalKindValue
+                                      Locators = List.rev locators
+                                      CapturedAt = capturedAt
+                                      Summary = summary
+                                      Tags = List.rev tags })
+                | "--docs-root" :: value :: rest ->
+                    loop value slug title sourceSystem intakeChannel signalKind locators capturedAt summary tags rest
+                | "--slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid slug: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop docsRoot (Some normalized) title sourceSystem intakeChannel signalKind locators capturedAt summary tags rest
+                | "--title" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid title: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop docsRoot slug (Some normalized) sourceSystem intakeChannel signalKind locators capturedAt summary tags rest
+                | "--source-system" :: value :: rest ->
+                    match KnownSourceSystems.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot slug title (Some identifier) intakeChannel signalKind locators capturedAt summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS source system: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--intake-channel" :: value :: rest ->
+                    match CoreIntakeChannels.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot slug title sourceSystem (Some identifier) signalKind locators capturedAt summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS intake channel: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--signal-kind" :: value :: rest ->
+                    match CoreSignalKinds.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot slug title sourceSystem intakeChannel (Some identifier) locators capturedAt summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS signal kind: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--native-item-id" :: value :: rest ->
+                    loop docsRoot slug title sourceSystem intakeChannel signalKind (LogosLocator.nativeItemId value :: locators) capturedAt summary tags rest
+                | "--native-thread-id" :: value :: rest ->
+                    loop docsRoot slug title sourceSystem intakeChannel signalKind (LogosLocator.nativeThreadId value :: locators) capturedAt summary tags rest
+                | "--native-message-id" :: value :: rest ->
+                    loop docsRoot slug title sourceSystem intakeChannel signalKind (LogosLocator.nativeMessageId value :: locators) capturedAt summary tags rest
+                | "--source-uri" :: value :: rest ->
+                    loop docsRoot slug title sourceSystem intakeChannel signalKind (LogosLocator.sourceUri value :: locators) capturedAt summary tags rest
+                | "--captured-at" :: value :: rest ->
+                    match DateTimeOffset.TryParse(value) with
+                    | true, parsedValue ->
+                        loop docsRoot slug title sourceSystem intakeChannel signalKind locators (Some parsedValue) summary tags rest
+                    | false, _ ->
+                        eprintfn "Invalid captured-at timestamp: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--summary" :: value :: rest ->
+                    loop docsRoot slug title sourceSystem intakeChannel signalKind locators capturedAt (Some value) tags rest
+                | "--tag" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid tag: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop docsRoot slug title sourceSystem intakeChannel signalKind locators capturedAt summary (normalized :: tags) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for create-logos-intake-note: %s" option
+                    printCommandHelp "create-logos-intake-note"
+                    Error 1
+
+            loop defaultDocsRoot None None None None None [] None None [] args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -1855,6 +2036,8 @@ module Program =
             parseReportProviderImportHistory rest
         | "report-current-ingestion" :: rest ->
             parseReportCurrentIngestion rest
+        | "report-logos-catalog" :: rest ->
+            parseReportLogosCatalog rest
         | "report-conversation-overlap-candidates" :: rest ->
             parseReportConversationOverlapCandidates rest
         | "rebuild-import-snapshots" :: rest ->
@@ -1893,6 +2076,8 @@ module Program =
             parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
+        | "create-logos-intake-note" :: rest ->
+            parseCreateLogosIntakeNote rest
         | "create-concept-note" :: rest ->
             parseCreateConceptNote rest
         | command :: _ ->
@@ -2459,6 +2644,24 @@ module Program =
                         artifacts
                 | _ -> ())
 
+        0
+
+    let private reportLogosCatalog () =
+        let report = LogosCatalog.build ()
+
+        let printItems (heading: string) (items: LogosCatalogItem list) =
+            printfn "  %s (%d):" heading items.Length
+
+            items
+            |> List.iter (fun item ->
+                printfn "    %s" item.Slug
+                printfn "      %s" item.Summary)
+
+        printfn "LOGOS catalog."
+        printfn "  This catalog is an explicit allowlist, not an open-ended taxonomy."
+        printItems "Source systems" report.SourceSystems
+        printItems "Intake channels" report.IntakeChannels
+        printItems "Signal kinds" report.SignalKinds
         0
 
     let private timestampLabel (value: DateTimeOffset option) =
@@ -3291,6 +3494,23 @@ module Program =
         printfn "  Graph assertions indexed: %d" result.GraphAssertionCount
         0
 
+    let private createLogosIntakeNote request =
+        match LogosIntakeNotes.create request with
+        | Ok result ->
+            let source = LogosSignal.source result.Signal
+
+            printfn "LOGOS intake note created."
+            printfn "  Output path: %s" result.OutputPath
+            printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Source system: %s" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)
+            printfn "  Intake channel: %s" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)
+            printfn "  Signal kind: %s" (LogosSignal.signalKindId result.Signal |> SignalKindId.value)
+            printfn "  Locators: %d" (LogosSourceRef.locators source |> List.length)
+            0
+        | Error error ->
+            eprintfn "%s" error
+            1
+
     let private createConceptNote request =
         match ConceptNotes.create request with
         | Error error ->
@@ -3327,6 +3547,8 @@ module Program =
             reportProviderImportHistory eventStoreRoot objectsRoot provider limit
         | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
             reportCurrentIngestion eventStoreRoot objectsRoot
+        | Ok ReportLogosCatalog ->
+            reportLogosCatalog ()
         | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
             reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
@@ -3365,6 +3587,8 @@ module Program =
             rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
+        | Ok (CreateLogosIntakeNote request) ->
+            createLogosIntakeNote request
         | Ok (CreateConceptNote request) ->
             createConceptNote request
         | Error exitCode ->

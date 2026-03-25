@@ -68,6 +68,12 @@ The CLI supports both:
 - It also shows the current LOGOS source/channel/signal classification for known providers.
 - Details: `docs/how-to/report-current-ingestion.md`
 
+`report-logos-catalog`
+
+- Reports the explicit allowlisted LOGOS source systems, intake channels, and signal kinds.
+- Use it when you want to see the current concrete LOGOS intake vocabulary before classifying or seeding a source.
+- Details: `docs/how-to/report-logos-catalog.md`
+
 `report-conversation-overlap-candidates`
 
 - Reports conservative conversation-level overlap candidates between two providers' projection sets.
@@ -114,6 +120,12 @@ The CLI supports both:
 - Creates a curated concept-note seed from one or more canonical conversation projections.
 - Use it to promote recurring ideas from chat history into durable repo memory with provenance.
 - Details: `docs/how-to/create-concept-note.md`
+
+`create-logos-intake-note`
+
+- Creates a durable LOGOS intake seed note from explicit source, channel, signal, and locator metadata.
+- Use it for forum/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
+- Details: `docs/how-to/create-logos-intake-note.md`
 
 `rebuild-artifact-projections`
 
@@ -240,6 +252,12 @@ Concept harvest:
 3. Edit the seed note under `docs/concepts/`.
 4. Use `export-graphviz-dot --conversation-id <uuid>` when you want the local graph neighborhood alongside the note.
 
+LOGOS intake seeding:
+
+1. Run `report-logos-catalog`.
+2. Run `create-logos-intake-note`.
+3. Refine the note under `docs/logos-intake/`.
+
 Manual artifact hydration:
 
 1. Identify a target artifact with `report-unresolved-artifacts`.
@@ -265,12 +283,14 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/render-graphviz-dot.md`
 - `docs/how-to/rebuild-conversation-projections.md`
 - `docs/how-to/create-concept-note.md`
+- `docs/how-to/create-logos-intake-note.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/rebuild-working-graph-index.md`
 - `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
 - `docs/how-to/report-current-ingestion.md`
+- `docs/how-to/report-logos-catalog.md`
 - `docs/how-to/report-working-graph-imports.md`
 - `docs/how-to/report-working-import-conversations.md`
 - `docs/how-to/compare-working-import-conversations.md`

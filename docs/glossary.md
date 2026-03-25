@@ -81,6 +81,10 @@ The NEXUS concept area for intake, refinement, and retention of knowledge-bearin
 
 LOGOS is broader than any one storage or retrieval technology.
 
+## LOGOS Intake Note
+
+A durable Markdown seed note under `docs/logos-intake/` that records explicit source-system, intake-channel, signal-kind, and locator metadata for an intake signal before full ingestion exists for that source type.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.

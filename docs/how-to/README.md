@@ -16,6 +16,7 @@ Current guides:
 - `compare-provider-exports.md`
 - `compare-working-import-conversations.md`
 - `create-concept-note.md`
+- `create-logos-intake-note.md`
 - `export-codex-sessions.md`
 - `export-graphviz-dot.md`
 - `find-working-graph-nodes.md`
@@ -29,6 +30,7 @@ Current guides:
 - `rebuild-import-snapshots.md`
 - `rebuild-working-graph-index.md`
 - `report-current-ingestion.md`
+- `report-logos-catalog.md`
 - `report-conversation-overlap-candidates.md`
 - `report-unresolved-artifacts.md`
 - `report-provider-import-history.md`

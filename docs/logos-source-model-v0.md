@@ -76,6 +76,7 @@ The `v0` scope is intentionally narrow:
 - stable intake-channel identifiers
 - stable signal-kind identifiers
 - minimal source references and signal envelopes
+- a small durable note workflow for seeding non-chat intake before full ingestion exists
 
 Deferred:
 
@@ -91,3 +92,30 @@ Deferred:
 `v0` LOGOS identifiers use explicit allowlisted slug validation rather than permissive acceptance.
 
 That keeps this layer aligned with the repo rule that stable recognized forms should be narrow and deterministic.
+
+Current concrete source-system allowlist:
+
+- `chatgpt`
+- `claude`
+- `grok`
+- `codex`
+- `forum`
+- `email`
+- `issue-tracker`
+- `app-feedback-surface`
+
+Current concrete intake-channel allowlist:
+
+- `ai-conversation`
+- `forum-thread`
+- `email-thread`
+- `bug-report`
+- `app-feedback`
+
+Current concrete signal-kind allowlist:
+
+- `conversation`
+- `message`
+- `bug-report`
+- `feedback`
+- `support-question`

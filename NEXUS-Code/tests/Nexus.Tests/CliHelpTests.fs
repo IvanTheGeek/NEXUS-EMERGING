@@ -63,6 +63,15 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-current-ingestion.md" "Expected the current-ingestion guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-current-ingestion.")
 
+              testCase "LOGOS catalog help exposes the explicit vocabulary workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-logos-catalog" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-logos-catalog to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-logos-catalog" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "allowlisted LOGOS source systems" "Expected the explicit vocabulary summary."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-logos-catalog.md" "Expected the LOGOS catalog guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-logos-catalog.")
+
               testCase "Conversation overlap help exposes the explicit candidate workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "report-conversation-overlap-candidates" ]
 
@@ -100,6 +109,19 @@ module CliHelpTests =
 
                   Expect.equal helpCommandResult.StandardError "" "Did not expect stderr from help import-provider-export."
                   Expect.equal switchResult.StandardError "" "Did not expect stderr from import-provider-export --help.")
+
+              testCase "LOGOS intake note help exposes the seeded intake workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "create-logos-intake-note" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help create-logos-intake-note to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: create-logos-intake-note" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--source-system <slug>" "Expected source-system guidance."
+                  Expect.stringContains result.StandardOutput "--intake-channel <slug>" "Expected intake-channel guidance."
+                  Expect.stringContains result.StandardOutput "--signal-kind <slug>" "Expected signal-kind guidance."
+                  Expect.stringContains result.StandardOutput "--source-uri <uri>" "Expected source-uri guidance."
+                  Expect.stringContains result.StandardOutput "At least one explicit locator is required." "Expected explicit locator note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/create-logos-intake-note.md" "Expected the intake note guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help create-logos-intake-note.")
 
               testCase "Graphviz help exposes the external graph export workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "export-graphviz-dot" ]
