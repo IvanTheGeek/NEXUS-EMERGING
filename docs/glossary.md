@@ -45,6 +45,10 @@ In the current bounded context, it is the canonical store for observed acquisiti
 
 A broad area of reality or work that a part of the graph concerns, such as `Ingestion` or `SoftwareDevelopment`.
 
+## Flow
+
+An ordered sequence of Event Modeling slices that accomplishes something useful.
+
 ## Event
 
 An append-only record in the canonical history that states what was observed, referenced, captured, or completed.
@@ -85,6 +89,10 @@ LOGOS is broader than any one storage or retrieval technology.
 
 A durable Markdown seed note under `docs/logos-intake/` that records explicit source-system, intake-channel, signal-kind, and locator metadata for an intake signal before full ingestion exists for that source type.
 
+## LOGOS Handling Policy
+
+An explicit handling classification for a LOGOS intake signal covering sensitivity, sharing scope, sanitization status, and retention class.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.
@@ -112,6 +120,10 @@ The provenance-first layer that records what NEXUS actually encountered from exp
 
 A rebuildable materialized view derived from canonical history.
 
+## Retention Class
+
+A stable classification for how long or how durably an intake signal should be retained, such as `ephemeral`, `case-bound`, or `durable`.
+
 ## Provider Artifact
 
 An original source object received from a provider, such as a ChatGPT, Claude, or Grok export zip.
@@ -119,6 +131,26 @@ An original source object received from a provider, such as a ChatGPT, Claude, o
 ## Raw Object
 
 A preserved source or derived extraction stored in the object layer.
+
+## Sanitization Status
+
+A stable classification for whether an intake signal or derived artifact is still raw, has been redacted, has been anonymized, or has been approved for wider sharing.
+
+## Scope
+
+An explicit filtered boundary over data or graph material, such as one provider, one conversation, one import batch, or one node neighborhood.
+
+## Sensitivity
+
+A stable classification for how sensitive an intake signal is, such as `personal-private`, `customer-confidential`, `internal-restricted`, or `public`.
+
+## Sharing Scope
+
+A stable classification for who may access or use an intake signal or derivative, such as `owner-only`, `case-team`, `project-team`, or `public`.
+
+## Slice
+
+In NEXUS terminology, `Slice` is reserved for the Event Modeling sense: a unit of change or read.
 
 ## Overlap Reconciliation
 
@@ -133,3 +165,7 @@ A stable classification for the kind of knowledge-bearing signal represented in 
 ## Source System
 
 A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, or an app feedback surface.
+
+## Batch
+
+An import-bounded or materialization-bounded contribution unit, especially in the graph working layer.

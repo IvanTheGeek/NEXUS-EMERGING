@@ -13,7 +13,11 @@ type LogosCatalogItem =
 type LogosCatalogReport =
     { SourceSystems: LogosCatalogItem list
       IntakeChannels: LogosCatalogItem list
-      SignalKinds: LogosCatalogItem list }
+      SignalKinds: LogosCatalogItem list
+      Sensitivities: LogosCatalogItem list
+      SharingScopes: LogosCatalogItem list
+      SanitizationStatuses: LogosCatalogItem list
+      RetentionClasses: LogosCatalogItem list }
 
 /// <summary>
 /// Builds human-facing reports over the allowlisted LOGOS source vocabulary.
@@ -31,9 +35,13 @@ module LogosCatalog =
               Summary = summary })
 
     /// <summary>
-    /// Builds the current allowlisted LOGOS source-system, intake-channel, and signal-kind catalog.
+    /// Builds the current allowlisted LOGOS source-system, intake-channel, signal-kind, and handling-policy catalog.
     /// </summary>
     let build () =
         { SourceSystems = KnownSourceSystems.described |> renderItems
           IntakeChannels = CoreIntakeChannels.described |> renderItems
-          SignalKinds = CoreSignalKinds.described |> renderItems }
+          SignalKinds = CoreSignalKinds.described |> renderItems
+          Sensitivities = KnownSensitivities.described |> renderItems
+          SharingScopes = KnownSharingScopes.described |> renderItems
+          SanitizationStatuses = KnownSanitizationStatuses.described |> renderItems
+          RetentionClasses = KnownRetentionClasses.described |> renderItems }

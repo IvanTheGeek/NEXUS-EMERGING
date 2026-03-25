@@ -10,8 +10,8 @@ NEXUS now has multiple derived layers over canonical history:
 
 - projections
 - durable graph assertions
-- graph working slices
-- a persisted SQLite working index over graph working slices
+- graph working batches
+- a persisted SQLite working index over graph working batches
 
 These layers exist to make practical work faster.
 
@@ -39,7 +39,7 @@ NEXUS must preserve the ability to verify important slice flows by tracing from 
 The intended verification chain is:
 
 1. working index
-2. working slice assertions
+2. working batch assertions
 3. canonical events
 4. raw source references
 5. provider artifact or preserved source object when needed

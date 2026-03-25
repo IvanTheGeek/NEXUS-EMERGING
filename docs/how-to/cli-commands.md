@@ -57,7 +57,7 @@ The CLI supports both:
 - Reports one provider's normalized import snapshots in chronological order.
 - Use it when you want a timeline view of export/import history plus adjacent snapshot deltas.
 - When the preserved raw artifacts are still available, it also reports raw SHA-256 and whether each artifact matches the previous snapshot's artifact.
-- This is a snapshot-history report, not an additive working-slice report.
+- This is a snapshot-history report, not an additive working-batch report.
 - Details: `docs/how-to/report-provider-import-history.md`
 
 `report-current-ingestion`
@@ -70,7 +70,7 @@ The CLI supports both:
 
 `report-logos-catalog`
 
-- Reports the explicit allowlisted LOGOS source systems, intake channels, and signal kinds.
+- Reports the explicit allowlisted LOGOS source systems, intake channels, signal kinds, and handling-policy dimensions.
 - Use it when you want to see the current concrete LOGOS intake vocabulary before classifying or seeding a source.
 - Details: `docs/how-to/report-logos-catalog.md`
 
@@ -94,7 +94,7 @@ The CLI supports both:
 - Archives a ChatGPT, Claude, or Grok export zip.
 - Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
 - Also writes a normalized import snapshot under `snapshots/imports/<import-id>/`.
-- Also materializes a batch-local graph working slice under `graph/working/imports/<import-id>/`.
+- Also materializes a batch-local graph working batch under `graph/working/imports/<import-id>/`.
 - Details: `docs/how-to/import-provider-export.md`
 
 `import-codex-sessions`
@@ -123,8 +123,9 @@ The CLI supports both:
 
 `create-logos-intake-note`
 
-- Creates a durable LOGOS intake seed note from explicit source, channel, signal, and locator metadata.
+- Creates a durable LOGOS intake seed note from explicit source, channel, signal, locator, and handling-policy metadata.
 - Use it for forum/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
+- New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 - Details: `docs/how-to/create-logos-intake-note.md`
 
 `rebuild-artifact-projections`
@@ -146,8 +147,8 @@ The CLI supports both:
 - Exports the derived graph assertions as a Graphviz DOT file.
 - Use it when you want an external visual lens over the graph to spot structure, clusters, and relationships.
 - It now supports provider, provider-conversation, and import slices so you do not have to render the whole graph every time.
-- It also supports `--working-node-id` for one node's immediate neighborhood inside a fresh working import slice.
-- It can also traceably verify a `--working-import-id` slice back to canonical events and raw object refs before writing the DOT file.
+- It also supports `--working-node-id` for one node's immediate neighborhood inside a fresh working import batch.
+- It can also traceably verify a `--working-import-id` batch back to canonical events and raw object refs before writing the DOT file.
 - Details: `docs/how-to/export-graphviz-dot.md`
 
 `render-graphviz-dot`
@@ -164,19 +165,19 @@ The CLI supports both:
 
 `report-working-graph-imports`
 
-- Summarizes the graph working-layer import slices from the lightweight catalog.
+- Summarizes the graph working-layer import batches from the lightweight catalog.
 - Use it when you want a fast view of the current secondary graph working layer.
 - Details: `docs/how-to/report-working-graph-imports.md`
 
 `report-working-import-conversations`
 
-- Summarizes the conversation nodes present in one import-local graph working slice.
+- Summarizes the conversation nodes present in one import-local graph working batch.
 - Use it when you want to understand a fresh import batch in conversation terms before drilling into graph details.
 - Details: `docs/how-to/report-working-import-conversations.md`
 
 `compare-working-import-conversations`
 
-- Compares the conversation contributions present in two import-local graph working slices.
+- Compares the conversation contributions present in two import-local graph working batches.
 - Use it when you want a fast batch-to-batch view of added, removed, and changed conversation contributions in the working layer.
 - This is intentionally about batch-local derived contributions, not full provider snapshot truth.
 - Details: `docs/how-to/compare-working-import-conversations.md`
@@ -187,27 +188,29 @@ The CLI supports both:
 - Use it when you need node IDs before inspecting a local neighborhood.
 - Details: `docs/how-to/find-working-graph-nodes.md`
 
-`report-working-graph-slice`
+`report-working-graph-batch`
 
-- Summarizes one graph working import slice from the SQLite working index.
+- Summarizes one graph working import batch from the SQLite working index.
 - Use it when you want a quick structural view of a specific fresh import batch.
-- Details: `docs/how-to/report-working-graph-slice.md`
+- Legacy alias: `report-working-graph-slice`
+- Details: `docs/how-to/report-working-graph-batch.md`
 
 `report-working-graph-neighborhood`
 
-- Shows the local neighborhood of one node inside a single graph working import slice.
+- Shows the local neighborhood of one node inside a single graph working import batch.
 - Use it after `find-working-graph-nodes` when you want the nearby literals and node-to-node connections.
 - Details: `docs/how-to/report-working-graph-neighborhood.md`
 
-`verify-working-graph-slice`
+`verify-working-graph-batch`
 
-- Verifies one graph working import slice back to canonical events and preserved raw objects.
-- Use it when a slice matters enough to trade speed for stronger provenance validation.
-- Details: `docs/how-to/verify-working-graph-slice.md`
+- Verifies one graph working import batch back to canonical events and preserved raw objects.
+- Use it when a batch matters enough to trade speed for stronger provenance validation.
+- Legacy alias: `verify-working-graph-slice`
+- Details: `docs/how-to/verify-working-graph-batch.md`
 
 `rebuild-working-graph-index`
 
-- Rebuilds the SQLite graph working index from the existing graph working import slices.
+- Rebuilds the SQLite graph working index from the existing graph working import batches.
 - Use it when the local working index is missing, stale, or intentionally reset.
 - Details: `docs/how-to/rebuild-working-graph-index.md`
 
@@ -228,14 +231,14 @@ Provider import:
 10. Run `export-graphviz-dot` if you want an external graph view.
 11. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
 12. Run `report-unresolved-artifacts` if you want to identify missing payloads.
-13. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
+13. Run `report-working-graph-imports` if you want a quick view of the current graph working batches.
 14. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
 15. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
 16. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
-17. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
+17. Run `report-working-graph-batch --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
 18. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
-19. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
-20. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
+19. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working batches.
+20. Run `verify-working-graph-batch --import-id <uuid>` if you want to validate that the batch still traces back cleanly to canonical and raw layers.
 21. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
 
 Codex session import:
@@ -243,7 +246,7 @@ Codex session import:
 1. Run `dotnet fsi NEXUS-Code/scripts/export_codex_sessions.fsx`.
 2. Run `import-codex-sessions`.
 3. Run `rebuild-conversation-projections`.
-4. Run `report-working-graph-slice --import-id <uuid>` if you want the local working-index summary for that batch.
+4. Run `report-working-graph-batch --import-id <uuid>` if you want the local working-index summary for that batch.
 
 Concept harvest:
 
@@ -295,7 +298,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/report-working-import-conversations.md`
 - `docs/how-to/compare-working-import-conversations.md`
 - `docs/how-to/find-working-graph-nodes.md`
-- `docs/how-to/report-working-graph-slice.md`
+- `docs/how-to/report-working-graph-batch.md`
 - `docs/how-to/report-working-graph-neighborhood.md`
 - `docs/how-to/run-tests.md`
-- `docs/how-to/verify-working-graph-slice.md`
+- `docs/how-to/verify-working-graph-batch.md`

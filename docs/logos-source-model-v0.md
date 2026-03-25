@@ -35,6 +35,8 @@ The `v0` LOGOS source model introduces:
   the source-system + intake-channel + locator grouping
 - `LogosSignal`
   a small semantic envelope for a captured signal
+- `LogosHandlingPolicy`
+  a small explicit handling envelope covering sensitivity, sharing scope, sanitization status, and retention class
 
 ## Relation To Existing NEXUS Layers
 
@@ -85,6 +87,7 @@ Deferred:
 - retrieval ranking
 - clustering
 - doctrine/refinement workflows
+- redaction and anonymization workflows as explicit derived steps
 - cross-source overlap reconciliation implementation
 
 ## Design Notes
@@ -119,3 +122,25 @@ Current concrete signal-kind allowlist:
 - `bug-report`
 - `feedback`
 - `support-question`
+
+Current handling-policy allowlists:
+
+- sensitivities:
+  - `personal-private`
+  - `customer-confidential`
+  - `internal-restricted`
+  - `public`
+- sharing scopes:
+  - `owner-only`
+  - `case-team`
+  - `project-team`
+  - `public`
+- sanitization statuses:
+  - `raw`
+  - `redacted`
+  - `anonymized`
+  - `approved-for-sharing`
+- retention classes:
+  - `ephemeral`
+  - `case-bound`
+  - `durable`

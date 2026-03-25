@@ -53,13 +53,11 @@ The branch graph should primarily describe the work, not which tool or agent hap
 
 ## Initial Application
 
-The bootstrap branch:
+The first ingestion-foundation workstream has already been preserved as a milestone:
 
-- `codex/nexus-ingestion-foundation`
+- merge milestone tag: `ingestion-foundation-v0`
 
-is treated as the first milestone branch for the ingestion foundation.
-
-It should be merged into `main` with `--no-ff` and tagged as a milestone so the bootstrap line remains easy to identify in the graph.
+That milestone marks the bootstrap phase without keeping the older agent-qualified branch name as the ongoing naming pattern.
 
 ## Consequences
 

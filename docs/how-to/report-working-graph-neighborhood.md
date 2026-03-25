@@ -1,6 +1,6 @@
 # Report Working Graph Neighborhood
 
-Use this command when you want the local graph neighborhood of one node inside a single import-local working slice.
+Use this command when you want the local graph neighborhood of one node inside a single import-local working batch.
 
 ## Command
 

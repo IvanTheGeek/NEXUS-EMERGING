@@ -137,7 +137,7 @@ module GraphvizDotTests =
                       Expect.stringContains sliceDot "references_artifact" "Expected local relationship edges around the conversation."
                       Expect.stringContains sliceDot "semantic: imprint" "Expected node metadata for the local neighborhood."))
 
-              testCase "Working import slice export works without a durable graph rebuild" (fun () ->
+              testCase "Working import batch export works without a durable graph rebuild" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-import" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -151,9 +151,9 @@ module GraphvizDotTests =
 
                       let dotText = File.ReadAllText(moduleResult.OutputPath)
 
-                      Expect.isTrue (File.Exists(moduleResult.OutputPath)) "Expected the working-slice DOT file to exist."
-                      Expect.equal moduleResult.ScannedAssertionCount 46 "Expected the working slice to read only its own assertion batch."
-                      Expect.equal moduleResult.AssertionCount 46 "Expected the exported working slice assertion count."
+                      Expect.isTrue (File.Exists(moduleResult.OutputPath)) "Expected the working-batch DOT file to exist."
+                      Expect.equal moduleResult.ScannedAssertionCount 46 "Expected the working batch to read only its own assertion batch."
+                      Expect.equal moduleResult.AssertionCount 46 "Expected the exported working-batch assertion count."
                       Expect.stringContains dotText "Claude Fixture Conversation" "Expected the working import graph to include the imported conversation title."
 
                       let cliResult =
@@ -168,9 +168,9 @@ module GraphvizDotTests =
 
                       Expect.equal cliResult.ExitCode 0 "Expected working-import Graphviz export through the CLI to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
-                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working batch" "Expected the CLI to report the working-batch source kind."))
 
-              testCase "Working node neighborhood export scopes one node inside a working import slice" (fun () ->
+              testCase "Working node neighborhood export scopes one node inside a working import batch" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-node" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -202,8 +202,8 @@ module GraphvizDotTests =
                       let dotText = File.ReadAllText(neighborhoodResult.OutputPath)
 
                       Expect.isTrue (File.Exists(neighborhoodResult.OutputPath)) "Expected the working-node DOT file to exist."
-                      Expect.isLessThan neighborhoodResult.AssertionCount fullResult.AssertionCount "Expected the node neighborhood to export fewer assertions than the full working slice."
-                      Expect.isLessThan neighborhoodResult.NodeCount fullResult.NodeCount "Expected the node neighborhood to export fewer nodes than the full working slice."
+                      Expect.isLessThan neighborhoodResult.AssertionCount fullResult.AssertionCount "Expected the node neighborhood to export fewer assertions than the full working batch."
+                      Expect.isLessThan neighborhoodResult.NodeCount fullResult.NodeCount "Expected the node neighborhood to export fewer nodes than the full working batch."
                       Expect.stringContains dotText "Claude Fixture Conversation" "Expected the selected working node to remain in the neighborhood export."
                       Expect.stringContains dotText "belongs_to_conversation" "Expected local neighborhood edges around the selected node."))
 
@@ -240,7 +240,7 @@ module GraphvizDotTests =
                       Expect.equal cliResult.ExitCode 0 "Expected working-node Graphviz export through the CLI to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-node Graphviz export."
                       Expect.isTrue (File.Exists(outputPath)) "Expected the CLI working-node DOT file to exist."
-                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice neighborhood" "Expected the CLI to report the neighborhood source kind."
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working batch neighborhood" "Expected the CLI to report the neighborhood source kind."
                       Expect.stringContains cliResult.StandardOutput nodeMatch.NodeId "Expected the CLI summary to report the selected working node.")) 
 
               testCase "Working import slice export can require traceable verification before writing DOT output" (fun () ->
@@ -294,7 +294,7 @@ module GraphvizDotTests =
                                 outputPath ]
 
                       Expect.equal cliResult.ExitCode 2 "Expected broken traceable verification to refuse export."
-                      Expect.stringContains cliResult.StandardError "Working-slice traceability verification failed." "Expected a clear verification failure."
+                      Expect.stringContains cliResult.StandardError "Working-batch traceability verification failed." "Expected a clear verification failure."
                       Expect.stringContains cliResult.StandardError "Missing raw object refs:" "Expected the missing raw object count in stderr."
                       Expect.isFalse (File.Exists(outputPath)) "Did not expect a DOT file after verification failure."))
 

@@ -37,7 +37,9 @@ Current guides:
 - `report-working-graph-imports.md`
 - `report-working-import-conversations.md`
 - `report-working-graph-neighborhood.md`
+- `report-working-graph-batch.md`
 - `report-working-graph-slice.md`
 - `run-tests.md`
+- `verify-working-graph-batch.md`
 - `verify-working-graph-slice.md`
 - `write-sample-event-store.md`

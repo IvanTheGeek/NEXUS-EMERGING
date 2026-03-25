@@ -106,10 +106,10 @@ If the derived graph may be stale:
 1. Run `rebuild-graph-assertions`
 2. Run `export-graphviz-dot`
 
-If you just finished an import and want the batch-local working slice instead:
+If you just finished an import and want the batch-local working batch instead:
 
 1. Run `import-provider-export`
-2. Run `report-working-graph-imports` if you want to confirm the available working slices
+2. Run `report-working-graph-imports` if you want to confirm the available working batches
 3. Run `export-graphviz-dot --working-import-id <import-id>`
 
 If you want just one local working-node neighborhood instead:
@@ -117,7 +117,7 @@ If you want just one local working-node neighborhood instead:
 1. Run `find-working-graph-nodes` or `report-working-graph-neighborhood` to identify a node ID
 2. Run `export-graphviz-dot --working-import-id <import-id> --working-node-id <node-id>`
 
-If that working slice is important enough to verify before export:
+If that working batch is important enough to verify before export:
 
 1. Run `import-provider-export`
 2. Run `export-graphviz-dot --working-import-id <import-id> --verification traceable`
@@ -129,7 +129,7 @@ For large stores, prefer slices first:
 2. `--conversation-id` for one canonical conversation and its immediate neighborhood
 3. `--provider-conversation-id` for one provider-native conversation
 4. `--import-id` for one import batch
-5. `--working-import-id` for one fresh graph working slice without a full durable-graph rebuild
+5. `--working-import-id` for one fresh graph working batch without a full durable-graph rebuild
 6. `--working-import-id` + `--working-node-id` for one local working neighborhood
 
 ## Rendering
@@ -151,13 +151,13 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 - This export is derived from `graph/assertions/`, not from canonical history directly.
 - `--working-import-id` is the exception: it reads `graph/working/imports/<import-id>/assertions/` directly from the secondary working layer.
 - `--working-node-id` is supported only together with `--working-import-id`.
-- `--working-node-id` narrows the working-slice export to the selected node plus its immediate neighborhood.
+- `--working-node-id` narrows the working-batch export to the selected node plus its immediate neighborhood scope.
 - `--verification traceable` is currently supported only with `--working-import-id`.
-- When `--verification traceable` is enabled, the command verifies the working slice back to canonical events and raw object refs before writing the DOT file.
+- When `--verification traceable` is enabled, the command verifies the working batch back to canonical events and raw object refs before writing the DOT file.
 - Use `--objects-root` only with `--verification traceable` when the preserved objects are not under the repository default.
 - Use either `--output` or `--output-root`, not both.
 - Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
 - `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.
-- `--working-import-id` cannot be combined with the durable-graph filter options because it already selects one explicit working slice.
+- `--working-import-id` cannot be combined with the durable-graph filter options because it already selects one explicit working batch.
 - The DOT file is an external lens, not the source of truth.
 - It is meant to help surface structure and relationships that may not yet be obvious from inside NEXUS itself.

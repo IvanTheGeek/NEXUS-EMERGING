@@ -17,6 +17,7 @@ type CreateLogosIntakeNoteRequest =
       SourceSystemId: SourceSystemId
       IntakeChannelId: IntakeChannelId
       SignalKindId: SignalKindId
+      Policy: LogosHandlingPolicy
       Locators: LogosLocator list
       CapturedAt: DateTimeOffset option
       Summary: string option
@@ -28,7 +29,8 @@ type CreateLogosIntakeNoteRequest =
 type CreateLogosIntakeNoteResult =
     { OutputPath: string
       NormalizedSlug: string
-      Signal: LogosSignal }
+      Signal: LogosSignal
+      Policy: LogosHandlingPolicy }
 
 /// <summary>
 /// Creates durable LOGOS intake seed notes from explicit source classifications and locators.
@@ -85,6 +87,7 @@ module LogosIntakeNotes =
         (title: string)
         (tags: string list)
         (signal: LogosSignal)
+        (policy: LogosHandlingPolicy)
         (now: DateTimeOffset)
         =
         let builder = StringBuilder()
@@ -101,6 +104,10 @@ module LogosIntakeNotes =
         builder.AppendLine(sprintf "source_system = \"%s\"" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)) |> ignore
         builder.AppendLine(sprintf "intake_channel = \"%s\"" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)) |> ignore
         builder.AppendLine(sprintf "signal_kind = \"%s\"" (LogosSignal.signalKindId signal |> SignalKindId.value)) |> ignore
+        builder.AppendLine(sprintf "sensitivity = \"%s\"" (SensitivityId.value policy.SensitivityId)) |> ignore
+        builder.AppendLine(sprintf "sharing_scope = \"%s\"" (SharingScopeId.value policy.SharingScopeId)) |> ignore
+        builder.AppendLine(sprintf "sanitization_status = \"%s\"" (SanitizationStatusId.value policy.SanitizationStatusId)) |> ignore
+        builder.AppendLine(sprintf "retention_class = \"%s\"" (RetentionClassId.value policy.RetentionClassId)) |> ignore
 
         LogosSignal.capturedAt signal
         |> Option.iter (fun capturedAt ->
@@ -143,6 +150,13 @@ module LogosIntakeNotes =
             builder.AppendLine(sprintf "- tags: `%s`" (String.concat "`, `" (tags |> List.map markdownEscapeInline))) |> ignore
 
         builder.AppendLine() |> ignore
+        builder.AppendLine("## Handling Policy") |> ignore
+        builder.AppendLine() |> ignore
+        builder.AppendLine(sprintf "- sensitivity: `%s`" (SensitivityId.value policy.SensitivityId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine(sprintf "- sharing scope: `%s`" (SharingScopeId.value policy.SharingScopeId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine(sprintf "- sanitization status: `%s`" (SanitizationStatusId.value policy.SanitizationStatusId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine(sprintf "- retention class: `%s`" (RetentionClassId.value policy.RetentionClassId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine() |> ignore
         builder.AppendLine("## Locators") |> ignore
         builder.AppendLine() |> ignore
 
@@ -168,6 +182,7 @@ module LogosIntakeNotes =
             let title = normalizeRequiredText "title" request.Title
             let summary = normalizeOptionalText request.Summary
             let normalizedTags = request.Tags |> List.map (normalizeStableSlug "tag") |> List.distinct
+            let policy = request.Policy
             let source = LogosSourceRef.create request.SourceSystemId request.IntakeChannelId request.Locators
             let signal = LogosSignal.create request.SignalKindId source request.CapturedAt (Some title) summary
             let outputDirectory = Path.Combine(request.DocsRoot, "logos-intake")
@@ -178,12 +193,13 @@ module LogosIntakeNotes =
             else
                 Directory.CreateDirectory(outputDirectory) |> ignore
                 let now = DateTimeOffset.UtcNow
-                let content = renderNote normalizedSlug title normalizedTags signal now
+                let content = renderNote normalizedSlug title normalizedTags signal policy now
                 File.WriteAllText(outputPath, content, utf8WithoutBom)
 
                 Ok
                     { OutputPath = outputPath
                       NormalizedSlug = normalizedSlug
-                      Signal = signal }
+                      Signal = signal
+                      Policy = policy }
         with :? ArgumentException as ex ->
             Error ex.Message

@@ -3,6 +3,7 @@
 Use this when you want to seed a non-chat intake item into durable repo memory before a full ingestion path exists for that source type.
 
 This writes a Markdown note under `docs/logos-intake/`.
+New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 
 ## Command
 
@@ -37,10 +38,21 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 
 ## Optional Inputs
 
+- `--sensitivity <slug>`
+- `--sharing-scope <slug>`
+- `--sanitization-status <slug>`
+- `--retention-class <slug>`
 - `--captured-at <iso-8601>`
 - `--summary <text>`
 - `--tag <slug>` repeatable
 - `--docs-root <path>`
+
+Default handling policy:
+
+- sensitivity: `internal-restricted`
+- sharing scope: `owner-only`
+- sanitization status: `raw`
+- retention class: `durable`
 
 ## Example Flows
 
@@ -70,6 +82,23 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --signal-kind feedback \
   --native-item-id fb-2026-03-25-001 \
   --summary "Users are confused about the onboarding transition."
+```
+
+Customer-confidential support case:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  create-logos-intake-note \
+  --slug cheddarbooks-debug-case-42 \
+  --title "CheddarBooks Debug Case 42" \
+  --source-system issue-tracker \
+  --intake-channel bug-report \
+  --signal-kind bug-report \
+  --sensitivity customer-confidential \
+  --sharing-scope case-team \
+  --sanitization-status raw \
+  --retention-class case-bound \
+  --native-item-id case-42
 ```
 
 ## Why This Exists

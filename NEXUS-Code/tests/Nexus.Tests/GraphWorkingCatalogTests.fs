@@ -25,14 +25,14 @@ module GraphWorkingCatalogTests =
     let tests =
         testList
             "graph working catalog"
-            [ testCase "Graph working catalog report summarizes import-batch slices" (fun () ->
+            [ testCase "Graph working catalog report summarizes import-batch batches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-catalog" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report = GraphWorkingCatalog.buildReport eventStoreRoot 10
 
-                      Expect.equal report.WorkingSliceCount 1 "Expected one graph working slice after the first import."
+                      Expect.equal report.WorkingSliceCount 1 "Expected one graph working batch after the first import."
                       Expect.equal report.TotalCanonicalEvents 7 "Expected the canonical event count from the fixture import."
                       Expect.equal report.TotalGraphAssertions 46 "Expected the graph assertion count from the fixture import."
                       Expect.equal report.ProviderCounts [ "claude", 1 ] "Expected the provider count to flow through from the import manifest."
@@ -65,7 +65,7 @@ module GraphWorkingCatalogTests =
                       Expect.equal cliResult.ExitCode 0 "Expected the working-graph report command to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-graph report command."
                       Expect.stringContains cliResult.StandardOutput "Graph working imports report." "Expected the report header."
-                      Expect.stringContains cliResult.StandardOutput "Working slices: 1" "Expected the working slice count."
+                      Expect.stringContains cliResult.StandardOutput "Working batches: 1" "Expected the working batch count."
                       Expect.stringContains cliResult.StandardOutput "Total canonical events: 7" "Expected the canonical event total."
                       Expect.stringContains cliResult.StandardOutput "Total graph assertions: 46" "Expected the graph assertion total."
                       Expect.stringContains cliResult.StandardOutput (ImportId.format importResult.ImportId) "Expected the import ID in the detailed output."

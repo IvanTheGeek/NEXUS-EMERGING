@@ -1,6 +1,6 @@
 # Compare Working Import Conversations
 
-Use this when you want to compare the conversation-level contributions of two import-local graph working slices.
+Use this when you want to compare the conversation-level contributions of two import-local graph working batches.
 
 This is useful for questions like:
 
@@ -10,7 +10,7 @@ This is useful for questions like:
 
 Important:
 
-- this compares **batch-local working-slice contributions**
+- this compares **batch-local working-batch contributions**
 - it does **not** claim to be full provider snapshot truth
 - if you need stronger validation, follow up with canonical or raw-layer inspection
 
@@ -65,11 +65,11 @@ Changed rows show contribution deltas like:
 - `messages=2 -> 1`
 - `artifacts=1 -> 0`
 
-That means the two import-local slices contributed different counts for the same canonical conversation node.
+That means the two import-local batches contributed different counts for the same canonical conversation node.
 
 ## Related Commands
 
 - `report-working-import-conversations`
 - `report-working-graph-imports`
-- `verify-working-graph-slice`
+- `verify-working-graph-batch`
 - `export-graphviz-dot --working-import-id <uuid>`

@@ -53,7 +53,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
 7. Writes a normalized import snapshot under `NEXUS-EventStore/snapshots/imports/<import-id>/...`
-8. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
+8. Materializes an import-local graph working batch under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
 9. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
 10. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
 

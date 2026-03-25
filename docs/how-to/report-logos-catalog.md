@@ -7,6 +7,10 @@ It reports:
 - recognized source systems
 - recognized intake channels
 - recognized signal kinds
+- recognized sensitivities
+- recognized sharing scopes
+- recognized sanitization statuses
+- recognized retention classes
 
 This keeps early LOGOS work explicit and deterministic rather than open-ended.
 
@@ -21,6 +25,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-logos-c
 Use this before:
 
 - creating a LOGOS intake note
+- assigning or checking intake handling policy
 - deciding how to classify a new source
 - checking whether a needed source kind is already modeled explicitly
 

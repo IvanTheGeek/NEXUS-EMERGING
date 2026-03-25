@@ -1,6 +1,6 @@
 # Report Working Import Conversations
 
-Use this command when you want to understand one import-local working slice in conversation terms instead of raw graph-node terms.
+Use this command when you want to understand one import-local working batch in conversation terms instead of raw graph-node terms.
 
 ## Command
 

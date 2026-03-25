@@ -68,7 +68,7 @@ module CliHelpTests =
 
                   Expect.equal result.ExitCode 0 "Expected help report-logos-catalog to exit successfully."
                   Expect.stringContains result.StandardOutput "Command: report-logos-catalog" "Expected the command header."
-                  Expect.stringContains result.StandardOutput "allowlisted LOGOS source systems" "Expected the explicit vocabulary summary."
+                  Expect.stringContains result.StandardOutput "handling-policy dimensions" "Expected the handling-policy summary."
                   Expect.stringContains result.StandardOutput "docs/how-to/report-logos-catalog.md" "Expected the LOGOS catalog guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-logos-catalog.")
 
@@ -118,7 +118,12 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "--source-system <slug>" "Expected source-system guidance."
                   Expect.stringContains result.StandardOutput "--intake-channel <slug>" "Expected intake-channel guidance."
                   Expect.stringContains result.StandardOutput "--signal-kind <slug>" "Expected signal-kind guidance."
+                  Expect.stringContains result.StandardOutput "--sensitivity <slug>" "Expected sensitivity guidance."
+                  Expect.stringContains result.StandardOutput "--sharing-scope <slug>" "Expected sharing-scope guidance."
+                  Expect.stringContains result.StandardOutput "--sanitization-status <slug>" "Expected sanitization guidance."
+                  Expect.stringContains result.StandardOutput "--retention-class <slug>" "Expected retention guidance."
                   Expect.stringContains result.StandardOutput "--source-uri <uri>" "Expected source-uri guidance."
+                  Expect.stringContains result.StandardOutput "restricted handling policy" "Expected the restricted-default note."
                   Expect.stringContains result.StandardOutput "At least one explicit locator is required." "Expected explicit locator note."
                   Expect.stringContains result.StandardOutput "docs/how-to/create-logos-intake-note.md" "Expected the intake note guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help create-logos-intake-note.")
@@ -205,14 +210,23 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/find-working-graph-nodes.md" "Expected the node-search guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help find-working-graph-nodes.")
 
-              testCase "Working graph slice help exposes the SQLite index workflow" (fun () ->
-                  let result = TestHelpers.runCli [ "help"; "report-working-graph-slice" ]
+              testCase "Working graph batch help exposes the SQLite index workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-graph-batch" ]
 
-                  Expect.equal result.ExitCode 0 "Expected help report-working-graph-slice to exit successfully."
-                  Expect.stringContains result.StandardOutput "Command: report-working-graph-slice" "Expected the command header."
+                  Expect.equal result.ExitCode 0 "Expected help report-working-graph-batch to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-graph-batch" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
                   Expect.stringContains result.StandardOutput "SQLite" "Expected the SQLite working-index note."
-                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-slice.md" "Expected the working-slice guide link."
+                  Expect.stringContains result.StandardOutput "report-working-graph-slice" "Expected the legacy alias note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-batch.md" "Expected the working-batch guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-batch.")
+
+              testCase "Legacy working graph slice help resolves to the preferred batch command" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-working-graph-slice" ]
+
+                  Expect.equal result.ExitCode 0 "Expected legacy help report-working-graph-slice to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-working-graph-batch" "Expected the preferred command header from the legacy alias."
+                  Expect.stringContains result.StandardOutput "report-working-graph-slice" "Expected the legacy alias note."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-slice.")
 
               testCase "Working graph neighborhood help exposes the local neighborhood workflow" (fun () ->
@@ -230,19 +244,28 @@ module CliHelpTests =
 
                   Expect.equal result.ExitCode 0 "Expected help rebuild-working-graph-index to exit successfully."
                   Expect.stringContains result.StandardOutput "Command: rebuild-working-graph-index" "Expected the command header."
-                  Expect.stringContains result.StandardOutput "graph/working/imports" "Expected the working-slice source note."
+                  Expect.stringContains result.StandardOutput "graph/working/imports" "Expected the working-batch source note."
                   Expect.stringContains result.StandardOutput "graph-working.sqlite" "Expected the SQLite index target note."
                   Expect.stringContains result.StandardOutput "docs/how-to/rebuild-working-graph-index.md" "Expected the working-index rebuild guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-working-graph-index.")
 
-              testCase "Working graph verification help exposes the traceability workflow" (fun () ->
-                  let result = TestHelpers.runCli [ "help"; "verify-working-graph-slice" ]
+              testCase "Working graph batch verification help exposes the traceability workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "verify-working-graph-batch" ]
 
-                  Expect.equal result.ExitCode 0 "Expected help verify-working-graph-slice to exit successfully."
-                  Expect.stringContains result.StandardOutput "Command: verify-working-graph-slice" "Expected the command header."
+                  Expect.equal result.ExitCode 0 "Expected help verify-working-graph-batch to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: verify-working-graph-batch" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected objects-root guidance."
                   Expect.stringContains result.StandardOutput "canonical events" "Expected canonical verification guidance."
-                  Expect.stringContains result.StandardOutput "docs/how-to/verify-working-graph-slice.md" "Expected the verification guide link."
+                  Expect.stringContains result.StandardOutput "verify-working-graph-slice" "Expected the legacy alias note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/verify-working-graph-batch.md" "Expected the verification guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help verify-working-graph-batch.")
+
+              testCase "Legacy working graph slice verification help resolves to the preferred batch command" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "verify-working-graph-slice" ]
+
+                  Expect.equal result.ExitCode 0 "Expected legacy help verify-working-graph-slice to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: verify-working-graph-batch" "Expected the preferred command header from the legacy alias."
+                  Expect.stringContains result.StandardOutput "verify-working-graph-slice" "Expected the legacy alias note."
                   Expect.equal result.StandardError "" "Did not expect stderr from help verify-working-graph-slice.")
 
               testCase "Concept note help exposes the curation workflow" (fun () ->
