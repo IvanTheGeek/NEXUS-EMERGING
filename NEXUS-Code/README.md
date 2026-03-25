@@ -17,6 +17,8 @@ The first code scaffold is intentionally small and centered on the canonical ing
 
 - `src/Nexus.Kernel/`
   small semantic kernel for ontology-level role and relation primitives
+- `src/Nexus.Logos/`
+  small source-model scaffold for knowledge-bearing intake systems, channels, and signals
 - `src/Nexus.Domain/`
   stable IDs, provenance, observed-history events, and a thin graph layer
 - `src/Nexus.EventStore/`
@@ -66,6 +68,7 @@ See:
 - `/docs/how-to/export-codex-sessions.md`
 - `/docs/how-to/run-tests.md`
 - `/docs/nexus-ontology-imprint-alignment.md`
+- `/docs/logos-source-model-v0.md`
 - `/docs/fsharp-documentation-convention.md`
 
 ## Testing Approach
