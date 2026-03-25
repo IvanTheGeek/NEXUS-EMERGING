@@ -109,10 +109,11 @@ module ExportComparison =
                 entry.ExtractToFile(destinationPath, true)
                 extractedEntries <- extractedEntries + 1
                 extractedNames <- extractedNames.Add(entry.Name.Trim().ToLowerInvariant())
+                extractedNames <- extractedNames.Add(entry.FullName.Trim().ToLowerInvariant())
 
         extractedEntries, extractedNames
 
-    let private withExtractedConversations provider zipPath action =
+    let private withExtractedProviderPayload provider zipPath action =
         let tempRoot = Path.Combine(Path.GetTempPath(), $"nexus-export-compare-{Guid.NewGuid():N}")
         let extractRoot = Path.Combine(tempRoot, "extracted")
 
@@ -120,10 +121,12 @@ module ExportComparison =
 
         try
             let extractedEntries, extractedNames = safeExtractToDirectory zipPath extractRoot
-            let conversationsJsonPath = Path.Combine(extractRoot, "conversations.json")
+            let providerPayloadLocation = ProviderAdapters.tryLocatePayload provider extractRoot
 
-            if not (File.Exists(conversationsJsonPath)) then
-                failwith $"The provider export did not contain conversations.json: {zipPath}"
+            let providerPayloadPath =
+                match providerPayloadLocation with
+                | Some value -> value.AbsolutePath
+                | None -> failwith $"The provider export did not contain the expected {ProviderNaming.slug provider} payload: {zipPath}"
 
             let parsedImport =
                 ProviderAdapters.parse
@@ -133,7 +136,7 @@ module ExportComparison =
                     (FileInfo(zipPath).Length)
                     extractedEntries
                     extractedNames
-                    conversationsJsonPath
+                    providerPayloadPath
 
             action parsedImport
         finally
@@ -187,8 +190,8 @@ module ExportComparison =
         let baseZipSha256 = sha256ForFile baseZipAbsolutePath
         let currentZipSha256 = sha256ForFile currentZipAbsolutePath
 
-        withExtractedConversations provider baseZipAbsolutePath (fun baseImport ->
-            withExtractedConversations provider currentZipAbsolutePath (fun currentImport ->
+        withExtractedProviderPayload provider baseZipAbsolutePath (fun baseImport ->
+            withExtractedProviderPayload provider currentZipAbsolutePath (fun currentImport ->
                 let baseConversations =
                     baseImport.Conversations
                     |> List.map (fun conversation -> conversation.ProviderConversationId, conversation)

@@ -57,4 +57,37 @@ module ProviderAdapterTests =
                   Expect.equal
                       (conversation.Messages[1].Segments |> List.map (fun segment -> segment.Text))
                       [ "ChatGPT fixture reply." ]
-                      "Expected normalized ChatGPT assistant text.") ]
+                      "Expected normalized ChatGPT assistant text.")
+
+              testCase "Grok fixture parses responses and attachment references" (fun () ->
+                  let fixturePath =
+                      TestHelpers.fixturePath "provider-export/grok/ttl/30d/export_data/test-user/prod-grok-backend.json"
+
+                  let extractedNames =
+                      [ "prod-grok-backend.json"
+                        "ttl/30d/export_data/test-user/prod-grok-backend.json"
+                        "content"
+                        "ttl/30d/export_data/test-user/prod-mc-asset-server/grok-asset-1/content" ]
+                      |> List.map (fun value -> value.ToLowerInvariant())
+                      |> Set.ofList
+
+                  let parsedImport =
+                      ProviderAdapters.parse Grok (Some(Rolling "30d")) "prod-grok-backend.json" (fixtureLength fixturePath) 2 extractedNames fixturePath
+
+                  Expect.equal parsedImport.Provider Grok "Expected the Grok provider adapter."
+                  Expect.equal parsedImport.Conversations.Length 1 "Expected one Grok fixture conversation."
+
+                  let conversation = parsedImport.Conversations.Head
+                  Expect.equal conversation.Title (Some "Grok Fixture Conversation") "Expected the Grok conversation title."
+                  Expect.equal conversation.Messages.Length 2 "Expected two Grok fixture messages."
+                  Expect.equal (conversation.Messages |> List.map (fun message -> message.Role)) [ Human; Assistant ] "Expected ordered human/assistant roles."
+                  Expect.equal (conversation.Messages |> List.choose (fun message -> message.SequenceHint)) [ 1; 2 ] "Expected stable sequence hints."
+                  Expect.equal conversation.Messages[1].ModelName (Some "grok-4") "Expected the Grok model slug to be captured."
+                  Expect.equal
+                      (conversation.Messages[1].Segments |> List.map (fun segment -> segment.Text))
+                      [ "Grok fixture reply." ]
+                      "Expected normalized Grok assistant text."
+
+                  let firstArtifact = conversation.Messages[0].ArtifactReferences.Head
+                  Expect.equal firstArtifact.ProviderArtifactId (Some "grok-asset-1") "Expected the Grok provider artifact ID."
+                  Expect.equal firstArtifact.Disposition PayloadIncluded "Expected the Grok attachment fixture to resolve as included.") ]

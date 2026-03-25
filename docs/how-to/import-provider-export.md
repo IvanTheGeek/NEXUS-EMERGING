@@ -7,7 +7,7 @@ This command takes a provider export zip, archives it into the NEXUS object laye
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   import-provider-export \
-  --provider <chatgpt|claude> \
+  --provider <chatgpt|claude|grok> \
   --zip <path-to-export.zip> \
   --window full
 ```
@@ -34,11 +34,21 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --window full
 ```
 
+Grok:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  import-provider-export \
+  --provider grok \
+  --zip "RawDataExports/ab6110cc-45f1-48f3-8e4a-091c0a0440e5 (1).zip" \
+  --window 30d
+```
+
 ## What It Does
 
 1. Copies the source zip into `NEXUS-Objects/providers/<provider>/archive/...`
 2. Updates the stable latest zip and extracted latest snapshot under `NEXUS-Objects/providers/<provider>/latest/`
-3. Extracts `conversations.json` and the rest of the zip contents into the raw object layer
+3. Extracts the provider payload and the rest of the zip contents into the raw object layer
 4. Parses provider conversations and messages
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
@@ -55,7 +65,7 @@ Typical phases:
 
 - preparing the import request
 - archiving the raw export zip
-- parsing `conversations.json`
+- parsing the provider payload file
 - loading the event-store dedupe index
 - processing conversations into canonical history
 - writing canonical events
@@ -83,6 +93,7 @@ Current provider parsing scope:
 
 - ChatGPT: conversations, messages, attachment references from message metadata
 - Claude: conversations, messages, file/attachment references from message payloads
+- Grok: conversations, responses, message text, and file-attachment references from `prod-grok-backend.json`
 
 Still deferred:
 

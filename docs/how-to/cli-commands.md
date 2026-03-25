@@ -39,7 +39,7 @@ The CLI supports both:
 
 `compare-provider-exports`
 
-- Compares two raw ChatGPT or Claude export zips before canonical import.
+- Compares two raw ChatGPT, Claude, or Grok export zips before canonical import.
 - Use it when you want a source-layer view of added, removed, and changed provider-native conversations or messages.
 - It also reports whether the two zip artifacts are byte-identical.
 - Details: `docs/how-to/compare-provider-exports.md`
@@ -69,7 +69,7 @@ The CLI supports both:
 
 `import-provider-export`
 
-- Archives a ChatGPT or Claude export zip.
+- Archives a ChatGPT, Claude, or Grok export zip.
 - Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
 - Also writes a normalized import snapshot under `snapshots/imports/<import-id>/`.
 - Also materializes a batch-local graph working slice under `graph/working/imports/<import-id>/`.
@@ -189,7 +189,7 @@ Provider import:
 
 1. Run `compare-provider-exports` if you want to understand raw export-window deltas before import.
 2. Run `import-provider-export`.
-3. Run `report-provider-import-history --provider <chatgpt|claude|codex>` if you want a chronological snapshot timeline for one provider.
+3. Run `report-provider-import-history --provider <chatgpt|claude|grok|codex>` if you want a chronological snapshot timeline for one provider.
    Add `--objects-root <path>` when the preserved raw artifacts are not under the repository-default object store and you want raw SHA-256 evidence in the report.
 4. Run `compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>` if you want normalized snapshot semantics for one specific import pair after import.
 5. Run `rebuild-conversation-projections`.

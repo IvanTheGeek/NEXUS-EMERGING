@@ -53,11 +53,11 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 
 ## Notes
 
-- This currently supports preserved `chatgpt` and `claude` provider-export imports.
+- This currently supports preserved `chatgpt`, `claude`, and `grok` provider-export imports.
 - Codex local-session imports are not rebuilt through this command.
 - Backfilled snapshots are derived from the current provider-export parser rules, not historical parser binaries.
 - The import manifest `imported_at` is preserved in the rebuilt normalized snapshot.
-- If preserved raw export files or extracted `conversations.json` files are missing, the command reports the import as failed instead of guessing.
+- If preserved raw export files or extracted provider payload files are missing, the command reports the import as failed instead of guessing.
 
 ## Related
 

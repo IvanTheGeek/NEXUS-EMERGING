@@ -142,12 +142,12 @@ module Program =
         | "compare-provider-exports" ->
             Some
                 { Name = name
-                  Summary = "Compare two raw ChatGPT or Claude export zips before canonical import."
+                  Summary = "Compare two raw ChatGPT, Claude, or Grok export zips before canonical import."
                   Usage =
-                    [ sprintf "%s compare-provider-exports --provider <chatgpt|claude> --base-zip <path> --current-zip <path>" cliInvocation
+                    [ sprintf "%s compare-provider-exports --provider <chatgpt|claude|grok> --base-zip <path> --current-zip <path>" cliInvocation
                       sprintf "%s compare-provider-exports --provider chatgpt --base-zip RawDataExports/older.zip --current-zip RawDataExports/newer.zip --limit 10" cliInvocation ]
                   Options =
-                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter used to parse both zips."
+                    [ "--provider <chatgpt|claude|grok>", "Required. Select the provider adapter used to parse both zips."
                       "--base-zip <path>", "Required. The older or reference raw export zip."
                       "--current-zip <path>", "Required. The newer or comparison raw export zip."
                       "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
@@ -185,10 +185,10 @@ module Program =
                 { Name = name
                   Summary = "Report one provider's normalized import snapshots in chronological order with adjacent deltas."
                   Usage =
-                    [ sprintf "%s report-provider-import-history --provider <chatgpt|claude|codex>" cliInvocation
+                    [ sprintf "%s report-provider-import-history --provider <chatgpt|claude|grok|codex>" cliInvocation
                       sprintf "%s report-provider-import-history --provider chatgpt --limit 10" cliInvocation ]
                   Options =
-                    [ "--provider <chatgpt|claude|codex>", "Required. Select the provider whose normalized import history you want to inspect."
+                    [ "--provider <chatgpt|claude|grok|codex>", "Required. Select the provider whose normalized import history you want to inspect."
                       "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
                       "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
                       "--limit <n>", "Limit the report to the newest N history rows. Defaults to 20." ]
@@ -227,12 +227,12 @@ module Program =
         | "import-provider-export" ->
             Some
                 { Name = name
-                  Summary = "Archive a ChatGPT or Claude export zip, parse provider records, and append canonical observed history."
+                  Summary = "Archive a ChatGPT, Claude, or Grok export zip, parse provider records, and append canonical observed history."
                   Usage =
-                    [ sprintf "%s import-provider-export --provider <chatgpt|claude> --zip <path>" cliInvocation
+                    [ sprintf "%s import-provider-export --provider <chatgpt|claude|grok> --zip <path>" cliInvocation
                       sprintf "%s import-provider-export --provider claude --zip RawDataExports/claude-export.zip --window full" cliInvocation ]
                   Options =
-                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter."
+                    [ "--provider <chatgpt|claude|grok>", "Required. Select the provider adapter."
                       "--zip <path>", "Required. Path to the provider export zip to archive and import."
                       "--window <kind>", "Import window label. Defaults to full."
                       "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
@@ -272,7 +272,7 @@ module Program =
                   Options =
                     [ "--file <path>", "Required. Path to the local artifact payload."
                       "--artifact-id <uuid>", "Hydrate a known internal artifact ID directly."
-                      "--provider <chatgpt|claude>", "Provider for provider-key lookup when not using --artifact-id."
+                      "--provider <chatgpt|claude|grok>", "Provider for provider-key lookup when not using --artifact-id."
                       "--provider-conversation-id <id>", "Provider conversation ID for provider-key lookup."
                       "--provider-message-id <id>", "Provider message ID for provider-key lookup."
                       "--provider-artifact-id <id>", "Provider artifact ID when the export referenced one."
@@ -341,7 +341,7 @@ module Program =
                       "--output <path>", "Optional DOT output path. Defaults to a filter-aware name under <event-store-root>/graph/exports."
                       "--output-root <path>", "Optional output directory root. NEXUS will place the default file name under this directory."
                       "--verification <none|traceable>", "Verification mode. Defaults to none. traceable is currently supported only with --working-import-id."
-                      "--provider <chatgpt|claude|codex>", "Only include assertions whose provenance references the selected provider."
+                      "--provider <chatgpt|claude|grok|codex>", "Only include assertions whose provenance references the selected provider."
                       "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
                       "--import-id <uuid>", "Only include assertions whose provenance import_id matches the selected import."
@@ -398,7 +398,7 @@ module Program =
                       sprintf "%s report-unresolved-artifacts --provider claude --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--provider <chatgpt|claude>", "Limit the report to a single provider."
+                      "--provider <chatgpt|claude|grok>", "Limit the report to a single provider."
                       "--limit <n>", "Limit detailed items. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s report-unresolved-artifacts" cliInvocation
@@ -473,7 +473,7 @@ module Program =
                       "--match <text>", "Optional title/slug substring match."
                       "--semantic-role <slug>", "Optional semantic-role slug filter."
                       "--message-role <slug>", "Optional message-role slug filter."
-                      "--provider <chatgpt|claude|codex>", "Optional provider filter."
+                      "--provider <chatgpt|claude|grok|codex>", "Optional provider filter."
                       "--import-id <uuid>", "Optional import-batch filter."
                       "--limit <n>", "Limit matches. Defaults to 20." ]
                   Examples =
@@ -717,6 +717,8 @@ module Program =
                         loop (Some ChatGpt) baseZipPath currentZipPath limit rest
                     | Some Claude ->
                         loop (Some Claude) baseZipPath currentZipPath limit rest
+                    | Some Grok ->
+                        loop (Some Grok) baseZipPath currentZipPath limit rest
                     | Some Codex ->
                         eprintfn "Codex sessions are not compared through raw export zips."
                         printCommandHelp "compare-provider-exports"
@@ -2314,8 +2316,8 @@ module Program =
         printfn "  Archived zip: %s" result.ArchivedZipRelativePath
         printfn "  Latest zip: %s" result.LatestZipRelativePath
 
-        match result.ExtractedConversationRelativePath with
-        | Some path -> printfn "  Extracted conversations.json: %s" path
+        match result.ExtractedPayloadRelativePath with
+        | Some path -> printfn "  Extracted provider payload: %s" path
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath

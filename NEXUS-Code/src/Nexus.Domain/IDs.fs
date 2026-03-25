@@ -318,6 +318,7 @@ module FactId =
 type ProviderKind =
     | ChatGpt
     | Claude
+    | Grok
     | Codex
     | OtherProvider of string
 

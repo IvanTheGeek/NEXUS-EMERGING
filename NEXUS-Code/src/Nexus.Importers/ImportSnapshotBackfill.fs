@@ -184,7 +184,8 @@ module ImportSnapshotBackfill =
         | Some provider, Some "export_zip", Some rootArtifactRelativePath, Some importedAt ->
             match provider with
             | ChatGpt
-            | Claude ->
+            | Claude
+            | Grok ->
                 let zipAbsolutePath =
                     Path.Combine(Path.GetFullPath(objectsRoot), toSystemRelativePath rootArtifactRelativePath)
 
@@ -197,41 +198,45 @@ module ImportSnapshotBackfill =
                     let extractedDirectoryAbsolutePath =
                         Path.Combine(archiveDirectoryAbsolutePath, "extracted")
 
-                    let conversationsJsonAbsolutePath =
-                        Path.Combine(extractedDirectoryAbsolutePath, "conversations.json")
-
                     let extractedRelativePath =
                         normalizePath (Path.Combine(Path.GetDirectoryName(rootArtifactRelativePath), "extracted"))
 
-                    let conversationsJsonRelativePath =
-                        normalizePath (Path.Combine(Path.GetDirectoryName(rootArtifactRelativePath), "extracted", "conversations.json"))
-
                     if not (Directory.Exists(extractedDirectoryAbsolutePath)) then
                         Error (FailedInput (sprintf "Preserved extracted snapshot not found for import %s: %s" (ImportId.format metadata.ImportId) extractedRelativePath))
-                    elif not (File.Exists(conversationsJsonAbsolutePath)) then
-                        Error (FailedInput (sprintf "Preserved conversations.json not found for import %s: %s" (ImportId.format metadata.ImportId) conversationsJsonRelativePath))
                     else
-                        let extractedFiles =
-                            Directory.EnumerateFiles(extractedDirectoryAbsolutePath, "*", SearchOption.AllDirectories)
-                            |> Seq.toList
+                        match ProviderAdapters.tryLocatePayload provider extractedDirectoryAbsolutePath with
+                        | None ->
+                            Error
+                                (FailedInput
+                                    (sprintf
+                                        "Preserved %s provider payload not found for import %s under: %s"
+                                        (ProviderNaming.slug provider)
+                                        (ImportId.format metadata.ImportId)
+                                        extractedRelativePath))
+                        | Some providerPayloadLocation ->
+                            let extractedFiles =
+                                Directory.EnumerateFiles(extractedDirectoryAbsolutePath, "*", SearchOption.AllDirectories)
+                                |> Seq.toList
 
-                        let extractedEntries = extractedFiles.Length
-                        let extractedNames =
-                            extractedFiles
-                            |> Seq.map Path.GetFileName
-                            |> Seq.map (fun value -> value.Trim().ToLowerInvariant())
-                            |> Set.ofSeq
+                            let extractedEntries = extractedFiles.Length
+                            let extractedNames =
+                                extractedFiles
+                                |> Seq.collect (fun absolutePath ->
+                                    [ Path.GetFileName(absolutePath)
+                                      Path.GetRelativePath(extractedDirectoryAbsolutePath, absolutePath) |> normalizePath ])
+                                |> Seq.map (fun value -> value.Trim().ToLowerInvariant())
+                                |> Set.ofSeq
 
-                        Ok
-                            (provider,
-                             metadata.Window,
-                             Path.GetFileName(zipAbsolutePath),
-                             FileInfo(zipAbsolutePath).Length,
-                             importedAt,
-                             rootArtifactRelativePath,
-                             extractedEntries,
-                             extractedNames,
-                             conversationsJsonAbsolutePath)
+                            Ok
+                                (provider,
+                                 metadata.Window,
+                                 Path.GetFileName(zipAbsolutePath),
+                                 FileInfo(zipAbsolutePath).Length,
+                                 importedAt,
+                                 rootArtifactRelativePath,
+                                 extractedEntries,
+                                 extractedNames,
+                                 providerPayloadLocation.AbsolutePath)
             | Codex ->
                 Error (UnsupportedImport "Codex local-session imports do not use provider-export normalized snapshots.")
             | OtherProvider value ->

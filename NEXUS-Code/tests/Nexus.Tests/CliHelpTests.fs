@@ -22,7 +22,7 @@ module CliHelpTests =
 
                   Expect.equal result.ExitCode 0 "Expected help compare-provider-exports to exit successfully."
                   Expect.stringContains result.StandardOutput "Command: compare-provider-exports" "Expected the command header."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok>" "Expected provider allowlist guidance."
                   Expect.stringContains result.StandardOutput "--base-zip <path>" "Expected base-zip guidance."
                   Expect.stringContains result.StandardOutput "--current-zip <path>" "Expected current-zip guidance."
                   Expect.stringContains result.StandardOutput "source-layer" "Expected source-layer comparison note."
@@ -45,7 +45,7 @@ module CliHelpTests =
 
                   Expect.equal result.ExitCode 0 "Expected help report-provider-import-history to exit successfully."
                   Expect.stringContains result.StandardOutput "Command: report-provider-import-history" "Expected the command header."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|codex>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider allowlist guidance."
                   Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected objects-root guidance."
                   Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
                   Expect.stringContains result.StandardOutput "adjacent deltas" "Expected the adjacent-delta note."
@@ -73,7 +73,7 @@ module CliHelpTests =
 
                   for output in [ helpCommandResult.StandardOutput; switchResult.StandardOutput ] do
                       Expect.stringContains output "Command: import-provider-export" "Expected the command header."
-                      Expect.stringContains output "--provider <chatgpt|claude>" "Expected required provider option guidance."
+                      Expect.stringContains output "--provider <chatgpt|claude|grok>" "Expected required provider option guidance."
                       Expect.stringContains output "docs/how-to/import-provider-export.md" "Expected the detailed guide link."
 
                   Expect.equal helpCommandResult.StandardError "" "Did not expect stderr from help import-provider-export."
@@ -86,7 +86,7 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "Command: export-graphviz-dot" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected traceable objects-root guidance."
                   Expect.stringContains result.StandardOutput "--output <path>" "Expected custom output guidance."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|codex>" "Expected provider slice guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider slice guidance."
                   Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import slice guidance."

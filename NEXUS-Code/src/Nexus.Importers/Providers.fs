@@ -11,6 +11,46 @@ open Nexus.Domain
 module ProviderAdapters =
     let private jsonOptions = JsonSerializerOptions(WriteIndented = false)
 
+    /// <summary>
+    /// Describes the extracted provider payload file that should be parsed from a raw export zip.
+    /// </summary>
+    type ProviderPayloadLocation =
+        { RelativePath: string
+          AbsolutePath: string
+          Description: string }
+
+    let private normalizeRelativePath (value: string) =
+        value.Replace('\\', '/')
+
+    let private tryFindPayloadByFileName (extractedRoot: string) (fileName: string) (description: string) =
+        let extractedRootAbsolutePath = Path.GetFullPath(extractedRoot)
+
+        Directory.EnumerateFiles(extractedRootAbsolutePath, fileName, SearchOption.AllDirectories)
+        |> Seq.sort
+        |> Seq.tryHead
+        |> Option.map (fun absolutePath ->
+            { RelativePath = Path.GetRelativePath(extractedRootAbsolutePath, absolutePath) |> normalizeRelativePath
+              AbsolutePath = absolutePath
+              Description = description })
+
+    /// <summary>
+    /// Locates the provider-specific extracted payload file that should feed the shared import adapter.
+    /// </summary>
+    /// <param name="provider">The provider whose export payload should be located.</param>
+    /// <param name="extractedRoot">The extracted root directory under the raw object layer.</param>
+    /// <returns>The provider payload location when the expected extracted file is present.</returns>
+    let tryLocatePayload provider extractedRoot =
+        match provider with
+        | Claude
+        | ChatGpt ->
+            tryFindPayloadByFileName extractedRoot "conversations.json" "Extracted conversations.json for parser input"
+        | Grok ->
+            tryFindPayloadByFileName extractedRoot "prod-grok-backend.json" "Extracted prod-grok-backend.json for parser input"
+        | Codex ->
+            invalidArg "provider" "Codex sessions are imported through CodexImportWorkflow, not the export-zip adapter."
+        | OtherProvider value ->
+            invalidArg "provider" $"Unsupported provider adapter: {value}"
+
     module private Json =
         let private tryAsValue<'T> (node: JsonNode) =
             if isNull node then
@@ -171,6 +211,22 @@ module ProviderAdapters =
         | Some value when extractedNames.Contains(value.Trim().ToLowerInvariant()) -> PayloadIncluded
         | Some _ -> PayloadMissing
         | None -> PayloadUnknown
+
+    let private grokAttachmentDisposition (extractedNames: Set<string>) (providerArtifactId: string) =
+        let normalizedArtifactId = providerArtifactId.Trim().ToLowerInvariant()
+
+        if String.IsNullOrWhiteSpace(normalizedArtifactId) then
+            PayloadUnknown
+        else
+            let pathNeedle = $"/{normalizedArtifactId}/"
+
+            if extractedNames
+               |> Seq.exists (fun value ->
+                   value = normalizedArtifactId
+                   || value.Contains(pathNeedle, StringComparison.Ordinal)) then
+                PayloadIncluded
+            else
+                PayloadMissing
 
     let private claudeArrayTexts propertyName candidateProperties (node: JsonNode) =
         Json.tryProperty propertyName node
@@ -506,6 +562,17 @@ module ProviderAdapters =
         |> Option.bind Json.tryFloat
         |> Option.map (fun seconds -> DateTimeOffset.UnixEpoch.AddSeconds(seconds))
 
+    let private tryUnixMillisecondsDateTime (node: JsonNode option) =
+        node
+        |> Option.bind (fun value ->
+            [ Json.tryPropertyPath [ "$date"; "$numberLong" ] value |> Option.bind Json.tryString
+              Json.tryString value ]
+            |> List.tryPick id)
+        |> Option.bind (fun value ->
+            match Int64.TryParse(value, Globalization.NumberStyles.Integer, Globalization.CultureInfo.InvariantCulture) with
+            | true, milliseconds -> Some(DateTimeOffset.FromUnixTimeMilliseconds(milliseconds))
+            | false, _ -> None)
+
     let private parseChatGptMessage extractedNames index (node: JsonNode) =
         match Json.tryProperty "message" node |> Option.bind Json.tryObject with
         | None -> None
@@ -599,26 +666,155 @@ module ProviderAdapters =
             [ "Parsed ChatGPT export conversations.json"
               "Only message text and attachment references are normalized in v0." ] }
 
+    let private parseGrokArtifacts extractedNames (responseNode: JsonNode) =
+        Json.tryProperty "file_attachments" responseNode
+        |> Option.bind Json.tryArray
+        |> Option.map (fun attachments ->
+            attachments
+            |> Seq.choose (fun attachment ->
+                attachment
+                |> Json.tryString
+                |> Option.bind normalizeTextCandidate
+                |> Option.map (fun providerArtifactId ->
+                    { ProviderArtifactId = Some providerArtifactId
+                      FileName = None
+                      MediaType = None
+                      Disposition = grokAttachmentDisposition extractedNames providerArtifactId }))
+            |> Seq.toList)
+        |> Option.defaultValue []
+
+    let private parseGrokMessage extractedNames index (node: JsonNode) =
+        match Json.tryProperty "response" node |> Option.bind Json.tryObject with
+        | None -> None
+        | Some responseObject ->
+            let responseNode = responseObject :> JsonNode
+            let providerMessageId =
+                Json.tryProperty "_id" responseNode
+                |> Option.bind Json.tryString
+                |> Option.defaultValue String.Empty
+
+            if String.IsNullOrWhiteSpace(providerMessageId) then
+                None
+            else
+                let role =
+                    Json.tryProperty "sender" responseNode
+                    |> Option.bind Json.tryString
+                    |> Option.map messageRoleFromText
+                    |> Option.defaultValue (OtherRole "unknown")
+
+                let segments =
+                    Json.tryProperty "message" responseNode
+                    |> Option.bind Json.tryString
+                    |> Option.bind normalizeTextCandidate
+                    |> Option.map (fun text ->
+                        [ { Kind = PlainText
+                            Text = text } ])
+                    |> Option.defaultValue []
+
+                let modelName =
+                    [ Json.tryProperty "model" responseNode |> Option.bind Json.tryString
+                      Json.tryPropertyPath [ "metadata"; "request_metadata"; "model" ] responseNode |> Option.bind Json.tryString
+                      Json.tryPropertyPath [ "metadata"; "last_used_model" ] responseNode |> Option.bind Json.tryString ]
+                    |> List.tryPick (Option.bind normalizeTextCandidate)
+
+                let artifacts = parseGrokArtifacts extractedNames responseNode
+                let occurredAt = Json.tryProperty "create_time" responseNode |> tryUnixMillisecondsDateTime
+
+                Some
+                    (
+                    index,
+                    occurredAt,
+                    { ProviderMessageId = providerMessageId
+                      Role = role
+                      Segments = segments
+                      OccurredAt = occurredAt
+                      ModelName = modelName
+                      SequenceHint = None
+                      ContentSignature = buildContentSignature role modelName segments artifacts
+                      ArtifactReferences = artifacts }
+                    )
+
+    let private parseGrokConversation extractedNames (conversationNode: JsonNode) =
+        let conversationMetadata =
+            Json.tryProperty "conversation" conversationNode
+            |> Option.bind Json.tryObject
+
+        let providerConversationId =
+            conversationMetadata
+            |> Option.bind (fun value -> Json.tryProperty "id" value)
+            |> Option.bind Json.tryString
+
+        match providerConversationId with
+        | None -> None
+        | Some conversationId ->
+            let messages =
+                Json.tryProperty "responses" conversationNode
+                |> Option.bind Json.tryArray
+                |> Option.map (fun responseArray ->
+                    responseArray
+                    |> Seq.toList
+                    |> List.mapi (fun index response -> parseGrokMessage extractedNames index response)
+                    |> List.choose id
+                    |> List.sortBy (fun (index, occurredAt, _) -> occurredAt |> Option.defaultValue DateTimeOffset.MaxValue, index)
+                    |> List.mapi (fun index (_, _, message) -> { message with SequenceHint = Some(index + 1) }))
+                |> Option.defaultValue []
+
+            Some
+                { ProviderConversationId = conversationId
+                  Title =
+                    conversationMetadata
+                    |> Option.bind (fun value -> Json.tryProperty "title" value)
+                    |> Option.bind Json.tryString
+                  IsArchived = None
+                  OccurredAt =
+                    conversationMetadata
+                    |> Option.bind (fun value -> Json.tryProperty "create_time" value)
+                    |> Option.bind Json.tryDateTimeOffset
+                  MessageCountHint = Some messages.Length
+                  Messages = messages
+                  RawObjects = [] }
+
+    let private parseGrok (window: ImportWindowKind option) (sourceFileName: string) (sourceByteCount: int64) extractedEntries extractedNames (payloadPath: string) =
+        let rootNode = JsonNode.Parse(File.ReadAllText(payloadPath))
+
+        let conversations =
+            Json.tryProperty "conversations" rootNode
+            |> Option.bind Json.tryArray
+            |> Option.map (fun conversationArray -> conversationArray |> Seq.choose (parseGrokConversation extractedNames) |> Seq.toList)
+            |> Option.defaultValue []
+
+        { Provider = Grok
+          Window = window
+          SourceFileName = sourceFileName
+          SourceByteCount = sourceByteCount
+          ExtractedEntries = extractedEntries
+          Conversations = conversations
+          Notes =
+            [ "Parsed Grok export prod-grok-backend.json"
+              "Only message text and attachment references are normalized in v0." ] }
+
     /// <summary>
-    /// Parses a provider-specific <c>conversations.json</c> payload into the shared canonical intermediate shape.
+    /// Parses a provider-specific extracted payload into the shared canonical intermediate shape.
     /// </summary>
     /// <param name="provider">The provider whose export format should be parsed.</param>
     /// <param name="window">The import window semantics associated with the raw source.</param>
     /// <param name="sourceFileName">The original provider artifact file name.</param>
     /// <param name="sourceByteCount">The byte length of the root provider artifact.</param>
     /// <param name="extractedEntries">The number of raw files extracted from the source artifact.</param>
-    /// <param name="extractedNames">The lower-cased file names extracted from the source artifact.</param>
-    /// <param name="conversationsJsonPath">The absolute path to the extracted <c>conversations.json</c> file.</param>
+    /// <param name="extractedNames">The lower-cased extracted file names and relative paths from the source artifact.</param>
+    /// <param name="payloadPath">The absolute path to the extracted provider payload file.</param>
     /// <returns>A provider-neutral parse result ready for canonical event writing.</returns>
     /// <remarks>
     /// Full ingestion notes: docs/nexus-ingestion-architecture.md
     /// </remarks>
-    let parse provider window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath =
+    let parse provider window sourceFileName sourceByteCount extractedEntries extractedNames payloadPath =
         match provider with
         | Claude ->
-            parseClaude window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath
+            parseClaude window sourceFileName sourceByteCount extractedEntries extractedNames payloadPath
         | ChatGpt ->
-            parseChatGpt window sourceFileName sourceByteCount extractedEntries extractedNames conversationsJsonPath
+            parseChatGpt window sourceFileName sourceByteCount extractedEntries extractedNames payloadPath
+        | Grok ->
+            parseGrok window sourceFileName sourceByteCount extractedEntries extractedNames payloadPath
         | Codex ->
             invalidArg "provider" "Codex sessions are imported through CodexImportWorkflow, not the export-zip adapter."
         | OtherProvider value ->

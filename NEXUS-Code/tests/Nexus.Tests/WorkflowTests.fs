@@ -24,6 +24,21 @@ module WorkflowTests =
         objectsRoot,
         eventStoreRoot
 
+    let private buildGrokImportRequest tempRoot =
+        let objectsRoot = Path.Combine(tempRoot, "objects")
+        let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+        let zipPath = Path.Combine(tempRoot, "grok-fixture.zip")
+
+        TestHelpers.createZipFromFixture "provider-export/grok" zipPath
+
+        { Provider = Grok
+          SourceZipPath = zipPath
+          Window = Some(Rolling "30d")
+          ObjectsRoot = objectsRoot
+          EventStoreRoot = eventStoreRoot },
+        objectsRoot,
+        eventStoreRoot
+
     let tests =
         testList
             "import workflows"
@@ -101,6 +116,23 @@ module WorkflowTests =
                       Expect.stringContains combined "Processing 1 conversations into canonical history." "Expected the canonical processing phase."
                       Expect.stringContains combined "Writing 7 canonical events to the event store." "Expected the write phase."
                       Expect.stringContains combined "Provider import completed in" "Expected the completion status."))
+
+              testCase "Grok provider export import uses the provider-specific payload file" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-grok-import" (fun tempRoot ->
+                      let request, _, _ = buildGrokImportRequest tempRoot
+
+                      let importResult = ImportWorkflow.run request
+
+                      Expect.equal importResult.Provider Grok "Expected the Grok provider import."
+                      Expect.equal importResult.Counts.ConversationsSeen 1 "Expected one Grok conversation."
+                      Expect.equal importResult.Counts.MessagesSeen 2 "Expected two Grok messages."
+                      Expect.equal importResult.Counts.ArtifactsReferenced 1 "Expected one Grok artifact reference."
+                      Expect.equal importResult.Counts.NewEventsAppended 7 "Expected the Grok first import event set."
+                      Expect.isSome importResult.ImportSnapshotManifestRelativePath "Expected the Grok import to write a normalized import snapshot manifest."
+                      Expect.equal
+                          (importResult.ExtractedPayloadRelativePath |> Option.map Path.GetFileName)
+                          (Some "prod-grok-backend.json")
+                          "Expected the Grok import to preserve the provider-specific payload path."))
 
               testCase "Provider export imports archive raw zips into distinct directories even within the same second" (fun () ->
                   TestHelpers.withTempDirectory "nexus-claude-import-archive-distinct" (fun tempRoot ->

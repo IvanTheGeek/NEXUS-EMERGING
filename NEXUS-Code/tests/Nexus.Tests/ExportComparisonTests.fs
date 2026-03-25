@@ -65,4 +65,24 @@ module ExportComparisonTests =
                       Expect.stringContains result.StandardOutput "Added conversations: 1" "Expected the added conversation count."
                       Expect.stringContains result.StandardOutput "Changed conversations: 1" "Expected the changed conversation count."
                       Expect.stringContains result.StandardOutput "Claude Follow-on Conversation" "Expected the added conversation label."
-                      Expect.stringContains result.StandardOutput "messages=2 -> 3 (added=1 removed=0)" "Expected the shared conversation message delta.")) ]
+                      Expect.stringContains result.StandardOutput "messages=2 -> 3 (added=1 removed=0)" "Expected the shared conversation message delta."))
+
+              testCase "Grok raw export comparison can parse provider-specific payload files" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-grok-export-comparison" (fun tempRoot ->
+                      let baseZipPath = createZipFromProviderFixture tempRoot "grok"
+                      let currentZipPath = createZipFromProviderFixture tempRoot "grok"
+
+                      let report = ExportComparison.compare Grok baseZipPath currentZipPath 10
+
+                      Expect.equal report.Provider Grok "Expected the Grok provider comparison."
+                      Expect.isTrue report.ZipArtifactsIdentical "Expected identical Grok raw zip content."
+                      Expect.equal report.BaseConversationCount 1 "Expected one Grok fixture conversation."
+                      Expect.equal report.CurrentConversationCount 1 "Expected one Grok fixture conversation."
+                      Expect.equal report.BaseMessageCount 2 "Expected two Grok fixture messages."
+                      Expect.equal report.CurrentMessageCount 2 "Expected two Grok fixture messages."
+                      Expect.equal report.BaseArtifactReferenceCount 1 "Expected one Grok fixture artifact reference."
+                      Expect.equal report.CurrentArtifactReferenceCount 1 "Expected one Grok fixture artifact reference."
+                      Expect.equal report.AddedConversationCount 0 "Expected no added Grok conversations in identical fixture comparison."
+                      Expect.equal report.RemovedConversationCount 0 "Expected no removed Grok conversations in identical fixture comparison."
+                      Expect.equal report.ChangedConversationCount 0 "Expected no changed Grok conversations in identical fixture comparison."
+                      Expect.equal report.UnchangedConversationCount 1 "Expected one unchanged Grok conversation in identical fixture comparison.")) ]
