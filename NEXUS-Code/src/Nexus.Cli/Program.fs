@@ -27,6 +27,7 @@ module Program =
         | WriteSampleEventStore of eventStoreRoot: string
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
+        | ReportProviderImportHistory of eventStoreRoot: string * provider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
@@ -175,6 +176,25 @@ module Program =
                       "Absence from the current snapshot means absence from that import payload only; it does not imply canonical deletion."
                       "Older imports may predate snapshot materialization and can be backfilled with rebuild-import-snapshots."
                       "Detailed guide: docs/how-to/compare-import-snapshots.md" ] }
+        | "report-provider-import-history" ->
+            Some
+                { Name = name
+                  Summary = "Report one provider's normalized import snapshots in chronological order with adjacent deltas."
+                  Usage =
+                    [ sprintf "%s report-provider-import-history --provider <chatgpt|claude|codex>" cliInvocation
+                      sprintf "%s report-provider-import-history --provider chatgpt --limit 10" cliInvocation ]
+                  Options =
+                    [ "--provider <chatgpt|claude|codex>", "Required. Select the provider whose normalized import history you want to inspect."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--limit <n>", "Limit the report to the newest N history rows. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-provider-import-history --provider chatgpt" cliInvocation
+                      sprintf "%s report-provider-import-history --provider claude --event-store-root /tmp/nexus-event-store --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This uses normalized import snapshots, not additive working-slice contributions."
+                      "Each row shows one import snapshot plus the delta from the previous snapshot for that provider."
+                      "If older imports are missing snapshot files, run rebuild-import-snapshots first."
+                      "Detailed guide: docs/how-to/report-provider-import-history.md" ] }
         | "rebuild-import-snapshots" ->
             Some
                 { Name = name
@@ -571,6 +591,7 @@ module Program =
         [ "write-sample-event-store"
           "compare-provider-exports"
           "compare-import-snapshots"
+          "report-provider-import-history"
           "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
@@ -1375,6 +1396,44 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
+    let private parseReportProviderImportHistory (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-provider-import-history"))
+        else
+            let rec loop eventStoreRoot provider limit remaining =
+                match remaining with
+                | [] ->
+                    match provider with
+                    | Some providerValue -> Ok (ReportProviderImportHistory(eventStoreRoot, providerValue, limit))
+                    | None ->
+                        eprintfn "Missing required option: --provider"
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value provider limit rest
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some providerKind ->
+                        loop eventStoreRoot (Some (ProviderNaming.slug providerKind)) limit rest
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot provider parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-provider-import-history: %s" option
+                    printCommandHelp "report-provider-import-history"
+                    Error 1
+
+            loop defaultEventStoreRoot None 20 args
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -1660,6 +1719,8 @@ module Program =
             parseCompareProviderExports rest
         | "compare-import-snapshots" :: rest ->
             parseCompareImportSnapshots rest
+        | "report-provider-import-history" :: rest ->
+            parseReportProviderImportHistory rest
         | "rebuild-import-snapshots" :: rest ->
             parseRebuildImportSnapshots rest
         | "import-provider-export" :: rest ->
@@ -2097,6 +2158,57 @@ module Program =
             eprintfn "Missing normalized import snapshot files for one or both imports."
             eprintfn "These snapshots are written during provider import and may be absent for older imports."
             eprintfn "Run rebuild-import-snapshots to backfill older provider-export imports from preserved raw artifacts."
+            1
+
+    let private reportProviderImportHistory eventStoreRoot provider limit =
+        match ImportSnapshots.tryBuildHistoryReport eventStoreRoot provider limit with
+        | Some report ->
+            printfn "Normalized import snapshot history."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Provider: %s" report.Provider
+            printfn "  Available snapshots: %d" report.AvailableSnapshotCount
+            printfn "  Reported entries: %d" report.ReportedEntryCount
+
+            if not report.Entries.IsEmpty then
+                printfn "  History:"
+
+                report.Entries
+                |> List.iteri (fun index entry ->
+                    let windowLabel = entry.Window |> Option.defaultValue "unknown"
+                    printfn
+                        "    %d. %s | imported_at=%s | window=%s | conversations=%d messages=%d artifacts=%d"
+                        (index + 1)
+                        (ImportId.format entry.ImportId)
+                        (entry.ImportedAt.ToUniversalTime().ToString("O"))
+                        windowLabel
+                        entry.ConversationCount
+                        entry.MessageCount
+                        entry.ArtifactReferenceCount
+
+                    match entry.NormalizationVersion with
+                    | Some value -> printfn "      normalization_version=%s" value
+                    | None -> ()
+
+                    match entry.SourceArtifactRelativePath with
+                    | Some value -> printfn "      source_artifact_relative_path=%s" value
+                    | None -> ()
+
+                    match entry.DeltaFromPrevious with
+                    | Some delta ->
+                        printfn
+                            "      delta_from_previous=%s added=%d removed=%d changed=%d unchanged=%d"
+                            (ImportId.format delta.PreviousImportId)
+                            delta.AddedConversationCount
+                            delta.RemovedConversationCount
+                            delta.ChangedConversationCount
+                            delta.UnchangedConversationCount
+                    | None ->
+                        printfn "      delta_from_previous=none (first snapshot for provider)")
+
+            0
+        | None ->
+            eprintfn "No normalized import snapshots found for provider %s." provider
+            eprintfn "Run provider imports first, or use rebuild-import-snapshots if older imports predate snapshot materialization."
             1
 
     let private backfillOutcomeLabel =
@@ -2911,6 +3023,8 @@ module Program =
             compareProviderExports provider baseZipPath currentZipPath limit
         | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
             compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
+        | Ok (ReportProviderImportHistory(eventStoreRoot, provider, limit)) ->
+            reportProviderImportHistory eventStoreRoot provider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
             rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->

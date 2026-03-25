@@ -11,6 +11,7 @@ module Program =
               ProviderAdapterTests.tests
               WorkflowTests.tests
               ImportSnapshotTests.tests
+              ImportSnapshotHistoryTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
               GraphWorkingIndexTests.tests

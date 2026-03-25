@@ -100,6 +100,40 @@ type NormalizedImportSnapshotComparisonReport =
       ChangedConversations: NormalizedImportSnapshotConversationDelta list }
 
 /// <summary>
+/// Summarizes how one normalized import snapshot differs from the previous snapshot for the same provider.
+/// </summary>
+type NormalizedImportSnapshotHistoryDelta =
+    { PreviousImportId: ImportId
+      PreviousImportedAt: DateTimeOffset
+      AddedConversationCount: int
+      RemovedConversationCount: int
+      ChangedConversationCount: int
+      UnchangedConversationCount: int }
+
+/// <summary>
+/// Describes one chronological row in a provider's normalized import-snapshot history.
+/// </summary>
+type NormalizedImportSnapshotHistoryEntry =
+    { ImportId: ImportId
+      ImportedAt: DateTimeOffset
+      Window: string option
+      NormalizationVersion: string option
+      SourceArtifactRelativePath: string option
+      ConversationCount: int
+      MessageCount: int
+      ArtifactReferenceCount: int
+      DeltaFromPrevious: NormalizedImportSnapshotHistoryDelta option }
+
+/// <summary>
+/// Summarizes the chronological normalized import-snapshot history for one provider.
+/// </summary>
+type NormalizedImportSnapshotHistoryReport =
+    { Provider: string
+      AvailableSnapshotCount: int
+      ReportedEntryCount: int
+      Entries: NormalizedImportSnapshotHistoryEntry list }
+
+/// <summary>
 /// Writes, loads, and compares normalized import snapshots derived from parsed provider payloads.
 /// </summary>
 [<RequireQualifiedAccess>]
@@ -142,6 +176,89 @@ module ImportSnapshots =
         value.CurrentTitle
         |> Option.orElse value.BaseTitle
         |> Option.defaultValue value.ProviderConversationId
+
+    let private reportSortKey (value: NormalizedImportSnapshotReport) =
+        value.ImportedAt, ImportId.format value.ImportId
+
+    let private buildComparisonReport baseReport currentReport limit =
+        let baseByProviderConversationId =
+            baseReport.Conversations
+            |> List.map (fun conversation -> conversation.ProviderConversationId, conversation)
+            |> Map.ofList
+
+        let currentByProviderConversationId =
+            currentReport.Conversations
+            |> List.map (fun conversation -> conversation.ProviderConversationId, conversation)
+            |> Map.ofList
+
+        let addedConversations =
+            currentReport.Conversations
+            |> List.filter (fun conversation -> not (baseByProviderConversationId.ContainsKey conversation.ProviderConversationId))
+            |> List.sortBy conversationLabel
+
+        let removedConversations =
+            baseReport.Conversations
+            |> List.filter (fun conversation -> not (currentByProviderConversationId.ContainsKey conversation.ProviderConversationId))
+            |> List.sortBy conversationLabel
+
+        let changedConversations =
+            baseReport.Conversations
+            |> List.choose (fun baseConversation ->
+                match currentByProviderConversationId.TryFind baseConversation.ProviderConversationId with
+                | Some currentConversation
+                    when baseConversation.CanonicalConversationId <> currentConversation.CanonicalConversationId
+                         || baseConversation.Title <> currentConversation.Title
+                         || baseConversation.IsArchived <> currentConversation.IsArchived
+                         || baseConversation.OccurredAt <> currentConversation.OccurredAt
+                         || baseConversation.MessageCount <> currentConversation.MessageCount
+                         || baseConversation.ArtifactReferenceCount <> currentConversation.ArtifactReferenceCount ->
+                    Some
+                        { ProviderConversationId = baseConversation.ProviderConversationId
+                          BaseCanonicalConversationId = baseConversation.CanonicalConversationId
+                          CurrentCanonicalConversationId = currentConversation.CanonicalConversationId
+                          BaseTitle = baseConversation.Title
+                          CurrentTitle = currentConversation.Title
+                          BaseIsArchived = baseConversation.IsArchived
+                          CurrentIsArchived = currentConversation.IsArchived
+                          BaseOccurredAt = baseConversation.OccurredAt
+                          CurrentOccurredAt = currentConversation.OccurredAt
+                          BaseMessageCount = baseConversation.MessageCount
+                          CurrentMessageCount = currentConversation.MessageCount
+                          BaseArtifactReferenceCount = baseConversation.ArtifactReferenceCount
+                          CurrentArtifactReferenceCount = currentConversation.ArtifactReferenceCount }
+                | Some _
+                | None -> None)
+            |> List.sortBy conversationDeltaLabel
+
+        let unchangedConversationCount =
+            baseReport.Conversations
+            |> List.filter (fun baseConversation ->
+                match currentByProviderConversationId.TryFind baseConversation.ProviderConversationId with
+                | Some currentConversation ->
+                    baseConversation.CanonicalConversationId = currentConversation.CanonicalConversationId
+                    && baseConversation.Title = currentConversation.Title
+                    && baseConversation.IsArchived = currentConversation.IsArchived
+                    && baseConversation.OccurredAt = currentConversation.OccurredAt
+                    && baseConversation.MessageCount = currentConversation.MessageCount
+                    && baseConversation.ArtifactReferenceCount = currentConversation.ArtifactReferenceCount
+                | None -> false)
+            |> List.length
+
+        { BaseImportId = baseReport.ImportId
+          CurrentImportId = currentReport.ImportId
+          BaseProvider = baseReport.Provider
+          CurrentProvider = currentReport.Provider
+          BaseWindow = baseReport.Window
+          CurrentWindow = currentReport.Window
+          BaseImportedAt = baseReport.ImportedAt
+          CurrentImportedAt = currentReport.ImportedAt
+          AddedConversationCount = addedConversations.Length
+          RemovedConversationCount = removedConversations.Length
+          ChangedConversationCount = changedConversations.Length
+          UnchangedConversationCount = unchangedConversationCount
+          AddedConversations = addedConversations |> List.truncate limit
+          RemovedConversations = removedConversations |> List.truncate limit
+          ChangedConversations = changedConversations |> List.truncate limit }
 
     let private renderConversationSnapshot (snapshot: NormalizedImportSnapshot) =
         let builder = create ()
@@ -325,6 +442,22 @@ module ImportSnapshots =
         else
             None
 
+    let private tryLoadAllReports eventStoreRoot =
+        let snapshotsRoot = Path.Combine(Path.GetFullPath(eventStoreRoot), snapshotsRootRelativePath)
+
+        if Directory.Exists(snapshotsRoot) then
+            Directory.EnumerateDirectories(snapshotsRoot)
+            |> Seq.choose (fun absolutePath ->
+                let directoryName = Path.GetFileName(absolutePath)
+
+                match Guid.TryParse(directoryName) with
+                | true, _ -> tryLoadReport eventStoreRoot (ImportId.parse directoryName)
+                | false, _ -> None)
+            |> Seq.sortBy reportSortKey
+            |> Seq.toList
+        else
+            []
+
     /// <summary>
     /// Compares two normalized import snapshots keyed by provider-native conversation identity.
     /// </summary>
@@ -336,83 +469,59 @@ module ImportSnapshots =
     let tryBuildComparisonReport eventStoreRoot baseImportId currentImportId limit =
         match tryLoadReport eventStoreRoot baseImportId, tryLoadReport eventStoreRoot currentImportId with
         | Some baseReport, Some currentReport ->
-            let baseByProviderConversationId =
-                baseReport.Conversations
-                |> List.map (fun conversation -> conversation.ProviderConversationId, conversation)
-                |> Map.ofList
+            Some (buildComparisonReport baseReport currentReport limit)
+        | _ -> None
 
-            let currentByProviderConversationId =
-                currentReport.Conversations
-                |> List.map (fun conversation -> conversation.ProviderConversationId, conversation)
-                |> Map.ofList
+    /// <summary>
+    /// Builds the chronological normalized import-snapshot history for one provider.
+    /// </summary>
+    /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
+    /// <param name="provider">The provider slug to report, such as <c>chatgpt</c> or <c>claude</c>.</param>
+    /// <param name="limit">The maximum number of newest history rows to include.</param>
+    /// <returns>The provider history report when matching normalized snapshots exist.</returns>
+    let tryBuildHistoryReport eventStoreRoot provider limit =
+        let sortedProviderReports =
+            tryLoadAllReports eventStoreRoot
+            |> List.filter (fun report -> String.Equals(report.Provider, provider, StringComparison.Ordinal))
+            |> List.sortBy reportSortKey
 
-            let addedConversations =
-                currentReport.Conversations
-                |> List.filter (fun conversation -> not (baseByProviderConversationId.ContainsKey conversation.ProviderConversationId))
-                |> List.sortBy conversationLabel
+        match sortedProviderReports with
+        | [] -> None
+        | _ ->
+            let historyEntries =
+                sortedProviderReports
+                |> List.mapi (fun index currentReport ->
+                    let deltaFromPrevious =
+                        match index with
+                        | 0 -> None
+                        | _ ->
+                            let previousReport = sortedProviderReports[index - 1]
+                            let comparison = buildComparisonReport previousReport currentReport 0
 
-            let removedConversations =
-                baseReport.Conversations
-                |> List.filter (fun conversation -> not (currentByProviderConversationId.ContainsKey conversation.ProviderConversationId))
-                |> List.sortBy conversationLabel
+                            Some
+                                { PreviousImportId = comparison.BaseImportId
+                                  PreviousImportedAt = comparison.BaseImportedAt
+                                  AddedConversationCount = comparison.AddedConversationCount
+                                  RemovedConversationCount = comparison.RemovedConversationCount
+                                  ChangedConversationCount = comparison.ChangedConversationCount
+                                  UnchangedConversationCount = comparison.UnchangedConversationCount }
 
-            let changedConversations =
-                baseReport.Conversations
-                |> List.choose (fun baseConversation ->
-                    match currentByProviderConversationId.TryFind baseConversation.ProviderConversationId with
-                    | Some currentConversation
-                        when baseConversation.CanonicalConversationId <> currentConversation.CanonicalConversationId
-                             || baseConversation.Title <> currentConversation.Title
-                             || baseConversation.IsArchived <> currentConversation.IsArchived
-                             || baseConversation.OccurredAt <> currentConversation.OccurredAt
-                             || baseConversation.MessageCount <> currentConversation.MessageCount
-                             || baseConversation.ArtifactReferenceCount <> currentConversation.ArtifactReferenceCount ->
-                        Some
-                            { ProviderConversationId = baseConversation.ProviderConversationId
-                              BaseCanonicalConversationId = baseConversation.CanonicalConversationId
-                              CurrentCanonicalConversationId = currentConversation.CanonicalConversationId
-                              BaseTitle = baseConversation.Title
-                              CurrentTitle = currentConversation.Title
-                              BaseIsArchived = baseConversation.IsArchived
-                              CurrentIsArchived = currentConversation.IsArchived
-                              BaseOccurredAt = baseConversation.OccurredAt
-                              CurrentOccurredAt = currentConversation.OccurredAt
-                              BaseMessageCount = baseConversation.MessageCount
-                              CurrentMessageCount = currentConversation.MessageCount
-                              BaseArtifactReferenceCount = baseConversation.ArtifactReferenceCount
-                              CurrentArtifactReferenceCount = currentConversation.ArtifactReferenceCount }
-                    | Some _
-                    | None -> None)
-                |> List.sortBy conversationDeltaLabel
+                    { ImportId = currentReport.ImportId
+                      ImportedAt = currentReport.ImportedAt
+                      Window = currentReport.Window
+                      NormalizationVersion = currentReport.NormalizationVersion
+                      SourceArtifactRelativePath = currentReport.SourceArtifactRelativePath
+                      ConversationCount = currentReport.ConversationCount
+                      MessageCount = currentReport.MessageCount
+                      ArtifactReferenceCount = currentReport.ArtifactReferenceCount
+                      DeltaFromPrevious = deltaFromPrevious })
 
-            let unchangedConversationCount =
-                baseReport.Conversations
-                |> List.filter (fun baseConversation ->
-                    match currentByProviderConversationId.TryFind baseConversation.ProviderConversationId with
-                    | Some currentConversation ->
-                        baseConversation.CanonicalConversationId = currentConversation.CanonicalConversationId
-                        && baseConversation.Title = currentConversation.Title
-                        && baseConversation.IsArchived = currentConversation.IsArchived
-                        && baseConversation.OccurredAt = currentConversation.OccurredAt
-                        && baseConversation.MessageCount = currentConversation.MessageCount
-                        && baseConversation.ArtifactReferenceCount = currentConversation.ArtifactReferenceCount
-                    | None -> false)
-                |> List.length
+            let reportedEntries =
+                let skipCount = max 0 (historyEntries.Length - limit)
+                historyEntries |> List.skip skipCount
 
             Some
-                { BaseImportId = baseImportId
-                  CurrentImportId = currentImportId
-                  BaseProvider = baseReport.Provider
-                  CurrentProvider = currentReport.Provider
-                  BaseWindow = baseReport.Window
-                  CurrentWindow = currentReport.Window
-                  BaseImportedAt = baseReport.ImportedAt
-                  CurrentImportedAt = currentReport.ImportedAt
-                  AddedConversationCount = addedConversations.Length
-                  RemovedConversationCount = removedConversations.Length
-                  ChangedConversationCount = changedConversations.Length
-                  UnchangedConversationCount = unchangedConversationCount
-                  AddedConversations = addedConversations |> List.truncate limit
-                  RemovedConversations = removedConversations |> List.truncate limit
-                  ChangedConversations = changedConversations |> List.truncate limit }
-        | _ -> None
+                { Provider = provider
+                  AvailableSnapshotCount = historyEntries.Length
+                  ReportedEntryCount = reportedEntries.Length
+                  Entries = reportedEntries }

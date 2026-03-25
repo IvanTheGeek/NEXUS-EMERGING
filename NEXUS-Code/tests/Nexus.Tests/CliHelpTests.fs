@@ -40,6 +40,17 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/compare-import-snapshots.md" "Expected the normalized snapshot guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help compare-import-snapshots.")
 
+              testCase "Provider import history help exposes the chronological snapshot workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-provider-import-history" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-provider-import-history to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-provider-import-history" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|codex>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
+                  Expect.stringContains result.StandardOutput "adjacent deltas" "Expected the adjacent-delta note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-provider-import-history.md" "Expected the history guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-provider-import-history.")
+
               testCase "Snapshot rebuild help exposes the backfill workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "rebuild-import-snapshots" ]
 
