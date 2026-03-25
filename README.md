@@ -63,11 +63,15 @@ Already established:
 - Provider exports are acquisition inputs, not absolute truth.
 - Raw artifacts must be preserved.
 - Canonical history should prefer `Observed` language at the ingestion layer.
-- A first working CLI importer exists for ChatGPT and Claude full-export zips.
+- Working CLI importers exist for ChatGPT, Claude, Grok, and Codex capture.
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
+- Normalized import snapshots exist for provider-export imports and can be rebuilt for older imports.
+- A current-ingestion report exists for cross-provider operational status.
 - A first external graph export exists through Graphviz DOT output over derived graph assertions.
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
+- A first LOGOS source-model scaffold exists for source systems, intake channels, and signal kinds.
+- A first explicit overlap-candidate report exists without collapsing acquisition history automatically.
 - Full graph rebuilds are now explicitly treated as heavyweight operations, and a secondary graph working layer is planned next.
 
 Not yet established:

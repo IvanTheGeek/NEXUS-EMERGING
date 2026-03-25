@@ -67,13 +67,29 @@ In the current ontology direction, `Imprint` is a role, not a structural primiti
 
 A single acquisition run that processes one or more provider artifacts and appends canonical history.
 
+## Intake Channel
+
+A stable classification for the path through which a LOGOS signal entered NEXUS, such as AI conversation, forum thread, email thread, bug report, or app feedback.
+
 ## Lens
 
 A perspective over the underlying graph that localizes meaning, naming, grouping, and emphasis for a purpose or audience.
 
+## LOGOS
+
+The NEXUS concept area for intake, refinement, and retention of knowledge-bearing signals.
+
+LOGOS is broader than any one storage or retrieval technology.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.
+
+## Normalized Import Snapshot
+
+A per-import derived snapshot written from one parsed provider payload before canonical dedupe.
+
+It captures what that import payload contained at the normalized layer, so imports can be compared with snapshot semantics instead of only additive canonical changes.
 
 ## Normalization Version
 
@@ -99,3 +115,17 @@ An original source object received from a provider, such as a ChatGPT, Claude, o
 ## Raw Object
 
 A preserved source or derived extraction stored in the object layer.
+
+## Overlap Reconciliation
+
+The explicit, traceable, and reversible process of linking multiple acquisition sources that may describe the same underlying interaction.
+
+In NEXUS, overlap is preserved separately first and reconciled later by explicit logic rather than silently collapsed during import.
+
+## Signal Kind
+
+A stable classification for the kind of knowledge-bearing signal represented in LOGOS, such as conversation, message, feedback, bug report, or support question.
+
+## Source System
+
+A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, or an app feedback surface.
