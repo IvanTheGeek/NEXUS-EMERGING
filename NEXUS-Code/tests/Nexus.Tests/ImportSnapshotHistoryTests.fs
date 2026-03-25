@@ -20,6 +20,7 @@ module ImportSnapshotHistoryTests =
           Window = Some Full
           ObjectsRoot = objectsRoot
           EventStoreRoot = eventStoreRoot },
+        objectsRoot,
         eventStoreRoot
 
     let tests =
@@ -27,8 +28,8 @@ module ImportSnapshotHistoryTests =
             "normalized import snapshot history"
             [ testCase "history report orders snapshots chronologically and computes adjacent deltas" (fun () ->
                   TestHelpers.withTempDirectory "nexus-import-snapshot-history" (fun tempRoot ->
-                      let baseRequest, eventStoreRoot = buildImportRequest tempRoot "claude"
-                      let currentRequest, _ = buildImportRequest tempRoot "claude-follow-on"
+                      let baseRequest, _, eventStoreRoot = buildImportRequest tempRoot "claude"
+                      let currentRequest, _, _ = buildImportRequest tempRoot "claude-follow-on"
 
                       let baseImport = ImportWorkflow.run baseRequest
                       let currentImport = ImportWorkflow.run currentRequest
@@ -57,8 +58,8 @@ module ImportSnapshotHistoryTests =
 
               testCase "CLI report-provider-import-history prints chronological snapshot history" (fun () ->
                   TestHelpers.withTempDirectory "nexus-import-snapshot-history-cli" (fun tempRoot ->
-                      let baseRequest, eventStoreRoot = buildImportRequest tempRoot "claude"
-                      let currentRequest, _ = buildImportRequest tempRoot "claude-follow-on"
+                      let baseRequest, objectsRoot, eventStoreRoot = buildImportRequest tempRoot "claude"
+                      let currentRequest, _, _ = buildImportRequest tempRoot "claude-follow-on"
 
                       let _ = ImportWorkflow.run baseRequest
                       let _ = ImportWorkflow.run currentRequest
@@ -68,6 +69,8 @@ module ImportSnapshotHistoryTests =
                               [ "report-provider-import-history"
                                 "--event-store-root"
                                 eventStoreRoot
+                                "--objects-root"
+                                objectsRoot
                                 "--provider"
                                 "claude"
                                 "--limit"
@@ -80,4 +83,6 @@ module ImportSnapshotHistoryTests =
                       Expect.stringContains result.StandardOutput "Available snapshots: 2" "Expected the snapshot count."
                       Expect.stringContains result.StandardOutput "delta_from_previous=none (first snapshot for provider)" "Expected the first-row delta note."
                       Expect.stringContains result.StandardOutput "added=1 removed=0 changed=1 unchanged=0" "Expected the adjacent delta counts."
-                      Expect.stringContains result.StandardOutput "source_artifact_relative_path=" "Expected the source artifact path in the history output." )) ]
+                      Expect.stringContains result.StandardOutput "source_artifact_relative_path=" "Expected the source artifact path in the history output."
+                      Expect.stringContains result.StandardOutput "source_artifact_sha256=" "Expected the raw artifact hash in the history output."
+                      Expect.stringContains result.StandardOutput "source_artifact_matches_previous=false" "Expected the second fixture artifact to differ from the first." )) ]

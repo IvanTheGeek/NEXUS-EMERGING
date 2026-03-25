@@ -27,7 +27,7 @@ module Program =
         | WriteSampleEventStore of eventStoreRoot: string
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
-        | ReportProviderImportHistory of eventStoreRoot: string * provider: string * limit: int
+        | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
@@ -81,6 +81,10 @@ module Program =
         let bytes = Encoding.UTF8.GetBytes(value)
         let hash = SHA256.HashData(bytes)
         Convert.ToHexString(hash).ToLowerInvariant()
+
+    let private sha256ForFile path =
+        use stream = File.OpenRead(path)
+        SHA256.HashData(stream) |> Convert.ToHexString |> fun value -> value.ToLowerInvariant()
 
     let private containsHelpSwitch args =
         args
@@ -186,12 +190,14 @@ module Program =
                   Options =
                     [ "--provider <chatgpt|claude|codex>", "Required. Select the provider whose normalized import history you want to inspect."
                       "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
                       "--limit <n>", "Limit the report to the newest N history rows. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s report-provider-import-history --provider chatgpt" cliInvocation
-                      sprintf "%s report-provider-import-history --provider claude --event-store-root /tmp/nexus-event-store --limit 10" cliInvocation ]
+                      sprintf "%s report-provider-import-history --provider claude --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --limit 10" cliInvocation ]
                   Notes =
                     [ "This uses normalized import snapshots, not additive working-slice contributions."
+                      "When the preserved raw artifact still exists, the report also prints its SHA-256."
                       "Each row shows one import snapshot plus the delta from the previous snapshot for that provider."
                       "If older imports are missing snapshot files, run rebuild-import-snapshots first."
                       "Detailed guide: docs/how-to/report-provider-import-history.md" ] }
@@ -1400,21 +1406,23 @@ module Program =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-provider-import-history"))
         else
-            let rec loop eventStoreRoot provider limit remaining =
+            let rec loop eventStoreRoot objectsRoot provider limit remaining =
                 match remaining with
                 | [] ->
                     match provider with
-                    | Some providerValue -> Ok (ReportProviderImportHistory(eventStoreRoot, providerValue, limit))
+                    | Some providerValue -> Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, providerValue, limit))
                     | None ->
                         eprintfn "Missing required option: --provider"
                         printCommandHelp "report-provider-import-history"
                         Error 1
                 | "--event-store-root" :: value :: rest ->
-                    loop value provider limit rest
+                    loop value objectsRoot provider limit rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value provider limit rest
                 | "--provider" :: value :: rest ->
                     match ProviderNaming.tryParse value with
                     | Some providerKind ->
-                        loop eventStoreRoot (Some (ProviderNaming.slug providerKind)) limit rest
+                        loop eventStoreRoot objectsRoot (Some (ProviderNaming.slug providerKind)) limit rest
                     | None ->
                         eprintfn "Unsupported provider: %s" value
                         printCommandHelp "report-provider-import-history"
@@ -1422,7 +1430,7 @@ module Program =
                 | "--limit" :: value :: rest ->
                     match Int32.TryParse(value) with
                     | true, parsedValue when parsedValue > 0 ->
-                        loop eventStoreRoot provider parsedValue rest
+                        loop eventStoreRoot objectsRoot provider parsedValue rest
                     | _ ->
                         eprintfn "Invalid limit: %s" value
                         printCommandHelp "report-provider-import-history"
@@ -1432,7 +1440,7 @@ module Program =
                     printCommandHelp "report-provider-import-history"
                     Error 1
 
-            loop defaultEventStoreRoot None 20 args
+            loop defaultEventStoreRoot defaultObjectsRoot None 20 args
 
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
@@ -2160,17 +2168,29 @@ module Program =
             eprintfn "Run rebuild-import-snapshots to backfill older provider-export imports from preserved raw artifacts."
             1
 
-    let private reportProviderImportHistory eventStoreRoot provider limit =
+    let private reportProviderImportHistory eventStoreRoot objectsRoot provider limit =
+        let resolveRawArtifactInfo (relativePath: string) =
+            let absolutePath =
+                Path.Combine(Path.GetFullPath(objectsRoot), relativePath.Replace('/', Path.DirectorySeparatorChar))
+
+            if File.Exists(absolutePath) then
+                Some (sha256ForFile absolutePath, true)
+            else
+                Some ("missing", false)
+
         match ImportSnapshots.tryBuildHistoryReport eventStoreRoot provider limit with
         | Some report ->
             printfn "Normalized import snapshot history."
             printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Objects root: %s" objectsRoot
             printfn "  Provider: %s" report.Provider
             printfn "  Available snapshots: %d" report.AvailableSnapshotCount
             printfn "  Reported entries: %d" report.ReportedEntryCount
 
             if not report.Entries.IsEmpty then
                 printfn "  History:"
+
+                let mutable previousRawArtifactHash: string option = None
 
                 report.Entries
                 |> List.iteri (fun index entry ->
@@ -2190,7 +2210,25 @@ module Program =
                     | None -> ()
 
                     match entry.SourceArtifactRelativePath with
-                    | Some value -> printfn "      source_artifact_relative_path=%s" value
+                    | Some value ->
+                        printfn "      source_artifact_relative_path=%s" value
+
+                        match resolveRawArtifactInfo value with
+                        | Some (rawArtifactHash, true) ->
+                            printfn "      source_artifact_sha256=%s" rawArtifactHash
+
+                            match previousRawArtifactHash with
+                            | Some previousHash ->
+                                printfn "      source_artifact_matches_previous=%b" (String.Equals(previousHash, rawArtifactHash, StringComparison.Ordinal))
+                            | None ->
+                                printfn "      source_artifact_matches_previous=none (first raw artifact for provider)"
+
+                            previousRawArtifactHash <- Some rawArtifactHash
+                        | Some (_, false) ->
+                            printfn "      source_artifact_sha256=missing"
+                            printfn "      source_artifact_matches_previous=unknown"
+                            previousRawArtifactHash <- None
+                        | None -> ()
                     | None -> ()
 
                     match entry.DeltaFromPrevious with
@@ -3023,8 +3061,8 @@ module Program =
             compareProviderExports provider baseZipPath currentZipPath limit
         | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
             compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
-        | Ok (ReportProviderImportHistory(eventStoreRoot, provider, limit)) ->
-            reportProviderImportHistory eventStoreRoot provider limit
+        | Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, provider, limit)) ->
+            reportProviderImportHistory eventStoreRoot objectsRoot provider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
             rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->

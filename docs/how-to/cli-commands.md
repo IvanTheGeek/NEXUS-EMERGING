@@ -56,6 +56,7 @@ The CLI supports both:
 
 - Reports one provider's normalized import snapshots in chronological order.
 - Use it when you want a timeline view of export/import history plus adjacent snapshot deltas.
+- When the preserved raw artifacts are still available, it also reports raw SHA-256 and whether each artifact matches the previous snapshot's artifact.
 - This is a snapshot-history report, not an additive working-slice report.
 - Details: `docs/how-to/report-provider-import-history.md`
 
@@ -189,6 +190,7 @@ Provider import:
 1. Run `compare-provider-exports` if you want to understand raw export-window deltas before import.
 2. Run `import-provider-export`.
 3. Run `report-provider-import-history --provider <chatgpt|claude|codex>` if you want a chronological snapshot timeline for one provider.
+   Add `--objects-root <path>` when the preserved raw artifacts are not under the repository-default object store and you want raw SHA-256 evidence in the report.
 4. Run `compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>` if you want normalized snapshot semantics for one specific import pair after import.
 5. Run `rebuild-conversation-projections`.
 6. Run `rebuild-artifact-projections`.
