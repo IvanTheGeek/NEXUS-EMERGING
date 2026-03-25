@@ -1,6 +1,6 @@
 # Compare Provider Exports
 
-Use this when you want to compare two raw ChatGPT or Claude export zips before importing either one into canonical history.
+Use this when you want to compare two raw ChatGPT, Claude, or Grok export zips before importing either one into canonical history.
 
 This is useful for questions like:
 
@@ -21,7 +21,7 @@ Important:
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   compare-provider-exports \
-  --provider <chatgpt|claude> \
+  --provider <chatgpt|claude|grok> \
   --base-zip <path> \
   --current-zip <path>
 ```
@@ -63,13 +63,14 @@ That means the same provider-native conversation ID appeared in both zips, but i
 
 ## Notes
 
-- This comparison is based on provider-native IDs and parsed `conversations.json` content.
+- This comparison is based on provider-native IDs and the parsed provider payload content.
 - It does not claim canonical or ontology-level meaning.
 - If the two zips are byte-identical, the comparison will report that directly.
 - After this check, use `import-provider-export` when you want to append canonical history.
 
 ## Related Commands
 
+- `compare-import-snapshots`
 - `import-provider-export`
 - `report-working-import-conversations`
 - `compare-working-import-conversations`

@@ -22,12 +22,69 @@ module CliHelpTests =
 
                   Expect.equal result.ExitCode 0 "Expected help compare-provider-exports to exit successfully."
                   Expect.stringContains result.StandardOutput "Command: compare-provider-exports" "Expected the command header."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok>" "Expected provider allowlist guidance."
                   Expect.stringContains result.StandardOutput "--base-zip <path>" "Expected base-zip guidance."
                   Expect.stringContains result.StandardOutput "--current-zip <path>" "Expected current-zip guidance."
                   Expect.stringContains result.StandardOutput "source-layer" "Expected source-layer comparison note."
                   Expect.stringContains result.StandardOutput "docs/how-to/compare-provider-exports.md" "Expected the raw comparison guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help compare-provider-exports.")
+
+              testCase "Normalized snapshot comparison help exposes the snapshot workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "compare-import-snapshots" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help compare-import-snapshots to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: compare-import-snapshots" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--base-import-id <uuid>" "Expected base-import guidance."
+                  Expect.stringContains result.StandardOutput "--current-import-id <uuid>" "Expected current-import guidance."
+                  Expect.stringContains result.StandardOutput "snapshot semantics" "Expected the normalized snapshot note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/compare-import-snapshots.md" "Expected the normalized snapshot guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help compare-import-snapshots.")
+
+              testCase "Provider import history help exposes the chronological snapshot workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-provider-import-history" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-provider-import-history to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-provider-import-history" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected objects-root guidance."
+                  Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
+                  Expect.stringContains result.StandardOutput "adjacent deltas" "Expected the adjacent-delta note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-provider-import-history.md" "Expected the history guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-provider-import-history.")
+
+              testCase "Current ingestion help exposes the cross-provider status workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-current-ingestion" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-current-ingestion to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-current-ingestion" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--event-store-root <path>" "Expected event-store-root guidance."
+                  Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected objects-root guidance."
+                  Expect.stringContains result.StandardOutput "latest known import state across providers" "Expected the cross-provider summary note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-current-ingestion.md" "Expected the current-ingestion guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-current-ingestion.")
+
+              testCase "Conversation overlap help exposes the explicit candidate workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-conversation-overlap-candidates" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-conversation-overlap-candidates to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-conversation-overlap-candidates" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--left-provider <chatgpt|claude|grok|codex>" "Expected left-provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--right-provider <chatgpt|claude|grok|codex>" "Expected right-provider allowlist guidance."
+                  Expect.stringContains result.StandardOutput "heuristic candidate report only" "Expected the explicit candidate warning."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-conversation-overlap-candidates.md" "Expected the overlap guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-conversation-overlap-candidates.")
+
+              testCase "Snapshot rebuild help exposes the backfill workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "rebuild-import-snapshots" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help rebuild-import-snapshots to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: rebuild-import-snapshots" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
+                  Expect.stringContains result.StandardOutput "--all" "Expected the explicit all-imports guidance."
+                  Expect.stringContains result.StandardOutput "--force" "Expected overwrite guidance."
+                  Expect.stringContains result.StandardOutput "current provider-export parser rules" "Expected the parser-version note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/rebuild-import-snapshots.md" "Expected the backfill guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-import-snapshots.")
 
               testCase "Command help works through both help forms" (fun () ->
                   let helpCommandResult = TestHelpers.runCli [ "help"; "import-provider-export" ]
@@ -38,7 +95,7 @@ module CliHelpTests =
 
                   for output in [ helpCommandResult.StandardOutput; switchResult.StandardOutput ] do
                       Expect.stringContains output "Command: import-provider-export" "Expected the command header."
-                      Expect.stringContains output "--provider <chatgpt|claude>" "Expected required provider option guidance."
+                      Expect.stringContains output "--provider <chatgpt|claude|grok>" "Expected required provider option guidance."
                       Expect.stringContains output "docs/how-to/import-provider-export.md" "Expected the detailed guide link."
 
                   Expect.equal helpCommandResult.StandardError "" "Did not expect stderr from help import-provider-export."
@@ -51,7 +108,7 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "Command: export-graphviz-dot" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected traceable objects-root guidance."
                   Expect.stringContains result.StandardOutput "--output <path>" "Expected custom output guidance."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|codex>" "Expected provider slice guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider slice guidance."
                   Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation slice guidance."
                   Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import slice guidance."

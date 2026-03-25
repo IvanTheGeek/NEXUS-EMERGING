@@ -18,6 +18,7 @@ module ProviderNaming =
         function
         | ChatGpt -> "chatgpt"
         | Claude -> "claude"
+        | Grok -> "grok"
         | Codex -> "codex"
         | OtherProvider value -> value.Trim().ToLowerInvariant()
 
@@ -30,6 +31,7 @@ module ProviderNaming =
         | "chat-gpt"
         | "chat_gpt" -> Some ChatGpt
         | "claude" -> Some Claude
+        | "grok" -> Some Grok
         | "codex" -> Some Codex
         | _ -> None
 
@@ -184,9 +186,11 @@ type ImportResult =
       ImportId: ImportId
       ArchivedZipRelativePath: string
       LatestZipRelativePath: string
-      ExtractedConversationRelativePath: string option
+      ExtractedPayloadRelativePath: string option
       EventPaths: string list
       ManifestRelativePath: string
+      ImportSnapshotManifestRelativePath: string option
+      ImportSnapshotConversationsRelativePath: string option
       WorkingGraphManifestRelativePath: string option
       WorkingGraphCatalogRelativePath: string option
       WorkingGraphIndexRelativePath: string option

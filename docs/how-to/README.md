@@ -12,6 +12,7 @@ Current guides:
 
 - `capture-artifact-payload.md`
 - `cli-commands.md`
+- `compare-import-snapshots.md`
 - `compare-provider-exports.md`
 - `compare-working-import-conversations.md`
 - `create-concept-note.md`
@@ -25,8 +26,12 @@ Current guides:
 - `rebuild-artifact-projections.md`
 - `rebuild-conversation-projections.md`
 - `rebuild-graph-assertions.md`
+- `rebuild-import-snapshots.md`
 - `rebuild-working-graph-index.md`
+- `report-current-ingestion.md`
+- `report-conversation-overlap-candidates.md`
 - `report-unresolved-artifacts.md`
+- `report-provider-import-history.md`
 - `report-working-graph-imports.md`
 - `report-working-import-conversations.md`
 - `report-working-graph-neighborhood.md`

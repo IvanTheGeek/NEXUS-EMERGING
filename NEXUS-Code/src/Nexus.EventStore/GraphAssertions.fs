@@ -96,6 +96,7 @@ module GraphAssertions =
         function
         | "chatgpt" -> ChatGpt
         | "claude" -> Claude
+        | "grok" -> Grok
         | "codex" -> Codex
         | value -> OtherProvider value
 
@@ -137,6 +138,7 @@ module GraphAssertions =
             [ match providerRef.Provider with
               | ChatGpt -> "chatgpt"
               | Claude -> "claude"
+              | Grok -> "grok"
               | Codex -> "codex"
               | OtherProvider value -> value
               match providerRef.ObjectKind with

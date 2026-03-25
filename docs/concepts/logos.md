@@ -32,6 +32,7 @@ Vector search or a vector database may later be useful inside this area for retr
 
 ## Working Notes
 
+- Related design note: `../logos-source-model-v0.md`
 - How should LOGOS distinguish raw intake, refined knowledge, and durable doctrine?
 - Which parts of LOGOS belong in canonical history versus derived knowledge projections?
 - How should retrieval aids like vector search relate to the broader LOGOS knowledge model without becoming the model itself?

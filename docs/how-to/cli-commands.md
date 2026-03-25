@@ -39,15 +39,55 @@ The CLI supports both:
 
 `compare-provider-exports`
 
-- Compares two raw ChatGPT or Claude export zips before canonical import.
+- Compares two raw ChatGPT, Claude, or Grok export zips before canonical import.
 - Use it when you want a source-layer view of added, removed, and changed provider-native conversations or messages.
 - It also reports whether the two zip artifacts are byte-identical.
 - Details: `docs/how-to/compare-provider-exports.md`
 
+`compare-import-snapshots`
+
+- Compares two normalized import snapshots after provider import.
+- Use it when you want full-export or rolling-window snapshot semantics inside the NEXUS pipeline, without confusing additive dedupe with snapshot membership.
+- It is keyed by provider-native conversation identity and is derived from the parsed provider payload before canonical dedupe.
+- If older imports are missing snapshot files, run `rebuild-import-snapshots`.
+- Details: `docs/how-to/compare-import-snapshots.md`
+
+`report-provider-import-history`
+
+- Reports one provider's normalized import snapshots in chronological order.
+- Use it when you want a timeline view of export/import history plus adjacent snapshot deltas.
+- When the preserved raw artifacts are still available, it also reports raw SHA-256 and whether each artifact matches the previous snapshot's artifact.
+- This is a snapshot-history report, not an additive working-slice report.
+- Details: `docs/how-to/report-provider-import-history.md`
+
+`report-current-ingestion`
+
+- Reports the latest known import state across providers.
+- Use it when you want one operational view of what is currently ingested without checking each provider separately.
+- It reads the newest import manifest per provider, adds normalized snapshot totals when available, and reports raw root-artifact SHA-256 when the preserved file still exists.
+- It also shows the current LOGOS source/channel/signal classification for known providers.
+- Details: `docs/how-to/report-current-ingestion.md`
+
+`report-conversation-overlap-candidates`
+
+- Reports conservative conversation-level overlap candidates between two providers' projection sets.
+- Use it when you want to spot possible cross-source overlap, such as local Codex capture vs later provider export, without collapsing anything automatically.
+- It is based on explainable signals like normalized title similarity, time overlap, and message-count closeness.
+- This is a candidate report only, not reconciliation.
+- Details: `docs/how-to/report-conversation-overlap-candidates.md`
+
+`rebuild-import-snapshots`
+
+- Rebuilds normalized import snapshots for older provider-export imports from preserved raw artifacts.
+- This rewrites derived snapshot files only. It does not append canonical events.
+- Use `--import-id <uuid>` for one import or `--all` for an explicit full backfill pass.
+- Details: `docs/how-to/rebuild-import-snapshots.md`
+
 `import-provider-export`
 
-- Archives a ChatGPT or Claude export zip.
+- Archives a ChatGPT, Claude, or Grok export zip.
 - Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
+- Also writes a normalized import snapshot under `snapshots/imports/<import-id>/`.
 - Also materializes a batch-local graph working slice under `graph/working/imports/<import-id>/`.
 - Details: `docs/how-to/import-provider-export.md`
 
@@ -165,21 +205,26 @@ Provider import:
 
 1. Run `compare-provider-exports` if you want to understand raw export-window deltas before import.
 2. Run `import-provider-export`.
-3. Run `rebuild-conversation-projections`.
-4. Run `rebuild-artifact-projections`.
-5. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
-6. Run `export-graphviz-dot` if you want an external graph view.
-7. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
-8. Run `report-unresolved-artifacts` if you want to identify missing payloads.
-9. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
-10. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
-11. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
-12. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
-13. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
-14. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
-15. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
-16. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
-17. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
+3. Run `report-provider-import-history --provider <chatgpt|claude|grok|codex>` if you want a chronological snapshot timeline for one provider.
+   Add `--objects-root <path>` when the preserved raw artifacts are not under the repository-default object store and you want raw SHA-256 evidence in the report.
+4. Run `report-current-ingestion` if you want one cross-provider status view of what the store currently contains.
+5. Run `compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>` if you want normalized snapshot semantics for one specific import pair after import.
+6. Run `rebuild-conversation-projections`.
+7. Run `report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt` if you want a first explicit cross-source overlap candidate check.
+8. Run `rebuild-artifact-projections`.
+9. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
+10. Run `export-graphviz-dot` if you want an external graph view.
+11. Run `render-graphviz-dot` if you want SVG or PNG output from the DOT file.
+12. Run `report-unresolved-artifacts` if you want to identify missing payloads.
+13. Run `report-working-graph-imports` if you want a quick view of the current graph working slices.
+14. Run `report-working-import-conversations --import-id <uuid>` if you want a conversation-centric view of one fresh import batch.
+15. Run `compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>` if you want a batch-to-batch comparison of conversation contributions in the working layer.
+16. Run `find-working-graph-nodes` if you want to discover candidate node IDs from the SQLite working index.
+17. Run `report-working-graph-slice --import-id <uuid>` if you want the SQLite-backed summary for one import batch.
+18. Run `report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>` if you want the local structure around one indexed node.
+19. Run `rebuild-working-graph-index` if the SQLite working index needs to be recreated from existing working slices.
+20. Run `verify-working-graph-slice --import-id <uuid>` if you want to validate that the slice still traces back cleanly to canonical and raw layers.
+21. Run `export-graphviz-dot --working-import-id <uuid> --verification traceable` if you want a graph export that refuses to render when that traceability chain is broken.
 
 Codex session import:
 
@@ -212,6 +257,7 @@ Unless overridden, the CLI uses repository-local defaults:
 ## Related Guides
 
 - `docs/how-to/export-codex-sessions.md`
+- `docs/how-to/compare-import-snapshots.md`
 - `docs/how-to/compare-provider-exports.md`
 - `docs/how-to/import-provider-export.md`
 - `docs/how-to/import-codex-sessions.md`
@@ -224,6 +270,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/rebuild-working-graph-index.md`
 - `docs/how-to/export-graphviz-dot.md`
 - `docs/how-to/report-unresolved-artifacts.md`
+- `docs/how-to/report-current-ingestion.md`
 - `docs/how-to/report-working-graph-imports.md`
 - `docs/how-to/report-working-import-conversations.md`
 - `docs/how-to/compare-working-import-conversations.md`

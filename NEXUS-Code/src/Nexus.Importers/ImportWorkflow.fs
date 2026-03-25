@@ -28,12 +28,12 @@ module ImportWorkflow =
           ArchivedZipAbsolutePath: string
           ArchivedZipRelativePath: string
           LatestZipRelativePath: string
-          ConversationsJsonAbsolutePath: string option
-          ConversationsJsonRelativePath: string option
+          ProviderPayloadAbsolutePath: string option
+          ProviderPayloadRelativePath: string option
           ExtractedEntries: int
           ExtractedFileNames: Set<string>
           RootArtifact: RawObjectRef
-          ConversationSnapshot: RawObjectRef option }
+          ProviderPayloadSnapshot: RawObjectRef option }
 
     let private importedAtValue (ImportedAt value) = value
     let private observedAtFromImported (ImportedAt value) = ObservedAt value
@@ -59,7 +59,7 @@ module ImportWorkflow =
         status message
 
     let private timestampFolderName (timestamp: DateTimeOffset) =
-        timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ssZ", CultureInfo.InvariantCulture)
+        timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ss-fffffffZ", CultureInfo.InvariantCulture)
 
     let private ensureEmptyDirectory path =
         if Directory.Exists(path) then
@@ -94,6 +94,7 @@ module ImportWorkflow =
                 entry.ExtractToFile(destinationPath, true)
                 extractedEntries <- extractedEntries + 1
                 extractedNames <- extractedNames.Add(entry.Name.Trim().ToLowerInvariant())
+                extractedNames <- extractedNames.Add(entry.FullName.Trim().ToLowerInvariant())
 
         extractedEntries, extractedNames
 
@@ -151,11 +152,13 @@ module ImportWorkflow =
         let archivedZipRelativePath =
             Path.Combine(archiveDirectoryRelativePath, sourceFileName).Replace('\\', '/')
 
-        let conversationsJsonRelativePath =
-            let relative = Path.Combine(archiveDirectoryRelativePath, "extracted", "conversations.json").Replace('\\', '/')
-            let absolute = Path.Combine(request.ObjectsRoot, relative)
+        let providerPayloadLocation =
+            ProviderAdapters.tryLocatePayload request.Provider extractedArchiveAbsolutePath
 
-            if File.Exists(absolute) then Some relative else None
+        let providerPayloadRelativePath =
+            providerPayloadLocation
+            |> Option.map (fun location ->
+                Path.Combine(archiveDirectoryRelativePath, "extracted", location.RelativePath).Replace('\\', '/'))
 
         let rootArtifact =
             { RawObjectId = None
@@ -164,14 +167,17 @@ module ImportWorkflow =
               ArchivedAt = Some importedAt
               SourceDescription = Some $"Archived {providerSlug} export zip" }
 
-        let conversationSnapshot =
-            conversationsJsonRelativePath
-            |> Option.map (fun relativePath ->
+        let providerPayloadSnapshot =
+            providerPayloadLocation
+            |> Option.map (fun location ->
+                let relativePath =
+                    Path.Combine(archiveDirectoryRelativePath, "extracted", location.RelativePath).Replace('\\', '/')
+
                 { RawObjectId = None
                   Kind = ExtractedSnapshot
                   RelativePath = relativePath
                   ArchivedAt = Some importedAt
-                  SourceDescription = Some "Extracted conversations.json for parser input" })
+                  SourceDescription = Some location.Description })
 
         { ImportedAt = importedAt
           SourceFileName = sourceFileName
@@ -180,14 +186,12 @@ module ImportWorkflow =
           ArchivedZipAbsolutePath = archivedZipAbsolutePath
           ArchivedZipRelativePath = archivedZipRelativePath
           LatestZipRelativePath = latestZipRelativePath
-          ConversationsJsonAbsolutePath =
-            conversationsJsonRelativePath
-            |> Option.map (fun relativePath -> Path.Combine(request.ObjectsRoot, relativePath))
-          ConversationsJsonRelativePath = conversationsJsonRelativePath
+          ProviderPayloadAbsolutePath = providerPayloadLocation |> Option.map (fun value -> value.AbsolutePath)
+          ProviderPayloadRelativePath = providerPayloadRelativePath
           ExtractedEntries = extractedEntries
           ExtractedFileNames = extractedNames
           RootArtifact = rootArtifact
-          ConversationSnapshot = conversationSnapshot }
+          ProviderPayloadSnapshot = providerPayloadSnapshot }
 
     let private conversationProviderRef provider conversationNativeId =
         { Provider = provider
@@ -223,7 +227,7 @@ module ImportWorkflow =
 
     let private rawObjectsForEnvelope intake =
         [ Some intake.RootArtifact
-          intake.ConversationSnapshot ]
+          intake.ProviderPayloadSnapshot ]
         |> List.choose id
 
     let private envelopeRawObjectsForConversation intake (conversation: ParsedConversation) =
@@ -289,7 +293,7 @@ module ImportWorkflow =
                 fallbackKey |> Option.iter (fun key -> index.ArtifactsByFallbackKey[key] <- artifactId)
                 artifactId, false
 
-    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses =
+    let private importCounts conversationsSeen messagesSeen artifactsReferenced newEvents duplicates revisions reparses : ImportCounts =
         { ConversationsSeen = conversationsSeen
           MessagesSeen = messagesSeen
           ArtifactsReferenced = artifactsReferenced
@@ -323,12 +327,17 @@ module ImportWorkflow =
         let intake = archiveRawImport { request with ObjectsRoot = objectsRoot }
         emitStatus status $"Raw archive complete: {intake.SourceFileName} copied and {intake.ExtractedEntries} extracted entries staged."
 
-        let conversationsJsonPath =
-            match intake.ConversationsJsonAbsolutePath with
+        let providerPayloadPath =
+            match intake.ProviderPayloadAbsolutePath with
             | Some value -> value
-            | None -> failwith "The provider export did not contain conversations.json."
+            | None -> failwith $"The provider export did not contain the expected {providerSlug} payload file."
 
-        emitStatus status "Parsing provider payload from conversations.json."
+        let providerPayloadLabel =
+            intake.ProviderPayloadRelativePath
+            |> Option.map Path.GetFileName
+            |> Option.defaultValue "provider payload"
+
+        emitStatus status $"Parsing provider payload from {providerPayloadLabel}."
         let parsedImport =
             ProviderAdapters.parse
                 request.Provider
@@ -337,7 +346,7 @@ module ImportWorkflow =
                 intake.SourceByteCount
                 intake.ExtractedEntries
                 intake.ExtractedFileNames
-                conversationsJsonPath
+                providerPayloadPath
 
         let parsedConversationCount = parsedImport.Conversations.Length
         let parsedMessageCount = parsedImport.Conversations |> List.sumBy (fun conversation -> conversation.Messages.Length)
@@ -357,6 +366,7 @@ module ImportWorkflow =
         emitStatus status "Loading event-store index for dedupe and revision checks."
         let index = EventStoreIndex.load eventStoreRoot
         let events = ResizeArray<CanonicalEvent>()
+        let snapshotConversations = ResizeArray<NormalizedImportSnapshotConversation>()
         let mutable conversationsSeen = 0
         let mutable messagesSeen = 0
         let mutable artifactsReferenced = 0
@@ -423,8 +433,19 @@ module ImportWorkflow =
                             { ConversationId = conversationId
                               ProviderConversation = conversationRef
                               Title = conversation.Title
-                              IsArchived = conversation.IsArchived
-                              MessageCountHint = conversation.MessageCountHint } }
+                                      IsArchived = conversation.IsArchived
+                                      MessageCountHint = conversation.MessageCountHint } }
+
+            snapshotConversations.Add
+                { CanonicalConversationId = ConversationId.format conversationId
+                  ProviderConversationId = conversation.ProviderConversationId
+                  Title = conversation.Title
+                  IsArchived = conversation.IsArchived
+                  OccurredAt = conversation.OccurredAt
+                  MessageCount = conversation.Messages.Length
+                  ArtifactReferenceCount =
+                    conversation.Messages
+                    |> List.sumBy (fun value -> value.ArtifactReferences.Length) }
 
             for message in conversation.Messages do
                 messagesSeen <- messagesSeen + 1
@@ -614,6 +635,17 @@ module ImportWorkflow =
         let eventPaths = CanonicalStore.writeCanonicalEvents eventStoreRoot eventList
         emitStatus status "Writing import manifest."
         let manifestPath = CanonicalStore.writeImportManifest eventStoreRoot manifest
+        emitStatus status "Writing normalized import snapshot."
+        let importSnapshot =
+            { ImportId = importId
+              Provider = providerSlug
+              Window = request.Window |> Option.map ImportWindowNaming.value
+              ImportedAt = importedAtValue intake.ImportedAt
+              NormalizationVersion = Some (NormalizationNaming.value currentNormalizationVersion)
+              SourceArtifactRelativePath = Some intake.ArchivedZipRelativePath
+              Conversations = snapshotConversations |> Seq.toList }
+
+        let importSnapshotResult = ImportSnapshots.write eventStoreRoot importSnapshot
         emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
         let workingGraph =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
@@ -631,9 +663,11 @@ module ImportWorkflow =
           ImportId = importId
           ArchivedZipRelativePath = intake.ArchivedZipRelativePath
           LatestZipRelativePath = intake.LatestZipRelativePath
-          ExtractedConversationRelativePath = intake.ConversationsJsonRelativePath
+          ExtractedPayloadRelativePath = intake.ProviderPayloadRelativePath
           EventPaths = eventPaths
           ManifestRelativePath = manifestPath
+          ImportSnapshotManifestRelativePath = Some importSnapshotResult.ManifestRelativePath
+          ImportSnapshotConversationsRelativePath = Some importSnapshotResult.ConversationsRelativePath
           WorkingGraphManifestRelativePath = Some workingGraph.ManifestRelativePath
           WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
           WorkingGraphIndexRelativePath = Some workingGraphIndexRelativePath

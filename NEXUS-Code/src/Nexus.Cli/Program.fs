@@ -26,6 +26,11 @@ module Program =
         | ShowHelp of commandName: string option
         | WriteSampleEventStore of eventStoreRoot: string
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
+        | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
+        | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
+        | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
+        | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
+        | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
@@ -78,6 +83,10 @@ module Program =
         let bytes = Encoding.UTF8.GetBytes(value)
         let hash = SHA256.HashData(bytes)
         Convert.ToHexString(hash).ToLowerInvariant()
+
+    let private sha256ForFile path =
+        use stream = File.OpenRead(path)
+        SHA256.HashData(stream) |> Convert.ToHexString |> fun value -> value.ToLowerInvariant()
 
     let private containsHelpSwitch args =
         args
@@ -135,12 +144,12 @@ module Program =
         | "compare-provider-exports" ->
             Some
                 { Name = name
-                  Summary = "Compare two raw ChatGPT or Claude export zips before canonical import."
+                  Summary = "Compare two raw ChatGPT, Claude, or Grok export zips before canonical import."
                   Usage =
-                    [ sprintf "%s compare-provider-exports --provider <chatgpt|claude> --base-zip <path> --current-zip <path>" cliInvocation
+                    [ sprintf "%s compare-provider-exports --provider <chatgpt|claude|grok> --base-zip <path> --current-zip <path>" cliInvocation
                       sprintf "%s compare-provider-exports --provider chatgpt --base-zip RawDataExports/older.zip --current-zip RawDataExports/newer.zip --limit 10" cliInvocation ]
                   Options =
-                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter used to parse both zips."
+                    [ "--provider <chatgpt|claude|grok>", "Required. Select the provider adapter used to parse both zips."
                       "--base-zip <path>", "Required. The older or reference raw export zip."
                       "--current-zip <path>", "Required. The newer or comparison raw export zip."
                       "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
@@ -152,15 +161,118 @@ module Program =
                       "It does not import, archive, or append anything to canonical history."
                       "Use it when you want to reason about export-window behavior before canonical import."
                       "Detailed guide: docs/how-to/compare-provider-exports.md" ] }
+        | "compare-import-snapshots" ->
+            Some
+                { Name = name
+                  Summary = "Compare two normalized import snapshots keyed by provider-native conversation identity."
+                  Usage =
+                    [ sprintf "%s compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>" cliInvocation
+                      sprintf "%s compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--base-import-id <uuid>", "Required. The older or reference import snapshot."
+                      "--current-import-id <uuid>", "Required. The newer or comparison import snapshot."
+                      "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s compare-import-snapshots --base-import-id 019d21d6-5036-732d-973a-ef40df7f9003 --current-import-id 019d21df-d8b9-7a0a-a7c0-36686a412d40" cliInvocation
+                      sprintf "%s compare-import-snapshots --event-store-root /tmp/nexus-event-store --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This compares normalized per-import snapshots derived from parsed provider payloads before canonical dedupe."
+                      "Use it when you want snapshot semantics at the normalized layer, rather than additive batch-local working slices."
+                      "Absence from the current snapshot means absence from that import payload only; it does not imply canonical deletion."
+                      "Older imports may predate snapshot materialization and can be backfilled with rebuild-import-snapshots."
+                      "Detailed guide: docs/how-to/compare-import-snapshots.md" ] }
+        | "report-provider-import-history" ->
+            Some
+                { Name = name
+                  Summary = "Report one provider's normalized import snapshots in chronological order with adjacent deltas."
+                  Usage =
+                    [ sprintf "%s report-provider-import-history --provider <chatgpt|claude|grok|codex>" cliInvocation
+                      sprintf "%s report-provider-import-history --provider chatgpt --limit 10" cliInvocation ]
+                  Options =
+                    [ "--provider <chatgpt|claude|grok|codex>", "Required. Select the provider whose normalized import history you want to inspect."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--limit <n>", "Limit the report to the newest N history rows. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-provider-import-history --provider chatgpt" cliInvocation
+                      sprintf "%s report-provider-import-history --provider claude --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This uses normalized import snapshots, not additive working-slice contributions."
+                      "When the preserved raw artifact still exists, the report also prints its SHA-256."
+                      "Each row shows one import snapshot plus the delta from the previous snapshot for that provider."
+                      "If older imports are missing snapshot files, run rebuild-import-snapshots first."
+                      "Detailed guide: docs/how-to/report-provider-import-history.md" ] }
+        | "report-current-ingestion" ->
+            Some
+                { Name = name
+                  Summary = "Report the latest known import state across providers from canonical import manifests."
+                  Usage =
+                    [ sprintf "%s report-current-ingestion" cliInvocation
+                      sprintf "%s report-current-ingestion --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation ]
+                  Options =
+                    [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot ]
+                  Examples =
+                    [ sprintf "%s report-current-ingestion" cliInvocation
+                      sprintf "%s report-current-ingestion --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation ]
+                  Notes =
+                    [ "This reads the newest import manifest for each provider and augments it with normalized snapshot totals when available."
+                      "Providers like Codex currently report from import-manifest counts because they do not yet write normalized import snapshots."
+                      "When the preserved root artifact still exists, the report also prints its SHA-256."
+                      "Detailed guide: docs/how-to/report-current-ingestion.md" ] }
+        | "report-conversation-overlap-candidates" ->
+            Some
+                { Name = name
+                  Summary = "Report conservative conversation-level overlap candidates between two providers' projection sets."
+                  Usage =
+                    [ sprintf "%s report-conversation-overlap-candidates --left-provider <chatgpt|claude|grok|codex> --right-provider <chatgpt|claude|grok|codex>" cliInvocation
+                      sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt --limit 10" cliInvocation ]
+                  Options =
+                    [ "--left-provider <chatgpt|claude|grok|codex>", "Required. The first provider projection set to inspect."
+                      "--right-provider <chatgpt|claude|grok|codex>", "Required. The second provider projection set to inspect."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--limit <n>", "Limit reported candidates. Defaults to 20." ]
+                  Examples =
+                    [ sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt" cliInvocation
+                      sprintf "%s report-conversation-overlap-candidates --left-provider codex --right-provider claude --event-store-root /tmp/nexus-event-store --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This is a heuristic candidate report only. It does not reconcile, merge, or delete anything."
+                      "Candidates are based on explainable signals such as normalized title similarity, time overlap, and message-count closeness."
+                      "Use it to spot likely cross-source overlap before any explicit reconciliation workflow exists."
+                      "Detailed guide: docs/how-to/report-conversation-overlap-candidates.md" ] }
+        | "rebuild-import-snapshots" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild normalized import snapshots for older provider-export imports from preserved raw artifacts."
+                  Usage =
+                    [ sprintf "%s rebuild-import-snapshots --import-id <uuid>" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --all" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --import-id <uuid> --force" cliInvocation ]
+                  Options =
+                    [ "--import-id <uuid>", "Rebuild one specific import snapshot."
+                      "--all", "Rebuild snapshots across all import manifests in the event store."
+                      "--force", "Overwrite existing normalized snapshot files instead of skipping them."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-import-snapshots --import-id 019d21d6-5036-732d-973a-ef40df7f9003" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --all --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --import-id <uuid> --force" cliInvocation ]
+                  Notes =
+                    [ "This rebuilds derived normalized snapshot artifacts only. It does not append canonical events."
+                      "Backfilled snapshots are reparsed from preserved raw exports using the current provider-export parser rules."
+                      "Use this when older imports predate snapshot materialization and compare-import-snapshots reports missing snapshot files."
+                      "Detailed guide: docs/how-to/rebuild-import-snapshots.md" ] }
         | "import-provider-export" ->
             Some
                 { Name = name
-                  Summary = "Archive a ChatGPT or Claude export zip, parse provider records, and append canonical observed history."
+                  Summary = "Archive a ChatGPT, Claude, or Grok export zip, parse provider records, and append canonical observed history."
                   Usage =
-                    [ sprintf "%s import-provider-export --provider <chatgpt|claude> --zip <path>" cliInvocation
+                    [ sprintf "%s import-provider-export --provider <chatgpt|claude|grok> --zip <path>" cliInvocation
                       sprintf "%s import-provider-export --provider claude --zip RawDataExports/claude-export.zip --window full" cliInvocation ]
                   Options =
-                    [ "--provider <chatgpt|claude>", "Required. Select the provider adapter."
+                    [ "--provider <chatgpt|claude|grok>", "Required. Select the provider adapter."
                       "--zip <path>", "Required. Path to the provider export zip to archive and import."
                       "--window <kind>", "Import window label. Defaults to full."
                       "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
@@ -200,7 +312,7 @@ module Program =
                   Options =
                     [ "--file <path>", "Required. Path to the local artifact payload."
                       "--artifact-id <uuid>", "Hydrate a known internal artifact ID directly."
-                      "--provider <chatgpt|claude>", "Provider for provider-key lookup when not using --artifact-id."
+                      "--provider <chatgpt|claude|grok>", "Provider for provider-key lookup when not using --artifact-id."
                       "--provider-conversation-id <id>", "Provider conversation ID for provider-key lookup."
                       "--provider-message-id <id>", "Provider message ID for provider-key lookup."
                       "--provider-artifact-id <id>", "Provider artifact ID when the export referenced one."
@@ -269,7 +381,7 @@ module Program =
                       "--output <path>", "Optional DOT output path. Defaults to a filter-aware name under <event-store-root>/graph/exports."
                       "--output-root <path>", "Optional output directory root. NEXUS will place the default file name under this directory."
                       "--verification <none|traceable>", "Verification mode. Defaults to none. traceable is currently supported only with --working-import-id."
-                      "--provider <chatgpt|claude|codex>", "Only include assertions whose provenance references the selected provider."
+                      "--provider <chatgpt|claude|grok|codex>", "Only include assertions whose provenance references the selected provider."
                       "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
                       "--import-id <uuid>", "Only include assertions whose provenance import_id matches the selected import."
@@ -326,7 +438,7 @@ module Program =
                       sprintf "%s report-unresolved-artifacts --provider claude --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--provider <chatgpt|claude>", "Limit the report to a single provider."
+                      "--provider <chatgpt|claude|grok>", "Limit the report to a single provider."
                       "--limit <n>", "Limit detailed items. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s report-unresolved-artifacts" cliInvocation
@@ -401,7 +513,7 @@ module Program =
                       "--match <text>", "Optional title/slug substring match."
                       "--semantic-role <slug>", "Optional semantic-role slug filter."
                       "--message-role <slug>", "Optional message-role slug filter."
-                      "--provider <chatgpt|claude|codex>", "Optional provider filter."
+                      "--provider <chatgpt|claude|grok|codex>", "Optional provider filter."
                       "--import-id <uuid>", "Optional import-batch filter."
                       "--limit <n>", "Limit matches. Defaults to 20." ]
                   Examples =
@@ -524,6 +636,11 @@ module Program =
     let private availableCommands () =
         [ "write-sample-event-store"
           "compare-provider-exports"
+          "compare-import-snapshots"
+          "report-provider-import-history"
+          "report-current-ingestion"
+          "report-conversation-overlap-candidates"
+          "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
           "capture-artifact-payload"
@@ -642,6 +759,8 @@ module Program =
                         loop (Some ChatGpt) baseZipPath currentZipPath limit rest
                     | Some Claude ->
                         loop (Some Claude) baseZipPath currentZipPath limit rest
+                    | Some Grok ->
+                        loop (Some Grok) baseZipPath currentZipPath limit rest
                     | Some Codex ->
                         eprintfn "Codex sessions are not compared through raw export zips."
                         printCommandHelp "compare-provider-exports"
@@ -672,6 +791,68 @@ module Program =
                     Error 1
 
             loop None None None 20 args
+
+    let private parseProviderSlugOption commandName optionName value =
+        match ProviderNaming.tryParse value with
+        | Some ChatGpt -> Ok "chatgpt"
+        | Some Claude -> Ok "claude"
+        | Some Grok -> Ok "grok"
+        | Some Codex -> Ok "codex"
+        | Some (OtherProvider _) ->
+            eprintfn "Unsupported provider for %s: %s" commandName value
+            printCommandHelp commandName
+            Error 1
+        | None ->
+            eprintfn "Unsupported value for %s: %s" optionName value
+            printCommandHelp commandName
+            Error 1
+
+    let private parseReportConversationOverlapCandidates (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-conversation-overlap-candidates"))
+        else
+            let rec loop eventStoreRoot leftProvider rightProvider limit remaining =
+                match remaining with
+                | [] ->
+                    match leftProvider, rightProvider with
+                    | Some leftProviderValue, Some rightProviderValue when leftProviderValue = rightProviderValue ->
+                        eprintfn "Left and right providers must be different for report-conversation-overlap-candidates."
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                    | Some leftProviderValue, Some rightProviderValue ->
+                        Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProviderValue, rightProviderValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option for report-conversation-overlap-candidates: --left-provider"
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option for report-conversation-overlap-candidates: --right-provider"
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value leftProvider rightProvider limit rest
+                | "--left-provider" :: value :: rest ->
+                    match parseProviderSlugOption "report-conversation-overlap-candidates" "--left-provider" value with
+                    | Ok parsedValue -> loop eventStoreRoot (Some parsedValue) rightProvider limit rest
+                    | Error code -> Error code
+                | "--right-provider" :: value :: rest ->
+                    match parseProviderSlugOption "report-conversation-overlap-candidates" "--right-provider" value with
+                    | Ok parsedValue -> loop eventStoreRoot leftProvider (Some parsedValue) limit rest
+                    | Error code -> Error code
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot leftProvider rightProvider parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-conversation-overlap-candidates"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-conversation-overlap-candidates: %s" option
+                    printCommandHelp "report-conversation-overlap-candidates"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
 
     let private parseImportProviderExport (args: string list) =
         if containsHelpSwitch args then
@@ -1276,6 +1457,166 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
+    let private parseCompareImportSnapshots (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "compare-import-snapshots"))
+        else
+            let rec loop eventStoreRoot baseImportId currentImportId limit remaining =
+                match remaining with
+                | [] ->
+                    match baseImportId, currentImportId with
+                    | Some baseImportIdValue, Some currentImportIdValue ->
+                        Ok (CompareImportSnapshots(eventStoreRoot, baseImportIdValue, currentImportIdValue, limit))
+                    | None, _ ->
+                        eprintfn "Missing required option: --base-import-id"
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option: --current-import-id"
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value baseImportId currentImportId limit rest
+                | "--base-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot (Some (ImportId.parse value)) currentImportId limit rest
+                    | false, _ ->
+                        eprintfn "Invalid base import ID: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--current-import-id" :: value :: rest ->
+                    match Guid.TryParse(value) with
+                    | true, _ ->
+                        loop eventStoreRoot baseImportId (Some (ImportId.parse value)) limit rest
+                    | false, _ ->
+                        eprintfn "Invalid current import ID: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot baseImportId currentImportId parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "compare-import-snapshots"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for compare-import-snapshots: %s" option
+                    printCommandHelp "compare-import-snapshots"
+                    Error 1
+
+            loop defaultEventStoreRoot None None 20 args
+
+    let private parseReportProviderImportHistory (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-provider-import-history"))
+        else
+            let rec loop eventStoreRoot objectsRoot provider limit remaining =
+                match remaining with
+                | [] ->
+                    match provider with
+                    | Some providerValue -> Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, providerValue, limit))
+                    | None ->
+                        eprintfn "Missing required option: --provider"
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot provider limit rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value provider limit rest
+                | "--provider" :: value :: rest ->
+                    match ProviderNaming.tryParse value with
+                    | Some providerKind ->
+                        loop eventStoreRoot objectsRoot (Some (ProviderNaming.slug providerKind)) limit rest
+                    | None ->
+                        eprintfn "Unsupported provider: %s" value
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop eventStoreRoot objectsRoot provider parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-provider-import-history"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-provider-import-history: %s" option
+                    printCommandHelp "report-provider-import-history"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot None 20 args
+
+    let private parseReportCurrentIngestion (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-current-ingestion"))
+        else
+            let rec loop eventStoreRoot objectsRoot remaining =
+                match remaining with
+                | [] -> Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot))
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for report-current-ingestion: %s" option
+                    printCommandHelp "report-current-ingestion"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot args
+
+    let private parseRebuildImportSnapshots (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-import-snapshots"))
+        else
+            let rec loop eventStoreRoot objectsRoot scope force remaining =
+                match remaining with
+                | [] ->
+                    match scope with
+                    | Some scopeValue ->
+                        Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scopeValue, force))
+                    | None ->
+                        eprintfn "Specify either --import-id <uuid> or --all."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot scope force rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value scope force rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value), scope with
+                    | (true, _), None ->
+                        loop eventStoreRoot objectsRoot (Some (SpecificImport (ImportId.parse value))) force rest
+                    | (true, _), Some AllImports ->
+                        eprintfn "Do not combine --import-id with --all."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                    | (true, _), Some (SpecificImport _) ->
+                        eprintfn "Only one --import-id value is allowed."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                    | (false, _), _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--all" :: rest ->
+                    match scope with
+                    | None ->
+                        loop eventStoreRoot objectsRoot (Some AllImports) force rest
+                    | Some _ ->
+                        eprintfn "Do not combine --all with --import-id."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--force" :: rest ->
+                    loop eventStoreRoot objectsRoot scope true rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-import-snapshots: %s" option
+                    printCommandHelp "rebuild-import-snapshots"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot None false args
+
     let private parseFindWorkingGraphNodes (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "find-working-graph-nodes"))
@@ -1508,6 +1849,16 @@ module Program =
             parseWriteSampleEventStore rest
         | "compare-provider-exports" :: rest ->
             parseCompareProviderExports rest
+        | "compare-import-snapshots" :: rest ->
+            parseCompareImportSnapshots rest
+        | "report-provider-import-history" :: rest ->
+            parseReportProviderImportHistory rest
+        | "report-current-ingestion" :: rest ->
+            parseReportCurrentIngestion rest
+        | "report-conversation-overlap-candidates" :: rest ->
+            parseReportConversationOverlapCandidates rest
+        | "rebuild-import-snapshots" :: rest ->
+            parseRebuildImportSnapshots rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
         | "import-codex-sessions" :: rest ->
@@ -1572,6 +1923,15 @@ module Program =
 
         match assertionCount with
         | Some value -> printfn "  Working graph assertions written: %d" value
+        | None -> ()
+
+    let private printImportSnapshotArtifacts manifestPath conversationsPath =
+        match manifestPath with
+        | Some value -> printfn "  Import snapshot manifest: %s" value
+        | None -> ()
+
+        match conversationsPath with
+        | Some value -> printfn "  Import snapshot conversations: %s" value
         | None -> ()
 
     let private buildSampleData () =
@@ -1738,7 +2098,7 @@ module Program =
 
         let appendedEventCount = 7
 
-        let counts =
+        let counts : ImportCounts =
             { ConversationsSeen = 1
               MessagesSeen = 2
               ArtifactsReferenced = 1
@@ -1860,6 +2220,353 @@ module Program =
 
         0
 
+    let private compareImportSnapshots eventStoreRoot baseImportId currentImportId limit =
+        match ImportSnapshots.tryBuildComparisonReport eventStoreRoot baseImportId currentImportId limit with
+        | Some report ->
+            printfn "Normalized import snapshot comparison."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Base import ID: %s" (ImportId.format report.BaseImportId)
+            printfn "  Current import ID: %s" (ImportId.format report.CurrentImportId)
+            printfn "  Base provider: %s" report.BaseProvider
+            printfn "  Current provider: %s" report.CurrentProvider
+
+            match report.BaseWindow with
+            | Some value -> printfn "  Base window: %s" value
+            | None -> ()
+
+            match report.CurrentWindow with
+            | Some value -> printfn "  Current window: %s" value
+            | None -> ()
+
+            printfn "  Base imported at: %s" (report.BaseImportedAt.ToUniversalTime().ToString("O"))
+            printfn "  Current imported at: %s" (report.CurrentImportedAt.ToUniversalTime().ToString("O"))
+            printfn "  Added conversations: %d" report.AddedConversationCount
+            printfn "  Removed conversations: %d" report.RemovedConversationCount
+            printfn "  Changed conversations: %d" report.ChangedConversationCount
+            printfn "  Unchanged conversations: %d" report.UnchangedConversationCount
+
+            if not report.AddedConversations.IsEmpty then
+                printfn "  Added:"
+
+                report.AddedConversations
+                |> List.iter (fun item ->
+                    let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn "      canonical_conversation_id=%s" item.CanonicalConversationId
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+            if not report.RemovedConversations.IsEmpty then
+                printfn "  Removed:"
+
+                report.RemovedConversations
+                |> List.iter (fun item ->
+                    let label = item.Title |> Option.defaultValue item.ProviderConversationId
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn "      canonical_conversation_id=%s" item.CanonicalConversationId
+                    printfn "      messages=%d artifacts=%d" item.MessageCount item.ArtifactReferenceCount)
+
+            if not report.ChangedConversations.IsEmpty then
+                printfn "  Changed:"
+
+                report.ChangedConversations
+                |> List.iter (fun item ->
+                    let label =
+                        item.CurrentTitle
+                        |> Option.orElse item.BaseTitle
+                        |> Option.defaultValue item.ProviderConversationId
+
+                    printfn "    %s" item.ProviderConversationId
+                    printfn "      label=%s" label
+                    printfn
+                        "      canonical_conversation_id=%s -> %s"
+                        item.BaseCanonicalConversationId
+                        item.CurrentCanonicalConversationId
+                    printfn "      messages=%d -> %d" item.BaseMessageCount item.CurrentMessageCount
+                    printfn
+                        "      artifacts=%d -> %d"
+                        item.BaseArtifactReferenceCount
+                        item.CurrentArtifactReferenceCount)
+
+            0
+        | None ->
+            eprintfn "Missing normalized import snapshot files for one or both imports."
+            eprintfn "These snapshots are written during provider import and may be absent for older imports."
+            eprintfn "Run rebuild-import-snapshots to backfill older provider-export imports from preserved raw artifacts."
+            1
+
+    let private reportProviderImportHistory eventStoreRoot objectsRoot provider limit =
+        let resolveRawArtifactInfo (relativePath: string) =
+            let absolutePath =
+                Path.Combine(Path.GetFullPath(objectsRoot), relativePath.Replace('/', Path.DirectorySeparatorChar))
+
+            if File.Exists(absolutePath) then
+                Some (sha256ForFile absolutePath, true)
+            else
+                Some ("missing", false)
+
+        match ImportSnapshots.tryBuildHistoryReport eventStoreRoot provider limit with
+        | Some report ->
+            printfn "Normalized import snapshot history."
+            printfn "  Event store root: %s" eventStoreRoot
+            printfn "  Objects root: %s" objectsRoot
+            printfn "  Provider: %s" report.Provider
+            printfn "  Available snapshots: %d" report.AvailableSnapshotCount
+            printfn "  Reported entries: %d" report.ReportedEntryCount
+
+            if not report.Entries.IsEmpty then
+                printfn "  History:"
+
+                let mutable previousRawArtifactHash: string option = None
+
+                report.Entries
+                |> List.iteri (fun index entry ->
+                    let windowLabel = entry.Window |> Option.defaultValue "unknown"
+                    printfn
+                        "    %d. %s | imported_at=%s | window=%s | conversations=%d messages=%d artifacts=%d"
+                        (index + 1)
+                        (ImportId.format entry.ImportId)
+                        (entry.ImportedAt.ToUniversalTime().ToString("O"))
+                        windowLabel
+                        entry.ConversationCount
+                        entry.MessageCount
+                        entry.ArtifactReferenceCount
+
+                    match entry.NormalizationVersion with
+                    | Some value -> printfn "      normalization_version=%s" value
+                    | None -> ()
+
+                    match entry.SourceArtifactRelativePath with
+                    | Some value ->
+                        printfn "      source_artifact_relative_path=%s" value
+
+                        match resolveRawArtifactInfo value with
+                        | Some (rawArtifactHash, true) ->
+                            printfn "      source_artifact_sha256=%s" rawArtifactHash
+
+                            match previousRawArtifactHash with
+                            | Some previousHash ->
+                                printfn "      source_artifact_matches_previous=%b" (String.Equals(previousHash, rawArtifactHash, StringComparison.Ordinal))
+                            | None ->
+                                printfn "      source_artifact_matches_previous=none (first raw artifact for provider)"
+
+                            previousRawArtifactHash <- Some rawArtifactHash
+                        | Some (_, false) ->
+                            printfn "      source_artifact_sha256=missing"
+                            printfn "      source_artifact_matches_previous=unknown"
+                            previousRawArtifactHash <- None
+                        | None -> ()
+                    | None -> ()
+
+                    match entry.DeltaFromPrevious with
+                    | Some delta ->
+                        printfn
+                            "      delta_from_previous=%s added=%d removed=%d changed=%d unchanged=%d"
+                            (ImportId.format delta.PreviousImportId)
+                            delta.AddedConversationCount
+                            delta.RemovedConversationCount
+                            delta.ChangedConversationCount
+                            delta.UnchangedConversationCount
+                    | None ->
+                        printfn "      delta_from_previous=none (first snapshot for provider)")
+
+            0
+        | None ->
+            eprintfn "No normalized import snapshots found for provider %s." provider
+            eprintfn "Run provider imports first, or use rebuild-import-snapshots if older imports predate snapshot materialization."
+            1
+
+    let private reportCurrentIngestion eventStoreRoot objectsRoot =
+        let report = CurrentIngestion.buildReport eventStoreRoot objectsRoot
+
+        printfn "Current ingestion status."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Objects root: %s" objectsRoot
+        printfn "  Import manifests available: %d" report.ImportManifestCount
+        printfn "  Providers with imports: %d" report.ProviderCount
+
+        match report.MissingKnownProviders with
+        | [] ->
+            printfn "  Missing known providers: none"
+        | values ->
+            printfn "  Missing known providers: %s" (String.concat ", " values)
+
+        if report.Entries.IsEmpty then
+            printfn "  Latest imports: none"
+        else
+            printfn "  Latest imports:"
+
+            report.Entries
+            |> List.iteri (fun index entry ->
+                let acquisitionLabel = entry.SourceAcquisition |> Option.defaultValue "unknown"
+                let windowLabel = entry.Window |> Option.defaultValue "unknown"
+
+                printfn
+                    "    %d. %s | import_id=%s | imported_at=%s | acquisition=%s | window=%s"
+                    (index + 1)
+                    entry.Provider
+                    (ImportId.format entry.ImportId)
+                    (entry.ImportedAt.ToUniversalTime().ToString("O"))
+                    acquisitionLabel
+                    windowLabel
+
+                match entry.NormalizationVersion with
+                | Some value -> printfn "      normalization_version=%s" value
+                | None -> ()
+
+                match entry.LogosSourceSystem, entry.LogosIntakeChannel, entry.LogosPrimarySignalKind with
+                | Some sourceSystem, Some intakeChannel, Some primarySignal ->
+                    printfn
+                        "      logos source_system=%s intake_channel=%s primary_signal=%s"
+                        sourceSystem
+                        intakeChannel
+                        primarySignal
+
+                    match entry.LogosRelatedSignalKinds with
+                    | [] -> ()
+                    | values -> printfn "      logos related_signals=%s" (String.concat ", " values)
+                | _ -> ()
+
+                match entry.RootArtifactRelativePath with
+                | Some value ->
+                    printfn "      root_artifact_relative_path=%s" value
+
+                    match entry.RootArtifactExists, entry.RootArtifactSha256 with
+                    | Some true, Some sha256 -> printfn "      root_artifact_sha256=%s" sha256
+                    | Some false, _ -> printfn "      root_artifact_sha256=missing"
+                    | _ -> ()
+                | None -> ()
+
+                printfn
+                    "      counts conversations=%d messages=%d artifacts=%d new_events=%d duplicates=%d revisions=%d reparses=%d"
+                    entry.Counts.ConversationsSeen
+                    entry.Counts.MessagesSeen
+                    entry.Counts.ArtifactsReferenced
+                    entry.Counts.NewEventsAppended
+                    entry.Counts.DuplicatesSkipped
+                    entry.Counts.RevisionsObserved
+                    entry.Counts.ReparseObservationsAppended
+
+                printfn "      normalized_snapshot_available=%b" entry.SnapshotAvailable
+
+                match entry.SnapshotConversationCount, entry.SnapshotMessageCount, entry.SnapshotArtifactReferenceCount with
+                | Some conversations, Some messages, Some artifacts ->
+                    printfn
+                        "      snapshot conversations=%d messages=%d artifacts=%d"
+                        conversations
+                        messages
+                        artifacts
+                | _ -> ())
+
+        0
+
+    let private timestampLabel (value: DateTimeOffset option) =
+        value
+        |> Option.map (fun timestamp -> timestamp.ToUniversalTime().ToString("O"))
+        |> Option.defaultValue "unknown"
+
+    let private reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit =
+        let report = ConversationOverlap.buildReport eventStoreRoot leftProvider rightProvider limit
+
+        printfn "Conversation overlap candidates."
+        printfn "  Event store root: %s" eventStoreRoot
+        printfn "  Left provider: %s" report.LeftProvider
+        printfn "  Right provider: %s" report.RightProvider
+        printfn "  Left conversations inspected: %d" report.LeftConversationCount
+        printfn "  Right conversations inspected: %d" report.RightConversationCount
+        printfn "  Candidate count: %d" report.CandidateCount
+        printfn "  Reported candidates: %d" report.ReportedCount
+        printfn "  These are heuristic candidates only. They do not reconcile or merge history."
+
+        match report.Candidates with
+        | [] ->
+            printfn "  Candidates: none"
+        | values ->
+            printfn "  Candidates:"
+
+            values
+            |> List.iteri (fun index value ->
+                printfn
+                    "    %d. score=%d | %s -> %s"
+                    (index + 1)
+                    value.Score
+                    value.LeftConversationId
+                    value.RightConversationId
+                printfn
+                    "      left provider=%s title=%s messages=%d first=%s last=%s"
+                    value.LeftProvider
+                    (value.LeftTitle |> Option.defaultValue "(untitled)")
+                    value.LeftMessageCount
+                    (timestampLabel value.LeftFirstOccurredAt)
+                    (timestampLabel value.LeftLastOccurredAt)
+                printfn
+                    "      right provider=%s title=%s messages=%d first=%s last=%s"
+                    value.RightProvider
+                    (value.RightTitle |> Option.defaultValue "(untitled)")
+                    value.RightMessageCount
+                    (timestampLabel value.RightFirstOccurredAt)
+                    (timestampLabel value.RightLastOccurredAt)
+                printfn "      signals=%s" (String.concat ", " value.Signals))
+
+        0
+
+    let private backfillOutcomeLabel =
+        function
+        | Rebuilt -> "rebuilt"
+        | SkippedExisting -> "skipped-existing"
+        | SkippedUnsupported -> "skipped-unsupported"
+        | Failed -> "failed"
+
+    let private rebuildImportSnapshots eventStoreRoot objectsRoot scope force =
+        let result =
+            ImportSnapshotBackfill.runWithStatus
+                (fun message -> printfn "  %s" message)
+                { EventStoreRoot = eventStoreRoot
+                  ObjectsRoot = objectsRoot
+                  Scope = scope
+                  Force = force }
+
+        printfn "Normalized import snapshots rebuilt."
+        printfn "  Event store root: %s" result.EventStoreRoot
+        printfn "  Objects root: %s" result.ObjectsRoot
+        printfn "  Scope: %s" result.ScopeDescription
+        printfn "  Parser normalization version: %s" result.ParserNormalizationVersion
+        printfn "  Imports processed: %d" result.ProcessedCount
+        printfn "  Snapshots rebuilt: %d" result.RebuiltCount
+        printfn "  Existing snapshots skipped: %d" result.SkippedExistingCount
+        printfn "  Unsupported imports skipped: %d" result.SkippedUnsupportedCount
+        printfn "  Failed rebuilds: %d" result.FailedCount
+
+        if not result.Imports.IsEmpty then
+            printfn "  Import results:"
+
+            result.Imports
+            |> List.iter (fun item ->
+                let providerLabel = item.Provider |> Option.defaultValue "unknown"
+                printfn
+                    "    %s | provider=%s | outcome=%s"
+                    (ImportId.format item.ImportId)
+                    providerLabel
+                    (backfillOutcomeLabel item.Outcome)
+
+                match item.ManifestRelativePath, item.ConversationsRelativePath with
+                | Some manifestRelativePath, Some conversationsRelativePath ->
+                    printfn "      manifest=%s" manifestRelativePath
+                    printfn "      conversations=%s" conversationsRelativePath
+                | _ -> ()
+
+                match item.ConversationCount, item.MessageCount, item.ArtifactReferenceCount with
+                | Some conversations, Some messages, Some artifacts ->
+                    printfn "      conversations=%d messages=%d artifacts=%d" conversations messages artifacts
+                | _ -> ()
+
+                match item.Reason with
+                | Some reason -> printfn "      note=%s" reason
+                | None -> ())
+
+        if result.FailedCount = 0 then 0 else 2
+
     let private importProviderExport request =
         let result = ImportWorkflow.runWithStatus (fun message -> printfn "  %s" message) request
 
@@ -1869,11 +2576,12 @@ module Program =
         printfn "  Archived zip: %s" result.ArchivedZipRelativePath
         printfn "  Latest zip: %s" result.LatestZipRelativePath
 
-        match result.ExtractedConversationRelativePath with
-        | Some path -> printfn "  Extracted conversations.json: %s" path
+        match result.ExtractedPayloadRelativePath with
+        | Some path -> printfn "  Extracted provider payload: %s" path
         | None -> ()
 
         printfn "  Event manifest: %s" result.ManifestRelativePath
+        printImportSnapshotArtifacts result.ImportSnapshotManifestRelativePath result.ImportSnapshotConversationsRelativePath
         printWorkingGraphArtifacts
             result.WorkingGraphManifestRelativePath
             result.WorkingGraphCatalogRelativePath
@@ -2613,6 +3321,16 @@ module Program =
             writeSampleEventStore eventStoreRoot
         | Ok (CompareProviderExports(provider, baseZipPath, currentZipPath, limit)) ->
             compareProviderExports provider baseZipPath currentZipPath limit
+        | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
+            compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
+        | Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, provider, limit)) ->
+            reportProviderImportHistory eventStoreRoot objectsRoot provider limit
+        | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
+            reportCurrentIngestion eventStoreRoot objectsRoot
+        | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
+            reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
+        | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
+            rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->
             importProviderExport request
         | Ok (ImportCodexSessions request) ->

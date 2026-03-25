@@ -39,6 +39,7 @@ module CanonicalStore =
         function
         | ChatGpt -> "chatgpt"
         | Claude -> "claude"
+        | Grok -> "grok"
         | Codex -> "codex"
         | OtherProvider value -> value
 

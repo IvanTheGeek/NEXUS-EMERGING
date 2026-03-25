@@ -94,7 +94,7 @@ A rebuildable materialized view derived from canonical history.
 
 ## Provider Artifact
 
-An original source object received from a provider, such as a ChatGPT or Claude export zip.
+An original source object received from a provider, such as a ChatGPT, Claude, or Grok export zip.
 
 ## Raw Object
 

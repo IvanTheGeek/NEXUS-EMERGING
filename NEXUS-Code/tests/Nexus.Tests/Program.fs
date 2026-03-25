@@ -8,8 +8,13 @@ module Program =
         testList
             "nexus"
             [ KernelTests.tests
+              LogosTests.tests
               ProviderAdapterTests.tests
               WorkflowTests.tests
+              ImportSnapshotTests.tests
+              ImportSnapshotHistoryTests.tests
+              CurrentIngestionTests.tests
+              ConversationOverlapTests.tests
               GraphAssertionTests.tests
               GraphWorkingCatalogTests.tests
               GraphWorkingIndexTests.tests

@@ -24,6 +24,21 @@ module WorkflowTests =
         objectsRoot,
         eventStoreRoot
 
+    let private buildGrokImportRequest tempRoot =
+        let objectsRoot = Path.Combine(tempRoot, "objects")
+        let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+        let zipPath = Path.Combine(tempRoot, "grok-fixture.zip")
+
+        TestHelpers.createZipFromFixture "provider-export/grok" zipPath
+
+        { Provider = Grok
+          SourceZipPath = zipPath
+          Window = Some(Rolling "30d")
+          ObjectsRoot = objectsRoot
+          EventStoreRoot = eventStoreRoot },
+        objectsRoot,
+        eventStoreRoot
+
     let tests =
         testList
             "import workflows"
@@ -36,10 +51,21 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.MessagesSeen 2 "Expected two Claude messages."
                       Expect.equal firstImport.Counts.ArtifactsReferenced 1 "Expected one Claude artifact reference."
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
+                      Expect.isSome firstImport.ImportSnapshotManifestRelativePath "Expected the import to write a normalized import snapshot manifest."
+                      Expect.isSome firstImport.ImportSnapshotConversationsRelativePath "Expected the import to write a normalized import snapshot conversation file."
                       Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected the import to update the graph working catalog."
                       Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected the import to refresh the SQLite graph working index."
                       Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
+
+                      let importSnapshotManifestPath =
+                          firstImport.ImportSnapshotManifestRelativePath
+                          |> Option.map (fun relativePath -> Path.Combine(eventStoreRoot, relativePath))
+                          |> Option.defaultWith (fun () -> failwith "Missing import snapshot manifest path.")
+
+                      let importSnapshotManifest = TestHelpers.readToml importSnapshotManifestPath
+                      Expect.equal (TomlDocument.tryScalar "snapshot_kind" importSnapshotManifest) (Some "normalized_import_snapshot") "Expected the normalized import snapshot manifest kind."
+                      Expect.equal (TomlDocument.tryTableValue "counts" "conversations_seen" importSnapshotManifest) (Some "1") "Expected one conversation in the normalized import snapshot."
 
                       let workingManifestPath =
                           firstImport.WorkingGraphManifestRelativePath
@@ -90,6 +116,39 @@ module WorkflowTests =
                       Expect.stringContains combined "Processing 1 conversations into canonical history." "Expected the canonical processing phase."
                       Expect.stringContains combined "Writing 7 canonical events to the event store." "Expected the write phase."
                       Expect.stringContains combined "Provider import completed in" "Expected the completion status."))
+
+              testCase "Grok provider export import uses the provider-specific payload file" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-grok-import" (fun tempRoot ->
+                      let request, _, _ = buildGrokImportRequest tempRoot
+
+                      let importResult = ImportWorkflow.run request
+
+                      Expect.equal importResult.Provider Grok "Expected the Grok provider import."
+                      Expect.equal importResult.Counts.ConversationsSeen 1 "Expected one Grok conversation."
+                      Expect.equal importResult.Counts.MessagesSeen 2 "Expected two Grok messages."
+                      Expect.equal importResult.Counts.ArtifactsReferenced 1 "Expected one Grok artifact reference."
+                      Expect.equal importResult.Counts.NewEventsAppended 7 "Expected the Grok first import event set."
+                      Expect.isSome importResult.ImportSnapshotManifestRelativePath "Expected the Grok import to write a normalized import snapshot manifest."
+                      Expect.equal
+                          (importResult.ExtractedPayloadRelativePath |> Option.map Path.GetFileName)
+                          (Some "prod-grok-backend.json")
+                          "Expected the Grok import to preserve the provider-specific payload path."))
+
+              testCase "Provider export imports archive raw zips into distinct directories even within the same second" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-claude-import-archive-distinct" (fun tempRoot ->
+                      let request, objectsRoot, _ = buildClaudeImportRequest tempRoot
+
+                      let firstImport = ImportWorkflow.run request
+                      let secondImport = ImportWorkflow.run request
+
+                      Expect.notEqual firstImport.ArchivedZipRelativePath secondImport.ArchivedZipRelativePath "Expected distinct archived zip paths across successive imports."
+
+                      let firstArchivedZip = Path.Combine(objectsRoot, firstImport.ArchivedZipRelativePath)
+                      let secondArchivedZip = Path.Combine(objectsRoot, secondImport.ArchivedZipRelativePath)
+
+                      Expect.isTrue (File.Exists(firstArchivedZip)) "Expected the first archived zip to remain preserved."
+                      Expect.isTrue (File.Exists(secondArchivedZip)) "Expected the second archived zip to remain preserved."
+                      Expect.notEqual (Path.GetDirectoryName(firstArchivedZip)) (Path.GetDirectoryName(secondArchivedZip)) "Expected distinct archive directories for successive imports." ))
 
               testCase "Manual artifact capture hydrates once and skips duplicate content" (fun () ->
                   TestHelpers.withTempDirectory "nexus-artifact-capture" (fun tempRoot ->
@@ -170,4 +229,28 @@ module WorkflowTests =
                       let projection = TestHelpers.readToml projectionPath
 
                       Expect.equal (TomlDocument.tryScalar "title" projection) (Some "Codex Fixture Session") "Expected the Codex projection title."
-                      Expect.equal (TomlDocument.tryScalar "message_count" projection) (Some "2") "Expected the Codex projection message count.")) ]
+                      Expect.equal (TomlDocument.tryScalar "message_count" projection) (Some "2") "Expected the Codex projection message count."))
+
+              testCase "Codex import skips null-padding lines in transcript JSONL" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-codex-import-null-padding" (fun tempRoot ->
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      let snapshotRoot = Path.Combine(objectsRoot, "providers", "codex", "latest")
+
+                      TestHelpers.copyFixtureDirectory "codex/latest" snapshotRoot
+
+                      let transcriptPath =
+                          Path.Combine(snapshotRoot, "sessions", "2026", "03", "21", "rollout-codex-session-1.jsonl")
+
+                      File.AppendAllText(transcriptPath, "\n" + String('\000', 48) + "\n")
+
+                      let request =
+                          { SnapshotRoot = snapshotRoot
+                            ObjectsRoot = objectsRoot
+                            EventStoreRoot = eventStoreRoot }
+
+                      let importResult = CodexImportWorkflow.run request
+
+                      Expect.equal importResult.Counts.ConversationsSeen 1 "Expected the Codex conversation to remain importable with null-padding lines."
+                      Expect.equal importResult.Counts.MessagesSeen 2 "Expected null-padding lines to be ignored rather than counted as messages."
+                      Expect.equal importResult.Counts.NewEventsAppended 5 "Expected the canonical event count to remain unchanged when null-padding lines are skipped.")) ]

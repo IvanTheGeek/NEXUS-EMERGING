@@ -37,6 +37,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - `docs/nexus-ingestion-architecture.md`
 - `docs/nexus-graph-materialization-plan.md`
 - `docs/nexus-ontology-imprint-alignment.md`
+- `docs/logos-source-model-v0.md`
 - `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
 - `docs/concepts/`
