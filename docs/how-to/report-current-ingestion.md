@@ -6,6 +6,7 @@ It reads the newest import manifest for each provider and augments it with:
 
 - normalized snapshot totals when they exist
 - preserved raw root-artifact SHA-256 when the file is still present
+- current LOGOS source/channel/signal classification when the provider is known
 
 It is useful after imports when you want to answer questions like:
 
@@ -41,6 +42,7 @@ For each provider with at least one import manifest, it prints:
 - normalization version
 - root artifact relative path
 - root artifact SHA-256 when the preserved file exists
+- LOGOS source system, intake channel, and signal classification when known
 - canonical import counts from the import manifest
 - whether a normalized import snapshot is available
 - snapshot totals when available

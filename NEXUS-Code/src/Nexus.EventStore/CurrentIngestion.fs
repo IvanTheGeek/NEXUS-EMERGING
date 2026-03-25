@@ -5,6 +5,7 @@ open System.Globalization
 open System.IO
 open System.Security.Cryptography
 open Nexus.Domain
+open Nexus.Logos
 
 /// <summary>
 /// Captures the canonical import counts recorded for one provider import.
@@ -28,6 +29,10 @@ type CurrentIngestionProviderEntry =
       SourceAcquisition: string option
       Window: string option
       NormalizationVersion: string option
+      LogosSourceSystem: string option
+      LogosIntakeChannel: string option
+      LogosPrimarySignalKind: string option
+      LogosRelatedSignalKinds: string list
       RootArtifactRelativePath: string option
       RootArtifactExists: bool option
       RootArtifactSha256: string option
@@ -153,6 +158,7 @@ module CurrentIngestion =
             |> List.sortBy (fun (provider, _) -> providerOrderKey provider)
             |> List.map (fun (_, value) ->
                 let snapshot = ImportSnapshots.tryLoadReport eventStoreRoot value.ImportId
+                let logosClassification = ProviderLogosClassification.tryFind value.Provider
 
                 let rootArtifactExists, rootArtifactSha256 =
                     match value.RootArtifactRelativePath with
@@ -172,6 +178,19 @@ module CurrentIngestion =
                   SourceAcquisition = value.SourceAcquisition
                   Window = value.Window
                   NormalizationVersion = value.NormalizationVersion
+                  LogosSourceSystem =
+                    logosClassification
+                    |> Option.map (fun classification -> SourceSystemId.value classification.SourceSystemId)
+                  LogosIntakeChannel =
+                    logosClassification
+                    |> Option.map (fun classification -> IntakeChannelId.value classification.IntakeChannelId)
+                  LogosPrimarySignalKind =
+                    logosClassification
+                    |> Option.map (fun classification -> SignalKindId.value classification.PrimarySignalKind)
+                  LogosRelatedSignalKinds =
+                    logosClassification
+                    |> Option.map (fun classification -> classification.RelatedSignalKinds |> List.map SignalKindId.value)
+                    |> Option.defaultValue []
                   RootArtifactRelativePath = value.RootArtifactRelativePath
                   RootArtifactExists = rootArtifactExists
                   RootArtifactSha256 = rootArtifactSha256

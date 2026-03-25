@@ -5,6 +5,7 @@ open Expecto
 open Nexus.EventStore
 open Nexus.Importers
 open Nexus.Domain
+open Nexus.Logos
 
 [<RequireQualifiedAccess>]
 module CurrentIngestionTests =
@@ -59,6 +60,10 @@ module CurrentIngestionTests =
 
                       Expect.equal chatGptEntry.ImportId chatGptImport.ImportId "Expected the ChatGPT row to point at the latest ChatGPT import."
                       Expect.isTrue chatGptEntry.SnapshotAvailable "Expected provider-export imports to have normalized snapshots."
+                      Expect.equal chatGptEntry.LogosSourceSystem (Some(SourceSystemId.value KnownSourceSystems.chatgpt)) "Expected ChatGPT to map into LOGOS source semantics."
+                      Expect.equal chatGptEntry.LogosIntakeChannel (Some(IntakeChannelId.value CoreIntakeChannels.aiConversation)) "Expected AI conversation LOGOS intake classification."
+                      Expect.equal chatGptEntry.LogosPrimarySignalKind (Some(SignalKindId.value CoreSignalKinds.conversation)) "Expected conversation to be the primary LOGOS signal kind."
+                      Expect.equal chatGptEntry.LogosRelatedSignalKinds [ SignalKindId.value CoreSignalKinds.message ] "Expected message as the related LOGOS signal kind."
                       Expect.equal chatGptEntry.SnapshotConversationCount (Some 1) "Expected one ChatGPT snapshot conversation."
                       Expect.equal chatGptEntry.SnapshotMessageCount (Some 2) "Expected two ChatGPT snapshot messages."
                       Expect.equal chatGptEntry.SnapshotArtifactReferenceCount (Some 1) "Expected one ChatGPT artifact reference in the fixture snapshot."
@@ -71,6 +76,7 @@ module CurrentIngestionTests =
 
                       Expect.equal codexEntry.ImportId codexImport.ImportId "Expected the Codex row to point at the latest Codex import."
                       Expect.isFalse codexEntry.SnapshotAvailable "Expected Codex to report from import manifests without normalized snapshots."
+                      Expect.equal codexEntry.LogosSourceSystem (Some(SourceSystemId.value KnownSourceSystems.codex)) "Expected Codex to map into LOGOS source semantics."
                       Expect.equal codexEntry.Counts.ConversationsSeen 1 "Expected one Codex fixture conversation."
                       Expect.equal codexEntry.Counts.MessagesSeen 2 "Expected two Codex fixture messages."
                       Expect.equal codexEntry.RootArtifactExists (Some true) "Expected the preserved Codex root artifact to exist."
@@ -99,6 +105,8 @@ module CurrentIngestionTests =
                       Expect.stringContains result.StandardOutput "Missing known providers: claude, grok" "Expected the missing-provider summary."
                       Expect.stringContains result.StandardOutput "1. chatgpt | import_id=" "Expected the ChatGPT row."
                       Expect.stringContains result.StandardOutput "2. codex | import_id=" "Expected the Codex row."
+                      Expect.stringContains result.StandardOutput "logos source_system=chatgpt intake_channel=ai-conversation primary_signal=conversation" "Expected the LOGOS classification to appear for ChatGPT."
+                      Expect.stringContains result.StandardOutput "logos related_signals=message" "Expected related LOGOS signal kinds to be printed."
                       Expect.stringContains result.StandardOutput "normalized_snapshot_available=true" "Expected snapshot-backed provider guidance."
                       Expect.stringContains result.StandardOutput "normalized_snapshot_available=false" "Expected Codex no-snapshot guidance."
                       Expect.stringContains result.StandardOutput "root_artifact_sha256=" "Expected the raw artifact hash output." )) ]

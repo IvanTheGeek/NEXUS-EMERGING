@@ -2329,6 +2329,19 @@ module Program =
                 | Some value -> printfn "      normalization_version=%s" value
                 | None -> ()
 
+                match entry.LogosSourceSystem, entry.LogosIntakeChannel, entry.LogosPrimarySignalKind with
+                | Some sourceSystem, Some intakeChannel, Some primarySignal ->
+                    printfn
+                        "      logos source_system=%s intake_channel=%s primary_signal=%s"
+                        sourceSystem
+                        intakeChannel
+                        primarySignal
+
+                    match entry.LogosRelatedSignalKinds with
+                    | [] -> ()
+                    | values -> printfn "      logos related_signals=%s" (String.concat ", " values)
+                | _ -> ()
+
                 match entry.RootArtifactRelativePath with
                 | Some value ->
                     printfn "      root_artifact_relative_path=%s" value
