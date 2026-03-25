@@ -49,7 +49,15 @@ The CLI supports both:
 - Compares two normalized import snapshots after provider import.
 - Use it when you want full-export or rolling-window snapshot semantics inside the NEXUS pipeline, without confusing additive dedupe with snapshot membership.
 - It is keyed by provider-native conversation identity and is derived from the parsed provider payload before canonical dedupe.
+- If older imports are missing snapshot files, run `rebuild-import-snapshots`.
 - Details: `docs/how-to/compare-import-snapshots.md`
+
+`rebuild-import-snapshots`
+
+- Rebuilds normalized import snapshots for older provider-export imports from preserved raw artifacts.
+- This rewrites derived snapshot files only. It does not append canonical events.
+- Use `--import-id <uuid>` for one import or `--all` for an explicit full backfill pass.
+- Details: `docs/how-to/rebuild-import-snapshots.md`
 
 `import-provider-export`
 

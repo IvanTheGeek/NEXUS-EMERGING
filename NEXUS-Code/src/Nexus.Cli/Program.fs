@@ -27,6 +27,7 @@ module Program =
         | WriteSampleEventStore of eventStoreRoot: string
         | CompareProviderExports of provider: ProviderKind * baseZipPath: string * currentZipPath: string * limit: int
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
+        | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
@@ -172,8 +173,31 @@ module Program =
                     [ "This compares normalized per-import snapshots derived from parsed provider payloads before canonical dedupe."
                       "Use it when you want snapshot semantics at the normalized layer, rather than additive batch-local working slices."
                       "Absence from the current snapshot means absence from that import payload only; it does not imply canonical deletion."
-                      "Older imports may predate snapshot materialization and will need re-import or backfill before this command can compare them."
+                      "Older imports may predate snapshot materialization and can be backfilled with rebuild-import-snapshots."
                       "Detailed guide: docs/how-to/compare-import-snapshots.md" ] }
+        | "rebuild-import-snapshots" ->
+            Some
+                { Name = name
+                  Summary = "Rebuild normalized import snapshots for older provider-export imports from preserved raw artifacts."
+                  Usage =
+                    [ sprintf "%s rebuild-import-snapshots --import-id <uuid>" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --all" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --import-id <uuid> --force" cliInvocation ]
+                  Options =
+                    [ "--import-id <uuid>", "Rebuild one specific import snapshot."
+                      "--all", "Rebuild snapshots across all import manifests in the event store."
+                      "--force", "Overwrite existing normalized snapshot files instead of skipping them."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot ]
+                  Examples =
+                    [ sprintf "%s rebuild-import-snapshots --import-id 019d21d6-5036-732d-973a-ef40df7f9003" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --all --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects" cliInvocation
+                      sprintf "%s rebuild-import-snapshots --import-id <uuid> --force" cliInvocation ]
+                  Notes =
+                    [ "This rebuilds derived normalized snapshot artifacts only. It does not append canonical events."
+                      "Backfilled snapshots are reparsed from preserved raw exports using the current provider-export parser rules."
+                      "Use this when older imports predate snapshot materialization and compare-import-snapshots reports missing snapshot files."
+                      "Detailed guide: docs/how-to/rebuild-import-snapshots.md" ] }
         | "import-provider-export" ->
             Some
                 { Name = name
@@ -547,6 +571,7 @@ module Program =
         [ "write-sample-event-store"
           "compare-provider-exports"
           "compare-import-snapshots"
+          "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
           "capture-artifact-payload"
@@ -1350,6 +1375,57 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
+    let private parseRebuildImportSnapshots (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "rebuild-import-snapshots"))
+        else
+            let rec loop eventStoreRoot objectsRoot scope force remaining =
+                match remaining with
+                | [] ->
+                    match scope with
+                    | Some scopeValue ->
+                        Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scopeValue, force))
+                    | None ->
+                        eprintfn "Specify either --import-id <uuid> or --all."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--event-store-root" :: value :: rest ->
+                    loop value objectsRoot scope force rest
+                | "--objects-root" :: value :: rest ->
+                    loop eventStoreRoot value scope force rest
+                | "--import-id" :: value :: rest ->
+                    match Guid.TryParse(value), scope with
+                    | (true, _), None ->
+                        loop eventStoreRoot objectsRoot (Some (SpecificImport (ImportId.parse value))) force rest
+                    | (true, _), Some AllImports ->
+                        eprintfn "Do not combine --import-id with --all."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                    | (true, _), Some (SpecificImport _) ->
+                        eprintfn "Only one --import-id value is allowed."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                    | (false, _), _ ->
+                        eprintfn "Invalid import ID: %s" value
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--all" :: rest ->
+                    match scope with
+                    | None ->
+                        loop eventStoreRoot objectsRoot (Some AllImports) force rest
+                    | Some _ ->
+                        eprintfn "Do not combine --all with --import-id."
+                        printCommandHelp "rebuild-import-snapshots"
+                        Error 1
+                | "--force" :: rest ->
+                    loop eventStoreRoot objectsRoot scope true rest
+                | option :: _ ->
+                    eprintfn "Unknown option for rebuild-import-snapshots: %s" option
+                    printCommandHelp "rebuild-import-snapshots"
+                    Error 1
+
+            loop defaultEventStoreRoot defaultObjectsRoot None false args
+
     let private parseFindWorkingGraphNodes (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "find-working-graph-nodes"))
@@ -1584,6 +1660,8 @@ module Program =
             parseCompareProviderExports rest
         | "compare-import-snapshots" :: rest ->
             parseCompareImportSnapshots rest
+        | "rebuild-import-snapshots" :: rest ->
+            parseRebuildImportSnapshots rest
         | "import-provider-export" :: rest ->
             parseImportProviderExport rest
         | "import-codex-sessions" :: rest ->
@@ -2018,7 +2096,64 @@ module Program =
         | None ->
             eprintfn "Missing normalized import snapshot files for one or both imports."
             eprintfn "These snapshots are written during provider import and may be absent for older imports."
+            eprintfn "Run rebuild-import-snapshots to backfill older provider-export imports from preserved raw artifacts."
             1
+
+    let private backfillOutcomeLabel =
+        function
+        | Rebuilt -> "rebuilt"
+        | SkippedExisting -> "skipped-existing"
+        | SkippedUnsupported -> "skipped-unsupported"
+        | Failed -> "failed"
+
+    let private rebuildImportSnapshots eventStoreRoot objectsRoot scope force =
+        let result =
+            ImportSnapshotBackfill.runWithStatus
+                (fun message -> printfn "  %s" message)
+                { EventStoreRoot = eventStoreRoot
+                  ObjectsRoot = objectsRoot
+                  Scope = scope
+                  Force = force }
+
+        printfn "Normalized import snapshots rebuilt."
+        printfn "  Event store root: %s" result.EventStoreRoot
+        printfn "  Objects root: %s" result.ObjectsRoot
+        printfn "  Scope: %s" result.ScopeDescription
+        printfn "  Parser normalization version: %s" result.ParserNormalizationVersion
+        printfn "  Imports processed: %d" result.ProcessedCount
+        printfn "  Snapshots rebuilt: %d" result.RebuiltCount
+        printfn "  Existing snapshots skipped: %d" result.SkippedExistingCount
+        printfn "  Unsupported imports skipped: %d" result.SkippedUnsupportedCount
+        printfn "  Failed rebuilds: %d" result.FailedCount
+
+        if not result.Imports.IsEmpty then
+            printfn "  Import results:"
+
+            result.Imports
+            |> List.iter (fun item ->
+                let providerLabel = item.Provider |> Option.defaultValue "unknown"
+                printfn
+                    "    %s | provider=%s | outcome=%s"
+                    (ImportId.format item.ImportId)
+                    providerLabel
+                    (backfillOutcomeLabel item.Outcome)
+
+                match item.ManifestRelativePath, item.ConversationsRelativePath with
+                | Some manifestRelativePath, Some conversationsRelativePath ->
+                    printfn "      manifest=%s" manifestRelativePath
+                    printfn "      conversations=%s" conversationsRelativePath
+                | _ -> ()
+
+                match item.ConversationCount, item.MessageCount, item.ArtifactReferenceCount with
+                | Some conversations, Some messages, Some artifacts ->
+                    printfn "      conversations=%d messages=%d artifacts=%d" conversations messages artifacts
+                | _ -> ()
+
+                match item.Reason with
+                | Some reason -> printfn "      note=%s" reason
+                | None -> ())
+
+        if result.FailedCount = 0 then 0 else 2
 
     let private importProviderExport request =
         let result = ImportWorkflow.runWithStatus (fun message -> printfn "  %s" message) request
@@ -2776,6 +2911,8 @@ module Program =
             compareProviderExports provider baseZipPath currentZipPath limit
         | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
             compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
+        | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
+            rebuildImportSnapshots eventStoreRoot objectsRoot scope force
         | Ok (ImportProviderExport request) ->
             importProviderExport request
         | Ok (ImportCodexSessions request) ->

@@ -102,6 +102,22 @@ module WorkflowTests =
                       Expect.stringContains combined "Writing 7 canonical events to the event store." "Expected the write phase."
                       Expect.stringContains combined "Provider import completed in" "Expected the completion status."))
 
+              testCase "Provider export imports archive raw zips into distinct directories even within the same second" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-claude-import-archive-distinct" (fun tempRoot ->
+                      let request, objectsRoot, _ = buildClaudeImportRequest tempRoot
+
+                      let firstImport = ImportWorkflow.run request
+                      let secondImport = ImportWorkflow.run request
+
+                      Expect.notEqual firstImport.ArchivedZipRelativePath secondImport.ArchivedZipRelativePath "Expected distinct archived zip paths across successive imports."
+
+                      let firstArchivedZip = Path.Combine(objectsRoot, firstImport.ArchivedZipRelativePath)
+                      let secondArchivedZip = Path.Combine(objectsRoot, secondImport.ArchivedZipRelativePath)
+
+                      Expect.isTrue (File.Exists(firstArchivedZip)) "Expected the first archived zip to remain preserved."
+                      Expect.isTrue (File.Exists(secondArchivedZip)) "Expected the second archived zip to remain preserved."
+                      Expect.notEqual (Path.GetDirectoryName(firstArchivedZip)) (Path.GetDirectoryName(secondArchivedZip)) "Expected distinct archive directories for successive imports." ))
+
               testCase "Manual artifact capture hydrates once and skips duplicate content" (fun () ->
                   TestHelpers.withTempDirectory "nexus-artifact-capture" (fun tempRoot ->
                       let request, objectsRoot, eventStoreRoot = buildClaudeImportRequest tempRoot

@@ -40,6 +40,18 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/compare-import-snapshots.md" "Expected the normalized snapshot guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help compare-import-snapshots.")
 
+              testCase "Snapshot rebuild help exposes the backfill workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "rebuild-import-snapshots" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help rebuild-import-snapshots to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: rebuild-import-snapshots" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import-id guidance."
+                  Expect.stringContains result.StandardOutput "--all" "Expected the explicit all-imports guidance."
+                  Expect.stringContains result.StandardOutput "--force" "Expected overwrite guidance."
+                  Expect.stringContains result.StandardOutput "current provider-export parser rules" "Expected the parser-version note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/rebuild-import-snapshots.md" "Expected the backfill guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help rebuild-import-snapshots.")
+
               testCase "Command help works through both help forms" (fun () ->
                   let helpCommandResult = TestHelpers.runCli [ "help"; "import-provider-export" ]
                   let switchResult = TestHelpers.runCli [ "import-provider-export"; "--help" ]

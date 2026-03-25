@@ -91,11 +91,13 @@ Changed rows show normalized deltas like:
 
 - Snapshot files are written during `import-provider-export`.
 - Older imports may predate snapshot materialization and therefore may not be comparable with this command yet.
+- Use `rebuild-import-snapshots` to backfill those normalized snapshot files from preserved raw exports.
 - Normalized import snapshots are derived working artifacts, not canonical truth.
 - Canonical history still remains the durable append-only authority.
 
 ## Related Commands
 
 - `compare-provider-exports`
+- `rebuild-import-snapshots`
 - `import-provider-export`
 - `compare-working-import-conversations`

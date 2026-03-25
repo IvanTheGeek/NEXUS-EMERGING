@@ -59,7 +59,7 @@ module ImportWorkflow =
         status message
 
     let private timestampFolderName (timestamp: DateTimeOffset) =
-        timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ssZ", CultureInfo.InvariantCulture)
+        timestamp.ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ss-fffffffZ", CultureInfo.InvariantCulture)
 
     let private ensureEmptyDirectory path =
         if Directory.Exists(path) then

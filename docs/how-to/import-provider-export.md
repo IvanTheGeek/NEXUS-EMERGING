@@ -112,6 +112,7 @@ Optional overrides:
 - The canonical event store is intended to be committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
 - Each provider import now also records a normalized per-import snapshot so later full exports and rolling windows can be compared without confusing additive dedupe behavior for snapshot truth.
+- Older imports that predate this snapshot layer can be backfilled with `rebuild-import-snapshots`.
 - The current importer baseline is `provider-export-v1`. Earlier history without explicit versioning is treated as the legacy `provider-export-v0` baseline for reparse comparisons.
 - Re-importing the same provider objects under the same normalization version will skip duplicates and emit revision events only when a known provider message is observed with changed canonical content.
 - Re-importing the same provider objects under a different normalization version appends new message observations instead of pretending the provider message itself changed.
