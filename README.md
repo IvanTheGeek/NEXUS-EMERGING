@@ -93,9 +93,16 @@ Preferred branch shape:
 - merge accepted work back with `--no-ff`
 - delete completed topic branches after merge
 - keep longer-lived branches only when a stream truly continues across multiple merges
+- multiple long-running branches can coexist when they reflect genuinely different concerns
+- periodically merge active long-running branches when convergence matters
 - tag milestone merges when the checkpoint itself should stay easy to find in history
 
 Bootstrap milestone:
 
 - `codex/nexus-ingestion-foundation` is the first ingestion-foundation branch
 - it is intended to merge into `main` as an explicit milestone rather than disappearing into a fast-forward line
+
+Current naming preference:
+
+- use plain workstream branch names such as `export-window-analysis` or `logos-intake-foundation`
+- avoid agent-qualified prefixes unless they add real meaning
