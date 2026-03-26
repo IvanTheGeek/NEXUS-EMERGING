@@ -6,6 +6,7 @@ The governing decision is:
 
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
+- [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
 
 ## Purpose
 
@@ -94,6 +95,8 @@ The first practical views likely include:
 - Which current CLI reports should become the first GUI views?
 - What should the first navigation model be?
 - Which runtime candidates should be evaluated after the host boundary is clearer?
+
+The first concrete runtime requirements for this line now live in [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md).
 
 ## Current Branch
 

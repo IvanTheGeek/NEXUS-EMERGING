@@ -5,6 +5,7 @@ This note maps the broader `FnHCI` concern to the narrower `FnUI` system line.
 The governing decision is:
 
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
+- [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
 
 ## Core Distinction
 

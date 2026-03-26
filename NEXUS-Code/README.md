@@ -78,6 +78,7 @@ See:
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](../docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](../docs/fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](../docs/fnui-foundation.md)
+- [`docs/fnhci-ui-blazor-requirements.md`](../docs/fnhci-ui-blazor-requirements.md)
 - [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](../docs/fsharp-documentation-convention.md)
 
