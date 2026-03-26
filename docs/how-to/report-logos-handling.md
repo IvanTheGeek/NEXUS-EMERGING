@@ -11,6 +11,9 @@ and reports:
 
 - note counts by kind
 - entry-pool counts
+- access-context counts
+- acquisition-kind counts
+- rights-policy counts
 - sensitivity counts
 - sharing-scope counts
 - sanitization-status counts
@@ -20,6 +23,8 @@ and reports:
   - personal-private
   - customer-confidential
   - approved-for-sharing
+  - rights-review-required
+  - attribution-likely-required
 
 ## Command
 
@@ -50,6 +55,8 @@ This report helps answer operational questions like:
 - which notes are still `raw`?
 - which notes are still `personal-private` or `customer-confidential`?
 - which derived notes are already marked `approved-for-sharing`?
+- which notes still need rights review before broader reuse?
+- which notes likely need attribution carried into future help/about or public-export surfaces?
 
 It is an audit report, not a publication gate by itself.
 

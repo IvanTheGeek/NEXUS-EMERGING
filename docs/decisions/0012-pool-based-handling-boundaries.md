@@ -60,6 +60,8 @@ In the early implementation, public-safe promotion requires:
 - `sanitization_status = approved-for-sharing`
 - `sensitivity = public`
 - `sharing_scope = public`
+- a `rights_policy` that explicitly allows public distribution
+- an `attribution_reference` when the rights policy requires attribution
 
 ### Future Work
 
@@ -71,3 +73,7 @@ This keeps the model explicit in two ways:
 
 - the policy remains visible and auditable
 - the dangerous operations gain compile-time boundaries
+
+See also:
+
+- `docs/decisions/0013-access-context-and-rights-aware-intake.md`

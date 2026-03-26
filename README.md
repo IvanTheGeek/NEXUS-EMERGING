@@ -73,12 +73,14 @@ Already established:
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 - A first LOGOS source-model scaffold exists for source systems, intake channels, and signal kinds.
 - A first explicit LOGOS handling-policy model exists for sensitivity, sharing scope, sanitization status, and retention class.
+- A first explicit LOGOS access and rights model now exists for source instance, access context, acquisition kind, rights policy, and attribution reference.
 - Concrete non-chat LOGOS source systems now exist for forum, Talkyard, Discord, email, issue-tracker, and app-feedback surfaces.
 - A first LOGOS intake-note workflow exists for seeding non-chat intake into durable repo memory.
 - A first LOGOS derived sanitization workflow exists for creating safer notes without widening access to restricted raw intake.
 - A first LOGOS handling audit report exists for surfacing raw, restricted, and approved note states.
 - A first LOGOS pool-boundary model exists so future public-facing flows can depend on explicit `public-safe` types instead of loose policy checks.
-- A first LOGOS public-safe export workflow now exists and only emits notes that successfully cross that explicit `public-safe` boundary.
+- A first LOGOS public-safe export workflow now exists and only emits notes that successfully cross that explicit `public-safe` boundary plus rights that allow public distribution.
+- Public-safe export manifests now surface attribution obligations explicitly for later prominent UI/help/about exposure.
 - Non-chat LOGOS notes now enter explicit `raw`, `private`, or `public-safe` pool paths at creation time instead of relying on a later inferred layout.
 - Restricted-by-default intake and explicit publication are now named architectural rules.
 - A first explicit overlap-candidate report exists without collapsing acquisition history automatically.

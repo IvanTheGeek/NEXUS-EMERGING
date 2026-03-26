@@ -122,6 +122,21 @@ type LogosHandlingPolicy =
       RetentionClassId: RetentionClassId }
 
 /// <summary>
+/// The explicit access metadata carried with a LOGOS intake signal or derivative.
+/// </summary>
+type LogosAccessContext =
+    { SourceInstanceId: SourceInstanceId option
+      AccessContextId: AccessContextId
+      AcquisitionKindId: AcquisitionKindId }
+
+/// <summary>
+/// The explicit rights metadata carried with a LOGOS intake signal or derivative.
+/// </summary>
+type LogosRightsContext =
+    { RightsPolicyId: RightsPolicyId
+      AttributionReference: string option }
+
+/// <summary>
 /// Stable sensitivity identifiers for early LOGOS handling policy.
 /// </summary>
 [<RequireQualifiedAccess>]
@@ -252,6 +267,125 @@ module KnownRetentionClasses =
                 if slug = normalized then Some identifier else None)
 
 /// <summary>
+/// Stable access-context identifiers for early LOGOS intake governance.
+/// </summary>
+[<RequireQualifiedAccess>]
+module KnownAccessContexts =
+    let publicAnonymous = AccessContextId.create "public-anonymous"
+    let registeredUser = AccessContextId.create "registered-user"
+    let owner = AccessContextId.create "owner"
+    let admin = AccessContextId.create "admin"
+    let bot = AccessContextId.create "bot"
+    let apiClient = AccessContextId.create "api-client"
+
+    let private catalog =
+        [ publicAnonymous, "Observed through a public non-authenticated view."
+          registeredUser, "Observed through a logged-in but non-owner account."
+          owner, "Observed through the system owner's or steward's account."
+          admin, "Observed through an elevated administrative view."
+          bot, "Observed or captured through an approved bot identity."
+          apiClient, "Observed through an API client context." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, summary) -> AccessContextId.value identifier, identifier, summary)
+
+    let described =
+        bySlug |> List.map (fun (slug, _, summary) -> slug, summary)
+
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            bySlug
+            |> List.tryPick (fun (slug, identifier, _) ->
+                if slug = normalized then Some identifier else None)
+
+/// <summary>
+/// Stable acquisition-kind identifiers for early LOGOS intake governance.
+/// </summary>
+[<RequireQualifiedAccess>]
+module KnownAcquisitionKinds =
+    let manualNote = AcquisitionKindId.create "manual-note"
+    let webScrape = AcquisitionKindId.create "web-scrape"
+    let apiPull = AcquisitionKindId.create "api-pull"
+    let manualExport = AcquisitionKindId.create "manual-export"
+    let liveCapture = AcquisitionKindId.create "live-capture"
+
+    let private catalog =
+        [ manualNote, "Manually entered note-based intake."
+          webScrape, "Captured through a web-scrape flow."
+          apiPull, "Captured through an API pull."
+          manualExport, "Captured from a manually produced export artifact."
+          liveCapture, "Captured live as the interaction happened." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, summary) -> AcquisitionKindId.value identifier, identifier, summary)
+
+    let described =
+        bySlug |> List.map (fun (slug, _, summary) -> slug, summary)
+
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            bySlug
+            |> List.tryPick (fun (slug, identifier, _) ->
+                if slug = normalized then Some identifier else None)
+
+/// <summary>
+/// Stable rights-policy identifiers for early LOGOS intake governance.
+/// </summary>
+[<RequireQualifiedAccess>]
+module KnownRightsPolicies =
+    let ownerControlled = RightsPolicyId.create "owner-controlled"
+    let personalTrainingOnly = RightsPolicyId.create "personal-training-only"
+    let siteTermsRestricted = RightsPolicyId.create "site-terms-restricted"
+    let ccBy = RightsPolicyId.create "cc-by"
+    let ccBySa = RightsPolicyId.create "cc-by-sa"
+    let apiContractRestricted = RightsPolicyId.create "api-contract-restricted"
+    let customerConfidential = RightsPolicyId.create "customer-confidential"
+    let reviewRequired = RightsPolicyId.create "review-required"
+
+    let private catalog =
+        [ ownerControlled, "Owned or explicitly stewarded material controlled by the operator."
+          personalTrainingOnly, "May be used for personal/private model training but not assumed safe for public redistribution."
+          siteTermsRestricted, "Visible under site terms or usage policies that require careful review before broader reuse."
+          ccBy, "Material governed by CC-BY style attribution requirements."
+          ccBySa, "Material governed by CC-BY-SA style attribution and share-alike requirements."
+          apiContractRestricted, "Material governed by a source API contract or bot/developer agreement."
+          customerConfidential, "Material governed by explicit confidentiality boundaries."
+          reviewRequired, "Rights or reuse boundaries are not yet clear enough to automate." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, summary) -> RightsPolicyId.value identifier, identifier, summary)
+
+    let described =
+        bySlug |> List.map (fun (slug, _, summary) -> slug, summary)
+
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            bySlug
+            |> List.tryPick (fun (slug, identifier, _) ->
+                if slug = normalized then Some identifier else None)
+
+    let requiresAttribution (identifier: RightsPolicyId) =
+        identifier = ccBy || identifier = ccBySa
+
+    let allowsPublicDistribution (identifier: RightsPolicyId) =
+        identifier = ownerControlled || identifier = ccBy || identifier = ccBySa
+
+/// <summary>
 /// Constructors and defaults for <see cref="T:Nexus.Logos.LogosHandlingPolicy" />.
 /// </summary>
 [<RequireQualifiedAccess>]
@@ -274,3 +408,51 @@ module LogosHandlingPolicy =
             KnownSharingScopes.ownerOnly
             KnownSanitizationStatuses.raw
             KnownRetentionClasses.durable
+
+/// <summary>
+/// Constructors and defaults for <see cref="T:Nexus.Logos.LogosAccessContext" />.
+/// </summary>
+[<RequireQualifiedAccess>]
+module LogosAccessContext =
+    /// <summary>
+    /// Creates explicit access metadata for LOGOS intake.
+    /// </summary>
+    let create sourceInstance accessContext acquisitionKind =
+        { SourceInstanceId = sourceInstance
+          AccessContextId = accessContext
+          AcquisitionKindId = acquisitionKind }
+
+    /// <summary>
+    /// Conservative default access metadata for manually seeded notes.
+    /// </summary>
+    let restrictedDefault =
+        create None KnownAccessContexts.owner KnownAcquisitionKinds.manualNote
+
+/// <summary>
+/// Constructors and defaults for <see cref="T:Nexus.Logos.LogosRightsContext" />.
+/// </summary>
+[<RequireQualifiedAccess>]
+module LogosRightsContext =
+    let private normalizeOptionalText (value: string option) =
+        match value with
+        | Some text ->
+            let normalized = text.Trim()
+
+            if System.String.IsNullOrWhiteSpace(normalized) then
+                None
+            else
+                Some normalized
+        | None -> None
+
+    /// <summary>
+    /// Creates explicit rights metadata for LOGOS intake.
+    /// </summary>
+    let create rightsPolicy attributionReference =
+        { RightsPolicyId = rightsPolicy
+          AttributionReference = normalizeOptionalText attributionReference }
+
+    /// <summary>
+    /// Conservative default rights metadata for newly seeded notes.
+    /// </summary>
+    let restrictedDefault =
+        create KnownRightsPolicies.reviewRequired None

@@ -70,14 +70,14 @@ The CLI supports both:
 
 `report-logos-catalog`
 
-- Reports the explicit allowlisted LOGOS source systems, intake channels, signal kinds, and handling-policy dimensions.
+- Reports the explicit allowlisted LOGOS source systems, source/access/acquisition/rights vocabulary, intake channels, signal kinds, and handling-policy dimensions.
 - Use it when you want to see the current concrete LOGOS intake vocabulary before classifying or seeding a source.
 - Details: `docs/how-to/report-logos-catalog.md`
 
 `report-logos-handling`
 
-- Audits LOGOS intake and derived notes by handling policy.
-- Use it when you want to quickly see which notes are still raw, which are personal-private or customer-confidential, and which derivatives are marked approved-for-sharing.
+- Audits LOGOS intake and derived notes by access, rights, and handling policy.
+- Use it when you want to quickly see which notes are still raw, which are personal-private or customer-confidential, which derivatives are marked approved-for-sharing, which notes still need rights review, and which likely require attribution.
 - It scans the intake and derived trees recursively and reports entry-pool counts too.
 - This is an audit report, not a publication gate by itself.
 - Details: `docs/how-to/report-logos-handling.md`
@@ -86,7 +86,7 @@ The CLI supports both:
 
 - Exports only public-safe LOGOS notes into a dedicated output folder.
 - Use it when you need an actual public-facing note set rather than just a handling audit.
-- It scans both intake and derived note trees recursively, but depends on the explicit `PublicSafe` pool boundary, so merely sanitized or team-only notes are skipped.
+- It scans both intake and derived note trees recursively, but depends on the explicit `PublicSafe` pool boundary plus rights that allow public distribution, so merely sanitized, team-only, personal-training-only, or attribution-missing notes are skipped.
 - Details: `docs/how-to/export-logos-public-notes.md`
 
 `report-conversation-overlap-candidates`
@@ -140,6 +140,7 @@ The CLI supports both:
 `create-logos-intake-note`
 
 - Creates a durable LOGOS intake seed note from explicit source, channel, signal, locator, and handling-policy metadata.
+- Creates a durable LOGOS intake seed note from explicit source, source-instance, access, acquisition, rights, locator, and handling-policy metadata.
 - Use it for forum/Talkyard/Discord/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
 - New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 - The note now enters an explicit LOGOS pool path at creation time: `raw`, `private`, or `public-safe`.
@@ -149,7 +150,7 @@ The CLI supports both:
 
 - Creates a derived sanitized LOGOS note from an existing restricted intake note.
 - Use it when the source note should stay restricted but a redacted, anonymized, or explicitly shareable derivative is needed.
-- The derived note keeps source classification and policy provenance, lands in `private` or `public-safe` based on policy, and does not copy raw locators or raw source text forward.
+- The derived note keeps source classification, access, rights, and policy provenance, lands in `private` or `public-safe` based on policy plus rights, and does not copy raw locators or raw source text forward.
 - Details: `docs/how-to/create-logos-sanitized-note.md`
 
 `rebuild-artifact-projections`

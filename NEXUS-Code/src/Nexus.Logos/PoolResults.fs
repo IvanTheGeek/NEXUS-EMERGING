@@ -27,4 +27,4 @@ module LogosPoolResults =
     /// Attempts to promote a derived sanitized-note result into the public-safe pool.
     /// </summary>
     let trySanitizedAsPublicSafe (result: CreateLogosSanitizedNoteResult) : Result<PublicSafePoolItem<CreateLogosSanitizedNoteResult>, string> =
-        sanitizedAsPrivate result |> LogosPoolTransitions.tryPrivateToPublicSafe
+        sanitizedAsPrivate result |> fun value -> LogosPoolTransitions.tryPrivateToPublicSafe value result.RightsContext

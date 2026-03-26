@@ -17,7 +17,7 @@ The intended pattern is:
 
 - reads one existing `logos_intake_seed` note from `docs/logos-intake/`
 - resolves that source note recursively under `docs/logos-intake/`
-- preserves the source classification and source handling policy
+- preserves the source classification, source access metadata, and source rights metadata
 - writes a new derived note under `docs/logos-intake-derived/<pool>/`
 - requires an explicit derived sanitization status
 - lets you narrow or widen the derived handling policy explicitly, within the allowlisted model
@@ -63,7 +63,8 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - the derived note is an explicit transform, not a silent replacement
 - raw locators and raw source text stay in the source note
 - `approved-for-sharing` requires an explicit `--sharing-scope`
-- the derived note enters either the `private` or `public-safe` pool based on its resulting policy
+- the derived note enters either the `private` or `public-safe` pool based on its resulting handling and rights boundary
+- `approved-for-sharing` on the handling side may still remain `private` if the carried-forward rights policy does not allow public distribution
 
 ## Example
 
@@ -88,6 +89,7 @@ The command writes:
 The derived note includes:
 
 - source classification
+- source access and rights metadata
 - source handling policy
 - derived handling policy
 - entry pool

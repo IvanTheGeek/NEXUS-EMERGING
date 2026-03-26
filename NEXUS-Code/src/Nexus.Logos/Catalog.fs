@@ -8,12 +8,15 @@ type LogosCatalogItem =
       Summary: string }
 
 /// <summary>
-/// A compact report of the currently allowlisted LOGOS source vocabulary.
+/// A compact report of the currently allowlisted LOGOS source, access, rights, and handling vocabulary.
 /// </summary>
 type LogosCatalogReport =
     { SourceSystems: LogosCatalogItem list
       IntakeChannels: LogosCatalogItem list
       SignalKinds: LogosCatalogItem list
+      AccessContexts: LogosCatalogItem list
+      AcquisitionKinds: LogosCatalogItem list
+      RightsPolicies: LogosCatalogItem list
       Sensitivities: LogosCatalogItem list
       SharingScopes: LogosCatalogItem list
       SanitizationStatuses: LogosCatalogItem list
@@ -35,12 +38,15 @@ module LogosCatalog =
               Summary = summary })
 
     /// <summary>
-    /// Builds the current allowlisted LOGOS source-system, intake-channel, signal-kind, and handling-policy catalog.
+    /// Builds the current allowlisted LOGOS source-system, source/access/rights, intake-channel, signal-kind, and handling-policy catalog.
     /// </summary>
     let build () =
         { SourceSystems = KnownSourceSystems.described |> renderItems
           IntakeChannels = CoreIntakeChannels.described |> renderItems
           SignalKinds = CoreSignalKinds.described |> renderItems
+          AccessContexts = KnownAccessContexts.described |> renderItems
+          AcquisitionKinds = KnownAcquisitionKinds.described |> renderItems
+          RightsPolicies = KnownRightsPolicies.described |> renderItems
           Sensitivities = KnownSensitivities.described |> renderItems
           SharingScopes = KnownSharingScopes.described |> renderItems
           SanitizationStatuses = KnownSanitizationStatuses.described |> renderItems

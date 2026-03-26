@@ -88,7 +88,7 @@ module PrivatePoolItem =
 /// A public-safe pool item that has passed the explicit policy boundary for public-facing use.
 /// </summary>
 [<Struct>]
-type PublicSafePoolItem<'payload> = private PublicSafePoolItem of 'payload * LogosHandlingPolicy
+type PublicSafePoolItem<'payload> = private PublicSafePoolItem of 'payload * LogosHandlingPolicy * LogosRightsContext
 
 /// <summary>
 /// Constructors and accessors for <see cref="T:Nexus.Logos.PublicSafePoolItem`1" />.
@@ -100,7 +100,7 @@ type PublicSafePoolItem<'payload> = private PublicSafePoolItem of 'payload * Log
 /// </remarks>
 [<RequireQualifiedAccess>]
 module PublicSafePoolItem =
-    let private validate (policy: LogosHandlingPolicy) =
+    let private validateHandling (policy: LogosHandlingPolicy) =
         if policy.SanitizationStatusId <> KnownSanitizationStatuses.approvedForSharing then
             Error "Public-safe promotion requires sanitization_status = approved-for-sharing."
         elif policy.SensitivityId <> KnownSensitivities.publicData then
@@ -110,22 +110,41 @@ module PublicSafePoolItem =
         else
             Ok ()
 
+    let private validateRights (rightsContext: LogosRightsContext) =
+        if not (KnownRightsPolicies.allowsPublicDistribution rightsContext.RightsPolicyId) then
+            Error "Public-safe promotion requires a rights policy that explicitly allows public distribution."
+        elif
+            KnownRightsPolicies.requiresAttribution rightsContext.RightsPolicyId
+            && rightsContext.AttributionReference.IsNone
+        then
+            Error "Public-safe promotion requires an attribution reference when the rights policy requires attribution."
+        else
+            Ok ()
+
     /// <summary>
-    /// Attempts to wrap a payload as a public-safe pool item using its explicit handling policy.
+    /// Attempts to wrap a payload as a public-safe pool item using its explicit handling policy and rights metadata.
     /// </summary>
-    let tryCreate payload (policy: LogosHandlingPolicy) : Result<PublicSafePoolItem<'payload>, string> =
-        validate policy
-        |> Result.map (fun () -> PublicSafePoolItem(payload, policy))
+    let tryCreate payload (policy: LogosHandlingPolicy) (rightsContext: LogosRightsContext) : Result<PublicSafePoolItem<'payload>, string> =
+        match validateHandling policy with
+        | Error error -> Error error
+        | Ok () ->
+            validateRights rightsContext
+            |> Result.map (fun () -> PublicSafePoolItem(payload, policy, rightsContext))
 
     /// <summary>
     /// Extracts the wrapped payload.
     /// </summary>
-    let value (PublicSafePoolItem(payload, _): PublicSafePoolItem<'payload>) = payload
+    let value (PublicSafePoolItem(payload, _, _): PublicSafePoolItem<'payload>) = payload
 
     /// <summary>
     /// Extracts the handling policy attached to the wrapped payload.
     /// </summary>
-    let policy (PublicSafePoolItem(_, policy): PublicSafePoolItem<'payload>) = policy
+    let policy (PublicSafePoolItem(_, policy, _): PublicSafePoolItem<'payload>) = policy
+
+    /// <summary>
+    /// Extracts the rights metadata attached to the wrapped payload.
+    /// </summary>
+    let rights (PublicSafePoolItem(_, _, rightsContext): PublicSafePoolItem<'payload>) = rightsContext
 
 /// <summary>
 /// Explicit transitions between handling pools.
@@ -141,5 +160,5 @@ module LogosPoolTransitions =
     /// <summary>
     /// Attempts to promote a private-pool item into the public-safe pool.
     /// </summary>
-    let tryPrivateToPublicSafe (privateItem: PrivatePoolItem<'payload>) : Result<PublicSafePoolItem<'payload>, string> =
-        PublicSafePoolItem.tryCreate (PrivatePoolItem.value privateItem) (PrivatePoolItem.policy privateItem)
+    let tryPrivateToPublicSafe (privateItem: PrivatePoolItem<'payload>) (rightsContext: LogosRightsContext) : Result<PublicSafePoolItem<'payload>, string> =
+        PublicSafePoolItem.tryCreate (PrivatePoolItem.value privateItem) (PrivatePoolItem.policy privateItem) rightsContext

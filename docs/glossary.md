@@ -75,6 +75,18 @@ A single acquisition run that processes one or more provider artifacts and appen
 
 A stable classification for the path through which a LOGOS signal entered NEXUS, such as AI conversation, forum thread, Discord thread, email thread, bug report, or app feedback.
 
+## Access Context
+
+A stable classification for the visibility or authority level under which material was observed, such as `public-anonymous`, `registered-user`, `owner`, `admin`, `bot`, or `api-client`.
+
+## Acquisition Kind
+
+A stable classification for how material entered NEXUS, such as `manual-note`, `web-scrape`, `api-pull`, `manual-export`, or `live-capture`.
+
+## Attribution Reference
+
+The explicit license, source, or attribution text/reference that should be carried forward when a rights policy requires prominent attribution in later public-facing use.
+
 ## Lens
 
 A perspective over the underlying graph that localizes meaning, naming, grouping, and emphasis for a purpose or audience.
@@ -87,11 +99,11 @@ LOGOS is broader than any one storage or retrieval technology.
 
 ## LOGOS Intake Note
 
-A durable Markdown seed note under `docs/logos-intake/<pool>/` that records explicit source-system, intake-channel, signal-kind, locator, and handling metadata for an intake signal before full ingestion exists for that source type.
+A durable Markdown seed note under `docs/logos-intake/<pool>/` that records explicit source-system, source-instance, access, acquisition, rights, locator, and handling metadata for an intake signal before full ingestion exists for that source type.
 
 ## LOGOS Sanitized Note
 
-A derived Markdown note under `docs/logos-intake-derived/<pool>/` that preserves source classification and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
+A derived Markdown note under `docs/logos-intake-derived/<pool>/` that preserves source classification, access, rights, and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
 
 ## LOGOS Handling Policy
 
@@ -99,7 +111,7 @@ An explicit handling classification for a LOGOS intake signal covering sensitivi
 
 ## LOGOS Handling Report
 
-A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for sensitivity, sharing scope, sanitization status, and retention.
+A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for access, acquisition, rights, sensitivity, sharing scope, sanitization status, retention, and likely attribution obligations.
 
 ## Entry Pool
 
@@ -111,7 +123,7 @@ A handling pool for owner or restricted internal use where sensitive detail may 
 
 ## Public-Safe Pool
 
-A handling pool for explicitly approved material that is safe for public-facing or broadly shared downstream use.
+A handling pool for explicitly approved material that is safe for public-facing or broadly shared downstream use only when both handling and rights boundaries are satisfied.
 
 ## Raw Pool
 
@@ -189,6 +201,14 @@ A stable classification for the kind of knowledge-bearing signal represented in 
 ## Source System
 
 A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, Talkyard, Discord, or an app feedback surface.
+
+## Source Instance
+
+A stable slug for one concrete source authority or deployment within a broader source system, such as one specific Talkyard host, Discord server, wiki, or repository surface.
+
+## Rights Policy
+
+A stable classification for the reuse boundary governing a LOGOS signal or derivative, such as `owner-controlled`, `personal-training-only`, `site-terms-restricted`, `cc-by`, `cc-by-sa`, `api-contract-restricted`, `customer-confidential`, or `review-required`.
 
 ## Batch
 

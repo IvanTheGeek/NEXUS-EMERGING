@@ -27,10 +27,18 @@ The `v0` LOGOS source model introduces:
 
 - `SourceSystemId`
   the stable slug for the originating system or source surface
+- `SourceInstanceId`
+  the stable slug for one concrete source authority or deployment within that source system
 - `IntakeChannelId`
   the stable slug for the intake channel or path
 - `SignalKindId`
   the stable slug for the kind of knowledge-bearing signal
+- `AccessContextId`
+  the stable slug for the visibility or authority context under which the material was observed
+- `AcquisitionKindId`
+  the stable slug for how the material entered NEXUS
+- `RightsPolicyId`
+  the stable slug for the reuse boundary governing the material
 - `LogosLocator`
   a concrete locator back to the originating source item
 - `LogosSourceRef`
@@ -39,6 +47,10 @@ The `v0` LOGOS source model introduces:
   a small semantic envelope for a captured signal
 - `LogosHandlingPolicy`
   a small explicit handling envelope covering sensitivity, sharing scope, sanitization status, and retention class
+- `LogosAccessContext`
+  the explicit source-instance + access-context + acquisition-kind envelope
+- `LogosRightsContext`
+  the explicit rights-policy + attribution-reference envelope
 - pool boundary types
   explicit `raw`, `private`, and `public-safe` handling boundaries for downstream use
 
@@ -85,12 +97,14 @@ The `v0` scope is intentionally narrow:
 - stable intake-channel identifiers
 - stable signal-kind identifiers
 - minimal source references and signal envelopes
+- explicit access and rights metadata for manual LOGOS intake notes
 - a small durable note workflow for seeding non-chat intake before full ingestion exists
 - a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
 - a first handling-policy audit report over LOGOS note material
-- first explicit pool boundary types for `raw`, `private`, and `public-safe` use
+- first explicit pool boundary types for `raw`, `private`, and `public-safe` use, with public-safe export now also constrained by rights policy
 - explicit pool-aware intake and derived note paths under `docs/logos-intake/<pool>/` and `docs/logos-intake-derived/<pool>/`
 - provider and Codex imports entering the system with restricted-by-default LOGOS handling metadata
+- attribution requirements surfaced into public export manifests
 
 Deferred:
 
@@ -161,6 +175,31 @@ Current handling-policy allowlists:
   - `case-bound`
   - `durable`
 
+Current access and rights allowlists:
+
+- access contexts:
+  - `public-anonymous`
+  - `registered-user`
+  - `owner`
+  - `admin`
+  - `bot`
+  - `api-client`
+- acquisition kinds:
+  - `manual-note`
+  - `web-scrape`
+  - `api-pull`
+  - `manual-export`
+  - `live-capture`
+- rights policies:
+  - `owner-controlled`
+  - `personal-training-only`
+  - `site-terms-restricted`
+  - `cc-by`
+  - `cc-by-sa`
+  - `api-contract-restricted`
+  - `customer-confidential`
+  - `review-required`
+
 Current provider-import baseline:
 
 - provider and Codex imports enter with restricted-by-default handling metadata
@@ -174,11 +213,16 @@ Current provider-import baseline:
 Current non-chat LOGOS note baseline:
 
 - manual intake notes now enter a declared pool at creation time
+- manual intake notes now also persist explicit source-instance, access, acquisition, rights, and optional attribution-reference metadata
 - the default entry pool is:
   - `entry_pool = raw`
+- the default access/rights posture is:
+  - `access_context = owner`
+  - `acquisition_kind = manual-note`
+  - `rights_policy = review-required`
 - derived sanitized notes resolve into:
   - `private` when the resulting policy is still restricted
-  - `public-safe` only when the explicit public-safe policy boundary is crossed
+  - `public-safe` only when the explicit public-safe policy boundary is crossed for both handling and rights
 
 Discord note:
 

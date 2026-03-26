@@ -6,6 +6,14 @@ open Nexus.Logos
 
 [<RequireQualifiedAccess>]
 module LogosTests =
+    let private defaultAccess = LogosAccessContext.restrictedDefault
+    let private defaultRights = LogosRightsContext.restrictedDefault
+    let private ownerControlledRights = LogosRightsContext.create KnownRightsPolicies.ownerControlled None
+    let private ccByRights =
+        LogosRightsContext.create
+            KnownRightsPolicies.ccBy
+            (Some "https://creativecommons.org/licenses/by/4.0/")
+
     let tests =
         testList
             "logos"
@@ -62,6 +70,9 @@ module LogosTests =
                   let report = LogosCatalog.build ()
                   let sourceSystemSlugs = report.SourceSystems |> List.map (fun item -> item.Slug)
                   let intakeChannelSlugs = report.IntakeChannels |> List.map (fun item -> item.Slug)
+                  let accessContextSlugs = report.AccessContexts |> List.map (fun item -> item.Slug)
+                  let acquisitionKindSlugs = report.AcquisitionKinds |> List.map (fun item -> item.Slug)
+                  let rightsPolicySlugs = report.RightsPolicies |> List.map (fun item -> item.Slug)
                   let sensitivitySlugs = report.Sensitivities |> List.map (fun item -> item.Slug)
 
                   Expect.isTrue (sourceSystemSlugs |> List.contains "forum") "Expected forum to be an explicit LOGOS source system."
@@ -72,6 +83,10 @@ module LogosTests =
                   Expect.isTrue (sourceSystemSlugs |> List.contains "app-feedback-surface") "Expected app-feedback-surface to be an explicit LOGOS source system."
                   Expect.isTrue (intakeChannelSlugs |> List.contains "discord-channel") "Expected discord-channel to be an explicit LOGOS intake channel."
                   Expect.isTrue (intakeChannelSlugs |> List.contains "discord-thread") "Expected discord-thread to be an explicit LOGOS intake channel."
+                  Expect.isTrue (accessContextSlugs |> List.contains "registered-user") "Expected registered-user to be an explicit LOGOS access context."
+                  Expect.isTrue (acquisitionKindSlugs |> List.contains "web-scrape") "Expected web-scrape to be an explicit LOGOS acquisition kind."
+                  Expect.isTrue (rightsPolicySlugs |> List.contains "personal-training-only") "Expected personal-training-only to be an explicit LOGOS rights policy."
+                  Expect.isTrue (rightsPolicySlugs |> List.contains "cc-by") "Expected cc-by to be an explicit LOGOS rights policy."
                   Expect.isTrue (sensitivitySlugs |> List.contains "internal-restricted") "Expected the restricted-default sensitivity to be allowlisted."
                   Expect.isTrue (sensitivitySlugs |> List.contains "public") "Expected public sensitivity to remain explicitly modeled.")
 
@@ -90,11 +105,20 @@ module LogosTests =
                               { DocsRoot = docsRoot
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
-                                SourceSystemId = KnownSourceSystems.forum
+                                SourceSystemId = KnownSourceSystems.talkyard
+                                AccessContext =
+                                    LogosAccessContext.create
+                                        (Some (SourceInstanceId.create "forum-nexus"))
+                                        KnownAccessContexts.registeredUser
+                                        KnownAcquisitionKinds.webScrape
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
                                 Policy = policy
+                                RightsContext =
+                                    LogosRightsContext.create
+                                        KnownRightsPolicies.ccBy
+                                        (Some "https://creativecommons.org/licenses/by/4.0/")
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = Some "Customer cannot complete setup after the latest update."
@@ -111,10 +135,15 @@ module LogosTests =
                           Expect.equal note.EntryPool LogosPool.Raw "Expected the note to enter the raw pool."
                           Expect.stringContains note.OutputPath (Path.Combine("logos-intake", "raw", "support-thread-123.md")) "Expected the note to land in the raw intake path."
                           Expect.stringContains text "note_kind = \"logos_intake_seed\"" "Expected the LOGOS intake note kind."
-                          Expect.stringContains text "source_system = \"forum\"" "Expected the forum source system."
+                          Expect.stringContains text "source_system = \"talkyard\"" "Expected the Talkyard source system."
+                          Expect.stringContains text "source_instance = \"forum-nexus\"" "Expected the source instance to be persisted."
+                          Expect.stringContains text "access_context = \"registered-user\"" "Expected the access context to be persisted."
+                          Expect.stringContains text "acquisition_kind = \"web-scrape\"" "Expected the acquisition kind to be persisted."
                           Expect.stringContains text "intake_channel = \"forum-thread\"" "Expected the forum-thread intake channel."
                           Expect.stringContains text "signal_kind = \"support-question\"" "Expected the support-question signal kind."
                           Expect.stringContains text "entry_pool = \"raw\"" "Expected the seed note to persist the raw entry pool."
+                          Expect.stringContains text "rights_policy = \"cc-by\"" "Expected the rights policy to be persisted."
+                          Expect.stringContains text "attribution_reference = \"https://creativecommons.org/licenses/by/4.0/\"" "Expected the attribution reference to be persisted."
                           Expect.stringContains text "sensitivity = \"customer-confidential\"" "Expected the note to carry the explicit sensitivity."
                           Expect.stringContains text "sharing_scope = \"case-team\"" "Expected the note to carry the explicit sharing scope."
                           Expect.stringContains text "sanitization_status = \"redacted\"" "Expected the note to carry the explicit sanitization status."
@@ -151,13 +180,23 @@ module LogosTests =
                                 "--title"
                                 "Support Thread 123"
                                 "--source-system"
-                                "forum"
+                                "talkyard"
+                                "--source-instance"
+                                "forum-nexus"
+                                "--access-context"
+                                "registered-user"
+                                "--acquisition-kind"
+                                "web-scrape"
                                 "--intake-channel"
                                 "forum-thread"
                                 "--signal-kind"
                                 "support-question"
                                 "--entry-pool"
                                 "private"
+                                "--rights-policy"
+                                "cc-by"
+                                "--attribution-reference"
+                                "https://creativecommons.org/licenses/by/4.0/"
                                 "--sensitivity"
                                 "customer-confidential"
                                 "--sharing-scope"
@@ -175,10 +214,20 @@ module LogosTests =
                       Expect.equal cliResult.ExitCode 0 "Expected CLI LOGOS intake note creation to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the CLI LOGOS intake note creation."
                       Expect.isTrue (File.Exists(outputPath)) "Expected the CLI-created LOGOS intake note file to exist."
+                      Expect.stringContains cliResult.StandardOutput "Source instance: forum-nexus" "Expected the CLI summary to print the source instance."
+                      Expect.stringContains cliResult.StandardOutput "Access context: registered-user" "Expected the CLI summary to print the access context."
+                      Expect.stringContains cliResult.StandardOutput "Acquisition kind: web-scrape" "Expected the CLI summary to print the acquisition kind."
                       Expect.stringContains cliResult.StandardOutput "Entry pool: private" "Expected the CLI summary to print the entry pool."
+                      Expect.stringContains cliResult.StandardOutput "Rights policy: cc-by" "Expected the CLI summary to print the rights policy."
                       Expect.stringContains cliResult.StandardOutput "Sensitivity: customer-confidential" "Expected the CLI summary to print the sensitivity."
                       Expect.stringContains cliResult.StandardOutput "Sharing scope: case-team" "Expected the CLI summary to print the sharing scope."
+                      Expect.stringContains text "source_system = \"talkyard\"" "Expected the CLI-created note to persist the Talkyard source system."
+                      Expect.stringContains text "source_instance = \"forum-nexus\"" "Expected the CLI-created note to persist the source instance."
+                      Expect.stringContains text "access_context = \"registered-user\"" "Expected the CLI-created note to persist the access context."
+                      Expect.stringContains text "acquisition_kind = \"web-scrape\"" "Expected the CLI-created note to persist the acquisition kind."
                       Expect.stringContains text "entry_pool = \"private\"" "Expected the CLI-created note to persist the private entry pool."
+                      Expect.stringContains text "rights_policy = \"cc-by\"" "Expected the CLI-created note to persist the rights policy."
+                      Expect.stringContains text "attribution_reference = \"https://creativecommons.org/licenses/by/4.0/\"" "Expected the CLI-created note to persist the attribution reference."
                       Expect.stringContains text "sanitization_status = \"redacted\"" "Expected the CLI-created note to persist the sanitization status."
                       Expect.stringContains text "retention_class = \"case-bound\"" "Expected the CLI-created note to persist the retention class."))
 
@@ -199,10 +248,12 @@ module LogosTests =
                                 Slug = "cheddarbooks-debug-case-42"
                                 Title = "CheddarBooks Debug Case 42"
                                 SourceSystemId = KnownSourceSystems.issueTracker
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.bugReport
                                 SignalKindId = CoreSignalKinds.bugReport
                                 EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
+                                RightsContext = defaultRights
                                 Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
                                 CapturedAt = None
                                 Summary = Some "Customer shared a support case with sensitive financial details."
@@ -262,10 +313,12 @@ module LogosTests =
                                 Slug = "personal-chat-1"
                                 Title = "Personal Chat 1"
                                 SourceSystemId = KnownSourceSystems.chatgpt
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.aiConversation
                                 SignalKindId = CoreSignalKinds.conversation
                                 EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
+                                RightsContext = defaultRights
                                 Locators = [ LogosLocator.nativeThreadId "thread-1" ]
                                 CapturedAt = None
                                 Summary = None
@@ -311,10 +364,12 @@ module LogosTests =
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
                                 SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
+                                RightsContext = defaultRights
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = Some "Customer cannot complete setup after the latest update."
@@ -382,10 +437,12 @@ module LogosTests =
                                 Slug = "cheddarbooks-debug-case-42"
                                 Title = "CheddarBooks Debug Case 42"
                                 SourceSystemId = KnownSourceSystems.issueTracker
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.bugReport
                                 SignalKindId = CoreSignalKinds.bugReport
                                 EntryPool = LogosPool.Raw
                                 Policy = customerRawPolicy
+                                RightsContext = ccByRights
                                 Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
                                 CapturedAt = None
                                 Summary = None
@@ -397,10 +454,12 @@ module LogosTests =
                                 Slug = "personal-chat-1"
                                 Title = "Personal Chat 1"
                                 SourceSystemId = KnownSourceSystems.chatgpt
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.aiConversation
                                 SignalKindId = CoreSignalKinds.conversation
                                 EntryPool = LogosPool.Private
                                 Policy = personalRawPolicy
+                                RightsContext = defaultRights
                                 Locators = [ LogosLocator.nativeThreadId "thread-1" ]
                                 CapturedAt = None
                                 Summary = None
@@ -434,10 +493,16 @@ module LogosTests =
                                   Expect.equal report.PersonalPrivateNotes.Length 1 "Expected one personal-private note."
                                   Expect.equal report.CustomerConfidentialNotes.Length 1 "Expected one customer-confidential note."
                                   Expect.equal report.ApprovedForSharingNotes.Length 1 "Expected one approved-for-sharing derivative."
+                                  Expect.equal report.RightsReviewRequiredNotes.Length 1 "Expected only the personal note to remain review-required."
+                                  Expect.equal report.AttributionRequiredNotes.Length 2 "Expected the CC-BY source and derived note to require attribution."
                                   Expect.equal (report.ApprovedForSharingNotes |> List.head |> fun note -> note.Slug) "cheddarbooks-case-42-shareable" "Expected the approved derived note slug."
                                   Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "raw" && item.Count >= 1)) "Expected raw-pool notes to be counted."
                                   Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "private" && item.Count >= 1)) "Expected private-pool notes to be counted."
                                   Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "public-safe" && item.Count = 1)) "Expected one public-safe note to be counted."
+                                  Expect.isTrue (report.AccessContexts |> List.exists (fun item -> item.Slug = "owner" && item.Count = 3)) "Expected the owner access context to be counted."
+                                  Expect.isTrue (report.AcquisitionKinds |> List.exists (fun item -> item.Slug = "manual-note" && item.Count = 3)) "Expected the manual-note acquisition kind to be counted."
+                                  Expect.isTrue (report.RightsPolicies |> List.exists (fun item -> item.Slug = "cc-by" && item.Count = 2)) "Expected the source and derived CC-BY notes to be counted."
+                                  Expect.isTrue (report.RightsPolicies |> List.exists (fun item -> item.Slug = "review-required" && item.Count = 1)) "Expected the personal note to remain review-required."
                                   Expect.isTrue (report.Sensitivities |> List.exists (fun item -> item.Slug = "public" && item.Count = 1)) "Expected the public derived note to be counted."
                                   Expect.isTrue (report.SanitizationStatuses |> List.exists (fun item -> item.Slug = "approved-for-sharing" && item.Count = 1)) "Expected the approved-for-sharing status to be counted."
                       | Error error, _
@@ -461,10 +526,12 @@ module LogosTests =
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
                                 SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
+                                RightsContext = ccByRights
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = None
@@ -505,7 +572,11 @@ module LogosTests =
                               Expect.stringContains result.StandardOutput "Still raw:" "Expected the raw-note section."
                               Expect.stringContains result.StandardOutput "Customer-confidential:" "Expected the confidential-note section."
                               Expect.stringContains result.StandardOutput "Approved for sharing:" "Expected the shareable-note section."
+                              Expect.stringContains result.StandardOutput "Rights review required:" "Expected the rights-review section."
+                              Expect.stringContains result.StandardOutput "Attribution likely required:" "Expected the attribution section."
                               Expect.stringContains result.StandardOutput "Entry pools:" "Expected the entry-pool count section."
+                              Expect.stringContains result.StandardOutput "cc-by" "Expected the CC-BY rights policy in the report."
+                              Expect.stringContains result.StandardOutput "https://creativecommons.org/licenses/by/4.0/" "Expected the attribution reference in the report."
                               Expect.stringContains result.StandardOutput "logos-intake/raw/support-thread-123.md" "Expected the source note path in the report."
                               Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report."))
 
@@ -520,6 +591,7 @@ module LogosTests =
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
                                 SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
@@ -529,6 +601,7 @@ module LogosTests =
                                         KnownSharingScopes.caseTeam
                                         KnownSanitizationStatuses.raw
                                         KnownRetentionClasses.caseBound
+                                RightsContext = ccByRights
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = None
@@ -575,11 +648,24 @@ module LogosTests =
 
                                   Expect.equal exportResult.EligibleNotesScanned 3 "Expected the raw source note plus both derived notes to be evaluated."
                                   Expect.equal exportResult.ExportedNotes.Length 1 "Expected only one note to cross the public-safe boundary."
+                                  Expect.equal exportResult.AttributionRequirements.Length 1 "Expected the CC-BY export to carry one attribution obligation."
                                   Expect.equal exportResult.SkippedNotes.Length 2 "Expected the raw source note and one non-public derived note to be skipped."
                                   Expect.isTrue (File.Exists(exportResult.ManifestPath)) "Expected a public export manifest."
                                   Expect.isTrue (File.Exists(exportedPath)) "Expected the approved public-safe note to be exported."
                                   Expect.isFalse (File.Exists(skippedPath)) "Expected the team-only note to stay out of the public export."
                                   Expect.equal (exportResult.ExportedNotes |> List.head |> fun note -> note.Slug) "support-thread-123-shareable" "Expected the approved note slug to be exported."
+                                  Expect.equal
+                                      (exportResult.ExportedNotes |> List.head |> fun note -> RightsPolicyId.value note.RightsContext.RightsPolicyId)
+                                      "cc-by"
+                                      "Expected the exported note to retain the CC-BY rights policy."
+                                  Expect.equal
+                                      (exportResult.AttributionRequirements |> List.head).AttributionReference
+                                      "https://creativecommons.org/licenses/by/4.0/"
+                                      "Expected the attribution requirement to retain the source reference."
+                                  Expect.stringContains
+                                      (File.ReadAllText(exportResult.ManifestPath))
+                                      "[[attribution_requirement]]"
+                                      "Expected the manifest to surface attribution obligations."
                                   Expect.stringContains
                                       ((exportResult.SkippedNotes |> List.head).Reason)
                                       "approved-for-sharing"
@@ -599,6 +685,7 @@ module LogosTests =
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
                                 SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
@@ -608,6 +695,7 @@ module LogosTests =
                                         KnownSharingScopes.caseTeam
                                         KnownSanitizationStatuses.raw
                                         KnownRetentionClasses.caseBound
+                                RightsContext = ccByRights
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = None
@@ -658,6 +746,7 @@ module LogosTests =
                               Expect.stringContains result.StandardOutput "LOGOS public-safe notes exported." "Expected the command header."
                               Expect.stringContains result.StandardOutput "Exported notes: 1" "Expected exactly one exported note."
                               Expect.stringContains result.StandardOutput "Eligible notes scanned: 3" "Expected the raw source note plus both derived notes to be evaluated."
+                              Expect.stringContains result.StandardOutput "Attribution requirements: 1" "Expected one attribution obligation in the public export."
                               Expect.stringContains result.StandardOutput "Skipped notes: 2" "Expected the raw source note and one team-only note to be skipped."
                               Expect.isTrue (File.Exists(Path.Combine(outputRoot, "manifest.toml"))) "Expected the public export manifest."
                               Expect.isTrue (File.Exists(Path.Combine(outputRoot, "support-thread-123-shareable.md"))) "Expected the public-safe note to be exported."
@@ -676,6 +765,7 @@ module LogosTests =
                                 Slug = "support-thread-123"
                                 Title = "Support Thread 123"
                                 SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
                                 EntryPool = LogosPool.Raw
@@ -685,6 +775,7 @@ module LogosTests =
                                         KnownSharingScopes.caseTeam
                                         KnownSanitizationStatuses.raw
                                         KnownRetentionClasses.caseBound
+                                RightsContext = ownerControlledRights
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
                                 Summary = None
@@ -733,6 +824,7 @@ module LogosTests =
                                   failtestf "Expected approved public sanitized note to promote into the public-safe pool. %s" error
                               | Ok publicSafe ->
                                   Expect.equal (PublicSafePoolItem.policy publicSafe).SharingScopeId KnownSharingScopes.publicAudience "Expected the public-safe item to require public sharing scope."
+                                  Expect.equal (PublicSafePoolItem.rights publicSafe).RightsPolicyId KnownRightsPolicies.ownerControlled "Expected the public-safe item to carry forward the owner-controlled rights policy."
                                   Expect.equal (PublicSafePoolItem.value publicSafe).NormalizedSlug "support-thread-123-shareable" "Expected the promoted result to preserve the original payload."
 
                               match LogosPoolResults.trySanitizedAsPublicSafe teamOnly with
@@ -742,4 +834,59 @@ module LogosTests =
                                   Expect.stringContains error "approved-for-sharing" "Expected the public-safe boundary to explain the missing approval policy."
                           | Error error, _
                           | _, Error error ->
-                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error)) ]
+                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error))
+
+              testCase "LOGOS public-safe promotion rejects personal-training-only rights" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-rights-boundary" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "personal-training-thread"
+                                Title = "Personal Training Thread"
+                                SourceSystemId = KnownSourceSystems.forum
+                                AccessContext = defaultAccess
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
+                                Policy =
+                                    LogosHandlingPolicy.create
+                                        KnownSensitivities.internalRestricted
+                                        KnownSharingScopes.ownerOnly
+                                        KnownSanitizationStatuses.raw
+                                        KnownRetentionClasses.durable
+                                RightsContext = LogosRightsContext.create KnownRightsPolicies.personalTrainingOnly None
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/personal-training" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected personal-training-only intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let derivedResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "personal-training-thread"
+                                    Slug = "personal-training-thread-shareable"
+                                    Title = "Personal Training Thread (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.publicAudience
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          match derivedResult with
+                          | Error error ->
+                              failtestf "Expected derived note creation to succeed even when rights stay restricted. %s" error
+                          | Ok derived ->
+                              Expect.equal derived.EntryPool LogosPool.Private "Expected the derived note to stay in the private pool when rights do not allow public distribution."
+
+                              match LogosPoolResults.trySanitizedAsPublicSafe derived with
+                              | Ok _ ->
+                                  failtest "Expected personal-training-only rights to block public-safe promotion."
+                              | Error error ->
+                                  Expect.stringContains error "allows public distribution" "Expected the public-safe boundary to explain the rights restriction.")) ]

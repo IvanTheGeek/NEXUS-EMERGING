@@ -31,16 +31,20 @@ type CreateLogosSanitizedNoteResult =
       NormalizedSlug: string
       SourceNotePath: string
       EntryPool: LogosPool
+      RightsContext: LogosRightsContext
       Policy: LogosHandlingPolicy }
 
 [<RequireQualifiedAccess>]
 module LogosSanitizedNotes =
     type private ParsedSeedNote =
         { NoteKind: string
+          SourceInstanceId: SourceInstanceId option
+          AccessContext: LogosAccessContext
           SourceSystemId: SourceSystemId
           IntakeChannelId: IntakeChannelId
           SignalKindId: SignalKindId
-          Policy: LogosHandlingPolicy }
+          Policy: LogosHandlingPolicy
+          RightsContext: LogosRightsContext }
 
     let private utf8WithoutBom = UTF8Encoding(false)
 
@@ -130,6 +134,20 @@ module LogosSanitizedNotes =
         if noteKind <> "logos_intake_seed" then
             invalidArg "sourceSlug" $"Expected a logos_intake_seed source note, but found %s{noteKind}."
 
+        let sourceInstanceId =
+            tryReadFrontMatterString "source_instance" frontMatter
+            |> Option.map SourceInstanceId.parse
+
+        let accessContextId =
+            tryReadFrontMatterString "access_context" frontMatter
+            |> Option.map AccessContextId.parse
+            |> Option.defaultValue LogosAccessContext.restrictedDefault.AccessContextId
+
+        let acquisitionKindId =
+            tryReadFrontMatterString "acquisition_kind" frontMatter
+            |> Option.map AcquisitionKindId.parse
+            |> Option.defaultValue LogosAccessContext.restrictedDefault.AcquisitionKindId
+
         let sourceSystemId = requireFrontMatterString "source_system" frontMatter |> SourceSystemId.parse
         let intakeChannelId = requireFrontMatterString "intake_channel" frontMatter |> IntakeChannelId.parse
         let signalKindId = requireFrontMatterString "signal_kind" frontMatter |> SignalKindId.parse
@@ -137,8 +155,16 @@ module LogosSanitizedNotes =
         let sharingScopeId = requireFrontMatterString "sharing_scope" frontMatter |> SharingScopeId.parse
         let sanitizationStatusId = requireFrontMatterString "sanitization_status" frontMatter |> SanitizationStatusId.parse
         let retentionClassId = requireFrontMatterString "retention_class" frontMatter |> RetentionClassId.parse
+        let rightsPolicyId =
+            tryReadFrontMatterString "rights_policy" frontMatter
+            |> Option.map RightsPolicyId.parse
+            |> Option.defaultValue LogosRightsContext.restrictedDefault.RightsPolicyId
+
+        let attributionReference = tryReadFrontMatterString "attribution_reference" frontMatter
 
         { NoteKind = noteKind
+          SourceInstanceId = sourceInstanceId
+          AccessContext = LogosAccessContext.create sourceInstanceId accessContextId acquisitionKindId
           SourceSystemId = sourceSystemId
           IntakeChannelId = intakeChannelId
           SignalKindId = signalKindId
@@ -147,7 +173,8 @@ module LogosSanitizedNotes =
                 sensitivityId
                 sharingScopeId
                 sanitizationStatusId
-                retentionClassId }
+                retentionClassId
+          RightsContext = LogosRightsContext.create rightsPolicyId attributionReference }
 
     let private ensureDerivedSanitizationStatus (identifier: SanitizationStatusId) =
         match SanitizationStatusId.value identifier with
@@ -159,8 +186,8 @@ module LogosSanitizedNotes =
         | value ->
             invalidArg "sanitizationStatus" $"Unsupported derived sanitization status: %s{value}."
 
-    let private determineDerivedPool policy =
-        match PublicSafePoolItem.tryCreate () policy with
+    let private determineDerivedPool policy rightsContext =
+        match PublicSafePoolItem.tryCreate () policy rightsContext with
         | Ok _ -> LogosPool.PublicSafe
         | Error _ -> LogosPool.Private
 
@@ -188,6 +215,7 @@ module LogosSanitizedNotes =
         (sourceNote: ParsedSeedNote)
         (entryPool: LogosPool)
         (policy: LogosHandlingPolicy)
+        (rightsContext: LogosRightsContext)
         (now: DateTimeOffset)
         =
         let builder = StringBuilder()
@@ -203,6 +231,11 @@ module LogosSanitizedNotes =
         builder.AppendLine(sprintf "source_slug = \"%s\"" sourceSlug) |> ignore
         builder.AppendLine(sprintf "source_note_kind = \"%s\"" sourceNote.NoteKind) |> ignore
         builder.AppendLine(sprintf "source_system = \"%s\"" (SourceSystemId.value sourceNote.SourceSystemId)) |> ignore
+        sourceNote.SourceInstanceId
+        |> Option.iter (fun sourceInstanceId ->
+            builder.AppendLine(sprintf "source_instance = \"%s\"" (SourceInstanceId.value sourceInstanceId)) |> ignore)
+        builder.AppendLine(sprintf "access_context = \"%s\"" (AccessContextId.value sourceNote.AccessContext.AccessContextId)) |> ignore
+        builder.AppendLine(sprintf "acquisition_kind = \"%s\"" (AcquisitionKindId.value sourceNote.AccessContext.AcquisitionKindId)) |> ignore
         builder.AppendLine(sprintf "intake_channel = \"%s\"" (IntakeChannelId.value sourceNote.IntakeChannelId)) |> ignore
         builder.AppendLine(sprintf "signal_kind = \"%s\"" (SignalKindId.value sourceNote.SignalKindId)) |> ignore
         builder.AppendLine(sprintf "entry_pool = \"%s\"" (LogosPool.value entryPool)) |> ignore
@@ -214,6 +247,10 @@ module LogosSanitizedNotes =
         builder.AppendLine(sprintf "sharing_scope = \"%s\"" (SharingScopeId.value policy.SharingScopeId)) |> ignore
         builder.AppendLine(sprintf "sanitization_status = \"%s\"" (SanitizationStatusId.value policy.SanitizationStatusId)) |> ignore
         builder.AppendLine(sprintf "retention_class = \"%s\"" (RetentionClassId.value policy.RetentionClassId)) |> ignore
+        builder.AppendLine(sprintf "rights_policy = \"%s\"" (RightsPolicyId.value rightsContext.RightsPolicyId)) |> ignore
+        rightsContext.AttributionReference
+        |> Option.iter (fun attributionReference ->
+            builder.AppendLine(sprintf "attribution_reference = \"%s\"" (tomlEscape attributionReference)) |> ignore)
         appendTomlStringArray builder "tags" tags
         builder.AppendLine("+++") |> ignore
         builder.AppendLine() |> ignore
@@ -237,6 +274,11 @@ module LogosSanitizedNotes =
         builder.AppendLine("## Source Classification") |> ignore
         builder.AppendLine() |> ignore
         builder.AppendLine(sprintf "- source system: `%s`" (SourceSystemId.value sourceNote.SourceSystemId |> markdownEscapeInline)) |> ignore
+        sourceNote.SourceInstanceId
+        |> Option.iter (fun sourceInstanceId ->
+            builder.AppendLine(sprintf "- source instance: `%s`" (SourceInstanceId.value sourceInstanceId |> markdownEscapeInline)) |> ignore)
+        builder.AppendLine(sprintf "- access context: `%s`" (AccessContextId.value sourceNote.AccessContext.AccessContextId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine(sprintf "- acquisition kind: `%s`" (AcquisitionKindId.value sourceNote.AccessContext.AcquisitionKindId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- intake channel: `%s`" (IntakeChannelId.value sourceNote.IntakeChannelId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- signal kind: `%s`" (SignalKindId.value sourceNote.SignalKindId |> markdownEscapeInline)) |> ignore
         builder.AppendLine() |> ignore
@@ -254,6 +296,13 @@ module LogosSanitizedNotes =
         builder.AppendLine(sprintf "- sharing scope: `%s`" (SharingScopeId.value policy.SharingScopeId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sanitization status: `%s`" (SanitizationStatusId.value policy.SanitizationStatusId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- retention class: `%s`" (RetentionClassId.value policy.RetentionClassId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine() |> ignore
+        builder.AppendLine("## Rights") |> ignore
+        builder.AppendLine() |> ignore
+        builder.AppendLine(sprintf "- rights policy: `%s`" (RightsPolicyId.value rightsContext.RightsPolicyId |> markdownEscapeInline)) |> ignore
+        rightsContext.AttributionReference
+        |> Option.iter (fun attributionReference ->
+            builder.AppendLine(sprintf "- attribution reference: `%s`" (markdownEscapeInline attributionReference)) |> ignore)
         builder.AppendLine() |> ignore
         builder.AppendLine("## Sanitization Notes") |> ignore
         builder.AppendLine() |> ignore
@@ -283,6 +332,7 @@ module LogosSanitizedNotes =
                     Error(sprintf "Source LOGOS intake note '%s' was not found under docs/logos-intake/." normalizedSourceSlug)
                 | Some sourceNotePath ->
                     let sourceNote = parseSeedNote sourceNotePath
+                    let rightsContext = sourceNote.RightsContext
                     let policy =
                         LogosHandlingPolicy.create
                             (defaultArg request.SensitivityId sourceNote.Policy.SensitivityId)
@@ -290,7 +340,7 @@ module LogosSanitizedNotes =
                             request.SanitizationStatusId
                             (defaultArg request.RetentionClassId sourceNote.Policy.RetentionClassId)
 
-                    let entryPool = determineDerivedPool policy
+                    let entryPool = determineDerivedPool policy rightsContext
                     let outputDirectory =
                         Path.Combine(request.DocsRoot, "logos-intake-derived", LogosPool.value entryPool)
 
@@ -313,6 +363,7 @@ module LogosSanitizedNotes =
                                 sourceNote
                                 entryPool
                                 policy
+                                rightsContext
                                 now
                         File.WriteAllText(outputPath, content, utf8WithoutBom)
 
@@ -321,6 +372,7 @@ module LogosSanitizedNotes =
                               NormalizedSlug = normalizedSlug
                               SourceNotePath = sourceNotePath
                               EntryPool = entryPool
+                              RightsContext = rightsContext
                               Policy = policy }
         with :? ArgumentException as ex ->
             Error ex.Message

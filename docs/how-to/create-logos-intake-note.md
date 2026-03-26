@@ -4,6 +4,7 @@ Use this when you want to seed a non-chat intake item into durable repo memory b
 
 This writes a Markdown note under `docs/logos-intake/<pool>/`.
 New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
+Access and rights metadata are also explicit from entry time because technical visibility does not imply publication permission.
 
 ## Command
 
@@ -12,7 +13,11 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   create-logos-intake-note \
   --slug support-thread-123 \
   --title "Support Thread 123" \
-  --source-system forum \
+  --source-system talkyard \
+  --source-instance forum-ivanthegeek \
+  --access-context registered-user \
+  --acquisition-kind web-scrape \
+  --rights-policy review-required \
   --intake-channel forum-thread \
   --signal-kind support-question \
   --source-uri https://community.example.com/t/123
@@ -26,6 +31,16 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   human-readable note title
 - `--source-system`
   explicit allowlisted source system
+- `--source-instance <slug>`
+  optional explicit source instance such as one concrete forum host or repo surface
+- `--access-context <slug>`
+  optional explicit access context. Defaults to `owner`.
+- `--acquisition-kind <slug>`
+  optional explicit acquisition kind. Defaults to `manual-note`.
+- `--rights-policy <slug>`
+  optional explicit rights policy. Defaults to `review-required`.
+- `--attribution-reference <text>`
+  optional attribution or license reference that should be preserved for later public-safe use
 - `--intake-channel`
   explicit allowlisted intake channel
 - `--signal-kind`
@@ -56,13 +71,21 @@ Default handling policy:
 - sanitization status: `raw`
 - retention class: `durable`
 
+Default access and rights policy:
+
+- access context: `owner`
+- acquisition kind: `manual-note`
+- rights policy: `review-required`
+
 Important entry-pool rule:
 
-- `public-safe` at creation time is allowed only when the explicit handling policy crosses the `PublicSafe` boundary
+- `public-safe` at creation time is allowed only when the explicit handling and rights policy cross the `PublicSafe` boundary
 - in practice that means:
   - `sanitization_status = approved-for-sharing`
   - `sensitivity = public`
   - `sharing_scope = public`
+  - `rights_policy` must explicitly allow public distribution
+  - `attribution_reference` is required when the rights policy requires attribution
 
 ## Example Flows
 
@@ -74,6 +97,11 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --slug support-thread-123 \
   --title "Support Thread 123" \
   --source-system talkyard \
+  --source-instance forum-ivanthegeek \
+  --access-context registered-user \
+  --acquisition-kind web-scrape \
+  --rights-policy cc-by \
+  --attribution-reference https://creativecommons.org/licenses/by/4.0/ \
   --intake-channel forum-thread \
   --signal-kind support-question \
   --source-uri https://forum.nexus.example/t/support-thread-123 \
@@ -91,6 +119,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --intake-channel discord-thread \
   --signal-kind conversation \
   --entry-pool private \
+  --rights-policy api-contract-restricted \
   --native-thread-id 1354987654321098765 \
   --source-uri https://discord.com/channels/123/456/789 \
   --summary "Discord discussion about FnHCI direction and UI substrate ideas."
@@ -125,6 +154,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --sharing-scope case-team \
   --sanitization-status raw \
   --retention-class case-bound \
+  --rights-policy customer-confidential \
   --native-item-id case-42
 ```
 
@@ -142,6 +172,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --sensitivity public \
   --sharing-scope public \
   --sanitization-status approved-for-sharing \
+  --rights-policy owner-controlled \
   --source-uri https://forum.nexus.example/t/releases-2026-03
 ```
 

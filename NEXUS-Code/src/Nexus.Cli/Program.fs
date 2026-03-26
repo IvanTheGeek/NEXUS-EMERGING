@@ -233,18 +233,18 @@ module Program =
         | "report-logos-catalog" ->
             Some
                 { Name = name
-                  Summary = "Report the explicit allowlisted LOGOS source systems, intake channels, signal kinds, and handling-policy dimensions."
+                  Summary = "Report the explicit allowlisted LOGOS source, access, acquisition, rights, and handling vocabulary."
                   Usage = [ sprintf "%s report-logos-catalog" cliInvocation ]
                   Options = []
                   Examples = [ sprintf "%s report-logos-catalog" cliInvocation ]
                   Notes =
                     [ "This is the concrete LOGOS intake vocabulary currently recognized by the codebase."
-                      "Use it before seeding intake notes so source-system, intake-channel, and signal-kind choices stay explicit."
+                      "Use it before seeding intake notes so source-system, source-instance, access, acquisition, rights, and handling-policy dimensions stay explicit."
                       "Detailed guide: docs/how-to/report-logos-catalog.md" ] }
         | "report-logos-handling" ->
             Some
                 { Name = name
-                  Summary = "Audit LOGOS intake and derived notes by handling policy so restricted, raw, and shareable notes are visible."
+                  Summary = "Audit LOGOS intake and derived notes by access, rights, and handling metadata so restricted and shareable notes stay visible."
                   Usage =
                     [ sprintf "%s report-logos-handling" cliInvocation
                       sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
@@ -256,7 +256,7 @@ module Program =
                       sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
                   Notes =
                     [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively for LOGOS notes with handling metadata."
-                      "Use it to see which notes are still raw, which remain personal-private or customer-confidential, and which derivatives are marked approved-for-sharing."
+                      "Use it to see which notes are still raw, which remain personal-private or customer-confidential, which notes are approved-for-sharing, which rights are still review-required, and which materials likely require attribution."
                       "This is an audit report, not a publication gate by itself."
                       "Detailed guide: docs/how-to/report-logos-handling.md" ] }
         | "export-logos-public-notes" ->
@@ -273,9 +273,9 @@ module Program =
                     [ sprintf "%s export-logos-public-notes" cliInvocation
                       sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
                   Notes =
-                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively and exports only notes that successfully cross the PublicSafe pool boundary."
-                      "Notes that are merely sanitized, raw, or team-only are skipped with explicit reasons."
-                      "This is the first real public-facing workflow protected by PublicSafePoolItem<_>."
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively and exports only notes that successfully cross the PublicSafe pool boundary with rights that also allow public distribution."
+                      "Notes that are merely sanitized, raw, team-only, personal-training-only, contract-restricted, or missing required attribution are skipped with explicit reasons."
+                      "This is the first real public-facing workflow protected by PublicSafePoolItem<_> plus explicit rights-policy checks."
                       "Detailed guide: docs/how-to/export-logos-public-notes.md" ] }
         | "report-conversation-overlap-candidates" ->
             Some
@@ -694,7 +694,7 @@ module Program =
         | "create-logos-intake-note" ->
             Some
                 { Name = name
-                  Summary = "Create a durable LOGOS intake seed note from explicit source, channel, signal, locator, and handling-policy metadata."
+                  Summary = "Create a durable LOGOS intake seed note from explicit source, access, acquisition, rights, locator, and handling metadata."
                   Usage =
                     [ sprintf "%s create-logos-intake-note --slug <slug> --title <title> --source-system <slug> --intake-channel <slug> --signal-kind <slug> --source-uri <uri>" cliInvocation
                       sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation ]
@@ -702,9 +702,14 @@ module Program =
                     [ "--slug <slug>", "Required. Explicit file-safe slug using lowercase ascii letters, digits, and '-'."
                       "--title <title>", "Required. Human-readable title for the intake note."
                       "--source-system <slug>", "Required. Explicit allowlisted source system. Run report-logos-catalog to inspect values."
+                      "--source-instance <slug>", "Optional stable source-instance slug such as one concrete forum host or repo surface."
+                      "--access-context <public-anonymous|registered-user|owner|admin|bot|api-client>", "Explicit access context. Defaults to owner."
+                      "--acquisition-kind <manual-note|web-scrape|api-pull|manual-export|live-capture>", "Explicit acquisition kind. Defaults to manual-note."
                       "--intake-channel <slug>", "Required. Explicit allowlisted intake channel."
                       "--signal-kind <slug>", "Required. Explicit allowlisted signal kind."
                       "--entry-pool <raw|private|public-safe>", "Choose which LOGOS pool path the new note enters. Defaults to raw."
+                      "--rights-policy <owner-controlled|personal-training-only|site-terms-restricted|cc-by|cc-by-sa|api-contract-restricted|customer-confidential|review-required>", "Explicit rights-policy classification. Defaults to review-required."
+                      "--attribution-reference <text>", "Optional attribution, license, or source-reference text to carry forward for later UI/help visibility."
                       "--sensitivity <slug>", "Optional explicit allowlisted sensitivity. Defaults to internal-restricted."
                       "--sharing-scope <slug>", "Optional explicit allowlisted sharing scope. Defaults to owner-only."
                       "--sanitization-status <slug>", "Optional explicit allowlisted sanitization status. Defaults to raw."
@@ -719,10 +724,11 @@ module Program =
                       "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
                   Examples =
                     [ sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation
-                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --intake-channel app-feedback --signal-kind feedback --entry-pool private --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
+                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --access-context public-anonymous --acquisition-kind web-scrape --rights-policy review-required --intake-channel app-feedback --signal-kind feedback --entry-pool private --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
                   Notes =
                     [ "This writes a Markdown seed note under docs/logos-intake/<pool>/."
                       "Use it to represent early LOGOS intake before a full ingestion pipeline exists for that source type."
+                      "Access context and rights policy are explicit because technical visibility does not imply publication permission."
                       "New notes default to a restricted handling policy unless you explicitly choose other allowlisted values."
                       "Choosing public-safe at entry requires a policy that crosses the explicit PublicSafe pool boundary."
                       "At least one explicit locator is required."
@@ -2017,15 +2023,22 @@ module Program =
             Ok (ShowHelp (Some "create-logos-intake-note"))
         else
             let defaultPolicy = LogosHandlingPolicy.restrictedDefault
+            let defaultAccess = LogosAccessContext.restrictedDefault
+            let defaultRights = LogosRightsContext.restrictedDefault
 
             let rec loop
                 docsRoot
                 slug
                 title
                 sourceSystem
+                sourceInstance
+                accessContext
+                acquisitionKind
                 intakeChannel
                 signalKind
                 entryPool
+                rightsPolicy
+                attributionReference
                 sensitivity
                 sharingScope
                 sanitizationStatus
@@ -2066,6 +2079,17 @@ module Program =
                             printCommandHelp "create-logos-intake-note"
                             Error 1
                         | _ ->
+                            let access =
+                                LogosAccessContext.create
+                                    sourceInstance
+                                    (defaultArg accessContext defaultAccess.AccessContextId)
+                                    (defaultArg acquisitionKind defaultAccess.AcquisitionKindId)
+
+                            let rights =
+                                LogosRightsContext.create
+                                    (defaultArg rightsPolicy defaultRights.RightsPolicyId)
+                                    attributionReference
+
                             let policy =
                                 LogosHandlingPolicy.create
                                     (defaultArg sensitivity defaultPolicy.SensitivityId)
@@ -2079,10 +2103,12 @@ module Program =
                                       Slug = slugValue
                                       Title = titleValue
                                       SourceSystemId = sourceSystemValue
+                                      AccessContext = access
                                       IntakeChannelId = intakeChannelValue
                                       SignalKindId = signalKindValue
                                       EntryPool = entryPool
                                       Policy = policy
+                                      RightsContext = rights
                                       Locators = List.rev locators
                                       CapturedAt = capturedAt
                                       Summary = summary
@@ -2093,9 +2119,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2118,9 +2149,14 @@ module Program =
                             (Some normalized)
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2143,9 +2179,14 @@ module Program =
                             slug
                             (Some normalized)
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2163,9 +2204,14 @@ module Program =
                             slug
                             title
                             (Some identifier)
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2179,6 +2225,94 @@ module Program =
                         eprintfn "Unsupported LOGOS source system: %s" value
                         printCommandHelp "create-logos-intake-note"
                         Error 1
+                | "--source-instance" :: value :: rest ->
+                    try
+                        let identifier = SourceInstanceId.create value
+
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            (Some identifier)
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    with :? ArgumentException ->
+                        eprintfn "Unsupported LOGOS source instance: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--access-context" :: value :: rest ->
+                    match KnownAccessContexts.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            (Some identifier)
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS access context: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--acquisition-kind" :: value :: rest ->
+                    match KnownAcquisitionKinds.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            (Some identifier)
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS acquisition kind: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
                 | "--intake-channel" :: value :: rest ->
                     match CoreIntakeChannels.tryFind value with
                     | Some identifier ->
@@ -2187,9 +2321,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             (Some identifier)
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2211,9 +2350,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             (Some identifier)
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2235,9 +2379,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             pool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2251,6 +2400,58 @@ module Program =
                         eprintfn "Unsupported LOGOS entry pool: %s" value
                         printCommandHelp "create-logos-intake-note"
                         Error 1
+                | "--rights-policy" :: value :: rest ->
+                    match KnownRightsPolicies.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            (Some identifier)
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS rights policy: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--attribution-reference" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        (Some value)
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        locators
+                        capturedAt
+                        summary
+                        tags
+                        rest
                 | "--sensitivity" :: value :: rest ->
                     match KnownSensitivities.tryFind value with
                     | Some identifier ->
@@ -2259,9 +2460,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             (Some identifier)
                             sharingScope
                             sanitizationStatus
@@ -2283,9 +2489,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             (Some identifier)
                             sanitizationStatus
@@ -2307,9 +2518,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             (Some identifier)
@@ -2331,9 +2547,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2353,9 +2574,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2371,9 +2597,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2389,9 +2620,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2407,9 +2643,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2427,9 +2668,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2449,9 +2695,14 @@ module Program =
                         slug
                         title
                         sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
                         intakeChannel
                         signalKind
                         entryPool
+                        rightsPolicy
+                        attributionReference
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2474,9 +2725,14 @@ module Program =
                             slug
                             title
                             sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
                             intakeChannel
                             signalKind
                             entryPool
+                            rightsPolicy
+                            attributionReference
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2491,7 +2747,7 @@ module Program =
                     printCommandHelp "create-logos-intake-note"
                     Error 1
 
-            loop defaultDocsRoot None None None None None LogosPool.Raw None None None None [] None None [] args
+            loop defaultDocsRoot None None None None None None None None LogosPool.Raw None None None None None None [] None None [] args
 
     let private parseCreateLogosSanitizedNote (args: string list) =
         if containsHelpSwitch args then
@@ -3294,6 +3550,9 @@ module Program =
         printItems "Source systems" report.SourceSystems
         printItems "Intake channels" report.IntakeChannels
         printItems "Signal kinds" report.SignalKinds
+        printItems "Access contexts" report.AccessContexts
+        printItems "Acquisition kinds" report.AcquisitionKinds
+        printItems "Rights policies" report.RightsPolicies
         printItems "Sensitivities" report.Sensitivities
         printItems "Sharing scopes" report.SharingScopes
         printItems "Sanitization statuses" report.SanitizationStatuses
@@ -3322,13 +3581,17 @@ module Program =
                 values
                 |> List.iter (fun note ->
                     printfn
-                        "    %s | %s | %s | %s | %s | %s"
+                        "    %s | %s | %s | %s | %s | %s | %s | %s | %s | %s"
                         note.RelativePath
                         note.NoteKind
                         (note.EntryPool |> Option.map LogosPool.value |> Option.defaultValue "(unspecified)")
+                        (note.AccessContextId |> Option.map AccessContextId.value |> Option.defaultValue "(unspecified)")
+                        (note.AcquisitionKindId |> Option.map AcquisitionKindId.value |> Option.defaultValue "(unspecified)")
                         (SourceSystemId.value note.SourceSystemId)
                         (SensitivityId.value note.Policy.SensitivityId)
-                        (SanitizationStatusId.value note.Policy.SanitizationStatusId))
+                        (SanitizationStatusId.value note.Policy.SanitizationStatusId)
+                        (note.RightsPolicyId |> Option.map RightsPolicyId.value |> Option.defaultValue "(unspecified)")
+                        (note.AttributionReference |> Option.defaultValue "(none)"))
 
         match LogosHandlingReports.build docsRoot with
         | Error error ->
@@ -3341,14 +3604,19 @@ module Program =
             printfn "  Limit per flagged section: %d" limit
             printCounts "Note kinds" report.NoteKinds
             printCounts "Entry pools" report.EntryPools
+            printCounts "Access contexts" report.AccessContexts
+            printCounts "Acquisition kinds" report.AcquisitionKinds
             printCounts "Sensitivities" report.Sensitivities
             printCounts "Sharing scopes" report.SharingScopes
             printCounts "Sanitization statuses" report.SanitizationStatuses
             printCounts "Retention classes" report.RetentionClasses
+            printCounts "Rights policies" report.RightsPolicies
             printNotes "Still raw" report.RawNotes
             printNotes "Personal-private" report.PersonalPrivateNotes
             printNotes "Customer-confidential" report.CustomerConfidentialNotes
             printNotes "Approved for sharing" report.ApprovedForSharingNotes
+            printNotes "Rights review required" report.RightsReviewRequiredNotes
+            printNotes "Attribution likely required" report.AttributionRequiredNotes
             0
 
     let private exportLogosPublicNotes docsRoot outputRoot =
@@ -3363,6 +3631,7 @@ module Program =
             printfn "  Manifest: %s" result.ManifestPath
             printfn "  Eligible notes scanned: %d" result.EligibleNotesScanned
             printfn "  Exported notes: %d" result.ExportedNotes.Length
+            printfn "  Attribution requirements: %d" result.AttributionRequirements.Length
             printfn "  Skipped notes: %d" result.SkippedNotes.Length
 
             if not result.ExportedNotes.IsEmpty then
@@ -3370,7 +3639,23 @@ module Program =
 
                 result.ExportedNotes
                 |> List.iter (fun note ->
-                    printfn "    %s | %s | %s" note.Slug note.OutputFileName (SharingScopeId.value note.Policy.SharingScopeId))
+                    printfn
+                        "    %s | %s | %s | %s"
+                        note.Slug
+                        note.OutputFileName
+                        (SharingScopeId.value note.Policy.SharingScopeId)
+                        (RightsPolicyId.value note.RightsContext.RightsPolicyId))
+
+            if not result.AttributionRequirements.IsEmpty then
+                printfn "  Attribution required:"
+
+                result.AttributionRequirements
+                |> List.iter (fun requirement ->
+                    printfn
+                        "    %s | %s | %s"
+                        requirement.Slug
+                        (RightsPolicyId.value requirement.RightsPolicyId)
+                        requirement.AttributionReference)
 
             if not result.SkippedNotes.IsEmpty then
                 printfn "  Skipped:"
@@ -4217,14 +4502,25 @@ module Program =
         | Ok result ->
             let source = LogosSignal.source result.Signal
             let policy = result.Policy
+            let access = request.AccessContext
+            let rights = request.RightsContext
 
             printfn "LOGOS intake note created."
             printfn "  Output path: %s" result.OutputPath
             printfn "  Slug: %s" result.NormalizedSlug
             printfn "  Source system: %s" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)
+            access.SourceInstanceId
+            |> Option.iter (fun sourceInstanceId ->
+                printfn "  Source instance: %s" (SourceInstanceId.value sourceInstanceId))
+            printfn "  Access context: %s" (AccessContextId.value access.AccessContextId)
+            printfn "  Acquisition kind: %s" (AcquisitionKindId.value access.AcquisitionKindId)
             printfn "  Intake channel: %s" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)
             printfn "  Signal kind: %s" (LogosSignal.signalKindId result.Signal |> SignalKindId.value)
             printfn "  Entry pool: %s" (LogosPool.value result.EntryPool)
+            printfn "  Rights policy: %s" (RightsPolicyId.value rights.RightsPolicyId)
+            rights.AttributionReference
+            |> Option.iter (fun attributionReference ->
+                printfn "  Attribution reference: %s" attributionReference)
             printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
             printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
             printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)

@@ -5,14 +5,25 @@ open System.IO
 open System.Text
 
 /// <summary>
-/// One sanitized LOGOS note exported into a public-safe output set.
+/// One sanitized LOGOS note exported into a public-safe output set after handling and rights checks.
 /// </summary>
 type LogosPublicExportedNote =
     { Slug: string
       Title: string
       SourceRelativePath: string
       OutputFileName: string
+      RightsContext: LogosRightsContext
       Policy: LogosHandlingPolicy }
+
+/// <summary>
+/// One attribution obligation carried by a public-safe export.
+/// </summary>
+type LogosPublicAttributionRequirement =
+    { Slug: string
+      Title: string
+      OutputFileName: string
+      RightsPolicyId: RightsPolicyId
+      AttributionReference: string }
 
 /// <summary>
 /// One sanitized LOGOS note skipped during public-safe export.
@@ -24,7 +35,7 @@ type LogosPublicSkippedNote =
       Reason: string }
 
 /// <summary>
-/// The result of exporting public-safe LOGOS notes.
+/// The result of exporting public-safe LOGOS notes, including carried attribution obligations.
 /// </summary>
 type LogosPublicExportResult =
     { DocsRoot: string
@@ -32,6 +43,7 @@ type LogosPublicExportResult =
       ManifestPath: string
       EligibleNotesScanned: int
       ExportedNotes: LogosPublicExportedNote list
+      AttributionRequirements: LogosPublicAttributionRequirement list
       SkippedNotes: LogosPublicSkippedNote list
       ExportedAt: DateTimeOffset }
 
@@ -40,7 +52,7 @@ type LogosPublicExportResult =
 /// </summary>
 /// <remarks>
 /// This is a real boundary-crossing workflow: only notes that promote into
-/// <see cref="T:Nexus.Logos.PublicSafePoolItem`1" /> are exported.
+/// <see cref="T:Nexus.Logos.PublicSafePoolItem`1" /> with rights that also allow public distribution are exported.
 /// Full notes: docs/decisions/0012-pool-based-handling-boundaries.md
 /// </remarks>
 [<RequireQualifiedAccess>]
@@ -76,6 +88,7 @@ module LogosPublicExports =
         builder.AppendLine(sprintf "output_root = \"%s\"" (tomlEscape result.OutputRoot)) |> ignore
         builder.AppendLine(sprintf "eligible_notes_scanned = %d" result.EligibleNotesScanned) |> ignore
         builder.AppendLine(sprintf "exported_notes = %d" result.ExportedNotes.Length) |> ignore
+        builder.AppendLine(sprintf "attribution_requirements = %d" result.AttributionRequirements.Length) |> ignore
         builder.AppendLine(sprintf "skipped_notes = %d" result.SkippedNotes.Length) |> ignore
         builder.AppendLine() |> ignore
 
@@ -89,6 +102,19 @@ module LogosPublicExports =
             builder.AppendLine(sprintf "sharing_scope = \"%s\"" (SharingScopeId.value note.Policy.SharingScopeId)) |> ignore
             builder.AppendLine(sprintf "sanitization_status = \"%s\"" (SanitizationStatusId.value note.Policy.SanitizationStatusId)) |> ignore
             builder.AppendLine(sprintf "retention_class = \"%s\"" (RetentionClassId.value note.Policy.RetentionClassId)) |> ignore
+            builder.AppendLine(sprintf "rights_policy = \"%s\"" (RightsPolicyId.value note.RightsContext.RightsPolicyId)) |> ignore
+            note.RightsContext.AttributionReference
+            |> Option.iter (fun attributionReference ->
+                builder.AppendLine(sprintf "attribution_reference = \"%s\"" (tomlEscape attributionReference)) |> ignore)
+            builder.AppendLine() |> ignore
+
+        for requirement in result.AttributionRequirements do
+            builder.AppendLine("[[attribution_requirement]]") |> ignore
+            builder.AppendLine(sprintf "slug = \"%s\"" requirement.Slug) |> ignore
+            builder.AppendLine(sprintf "title = \"%s\"" (tomlEscape requirement.Title)) |> ignore
+            builder.AppendLine(sprintf "output_file = \"%s\"" (tomlEscape requirement.OutputFileName)) |> ignore
+            builder.AppendLine(sprintf "rights_policy = \"%s\"" (RightsPolicyId.value requirement.RightsPolicyId)) |> ignore
+            builder.AppendLine(sprintf "attribution_reference = \"%s\"" (tomlEscape requirement.AttributionReference)) |> ignore
             builder.AppendLine() |> ignore
 
         for note in result.SkippedNotes do
@@ -102,7 +128,7 @@ module LogosPublicExports =
         builder.ToString()
 
     /// <summary>
-    /// Exports public-safe LOGOS notes into a dedicated output root.
+    /// Exports public-safe LOGOS notes into a dedicated output root and records attribution obligations in the manifest.
     /// </summary>
     let export docsRoot outputRoot =
         try
@@ -124,41 +150,69 @@ module LogosPublicExports =
                     eligibleNotes
                     |> List.fold
                         (fun (exported, skipped) note ->
-                            match PublicSafePoolItem.tryCreate note note.Policy with
-                            | Ok publicSafeNote ->
-                                let exportNote = PublicSafePoolItem.value publicSafeNote
-                                let sourcePath = Path.Combine(normalizedDocsRoot, exportNote.RelativePath.Replace('/', Path.DirectorySeparatorChar))
-                                let outputFileName = $"{exportNote.Slug}.md"
-                                let outputPath = Path.Combine(normalizedOutputRoot, outputFileName)
-
-                                if File.Exists(sourcePath) then
-                                    File.Copy(sourcePath, outputPath, true)
-
-                                    let exportedNote =
-                                        { Slug = exportNote.Slug
-                                          Title = exportNote.Title
-                                          SourceRelativePath = exportNote.RelativePath
-                                          OutputFileName = outputFileName
-                                          Policy = exportNote.Policy }
-
-                                    (exportedNote :: exported, skipped)
-                                else
-                                    let skippedNote =
-                                        { RelativePath = exportNote.RelativePath
-                                          Slug = exportNote.Slug
-                                          Title = exportNote.Title
-                                          Reason = "Source note file is missing." }
-
-                                    (exported, skippedNote :: skipped)
-                            | Error reason ->
+                            match note.RightsPolicyId with
+                            | None ->
                                 let skippedNote =
                                     { RelativePath = note.RelativePath
                                       Slug = note.Slug
                                       Title = note.Title
-                                      Reason = reason }
+                                      Reason = "Public export requires an explicit rights_policy." }
 
-                                (exported, skippedNote :: skipped))
+                                (exported, skippedNote :: skipped)
+                            | Some rightsPolicyId ->
+                                let rightsContext = LogosRightsContext.create rightsPolicyId note.AttributionReference
+
+                                match PublicSafePoolItem.tryCreate note note.Policy rightsContext with
+                                | Ok publicSafeNote ->
+                                    let exportNote = PublicSafePoolItem.value publicSafeNote
+                                    let exportRights = PublicSafePoolItem.rights publicSafeNote
+                                    let sourcePath = Path.Combine(normalizedDocsRoot, exportNote.RelativePath.Replace('/', Path.DirectorySeparatorChar))
+                                    let outputFileName = $"{exportNote.Slug}.md"
+                                    let outputPath = Path.Combine(normalizedOutputRoot, outputFileName)
+
+                                    if File.Exists(sourcePath) then
+                                        File.Copy(sourcePath, outputPath, true)
+
+                                        let exportedNote =
+                                            { Slug = exportNote.Slug
+                                              Title = exportNote.Title
+                                              SourceRelativePath = exportNote.RelativePath
+                                              OutputFileName = outputFileName
+                                              RightsContext = exportRights
+                                              Policy = exportNote.Policy }
+
+                                        (exportedNote :: exported, skipped)
+                                    else
+                                        let skippedNote =
+                                            { RelativePath = exportNote.RelativePath
+                                              Slug = exportNote.Slug
+                                              Title = exportNote.Title
+                                              Reason = "Source note file is missing." }
+
+                                        (exported, skippedNote :: skipped)
+                                | Error reason ->
+                                    let skippedNote =
+                                        { RelativePath = note.RelativePath
+                                          Slug = note.Slug
+                                          Title = note.Title
+                                          Reason = reason }
+
+                                    (exported, skippedNote :: skipped))
                         ([], [])
+
+                let attributionRequirements =
+                    exportedNotes
+                    |> List.choose (fun note ->
+                        if KnownRightsPolicies.requiresAttribution note.RightsContext.RightsPolicyId then
+                            note.RightsContext.AttributionReference
+                            |> Option.map (fun attributionReference ->
+                                { Slug = note.Slug
+                                  Title = note.Title
+                                  OutputFileName = note.OutputFileName
+                                  RightsPolicyId = note.RightsContext.RightsPolicyId
+                                  AttributionReference = attributionReference })
+                        else
+                            None)
 
                 let now = DateTimeOffset.UtcNow
 
@@ -168,6 +222,7 @@ module LogosPublicExports =
                       ManifestPath = Path.Combine(normalizedOutputRoot, "manifest.toml")
                       EligibleNotesScanned = eligibleNotes.Length
                       ExportedNotes = exportedNotes |> List.rev
+                      AttributionRequirements = attributionRequirements |> List.rev
                       SkippedNotes = skippedNotes |> List.rev
                       ExportedAt = now }
 

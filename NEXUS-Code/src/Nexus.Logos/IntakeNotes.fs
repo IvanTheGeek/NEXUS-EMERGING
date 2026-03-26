@@ -15,10 +15,12 @@ type CreateLogosIntakeNoteRequest =
       Slug: string
       Title: string
       SourceSystemId: SourceSystemId
+      AccessContext: LogosAccessContext
       IntakeChannelId: IntakeChannelId
       SignalKindId: SignalKindId
       EntryPool: LogosPool
       Policy: LogosHandlingPolicy
+      RightsContext: LogosRightsContext
       Locators: LogosLocator list
       CapturedAt: DateTimeOffset option
       Summary: string option
@@ -32,6 +34,7 @@ type CreateLogosIntakeNoteResult =
       NormalizedSlug: string
       EntryPool: LogosPool
       Signal: LogosSignal
+      RightsContext: LogosRightsContext
       Policy: LogosHandlingPolicy }
 
 /// <summary>
@@ -69,12 +72,12 @@ module LogosIntakeNotes =
     let private markdownEscapeInline (value: string) =
         value.Replace("`", "\\`")
 
-    let private validateEntryPool entryPool signal policy =
+    let private validateEntryPool entryPool signal policy rightsContext =
         match entryPool with
         | LogosPool.Raw
         | LogosPool.Private -> Ok ()
         | LogosPool.PublicSafe ->
-            PublicSafePoolItem.tryCreate signal policy
+            PublicSafePoolItem.tryCreate signal policy rightsContext
             |> Result.map (fun _ -> ())
 
     let private appendTomlStringArray (builder: StringBuilder) key values =
@@ -98,7 +101,9 @@ module LogosIntakeNotes =
         (tags: string list)
         (signal: LogosSignal)
         (entryPool: LogosPool)
+        (accessContext: LogosAccessContext)
         (policy: LogosHandlingPolicy)
+        (rightsContext: LogosRightsContext)
         (now: DateTimeOffset)
         =
         let builder = StringBuilder()
@@ -113,6 +118,11 @@ module LogosIntakeNotes =
         builder.AppendLine(sprintf "created_at = \"%s\"" (now.ToString("O"))) |> ignore
         builder.AppendLine(sprintf "updated_at = \"%s\"" (now.ToString("O"))) |> ignore
         builder.AppendLine(sprintf "source_system = \"%s\"" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)) |> ignore
+        accessContext.SourceInstanceId
+        |> Option.iter (fun sourceInstanceId ->
+            builder.AppendLine(sprintf "source_instance = \"%s\"" (SourceInstanceId.value sourceInstanceId)) |> ignore)
+        builder.AppendLine(sprintf "access_context = \"%s\"" (AccessContextId.value accessContext.AccessContextId)) |> ignore
+        builder.AppendLine(sprintf "acquisition_kind = \"%s\"" (AcquisitionKindId.value accessContext.AcquisitionKindId)) |> ignore
         builder.AppendLine(sprintf "intake_channel = \"%s\"" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)) |> ignore
         builder.AppendLine(sprintf "signal_kind = \"%s\"" (LogosSignal.signalKindId signal |> SignalKindId.value)) |> ignore
         builder.AppendLine(sprintf "entry_pool = \"%s\"" (LogosPool.value entryPool)) |> ignore
@@ -120,6 +130,10 @@ module LogosIntakeNotes =
         builder.AppendLine(sprintf "sharing_scope = \"%s\"" (SharingScopeId.value policy.SharingScopeId)) |> ignore
         builder.AppendLine(sprintf "sanitization_status = \"%s\"" (SanitizationStatusId.value policy.SanitizationStatusId)) |> ignore
         builder.AppendLine(sprintf "retention_class = \"%s\"" (RetentionClassId.value policy.RetentionClassId)) |> ignore
+        builder.AppendLine(sprintf "rights_policy = \"%s\"" (RightsPolicyId.value rightsContext.RightsPolicyId)) |> ignore
+        rightsContext.AttributionReference
+        |> Option.iter (fun attributionReference ->
+            builder.AppendLine(sprintf "attribution_reference = \"%s\"" (tomlEscape attributionReference)) |> ignore)
 
         LogosSignal.capturedAt signal
         |> Option.iter (fun capturedAt ->
@@ -151,6 +165,11 @@ module LogosIntakeNotes =
         builder.AppendLine("## Source") |> ignore
         builder.AppendLine() |> ignore
         builder.AppendLine(sprintf "- source system: `%s`" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value |> markdownEscapeInline)) |> ignore
+        accessContext.SourceInstanceId
+        |> Option.iter (fun sourceInstanceId ->
+            builder.AppendLine(sprintf "- source instance: `%s`" (SourceInstanceId.value sourceInstanceId |> markdownEscapeInline)) |> ignore)
+        builder.AppendLine(sprintf "- access context: `%s`" (AccessContextId.value accessContext.AccessContextId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine(sprintf "- acquisition kind: `%s`" (AcquisitionKindId.value accessContext.AcquisitionKindId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- intake channel: `%s`" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- signal kind: `%s`" (LogosSignal.signalKindId signal |> SignalKindId.value |> markdownEscapeInline)) |> ignore
 
@@ -169,6 +188,13 @@ module LogosIntakeNotes =
         builder.AppendLine(sprintf "- sharing scope: `%s`" (SharingScopeId.value policy.SharingScopeId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sanitization status: `%s`" (SanitizationStatusId.value policy.SanitizationStatusId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- retention class: `%s`" (RetentionClassId.value policy.RetentionClassId |> markdownEscapeInline)) |> ignore
+        builder.AppendLine() |> ignore
+        builder.AppendLine("## Rights") |> ignore
+        builder.AppendLine() |> ignore
+        builder.AppendLine(sprintf "- rights policy: `%s`" (RightsPolicyId.value rightsContext.RightsPolicyId |> markdownEscapeInline)) |> ignore
+        rightsContext.AttributionReference
+        |> Option.iter (fun attributionReference ->
+            builder.AppendLine(sprintf "- attribution reference: `%s`" (markdownEscapeInline attributionReference)) |> ignore)
         builder.AppendLine() |> ignore
         builder.AppendLine("## Locators") |> ignore
         builder.AppendLine() |> ignore
@@ -196,6 +222,8 @@ module LogosIntakeNotes =
             let summary = normalizeOptionalText request.Summary
             let normalizedTags = request.Tags |> List.map (normalizeStableSlug "tag") |> List.distinct
             let policy = request.Policy
+            let accessContext = request.AccessContext
+            let rightsContext = request.RightsContext
             let source = LogosSourceRef.create request.SourceSystemId request.IntakeChannelId request.Locators
             let signal = LogosSignal.create request.SignalKindId source request.CapturedAt (Some title) summary
             let outputDirectory =
@@ -206,13 +234,13 @@ module LogosIntakeNotes =
             if File.Exists(outputPath) then
                 Error(sprintf "LOGOS intake note already exists at %s." outputPath)
             else
-                match validateEntryPool request.EntryPool signal policy with
+                match validateEntryPool request.EntryPool signal policy rightsContext with
                 | Error error ->
                     Error error
                 | Ok () ->
                     Directory.CreateDirectory(outputDirectory) |> ignore
                     let now = DateTimeOffset.UtcNow
-                    let content = renderNote normalizedSlug title normalizedTags signal request.EntryPool policy now
+                    let content = renderNote normalizedSlug title normalizedTags signal request.EntryPool accessContext policy rightsContext now
                     File.WriteAllText(outputPath, content, utf8WithoutBom)
 
                     Ok
@@ -220,6 +248,7 @@ module LogosIntakeNotes =
                           NormalizedSlug = normalizedSlug
                           EntryPool = request.EntryPool
                           Signal = signal
+                          RightsContext = rightsContext
                           Policy = policy }
         with :? ArgumentException as ex ->
             Error ex.Message

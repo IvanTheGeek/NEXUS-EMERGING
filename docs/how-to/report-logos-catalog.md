@@ -5,8 +5,11 @@ Use this when you want to inspect the currently allowlisted LOGOS source vocabul
 It reports:
 
 - recognized source systems
+- recognized access contexts
+- recognized acquisition kinds
 - recognized intake channels
 - recognized signal kinds
+- recognized rights policies
 - recognized sensitivities
 - recognized sharing scopes
 - recognized sanitization statuses
@@ -25,6 +28,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-logos-c
 Use this before:
 
 - creating a LOGOS intake note
+- choosing source-instance, access-context, acquisition-kind, or rights-policy values
 - assigning or checking intake handling policy
 - deciding how to classify a new source
 - checking whether a needed source kind is already modeled explicitly
