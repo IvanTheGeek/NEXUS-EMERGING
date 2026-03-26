@@ -255,14 +255,14 @@ module Program =
                     [ sprintf "%s report-logos-handling" cliInvocation
                       sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
                   Notes =
-                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ for LOGOS notes with handling metadata."
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively for LOGOS notes with handling metadata."
                       "Use it to see which notes are still raw, which remain personal-private or customer-confidential, and which derivatives are marked approved-for-sharing."
                       "This is an audit report, not a publication gate by itself."
                       "Detailed guide: docs/how-to/report-logos-handling.md" ] }
         | "export-logos-public-notes" ->
             Some
                 { Name = name
-                  Summary = "Export only public-safe LOGOS sanitized notes into a dedicated output folder."
+                  Summary = "Export only public-safe LOGOS notes into a dedicated output folder."
                   Usage =
                     [ sprintf "%s export-logos-public-notes" cliInvocation
                       sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
@@ -273,8 +273,8 @@ module Program =
                     [ sprintf "%s export-logos-public-notes" cliInvocation
                       sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
                   Notes =
-                    [ "This scans docs/logos-intake-derived/ and exports only notes that successfully cross the PublicSafe pool boundary."
-                      "Notes that are merely sanitized but not approved for public sharing are skipped with explicit reasons."
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively and exports only notes that successfully cross the PublicSafe pool boundary."
+                      "Notes that are merely sanitized, raw, or team-only are skipped with explicit reasons."
                       "This is the first real public-facing workflow protected by PublicSafePoolItem<_>."
                       "Detailed guide: docs/how-to/export-logos-public-notes.md" ] }
         | "report-conversation-overlap-candidates" ->
@@ -704,6 +704,7 @@ module Program =
                       "--source-system <slug>", "Required. Explicit allowlisted source system. Run report-logos-catalog to inspect values."
                       "--intake-channel <slug>", "Required. Explicit allowlisted intake channel."
                       "--signal-kind <slug>", "Required. Explicit allowlisted signal kind."
+                      "--entry-pool <raw|private|public-safe>", "Choose which LOGOS pool path the new note enters. Defaults to raw."
                       "--sensitivity <slug>", "Optional explicit allowlisted sensitivity. Defaults to internal-restricted."
                       "--sharing-scope <slug>", "Optional explicit allowlisted sharing scope. Defaults to owner-only."
                       "--sanitization-status <slug>", "Optional explicit allowlisted sanitization status. Defaults to raw."
@@ -718,11 +719,12 @@ module Program =
                       "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
                   Examples =
                     [ sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation
-                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --intake-channel app-feedback --signal-kind feedback --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
+                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --intake-channel app-feedback --signal-kind feedback --entry-pool private --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
                   Notes =
-                    [ "This writes a Markdown seed note under docs/logos-intake/."
+                    [ "This writes a Markdown seed note under docs/logos-intake/<pool>/."
                       "Use it to represent early LOGOS intake before a full ingestion pipeline exists for that source type."
                       "New notes default to a restricted handling policy unless you explicitly choose other allowlisted values."
+                      "Choosing public-safe at entry requires a policy that crosses the explicit PublicSafe pool boundary."
                       "At least one explicit locator is required."
                       "Detailed guide: docs/how-to/create-logos-intake-note.md" ] }
         | "create-logos-sanitized-note" ->
@@ -733,7 +735,7 @@ module Program =
                     [ sprintf "%s create-logos-sanitized-note --source-slug <slug> --slug <slug> --title <title> --sanitization-status <slug>" cliInvocation
                       sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation ]
                   Options =
-                    [ "--source-slug <slug>", "Required. Select the source LOGOS intake note under docs/logos-intake/."
+                    [ "--source-slug <slug>", "Required. Select the source LOGOS intake note under docs/logos-intake/ recursively."
                       "--slug <slug>", "Required. Explicit file-safe slug for the derived note."
                       "--title <title>", "Required. Explicit sanitized title. This is not copied from the source note."
                       "--sanitization-status <redacted|anonymized|approved-for-sharing>", "Required. Explicit derived sanitization status."
@@ -747,7 +749,7 @@ module Program =
                     [ sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation
                       sprintf "%s create-logos-sanitized-note --source-slug cheddarbooks-debug-case-42 --slug cheddarbooks-case-42-anonymized --title \"CheddarBooks Case 42 (Anonymized)\" --sanitization-status anonymized --sharing-scope project-team" cliInvocation ]
                   Notes =
-                    [ "This writes a derived note under docs/logos-intake-derived/."
+                    [ "This writes a derived note under docs/logos-intake-derived/<pool>/."
                       "Raw locators and raw source text remain in the restricted source intake note."
                       "Use this as an explicit derived sanitization step rather than widening access to the raw note."
                       "approved-for-sharing requires an explicit --sharing-scope."
@@ -1395,6 +1397,9 @@ module Program =
         | "png" -> Some Png
         | _ -> None
 
+    let private parseLogosPool (value: string) =
+        LogosPool.tryParse value
+
     let private parseRenderGraphvizDot (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "render-graphviz-dot"))
@@ -2020,6 +2025,7 @@ module Program =
                 sourceSystem
                 intakeChannel
                 signalKind
+                entryPool
                 sensitivity
                 sharingScope
                 sanitizationStatus
@@ -2075,6 +2081,7 @@ module Program =
                                       SourceSystemId = sourceSystemValue
                                       IntakeChannelId = intakeChannelValue
                                       SignalKindId = signalKindValue
+                                      EntryPool = entryPool
                                       Policy = policy
                                       Locators = List.rev locators
                                       CapturedAt = capturedAt
@@ -2088,6 +2095,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2112,6 +2120,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2136,6 +2145,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2155,6 +2165,7 @@ module Program =
                             (Some identifier)
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2178,6 +2189,7 @@ module Program =
                             sourceSystem
                             (Some identifier)
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2201,6 +2213,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             (Some identifier)
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2214,6 +2227,30 @@ module Program =
                         eprintfn "Unsupported LOGOS signal kind: %s" value
                         printCommandHelp "create-logos-intake-note"
                         Error 1
+                | "--entry-pool" :: value :: rest ->
+                    match parseLogosPool value with
+                    | Some pool ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            intakeChannel
+                            signalKind
+                            pool
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS entry pool: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
                 | "--sensitivity" :: value :: rest ->
                     match KnownSensitivities.tryFind value with
                     | Some identifier ->
@@ -2224,6 +2261,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             (Some identifier)
                             sharingScope
                             sanitizationStatus
@@ -2247,6 +2285,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             (Some identifier)
                             sanitizationStatus
@@ -2270,6 +2309,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             (Some identifier)
@@ -2293,6 +2333,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2314,6 +2355,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2331,6 +2373,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2348,6 +2391,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2365,6 +2409,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2384,6 +2429,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2405,6 +2451,7 @@ module Program =
                         sourceSystem
                         intakeChannel
                         signalKind
+                        entryPool
                         sensitivity
                         sharingScope
                         sanitizationStatus
@@ -2429,6 +2476,7 @@ module Program =
                             sourceSystem
                             intakeChannel
                             signalKind
+                            entryPool
                             sensitivity
                             sharingScope
                             sanitizationStatus
@@ -2443,7 +2491,7 @@ module Program =
                     printCommandHelp "create-logos-intake-note"
                     Error 1
 
-            loop defaultDocsRoot None None None None None None None None None [] None None [] args
+            loop defaultDocsRoot None None None None None LogosPool.Raw None None None None [] None None [] args
 
     let private parseCreateLogosSanitizedNote (args: string list) =
         if containsHelpSwitch args then
@@ -3274,9 +3322,10 @@ module Program =
                 values
                 |> List.iter (fun note ->
                     printfn
-                        "    %s | %s | %s | %s | %s"
+                        "    %s | %s | %s | %s | %s | %s"
                         note.RelativePath
                         note.NoteKind
+                        (note.EntryPool |> Option.map LogosPool.value |> Option.defaultValue "(unspecified)")
                         (SourceSystemId.value note.SourceSystemId)
                         (SensitivityId.value note.Policy.SensitivityId)
                         (SanitizationStatusId.value note.Policy.SanitizationStatusId))
@@ -3291,6 +3340,7 @@ module Program =
             printfn "  Notes scanned: %d" report.Notes.Length
             printfn "  Limit per flagged section: %d" limit
             printCounts "Note kinds" report.NoteKinds
+            printCounts "Entry pools" report.EntryPools
             printCounts "Sensitivities" report.Sensitivities
             printCounts "Sharing scopes" report.SharingScopes
             printCounts "Sanitization statuses" report.SanitizationStatuses
@@ -3311,7 +3361,7 @@ module Program =
             printfn "  Docs root: %s" result.DocsRoot
             printfn "  Output root: %s" result.OutputRoot
             printfn "  Manifest: %s" result.ManifestPath
-            printfn "  Sanitized notes scanned: %d" result.SanitizedNotesScanned
+            printfn "  Eligible notes scanned: %d" result.EligibleNotesScanned
             printfn "  Exported notes: %d" result.ExportedNotes.Length
             printfn "  Skipped notes: %d" result.SkippedNotes.Length
 
@@ -4174,6 +4224,7 @@ module Program =
             printfn "  Source system: %s" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)
             printfn "  Intake channel: %s" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)
             printfn "  Signal kind: %s" (LogosSignal.signalKindId result.Signal |> SignalKindId.value)
+            printfn "  Entry pool: %s" (LogosPool.value result.EntryPool)
             printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
             printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
             printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)
@@ -4193,6 +4244,7 @@ module Program =
             printfn "  Output path: %s" result.OutputPath
             printfn "  Source note path: %s" result.SourceNotePath
             printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Entry pool: %s" (LogosPool.value result.EntryPool)
             printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
             printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
             printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)

@@ -2,6 +2,12 @@
 
 This folder holds durable seed notes for LOGOS intake items that are not yet flowing through a full ingestion pipeline.
 
+Notes are now organized by pool:
+
+- `raw/`
+- `private/`
+- `public-safe/`
+
 Use these notes when you have source metadata now, but the richer canonical/import path is still future work.
 
 Examples:

@@ -78,14 +78,15 @@ The CLI supports both:
 
 - Audits LOGOS intake and derived notes by handling policy.
 - Use it when you want to quickly see which notes are still raw, which are personal-private or customer-confidential, and which derivatives are marked approved-for-sharing.
+- It scans the intake and derived trees recursively and reports entry-pool counts too.
 - This is an audit report, not a publication gate by itself.
 - Details: `docs/how-to/report-logos-handling.md`
 
 `export-logos-public-notes`
 
-- Exports only public-safe LOGOS sanitized notes into a dedicated output folder.
+- Exports only public-safe LOGOS notes into a dedicated output folder.
 - Use it when you need an actual public-facing note set rather than just a handling audit.
-- It depends on the explicit `PublicSafe` pool boundary, so merely sanitized or team-only notes are skipped.
+- It scans both intake and derived note trees recursively, but depends on the explicit `PublicSafe` pool boundary, so merely sanitized or team-only notes are skipped.
 - Details: `docs/how-to/export-logos-public-notes.md`
 
 `report-conversation-overlap-candidates`
@@ -141,13 +142,14 @@ The CLI supports both:
 - Creates a durable LOGOS intake seed note from explicit source, channel, signal, locator, and handling-policy metadata.
 - Use it for forum/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
 - New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
+- The note now enters an explicit LOGOS pool path at creation time: `raw`, `private`, or `public-safe`.
 - Details: `docs/how-to/create-logos-intake-note.md`
 
 `create-logos-sanitized-note`
 
 - Creates a derived sanitized LOGOS note from an existing restricted intake note.
 - Use it when the source note should stay restricted but a redacted, anonymized, or explicitly shareable derivative is needed.
-- The derived note keeps source classification and policy provenance but does not copy raw locators or raw source text forward.
+- The derived note keeps source classification and policy provenance, lands in `private` or `public-safe` based on policy, and does not copy raw locators or raw source text forward.
 - Details: `docs/how-to/create-logos-sanitized-note.md`
 
 `rebuild-artifact-projections`
@@ -283,8 +285,8 @@ LOGOS intake seeding:
 2. Run `create-logos-intake-note`.
 3. Run `create-logos-sanitized-note` if the source note needs a safer derivative for broader sharing.
 4. Run `report-logos-handling` if you want to audit raw, restricted, and approved notes across the LOGOS note folders.
-5. Keep the restricted source note under `docs/logos-intake/`.
-6. Refine the derived note under `docs/logos-intake-derived/` for the intended sharing scope.
+5. Keep the restricted source note under `docs/logos-intake/<pool>/`.
+6. Refine the derived note under `docs/logos-intake-derived/<pool>/` for the intended sharing scope.
 
 Manual artifact hydration:
 

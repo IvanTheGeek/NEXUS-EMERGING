@@ -11,6 +11,7 @@ type LogosHandlingNote =
       NoteKind: string
       Slug: string
       Title: string
+      EntryPool: LogosPool option
       SourceSystemId: SourceSystemId
       IntakeChannelId: IntakeChannelId
       SignalKindId: SignalKindId
@@ -29,6 +30,7 @@ type LogosHandlingCount =
 type LogosHandlingReport =
     { Notes: LogosHandlingNote list
       NoteKinds: LogosHandlingCount list
+      EntryPools: LogosHandlingCount list
       Sensitivities: LogosHandlingCount list
       SharingScopes: LogosHandlingCount list
       SanitizationStatuses: LogosHandlingCount list
@@ -96,6 +98,7 @@ module LogosHandlingReports =
             let noteKind = requireFrontMatterString path "note_kind" frontMatter
             let slug = requireFrontMatterString path "slug" frontMatter
             let title = requireFrontMatterString path "title" frontMatter
+            let entryPool = tryReadFrontMatterString "entry_pool" frontMatter |> Option.bind LogosPool.tryParse
             let sourceSystem = requireFrontMatterString path "source_system" frontMatter |> SourceSystemId.parse
             let intakeChannel = requireFrontMatterString path "intake_channel" frontMatter |> IntakeChannelId.parse
             let signalKind = requireFrontMatterString path "signal_kind" frontMatter |> SignalKindId.parse
@@ -109,6 +112,7 @@ module LogosHandlingReports =
                   NoteKind = noteKind
                   Slug = slug
                   Title = title
+                  EntryPool = entryPool
                   SourceSystemId = sourceSystem
                   IntakeChannelId = intakeChannel
                   SignalKindId = signalKind
@@ -121,7 +125,7 @@ module LogosHandlingReports =
 
     let private noteFilesUnder path =
         if Directory.Exists(path) then
-            Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly)
+            Directory.EnumerateFiles(path, "*.md", SearchOption.AllDirectories)
             |> Seq.sort
             |> Seq.toList
         else
@@ -150,6 +154,12 @@ module LogosHandlingReports =
             Ok
                 { Notes = notes
                   NoteKinds = notes |> countBySlug (fun note -> note.NoteKind)
+                  EntryPools =
+                    notes
+                    |> countBySlug (fun note ->
+                        note.EntryPool
+                        |> Option.map LogosPool.value
+                        |> Option.defaultValue "(unspecified)")
                   Sensitivities = notes |> countBySlug (fun note -> SensitivityId.value note.Policy.SensitivityId)
                   SharingScopes = notes |> countBySlug (fun note -> SharingScopeId.value note.Policy.SharingScopeId)
                   SanitizationStatuses = notes |> countBySlug (fun note -> SanitizationStatusId.value note.Policy.SanitizationStatusId)

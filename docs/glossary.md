@@ -87,11 +87,11 @@ LOGOS is broader than any one storage or retrieval technology.
 
 ## LOGOS Intake Note
 
-A durable Markdown seed note under `docs/logos-intake/` that records explicit source-system, intake-channel, signal-kind, and locator metadata for an intake signal before full ingestion exists for that source type.
+A durable Markdown seed note under `docs/logos-intake/<pool>/` that records explicit source-system, intake-channel, signal-kind, locator, and handling metadata for an intake signal before full ingestion exists for that source type.
 
 ## LOGOS Sanitized Note
 
-A derived Markdown note under `docs/logos-intake-derived/` that preserves source classification and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
+A derived Markdown note under `docs/logos-intake-derived/<pool>/` that preserves source classification and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
 
 ## LOGOS Handling Policy
 
@@ -100,6 +100,10 @@ An explicit handling classification for a LOGOS intake signal covering sensitivi
 ## LOGOS Handling Report
 
 A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for sensitivity, sharing scope, sanitization status, and retention.
+
+## Entry Pool
+
+The explicit pool path where a LOGOS note enters or lands: `raw`, `private`, or `public-safe`.
 
 ## Private Pool
 

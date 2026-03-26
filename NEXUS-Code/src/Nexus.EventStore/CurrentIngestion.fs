@@ -207,7 +207,7 @@ module CurrentIngestion =
                               SharingScope = SharingScopeId.value classification.DefaultHandlingPolicy.SharingScopeId
                               SanitizationStatus = SanitizationStatusId.value classification.DefaultHandlingPolicy.SanitizationStatusId
                               RetentionClass = RetentionClassId.value classification.DefaultHandlingPolicy.RetentionClassId }
-                          EntryPool = classification.EntryPool })
+                          EntryPool = LogosPool.value classification.EntryPool })
 
                 let logosMetadata =
                     value.LogosMetadata

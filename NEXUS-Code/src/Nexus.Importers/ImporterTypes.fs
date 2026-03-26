@@ -141,7 +141,7 @@ module ProviderLogosImportMetadata =
                   SharingScope = SharingScopeId.value classification.DefaultHandlingPolicy.SharingScopeId
                   SanitizationStatus = SanitizationStatusId.value classification.DefaultHandlingPolicy.SanitizationStatusId
                   RetentionClass = RetentionClassId.value classification.DefaultHandlingPolicy.RetentionClassId }
-              EntryPool = classification.EntryPool })
+              EntryPool = LogosPool.value classification.EntryPool })
 
 /// <summary>
 /// A normalized artifact reference discovered while parsing provider content.

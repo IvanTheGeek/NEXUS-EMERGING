@@ -1,6 +1,6 @@
 # Export LOGOS Public Notes
 
-Use this when you want a dedicated public-safe output set from sanitized LOGOS notes.
+Use this when you want a dedicated public-safe output set from LOGOS notes that truly cross the public-safe boundary.
 
 This is intentionally stricter than a handling audit.
 
@@ -10,8 +10,8 @@ The command does not export notes just because they are derived or redacted. It 
 
 `export-logos-public-notes`:
 
-- scans `docs/logos-intake-derived/`
-- evaluates each sanitized note against the explicit public-safe pool rules
+- scans `docs/logos-intake/` and `docs/logos-intake-derived/` recursively
+- evaluates each eligible note against the explicit public-safe pool rules
 - exports only eligible notes into a dedicated output folder
 - writes a `manifest.toml` describing what was exported and what was skipped
 
@@ -59,7 +59,7 @@ The command writes:
 
 It reports:
 
-- sanitized notes scanned
+- eligible notes scanned
 - exported note count
 - skipped note count
 
@@ -67,5 +67,6 @@ It reports:
 
 - import permission is not publication permission
 - sanitized is not automatically public-safe
+- being in the intake tree is not automatically disqualifying if the note already crosses the public-safe boundary
 - public-facing export depends on the explicit `PublicSafe` pool boundary
 - a skipped note is not an error if it was never meant for public use

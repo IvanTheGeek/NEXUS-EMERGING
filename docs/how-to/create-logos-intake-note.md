@@ -2,7 +2,7 @@
 
 Use this when you want to seed a non-chat intake item into durable repo memory before a full ingestion path exists for that source type.
 
-This writes a Markdown note under `docs/logos-intake/`.
+This writes a Markdown note under `docs/logos-intake/<pool>/`.
 New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 
 ## Command
@@ -30,6 +30,8 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   explicit allowlisted intake channel
 - `--signal-kind`
   explicit allowlisted signal kind
+- `--entry-pool <raw|private|public-safe>`
+  optional explicit pool boundary for where the new note enters. Defaults to `raw`.
 - at least one locator:
   - `--native-item-id`
   - `--native-thread-id`
@@ -53,6 +55,14 @@ Default handling policy:
 - sharing scope: `owner-only`
 - sanitization status: `raw`
 - retention class: `durable`
+
+Important entry-pool rule:
+
+- `public-safe` at creation time is allowed only when the explicit handling policy crosses the `PublicSafe` boundary
+- in practice that means:
+  - `sanitization_status = approved-for-sharing`
+  - `sensitivity = public`
+  - `sharing_scope = public`
 
 ## Example Flows
 
@@ -80,6 +90,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --source-system app-feedback-surface \
   --intake-channel app-feedback \
   --signal-kind feedback \
+  --entry-pool private \
   --native-item-id fb-2026-03-25-001 \
   --summary "Users are confused about the onboarding transition."
 ```
@@ -101,11 +112,30 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --native-item-id case-42
 ```
 
+Explicit public-safe note:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  create-logos-intake-note \
+  --slug public-release-note-2026-03 \
+  --title "Public Release Note 2026-03" \
+  --source-system forum \
+  --intake-channel forum-thread \
+  --signal-kind feedback \
+  --entry-pool public-safe \
+  --sensitivity public \
+  --sharing-scope public \
+  --sanitization-status approved-for-sharing \
+  --source-uri https://community.example.com/releases/2026-03
+```
+
 ## Why This Exists
 
 This is a bridge workflow.
 
 It lets LOGOS intake become durable and inspectable now, while keeping the future option open for richer ingestion, indexing, and refinement later.
+
+It also lets intake enter NEXUS through an explicit pool boundary from the start instead of leaving safe-vs-restricted intent implicit.
 
 ## Related
 

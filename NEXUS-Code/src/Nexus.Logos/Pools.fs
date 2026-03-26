@@ -1,6 +1,38 @@
 namespace Nexus.Logos
 
 /// <summary>
+/// The explicit LOGOS handling pools used to separate raw, private, and public-safe material.
+/// </summary>
+type LogosPool =
+    | Raw
+    | Private
+    | PublicSafe
+
+/// <summary>
+/// Stable conversions and helpers for <see cref="T:Nexus.Logos.LogosPool" />.
+/// </summary>
+[<RequireQualifiedAccess>]
+module LogosPool =
+    /// <summary>
+    /// Returns the persisted stable slug for a LOGOS pool.
+    /// </summary>
+    let value =
+        function
+        | Raw -> "raw"
+        | Private -> "private"
+        | PublicSafe -> "public-safe"
+
+    /// <summary>
+    /// Parses a stable LOGOS pool slug.
+    /// </summary>
+    let tryParse (value: string) =
+        match value.Trim().ToLowerInvariant() with
+        | "raw" -> Some Raw
+        | "private" -> Some Private
+        | "public-safe" -> Some PublicSafe
+        | _ -> None
+
+/// <summary>
 /// A raw-pool item that may retain the fullest preserved intake detail.
 /// </summary>
 [<Struct>]
@@ -111,32 +143,3 @@ module LogosPoolTransitions =
     /// </summary>
     let tryPrivateToPublicSafe (privateItem: PrivatePoolItem<'payload>) : Result<PublicSafePoolItem<'payload>, string> =
         PublicSafePoolItem.tryCreate (PrivatePoolItem.value privateItem) (PrivatePoolItem.policy privateItem)
-
-/// <summary>
-/// Bridges current LOGOS workflow results into explicit pool boundary types.
-/// </summary>
-[<RequireQualifiedAccess>]
-module LogosPoolResults =
-    /// <summary>
-    /// Wraps a LOGOS intake-note result as a raw-pool item.
-    /// </summary>
-    let intakeAsRaw (result: CreateLogosIntakeNoteResult) : RawPoolItem<CreateLogosIntakeNoteResult> =
-        RawPoolItem.create result result.Policy
-
-    /// <summary>
-    /// Wraps a LOGOS intake-note result as a private-pool item.
-    /// </summary>
-    let intakeAsPrivate (result: CreateLogosIntakeNoteResult) : PrivatePoolItem<CreateLogosIntakeNoteResult> =
-        intakeAsRaw result |> LogosPoolTransitions.rawToPrivate
-
-    /// <summary>
-    /// Wraps a derived sanitized-note result as a private-pool item.
-    /// </summary>
-    let sanitizedAsPrivate (result: CreateLogosSanitizedNoteResult) : PrivatePoolItem<CreateLogosSanitizedNoteResult> =
-        PrivatePoolItem.create result result.Policy
-
-    /// <summary>
-    /// Attempts to promote a derived sanitized-note result into the public-safe pool.
-    /// </summary>
-    let trySanitizedAsPublicSafe (result: CreateLogosSanitizedNoteResult) : Result<PublicSafePoolItem<CreateLogosSanitizedNoteResult>, string> =
-        sanitizedAsPrivate result |> LogosPoolTransitions.tryPrivateToPublicSafe

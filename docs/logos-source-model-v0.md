@@ -87,6 +87,7 @@ The `v0` scope is intentionally narrow:
 - a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
 - a first handling-policy audit report over LOGOS note material
 - first explicit pool boundary types for `raw`, `private`, and `public-safe` use
+- explicit pool-aware intake and derived note paths under `docs/logos-intake/<pool>/` and `docs/logos-intake-derived/<pool>/`
 - provider and Codex imports entering the system with restricted-by-default LOGOS handling metadata
 
 Deferred:
@@ -163,3 +164,12 @@ Current provider-import baseline:
   - `sanitization_status = raw`
   - `retention_class = durable`
   - `entry_pool = raw`
+
+Current non-chat LOGOS note baseline:
+
+- manual intake notes now enter a declared pool at creation time
+- the default entry pool is:
+  - `entry_pool = raw`
+- derived sanitized notes resolve into:
+  - `private` when the resulting policy is still restricted
+  - `public-safe` only when the explicit public-safe policy boundary is crossed

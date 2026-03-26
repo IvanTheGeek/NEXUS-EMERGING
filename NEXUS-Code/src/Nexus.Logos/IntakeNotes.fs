@@ -17,6 +17,7 @@ type CreateLogosIntakeNoteRequest =
       SourceSystemId: SourceSystemId
       IntakeChannelId: IntakeChannelId
       SignalKindId: SignalKindId
+      EntryPool: LogosPool
       Policy: LogosHandlingPolicy
       Locators: LogosLocator list
       CapturedAt: DateTimeOffset option
@@ -29,6 +30,7 @@ type CreateLogosIntakeNoteRequest =
 type CreateLogosIntakeNoteResult =
     { OutputPath: string
       NormalizedSlug: string
+      EntryPool: LogosPool
       Signal: LogosSignal
       Policy: LogosHandlingPolicy }
 
@@ -67,6 +69,14 @@ module LogosIntakeNotes =
     let private markdownEscapeInline (value: string) =
         value.Replace("`", "\\`")
 
+    let private validateEntryPool entryPool signal policy =
+        match entryPool with
+        | LogosPool.Raw
+        | LogosPool.Private -> Ok ()
+        | LogosPool.PublicSafe ->
+            PublicSafePoolItem.tryCreate signal policy
+            |> Result.map (fun _ -> ())
+
     let private appendTomlStringArray (builder: StringBuilder) key values =
         let rendered =
             values
@@ -87,6 +97,7 @@ module LogosIntakeNotes =
         (title: string)
         (tags: string list)
         (signal: LogosSignal)
+        (entryPool: LogosPool)
         (policy: LogosHandlingPolicy)
         (now: DateTimeOffset)
         =
@@ -104,6 +115,7 @@ module LogosIntakeNotes =
         builder.AppendLine(sprintf "source_system = \"%s\"" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)) |> ignore
         builder.AppendLine(sprintf "intake_channel = \"%s\"" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)) |> ignore
         builder.AppendLine(sprintf "signal_kind = \"%s\"" (LogosSignal.signalKindId signal |> SignalKindId.value)) |> ignore
+        builder.AppendLine(sprintf "entry_pool = \"%s\"" (LogosPool.value entryPool)) |> ignore
         builder.AppendLine(sprintf "sensitivity = \"%s\"" (SensitivityId.value policy.SensitivityId)) |> ignore
         builder.AppendLine(sprintf "sharing_scope = \"%s\"" (SharingScopeId.value policy.SharingScopeId)) |> ignore
         builder.AppendLine(sprintf "sanitization_status = \"%s\"" (SanitizationStatusId.value policy.SanitizationStatusId)) |> ignore
@@ -152,6 +164,7 @@ module LogosIntakeNotes =
         builder.AppendLine() |> ignore
         builder.AppendLine("## Handling Policy") |> ignore
         builder.AppendLine() |> ignore
+        builder.AppendLine(sprintf "- entry pool: `%s`" (LogosPool.value entryPool |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sensitivity: `%s`" (SensitivityId.value policy.SensitivityId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sharing scope: `%s`" (SharingScopeId.value policy.SharingScopeId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sanitization status: `%s`" (SanitizationStatusId.value policy.SanitizationStatusId |> markdownEscapeInline)) |> ignore
@@ -185,21 +198,28 @@ module LogosIntakeNotes =
             let policy = request.Policy
             let source = LogosSourceRef.create request.SourceSystemId request.IntakeChannelId request.Locators
             let signal = LogosSignal.create request.SignalKindId source request.CapturedAt (Some title) summary
-            let outputDirectory = Path.Combine(request.DocsRoot, "logos-intake")
+            let outputDirectory =
+                Path.Combine(request.DocsRoot, "logos-intake", LogosPool.value request.EntryPool)
+
             let outputPath = Path.Combine(outputDirectory, $"{normalizedSlug}.md")
 
             if File.Exists(outputPath) then
                 Error(sprintf "LOGOS intake note already exists at %s." outputPath)
             else
-                Directory.CreateDirectory(outputDirectory) |> ignore
-                let now = DateTimeOffset.UtcNow
-                let content = renderNote normalizedSlug title normalizedTags signal policy now
-                File.WriteAllText(outputPath, content, utf8WithoutBom)
+                match validateEntryPool request.EntryPool signal policy with
+                | Error error ->
+                    Error error
+                | Ok () ->
+                    Directory.CreateDirectory(outputDirectory) |> ignore
+                    let now = DateTimeOffset.UtcNow
+                    let content = renderNote normalizedSlug title normalizedTags signal request.EntryPool policy now
+                    File.WriteAllText(outputPath, content, utf8WithoutBom)
 
-                Ok
-                    { OutputPath = outputPath
-                      NormalizedSlug = normalizedSlug
-                      Signal = signal
-                      Policy = policy }
+                    Ok
+                        { OutputPath = outputPath
+                          NormalizedSlug = normalizedSlug
+                          EntryPool = request.EntryPool
+                          Signal = signal
+                          Policy = policy }
         with :? ArgumentException as ex ->
             Error ex.Message

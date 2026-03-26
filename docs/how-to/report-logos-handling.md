@@ -10,6 +10,7 @@ It scans:
 and reports:
 
 - note counts by kind
+- entry-pool counts
 - sensitivity counts
 - sharing-scope counts
 - sanitization-status counts
@@ -57,3 +58,5 @@ The intended rule still stands:
 - import permission is not publication permission
 - restricted source notes remain the source note of record
 - safer derivatives should be explicit
+
+The report scans both note trees recursively, so pool subfolders like `raw/`, `private/`, and `public-safe/` are all included.

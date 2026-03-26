@@ -56,7 +56,7 @@ module LogosTests =
                   Expect.equal (SharingScopeId.value value.DefaultHandlingPolicy.SharingScopeId) "owner-only" "Expected provider imports to default to owner-only sharing."
                   Expect.equal (SanitizationStatusId.value value.DefaultHandlingPolicy.SanitizationStatusId) "raw" "Expected provider imports to enter NEXUS as raw."
                   Expect.equal (RetentionClassId.value value.DefaultHandlingPolicy.RetentionClassId) "durable" "Expected provider imports to default to durable retention."
-                  Expect.equal value.EntryPool "raw" "Expected provider imports to enter through the raw pool.")
+                  Expect.equal (LogosPool.value value.EntryPool) "raw" "Expected provider imports to enter through the raw pool.")
 
               testCase "LOGOS catalog includes concrete non-chat source systems" (fun () ->
                   let report = LogosCatalog.build ()
@@ -88,6 +88,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy = policy
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
@@ -102,10 +103,13 @@ module LogosTests =
 
                           Expect.isTrue (File.Exists(note.OutputPath)) "Expected the LOGOS intake note file to exist."
                           Expect.equal note.NormalizedSlug "support-thread-123" "Expected the slug to stay stable."
+                          Expect.equal note.EntryPool LogosPool.Raw "Expected the note to enter the raw pool."
+                          Expect.stringContains note.OutputPath (Path.Combine("logos-intake", "raw", "support-thread-123.md")) "Expected the note to land in the raw intake path."
                           Expect.stringContains text "note_kind = \"logos_intake_seed\"" "Expected the LOGOS intake note kind."
                           Expect.stringContains text "source_system = \"forum\"" "Expected the forum source system."
                           Expect.stringContains text "intake_channel = \"forum-thread\"" "Expected the forum-thread intake channel."
                           Expect.stringContains text "signal_kind = \"support-question\"" "Expected the support-question signal kind."
+                          Expect.stringContains text "entry_pool = \"raw\"" "Expected the seed note to persist the raw entry pool."
                           Expect.stringContains text "sensitivity = \"customer-confidential\"" "Expected the note to carry the explicit sensitivity."
                           Expect.stringContains text "sharing_scope = \"case-team\"" "Expected the note to carry the explicit sharing scope."
                           Expect.stringContains text "sanitization_status = \"redacted\"" "Expected the note to carry the explicit sanitization status."
@@ -144,6 +148,8 @@ module LogosTests =
                                 "forum-thread"
                                 "--signal-kind"
                                 "support-question"
+                                "--entry-pool"
+                                "private"
                                 "--sensitivity"
                                 "customer-confidential"
                                 "--sharing-scope"
@@ -155,14 +161,16 @@ module LogosTests =
                                 "--source-uri"
                                 "https://community.example.com/t/123" ]
 
-                      let outputPath = Path.Combine(docsRoot, "logos-intake", "support-thread-123.md")
+                      let outputPath = Path.Combine(docsRoot, "logos-intake", "private", "support-thread-123.md")
                       let text = File.ReadAllText(outputPath)
 
                       Expect.equal cliResult.ExitCode 0 "Expected CLI LOGOS intake note creation to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the CLI LOGOS intake note creation."
                       Expect.isTrue (File.Exists(outputPath)) "Expected the CLI-created LOGOS intake note file to exist."
+                      Expect.stringContains cliResult.StandardOutput "Entry pool: private" "Expected the CLI summary to print the entry pool."
                       Expect.stringContains cliResult.StandardOutput "Sensitivity: customer-confidential" "Expected the CLI summary to print the sensitivity."
                       Expect.stringContains cliResult.StandardOutput "Sharing scope: case-team" "Expected the CLI summary to print the sharing scope."
+                      Expect.stringContains text "entry_pool = \"private\"" "Expected the CLI-created note to persist the private entry pool."
                       Expect.stringContains text "sanitization_status = \"redacted\"" "Expected the CLI-created note to persist the sanitization status."
                       Expect.stringContains text "retention_class = \"case-bound\"" "Expected the CLI-created note to persist the retention class."))
 
@@ -185,6 +193,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.issueTracker
                                 IntakeChannelId = CoreIntakeChannels.bugReport
                                 SignalKindId = CoreSignalKinds.bugReport
+                                EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
                                 Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
                                 CapturedAt = None
@@ -217,7 +226,8 @@ module LogosTests =
                               Expect.isTrue (File.Exists(note.OutputPath)) "Expected the sanitized LOGOS note file to exist."
                               Expect.equal note.NormalizedSlug "cheddarbooks-case-42-anonymized" "Expected the derived slug to stay stable."
                               Expect.stringContains text "note_kind = \"logos_intake_sanitized\"" "Expected the derived note kind."
-                              Expect.stringContains text "derived_from = \"logos-intake/cheddarbooks-debug-case-42.md\"" "Expected the derived note to retain a source pointer."
+                              Expect.stringContains text "derived_from = \"logos-intake/raw/cheddarbooks-debug-case-42.md\"" "Expected the derived note to retain a source pointer."
+                              Expect.stringContains text "entry_pool = \"private\"" "Expected the derived note to enter the private pool."
                               Expect.stringContains text "source_system = \"issue-tracker\"" "Expected the source system classification to be preserved."
                               Expect.stringContains text "source_sanitization_status = \"raw\"" "Expected the source policy to remain visible."
                               Expect.stringContains text "sanitization_status = \"anonymized\"" "Expected the derived sanitization status."
@@ -246,6 +256,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.chatgpt
                                 IntakeChannelId = CoreIntakeChannels.aiConversation
                                 SignalKindId = CoreSignalKinds.conversation
+                                EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
                                 Locators = [ LogosLocator.nativeThreadId "thread-1" ]
                                 CapturedAt = None
@@ -294,6 +305,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
@@ -324,7 +336,7 @@ module LogosTests =
                                     "--tag"
                                     "redacted" ]
 
-                          let outputPath = Path.Combine(docsRoot, "logos-intake-derived", "support-thread-123-redacted.md")
+                          let outputPath = Path.Combine(docsRoot, "logos-intake-derived", "private", "support-thread-123-redacted.md")
                           let text = File.ReadAllText(outputPath)
 
                           Expect.equal cliResult.ExitCode 0 "Expected CLI sanitized LOGOS note creation to succeed."
@@ -332,6 +344,7 @@ module LogosTests =
                           Expect.isTrue (File.Exists(outputPath)) "Expected the CLI-created sanitized LOGOS note file to exist."
                           Expect.stringContains cliResult.StandardOutput "Sanitized LOGOS note created." "Expected the CLI result header."
                           Expect.stringContains cliResult.StandardOutput "Source note path:" "Expected the CLI summary to print the source note path."
+                          Expect.stringContains cliResult.StandardOutput "Entry pool: private" "Expected the CLI summary to print the derived entry pool."
                           Expect.stringContains cliResult.StandardOutput "Sanitization status: redacted" "Expected the CLI summary to print the sanitization status."
                           Expect.stringContains text "note_kind = \"logos_intake_sanitized\"" "Expected the derived note kind."
                           Expect.stringContains text "sharing_scope = \"project-team\"" "Expected the derived sharing scope."
@@ -363,6 +376,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.issueTracker
                                 IntakeChannelId = CoreIntakeChannels.bugReport
                                 SignalKindId = CoreSignalKinds.bugReport
+                                EntryPool = LogosPool.Raw
                                 Policy = customerRawPolicy
                                 Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
                                 CapturedAt = None
@@ -377,6 +391,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.chatgpt
                                 IntakeChannelId = CoreIntakeChannels.aiConversation
                                 SignalKindId = CoreSignalKinds.conversation
+                                EntryPool = LogosPool.Private
                                 Policy = personalRawPolicy
                                 Locators = [ LogosLocator.nativeThreadId "thread-1" ]
                                 CapturedAt = None
@@ -412,6 +427,9 @@ module LogosTests =
                                   Expect.equal report.CustomerConfidentialNotes.Length 1 "Expected one customer-confidential note."
                                   Expect.equal report.ApprovedForSharingNotes.Length 1 "Expected one approved-for-sharing derivative."
                                   Expect.equal (report.ApprovedForSharingNotes |> List.head |> fun note -> note.Slug) "cheddarbooks-case-42-shareable" "Expected the approved derived note slug."
+                                  Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "raw" && item.Count >= 1)) "Expected raw-pool notes to be counted."
+                                  Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "private" && item.Count >= 1)) "Expected private-pool notes to be counted."
+                                  Expect.isTrue (report.EntryPools |> List.exists (fun item -> item.Slug = "public-safe" && item.Count = 1)) "Expected one public-safe note to be counted."
                                   Expect.isTrue (report.Sensitivities |> List.exists (fun item -> item.Slug = "public" && item.Count = 1)) "Expected the public derived note to be counted."
                                   Expect.isTrue (report.SanitizationStatuses |> List.exists (fun item -> item.Slug = "approved-for-sharing" && item.Count = 1)) "Expected the approved-for-sharing status to be counted."
                       | Error error, _
@@ -437,6 +455,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy = sourcePolicy
                                 Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
                                 CapturedAt = None
@@ -478,7 +497,8 @@ module LogosTests =
                               Expect.stringContains result.StandardOutput "Still raw:" "Expected the raw-note section."
                               Expect.stringContains result.StandardOutput "Customer-confidential:" "Expected the confidential-note section."
                               Expect.stringContains result.StandardOutput "Approved for sharing:" "Expected the shareable-note section."
-                              Expect.stringContains result.StandardOutput "support-thread-123.md" "Expected the source note path in the report."
+                              Expect.stringContains result.StandardOutput "Entry pools:" "Expected the entry-pool count section."
+                              Expect.stringContains result.StandardOutput "logos-intake/raw/support-thread-123.md" "Expected the source note path in the report."
                               Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report."))
 
               testCase "LOGOS public export only emits notes that cross the public-safe pool boundary" (fun () ->
@@ -494,6 +514,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy =
                                     LogosHandlingPolicy.create
                                         KnownSensitivities.customerConfidential
@@ -544,9 +565,9 @@ module LogosTests =
                                   let exportedPath = Path.Combine(outputRoot, "support-thread-123-shareable.md")
                                   let skippedPath = Path.Combine(outputRoot, "support-thread-123-team.md")
 
-                                  Expect.equal exportResult.SanitizedNotesScanned 2 "Expected both sanitized notes to be evaluated."
+                                  Expect.equal exportResult.EligibleNotesScanned 3 "Expected the raw source note plus both derived notes to be evaluated."
                                   Expect.equal exportResult.ExportedNotes.Length 1 "Expected only one note to cross the public-safe boundary."
-                                  Expect.equal exportResult.SkippedNotes.Length 1 "Expected one non-public sanitized note to be skipped."
+                                  Expect.equal exportResult.SkippedNotes.Length 2 "Expected the raw source note and one non-public derived note to be skipped."
                                   Expect.isTrue (File.Exists(exportResult.ManifestPath)) "Expected a public export manifest."
                                   Expect.isTrue (File.Exists(exportedPath)) "Expected the approved public-safe note to be exported."
                                   Expect.isFalse (File.Exists(skippedPath)) "Expected the team-only note to stay out of the public export."
@@ -572,6 +593,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy =
                                     LogosHandlingPolicy.create
                                         KnownSensitivities.customerConfidential
@@ -627,7 +649,8 @@ module LogosTests =
                               Expect.equal result.StandardError "" "Did not expect stderr from export-logos-public-notes."
                               Expect.stringContains result.StandardOutput "LOGOS public-safe notes exported." "Expected the command header."
                               Expect.stringContains result.StandardOutput "Exported notes: 1" "Expected exactly one exported note."
-                              Expect.stringContains result.StandardOutput "Skipped notes: 1" "Expected exactly one skipped note."
+                              Expect.stringContains result.StandardOutput "Eligible notes scanned: 3" "Expected the raw source note plus both derived notes to be evaluated."
+                              Expect.stringContains result.StandardOutput "Skipped notes: 2" "Expected the raw source note and one team-only note to be skipped."
                               Expect.isTrue (File.Exists(Path.Combine(outputRoot, "manifest.toml"))) "Expected the public export manifest."
                               Expect.isTrue (File.Exists(Path.Combine(outputRoot, "support-thread-123-shareable.md"))) "Expected the public-safe note to be exported."
                               Expect.isFalse (File.Exists(Path.Combine(outputRoot, "support-thread-123-team.md"))) "Expected the team-only note to stay out of the public export."
@@ -647,6 +670,7 @@ module LogosTests =
                                 SourceSystemId = KnownSourceSystems.forum
                                 IntakeChannelId = CoreIntakeChannels.forumThread
                                 SignalKindId = CoreSignalKinds.supportQuestion
+                                EntryPool = LogosPool.Raw
                                 Policy =
                                     LogosHandlingPolicy.create
                                         KnownSensitivities.customerConfidential

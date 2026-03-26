@@ -30,6 +30,7 @@ type CreateLogosSanitizedNoteResult =
     { OutputPath: string
       NormalizedSlug: string
       SourceNotePath: string
+      EntryPool: LogosPool
       Policy: LogosHandlingPolicy }
 
 [<RequireQualifiedAccess>]
@@ -158,6 +159,25 @@ module LogosSanitizedNotes =
         | value ->
             invalidArg "sanitizationStatus" $"Unsupported derived sanitization status: %s{value}."
 
+    let private determineDerivedPool policy =
+        match PublicSafePoolItem.tryCreate () policy with
+        | Ok _ -> LogosPool.PublicSafe
+        | Error _ -> LogosPool.Private
+
+    let private tryFindSourceNotePath docsRoot normalizedSourceSlug =
+        let intakeRoot = Path.Combine(docsRoot, "logos-intake")
+
+        if not (Directory.Exists(intakeRoot)) then
+            None
+        else
+            match
+                Directory.EnumerateFiles(intakeRoot, $"{normalizedSourceSlug}.md", SearchOption.AllDirectories)
+                |> Seq.sort
+                |> Seq.toList
+            with
+            | [ path ] -> Some path
+            | _ -> None
+
     let private renderNote
         (normalizedSlug: string)
         (title: string)
@@ -166,6 +186,7 @@ module LogosSanitizedNotes =
         (sourceRelativePath: string)
         (sourceSlug: string)
         (sourceNote: ParsedSeedNote)
+        (entryPool: LogosPool)
         (policy: LogosHandlingPolicy)
         (now: DateTimeOffset)
         =
@@ -184,6 +205,7 @@ module LogosSanitizedNotes =
         builder.AppendLine(sprintf "source_system = \"%s\"" (SourceSystemId.value sourceNote.SourceSystemId)) |> ignore
         builder.AppendLine(sprintf "intake_channel = \"%s\"" (IntakeChannelId.value sourceNote.IntakeChannelId)) |> ignore
         builder.AppendLine(sprintf "signal_kind = \"%s\"" (SignalKindId.value sourceNote.SignalKindId)) |> ignore
+        builder.AppendLine(sprintf "entry_pool = \"%s\"" (LogosPool.value entryPool)) |> ignore
         builder.AppendLine(sprintf "source_sensitivity = \"%s\"" (SensitivityId.value sourceNote.Policy.SensitivityId)) |> ignore
         builder.AppendLine(sprintf "source_sharing_scope = \"%s\"" (SharingScopeId.value sourceNote.Policy.SharingScopeId)) |> ignore
         builder.AppendLine(sprintf "source_sanitization_status = \"%s\"" (SanitizationStatusId.value sourceNote.Policy.SanitizationStatusId)) |> ignore
@@ -227,6 +249,7 @@ module LogosSanitizedNotes =
         builder.AppendLine() |> ignore
         builder.AppendLine("## Derived Handling Policy") |> ignore
         builder.AppendLine() |> ignore
+        builder.AppendLine(sprintf "- entry pool: `%s`" (LogosPool.value entryPool |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sensitivity: `%s`" (SensitivityId.value policy.SensitivityId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sharing scope: `%s`" (SharingScopeId.value policy.SharingScopeId |> markdownEscapeInline)) |> ignore
         builder.AppendLine(sprintf "- sanitization status: `%s`" (SanitizationStatusId.value policy.SanitizationStatusId |> markdownEscapeInline)) |> ignore
@@ -255,11 +278,10 @@ module LogosSanitizedNotes =
                && request.SharingScopeId.IsNone then
                 Error "approved-for-sharing requires an explicit --sharing-scope."
             else
-                let sourceNotePath = Path.Combine(request.DocsRoot, "logos-intake", $"{normalizedSourceSlug}.md")
-
-                if not (File.Exists(sourceNotePath)) then
-                    Error(sprintf "Source LOGOS intake note does not exist at %s." sourceNotePath)
-                else
+                match tryFindSourceNotePath request.DocsRoot normalizedSourceSlug with
+                | None ->
+                    Error(sprintf "Source LOGOS intake note '%s' was not found under docs/logos-intake/." normalizedSourceSlug)
+                | Some sourceNotePath ->
                     let sourceNote = parseSeedNote sourceNotePath
                     let policy =
                         LogosHandlingPolicy.create
@@ -268,7 +290,10 @@ module LogosSanitizedNotes =
                             request.SanitizationStatusId
                             (defaultArg request.RetentionClassId sourceNote.Policy.RetentionClassId)
 
-                    let outputDirectory = Path.Combine(request.DocsRoot, "logos-intake-derived")
+                    let entryPool = determineDerivedPool policy
+                    let outputDirectory =
+                        Path.Combine(request.DocsRoot, "logos-intake-derived", LogosPool.value entryPool)
+
                     let outputPath = Path.Combine(outputDirectory, $"{normalizedSlug}.md")
 
                     if File.Exists(outputPath) then
@@ -276,7 +301,7 @@ module LogosSanitizedNotes =
                     else
                         Directory.CreateDirectory(outputDirectory) |> ignore
                         let now = DateTimeOffset.UtcNow
-                        let sourceRelativePath = $"logos-intake/{normalizedSourceSlug}.md"
+                        let sourceRelativePath = Path.GetRelativePath(request.DocsRoot, sourceNotePath).Replace('\\', '/')
                         let content =
                             renderNote
                                 normalizedSlug
@@ -286,6 +311,7 @@ module LogosSanitizedNotes =
                                 sourceRelativePath
                                 normalizedSourceSlug
                                 sourceNote
+                                entryPool
                                 policy
                                 now
                         File.WriteAllText(outputPath, content, utf8WithoutBom)
@@ -294,6 +320,7 @@ module LogosSanitizedNotes =
                             { OutputPath = outputPath
                               NormalizedSlug = normalizedSlug
                               SourceNotePath = sourceNotePath
+                              EntryPool = entryPool
                               Policy = policy }
         with :? ArgumentException as ex ->
             Error ex.Message

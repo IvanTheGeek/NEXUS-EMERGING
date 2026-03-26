@@ -30,7 +30,7 @@ type LogosPublicExportResult =
     { DocsRoot: string
       OutputRoot: string
       ManifestPath: string
-      SanitizedNotesScanned: int
+      EligibleNotesScanned: int
       ExportedNotes: LogosPublicExportedNote list
       SkippedNotes: LogosPublicSkippedNote list
       ExportedAt: DateTimeOffset }
@@ -74,7 +74,7 @@ module LogosPublicExports =
         builder.AppendLine(sprintf "exported_at = \"%s\"" (result.ExportedAt.ToString("O"))) |> ignore
         builder.AppendLine(sprintf "docs_root = \"%s\"" (tomlEscape result.DocsRoot)) |> ignore
         builder.AppendLine(sprintf "output_root = \"%s\"" (tomlEscape result.OutputRoot)) |> ignore
-        builder.AppendLine(sprintf "sanitized_notes_scanned = %d" result.SanitizedNotesScanned) |> ignore
+        builder.AppendLine(sprintf "eligible_notes_scanned = %d" result.EligibleNotesScanned) |> ignore
         builder.AppendLine(sprintf "exported_notes = %d" result.ExportedNotes.Length) |> ignore
         builder.AppendLine(sprintf "skipped_notes = %d" result.SkippedNotes.Length) |> ignore
         builder.AppendLine() |> ignore
@@ -102,7 +102,7 @@ module LogosPublicExports =
         builder.ToString()
 
     /// <summary>
-    /// Exports public-safe LOGOS notes from docs/logos-intake-derived/ into a dedicated output root.
+    /// Exports public-safe LOGOS notes into a dedicated output root.
     /// </summary>
     let export docsRoot outputRoot =
         try
@@ -112,16 +112,16 @@ module LogosPublicExports =
             match LogosHandlingReports.build normalizedDocsRoot with
             | Error error -> Error error
             | Ok report ->
-                let sanitizedNotes =
+                let eligibleNotes =
                     report.Notes
                     |> List.filter (fun note ->
-                        note.NoteKind = "logos_intake_sanitized"
-                        && note.RelativePath.StartsWith("logos-intake-derived/", StringComparison.Ordinal))
+                        note.RelativePath.StartsWith("logos-intake/", StringComparison.Ordinal)
+                        || note.RelativePath.StartsWith("logos-intake-derived/", StringComparison.Ordinal))
 
                 Directory.CreateDirectory(normalizedOutputRoot) |> ignore
 
                 let exportedNotes, skippedNotes =
-                    sanitizedNotes
+                    eligibleNotes
                     |> List.fold
                         (fun (exported, skipped) note ->
                             match PublicSafePoolItem.tryCreate note note.Policy with
@@ -166,7 +166,7 @@ module LogosPublicExports =
                     { DocsRoot = normalizedDocsRoot
                       OutputRoot = normalizedOutputRoot
                       ManifestPath = Path.Combine(normalizedOutputRoot, "manifest.toml")
-                      SanitizedNotesScanned = sanitizedNotes.Length
+                      EligibleNotesScanned = eligibleNotes.Length
                       ExportedNotes = exportedNotes |> List.rev
                       SkippedNotes = skippedNotes |> List.rev
                       ExportedAt = now }

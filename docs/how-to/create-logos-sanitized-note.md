@@ -6,8 +6,8 @@ This is not the same as widening access to the raw intake note.
 
 The intended pattern is:
 
-- keep the raw or restricted intake note under `docs/logos-intake/`
-- create an explicit derived note under `docs/logos-intake-derived/`
+- keep the raw or restricted intake note under `docs/logos-intake/<pool>/`
+- create an explicit derived note under `docs/logos-intake-derived/<pool>/`
 - carry forward source classification and handling-policy provenance
 - do not copy raw locators or raw source text into the derived note
 
@@ -16,8 +16,9 @@ The intended pattern is:
 `create-logos-sanitized-note`:
 
 - reads one existing `logos_intake_seed` note from `docs/logos-intake/`
+- resolves that source note recursively under `docs/logos-intake/`
 - preserves the source classification and source handling policy
-- writes a new derived note under `docs/logos-intake-derived/`
+- writes a new derived note under `docs/logos-intake-derived/<pool>/`
 - requires an explicit derived sanitization status
 - lets you narrow or widen the derived handling policy explicitly, within the allowlisted model
 
@@ -35,7 +36,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 ## Useful Options
 
 - `--source-slug <slug>`
-  Required. Picks the source note under `docs/logos-intake/`.
+  Required. Picks the source note under `docs/logos-intake/` recursively.
 - `--slug <slug>`
   Required. The new derived note slug.
 - `--title <title>`
@@ -62,6 +63,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - the derived note is an explicit transform, not a silent replacement
 - raw locators and raw source text stay in the source note
 - `approved-for-sharing` requires an explicit `--sharing-scope`
+- the derived note enters either the `private` or `public-safe` pool based on its resulting policy
 
 ## Example
 
@@ -80,14 +82,15 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 
 The command writes:
 
-- source note remains in `docs/logos-intake/`
-- derived note appears in `docs/logos-intake-derived/`
+- source note remains in `docs/logos-intake/<pool>/`
+- derived note appears in `docs/logos-intake-derived/<pool>/`
 
 The derived note includes:
 
 - source classification
 - source handling policy
 - derived handling policy
+- entry pool
 - derivation pointer back to the source note
 
 The derived note excludes:
