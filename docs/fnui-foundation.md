@@ -7,6 +7,7 @@ The governing decision is:
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+- [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 
 ## Purpose
@@ -76,6 +77,7 @@ The first practical views likely include:
 - current-ingestion dashboard
 - provider/import history
 - concept notes and LOGOS intake notes
+- conversation reading surfaces over canonical projection TOML files
 - graph scope and batch exploration
 - help/about with attribution obligations
 
@@ -100,6 +102,8 @@ LaundryLog is currently the clearest first proving ground for this line because 
 - Which runtime candidates should be evaluated after the host boundary is clearer?
 
 The first concrete runtime requirements for this line now live in [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md).
+
+The first explicit reading-surface requirement now lives in [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md).
 
 ## Current Branch
 

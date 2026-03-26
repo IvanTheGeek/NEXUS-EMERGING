@@ -135,6 +135,7 @@ Primary docs:
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+- [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md)
 - [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)
 - [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
@@ -180,6 +181,11 @@ Examples:
 - LaundryLog
 - future CheddarBooks support/debugging flows
 - other downstream applications
+
+Primary docs:
+
+- [`docs/application-domains/README.md`](application-domains/README.md)
+- [`docs/application-domains/laundrylog-foundation.md`](application-domains/laundrylog-foundation.md)
 
 Typical branch names:
 
