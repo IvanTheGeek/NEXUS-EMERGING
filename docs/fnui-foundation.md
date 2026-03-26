@@ -7,6 +7,7 @@ The governing decision is:
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+- [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 
 ## Purpose
 
@@ -77,6 +78,8 @@ The first practical views likely include:
 - concept notes and LOGOS intake notes
 - graph scope and batch exploration
 - help/about with attribution obligations
+
+LaundryLog is currently the clearest first proving ground for this line because it is small, mobile-friendly, event-heavy, and pressures offline and convergence concerns early.
 
 ## Relationship To Other Concern Lines
 

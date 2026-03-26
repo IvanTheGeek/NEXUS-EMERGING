@@ -135,6 +135,9 @@ Primary docs:
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+- [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)
+- [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md)
+- [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 

@@ -15,6 +15,9 @@ See also:
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
+- [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)
+- [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md)
+- [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 
 ## Purpose
 
@@ -26,6 +29,21 @@ The intent is:
 - avoid depending on Bolero as the long-term abstraction owner
 - preserve ownership of the authoring model, view model, and projection seams
 - allow the visual system to grow beyond one hosting style or deployment model
+
+This document is now the convergence layer over smaller, more specific requirement notes rather than the only requirements document in this area.
+
+## Requirement Layers
+
+The current split is:
+
+1. [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+   the convergence document for the Blazor-backed line
+2. [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)
+   browser-facing, wasm, connected, mixed, and PWA requirements
+3. [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md)
+   native-shell requirements and host-candidate boundaries
+4. [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
+   concrete pressure from the first real proving-ground application
 
 ## Recorded Direction
 
@@ -92,6 +110,8 @@ For NEXUS purposes, the following deployment shapes must be supportable over tim
    a web application that uses Blazor's evolving mixed or component-level execution options
 5. native-hosted app
    a desktop or later mobile shell that hosts the Blazor-backed UI inside a native application container
+6. PWA-capable web app
+   a browser-based app that can also package as an installable Progressive Web App when the product benefits from it
 
 `connected wasm app` is intentionally named here as a NEXUS deployment shape, not as the same thing as official `Blazor Hybrid`.
 
@@ -115,6 +135,8 @@ The architecture should also leave room for later exploration of:
 
 but those should remain future evaluation targets rather than being treated as already equivalent to the official Blazor Hybrid hosts.
 
+More detailed host-specific notes now live in [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md).
+
 ## Shell And View Requirements
 
 `FnHCI.UI.Blazor` must support the first stable NEXUS GUI surfaces identified in [`docs/fnui-foundation.md`](fnui-foundation.md):
@@ -124,6 +146,10 @@ but those should remain future evaluation targets rather than being treated as a
 - concept and LOGOS memory surfaces
 - graph scope and batch exploration
 - help/about and attribution visibility
+
+LaundryLog is the first named proving ground for this line:
+
+- [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 
 The Blazor line must not bypass the renderer-neutral shell boundary already forming in `Nexus.FnHCI.UI`.
 
