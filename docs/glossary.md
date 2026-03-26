@@ -57,6 +57,16 @@ An append-only record in the canonical history that states what was observed, re
 
 A graph-level assertion derived from canonical history and tied back to provenance.
 
+## FnHCI
+
+The broader NEXUS interaction concern covering visual UI, CLI, API, accessibility, and other human-computer interaction surfaces without collapsing them into one renderer or one interface type.
+
+## FnUI
+
+The visual application lens within FnHCI.
+
+FnUI is the GUI-facing concern that should provide the NEXUS application shell, navigation, views, and operator workflows without becoming the source of truth for NEXUS state.
+
 ## Graph Substrate
 
 The shared structural layer of nodes, edges, and assertions derived from observed history.

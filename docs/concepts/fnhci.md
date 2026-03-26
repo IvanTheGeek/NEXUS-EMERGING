@@ -34,6 +34,8 @@ At the current understanding, `FnUI` becomes one lens or sub-area inside `FnHCI`
 
 The newer `FnHCI Concept Overview` conversation reinforces that this is not just a naming tweak. It frames `FnHCI` as a unifying concept for the work already happening in NEXUS: a way to think about human-computer interaction as a projection concern that spans visual interfaces, terminal interaction, APIs, and other operational surfaces without collapsing them into a single UI-only idea.
 
+The first explicit `FnUI` foundation boundary now lives in [`docs/fnui-foundation.md`](../fnui-foundation.md).
+
 ## Working Notes
 
 - What are the stable core primitives of FnHCI, separate from any one runtime like Blazor or Bolero?

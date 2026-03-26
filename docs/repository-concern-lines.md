@@ -133,7 +133,8 @@ Scope:
 Primary docs:
 
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
-- later FnUI/FnHCI architecture docs
+- [`docs/fnui-foundation.md`](fnui-foundation.md)
+- [`docs/decisions/0015-fnui-is-the-visual-application-lens.md`](decisions/0015-fnui-is-the-visual-application-lens.md)
 
 Typical branch names:
 
