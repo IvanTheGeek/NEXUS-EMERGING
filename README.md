@@ -38,6 +38,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - `docs/nexus-graph-materialization-plan.md`
 - `docs/nexus-ontology-imprint-alignment.md`
 - `docs/logos-source-model-v0.md`
+- `docs/repository-concern-lines.md`
 - `docs/fsharp-documentation-convention.md`
 - `docs/glossary.md`
 - `docs/concepts/`
@@ -102,6 +103,11 @@ This repository preserves branch history intentionally.
 - avoid squash merges when the branch history itself is part of the durable record
 
 The goal is to keep implementation branches inspectable later as durable lines of work, thought, and experimentation.
+
+Concern-line map:
+
+- `docs/repository-concern-lines.md`
+  use this when deciding whether work belongs to NEXUS core, engineering conventions, repository governance, ingestion, LOGOS, interaction/UI, integrations, or an application-specific domain
 
 Preferred branch shape:
 
