@@ -6,6 +6,11 @@ Start here:
 
 - [`../laundrylog-foundation.md`](../laundrylog-foundation.md)
 - [`requirements.md`](requirements.md)
+- [`product.md`](product.md)
+- [`domain-model.md`](domain-model.md)
+- [`privacy-and-ownership.md`](privacy-and-ownership.md)
+- [`delivery.md`](delivery.md)
+- [`convergence.md`](convergence.md)
 - [`screens.md`](screens.md)
 - [`workflows.md`](workflows.md)
 

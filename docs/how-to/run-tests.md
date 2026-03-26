@@ -10,6 +10,12 @@ Run the Expecto test project from the repository root:
 dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj
 ```
 
+For faster repeated runs after a successful build:
+
+```bash
+dotnet run --no-build --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj
+```
+
 ## What It Covers Right Now
 
 - provider adapter parsing for small ChatGPT and Claude fixtures
@@ -37,3 +43,7 @@ When a serializer change is intentional, rerun the tests and inspect the generat
 - the property tests focus on stable importer invariants rather than raw parser exhaustiveness
 - the snapshot tests are aimed at wire-format stability for generated artifacts
 - property tests can still be added later for stronger invariant coverage
+- Expecto runs tests in parallel by default in this project
+- use `--sequenced` when debugging order-sensitive or potentially interfering tests
+- use `--parallel-workers <n>` if you want to tune worker count for the current machine
+- the biggest time difference in day-to-day runs is often `--no-build`, not test parallelism alone
