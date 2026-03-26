@@ -73,7 +73,7 @@ A single acquisition run that processes one or more provider artifacts and appen
 
 ## Intake Channel
 
-A stable classification for the path through which a LOGOS signal entered NEXUS, such as AI conversation, forum thread, email thread, bug report, or app feedback.
+A stable classification for the path through which a LOGOS signal entered NEXUS, such as AI conversation, forum thread, Discord thread, email thread, bug report, or app feedback.
 
 ## Lens
 
@@ -188,7 +188,7 @@ A stable classification for the kind of knowledge-bearing signal represented in 
 
 ## Source System
 
-A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, or an app feedback surface.
+A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, Talkyard, Discord, or an app feedback surface.
 
 ## Batch
 

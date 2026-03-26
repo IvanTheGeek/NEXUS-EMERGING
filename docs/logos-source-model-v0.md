@@ -14,6 +14,8 @@ This is especially relevant for later sources such as:
 
 - AI conversations
 - forum threads
+- Talkyard forum threads
+- Discord channels and threads
 - email threads
 - bug reports
 - support requests
@@ -113,6 +115,8 @@ Current concrete source-system allowlist:
 - `grok`
 - `codex`
 - `forum`
+- `talkyard`
+- `discord`
 - `email`
 - `issue-tracker`
 - `app-feedback-surface`
@@ -121,6 +125,8 @@ Current concrete intake-channel allowlist:
 
 - `ai-conversation`
 - `forum-thread`
+- `discord-channel`
+- `discord-thread`
 - `email-thread`
 - `bug-report`
 - `app-feedback`
@@ -173,3 +179,14 @@ Current non-chat LOGOS note baseline:
 - derived sanitized notes resolve into:
   - `private` when the resulting policy is still restricted
   - `public-safe` only when the explicit public-safe policy boundary is crossed
+
+Discord note:
+
+- Discord is modeled as a LOGOS source now so later inbound ingestion and later outbound NEXUS-to-Discord flows can share the same source vocabulary.
+- The current scope is intake classification only, not outbound transport or live Discord integration.
+
+Talkyard note:
+
+- `forum` remains the generic category.
+- `talkyard` is now the explicit current forum implementation source system.
+- That lets NEXUS model real Talkyard intake now without losing the broader forum abstraction later.

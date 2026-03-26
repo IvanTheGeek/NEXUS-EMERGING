@@ -35,6 +35,16 @@ module KnownSourceSystems =
     let forum = SourceSystemId.create "forum"
 
     /// <summary>
+    /// Talkyard forum-originated intake sources.
+    /// </summary>
+    let talkyard = SourceSystemId.create "talkyard"
+
+    /// <summary>
+    /// Discord-originated intake sources.
+    /// </summary>
+    let discord = SourceSystemId.create "discord"
+
+    /// <summary>
     /// Email-originated intake sources.
     /// </summary>
     let email = SourceSystemId.create "email"
@@ -58,6 +68,8 @@ module KnownSourceSystems =
           grok
           codex
           forum
+          talkyard
+          discord
           email
           issueTracker
           appFeedbackSurface ]
@@ -68,6 +80,8 @@ module KnownSourceSystems =
           grok, "Grok provider capture and export sources."
           codex, "Local Codex session capture sources."
           forum, "Forum-originated intake sources."
+          talkyard, "Talkyard forum-originated intake sources."
+          discord, "Discord-originated intake sources."
           email, "Email-originated intake sources."
           issueTracker, "Issue-tracker or bug-tracker intake sources."
           appFeedbackSurface, "Deployed-app feedback surfaces." ]
@@ -114,6 +128,16 @@ module CoreIntakeChannels =
     let forumThread = IntakeChannelId.create "forum-thread"
 
     /// <summary>
+    /// Discord channel intake.
+    /// </summary>
+    let discordChannel = IntakeChannelId.create "discord-channel"
+
+    /// <summary>
+    /// Discord thread intake.
+    /// </summary>
+    let discordThread = IntakeChannelId.create "discord-thread"
+
+    /// <summary>
     /// Email-thread intake.
     /// </summary>
     let emailThread = IntakeChannelId.create "email-thread"
@@ -134,6 +158,8 @@ module CoreIntakeChannels =
     let all =
         [ aiConversation
           forumThread
+          discordChannel
+          discordThread
           emailThread
           bugReport
           appFeedback ]
@@ -141,6 +167,8 @@ module CoreIntakeChannels =
     let private catalog =
         [ aiConversation, "AI conversational intake such as chat or session transcripts."
           forumThread, "Forum-thread intake."
+          discordChannel, "Discord channel intake."
+          discordThread, "Discord thread intake."
           emailThread, "Email-thread intake."
           bugReport, "Bug-report intake."
           appFeedback, "Deployed-app feedback intake." ]

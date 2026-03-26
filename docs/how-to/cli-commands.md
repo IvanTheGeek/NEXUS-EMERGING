@@ -140,7 +140,7 @@ The CLI supports both:
 `create-logos-intake-note`
 
 - Creates a durable LOGOS intake seed note from explicit source, channel, signal, locator, and handling-policy metadata.
-- Use it for forum/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
+- Use it for forum/Talkyard/Discord/email/bug-report/app-feedback items before a full ingestion path exists for that source type.
 - New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 - The note now enters an explicit LOGOS pool path at creation time: `raw`, `private`, or `public-safe`.
 - Details: `docs/how-to/create-logos-intake-note.md`

@@ -61,12 +61,17 @@ module LogosTests =
               testCase "LOGOS catalog includes concrete non-chat source systems" (fun () ->
                   let report = LogosCatalog.build ()
                   let sourceSystemSlugs = report.SourceSystems |> List.map (fun item -> item.Slug)
+                  let intakeChannelSlugs = report.IntakeChannels |> List.map (fun item -> item.Slug)
                   let sensitivitySlugs = report.Sensitivities |> List.map (fun item -> item.Slug)
 
                   Expect.isTrue (sourceSystemSlugs |> List.contains "forum") "Expected forum to be an explicit LOGOS source system."
+                  Expect.isTrue (sourceSystemSlugs |> List.contains "talkyard") "Expected talkyard to be an explicit LOGOS source system."
+                  Expect.isTrue (sourceSystemSlugs |> List.contains "discord") "Expected discord to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "email") "Expected email to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "issue-tracker") "Expected issue-tracker to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "app-feedback-surface") "Expected app-feedback-surface to be an explicit LOGOS source system."
+                  Expect.isTrue (intakeChannelSlugs |> List.contains "discord-channel") "Expected discord-channel to be an explicit LOGOS intake channel."
+                  Expect.isTrue (intakeChannelSlugs |> List.contains "discord-thread") "Expected discord-thread to be an explicit LOGOS intake channel."
                   Expect.isTrue (sensitivitySlugs |> List.contains "internal-restricted") "Expected the restricted-default sensitivity to be allowlisted."
                   Expect.isTrue (sensitivitySlugs |> List.contains "public") "Expected public sensitivity to remain explicitly modeled.")
 
@@ -123,7 +128,10 @@ module LogosTests =
                   Expect.equal result.ExitCode 0 "Expected the LOGOS catalog report to succeed."
                   Expect.equal result.StandardError "" "Did not expect stderr from report-logos-catalog."
                   Expect.stringContains result.StandardOutput "LOGOS catalog." "Expected the report header."
+                  Expect.stringContains result.StandardOutput "talkyard" "Expected talkyard in the source-system list."
+                  Expect.stringContains result.StandardOutput "discord" "Expected discord in the source-system list."
                   Expect.stringContains result.StandardOutput "forum" "Expected forum in the source-system list."
+                  Expect.stringContains result.StandardOutput "discord-thread" "Expected discord-thread in the intake-channel list."
                   Expect.stringContains result.StandardOutput "email-thread" "Expected email-thread in the intake-channel list."
                   Expect.stringContains result.StandardOutput "support-question" "Expected support-question in the signal-kind list."
                   Expect.stringContains result.StandardOutput "internal-restricted" "Expected sensitivity values in the policy catalog."

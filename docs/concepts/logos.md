@@ -20,6 +20,8 @@ At the current understanding, LOGOS is where many input sources can converge:
 
 - AI conversations
 - forum discussions
+- Talkyard forum threads
+- Discord channels and threads
 - email threads
 - user feedback from deployed apps
 - bug reports

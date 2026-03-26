@@ -13,6 +13,8 @@ Use these notes when you have source metadata now, but the richer canonical/impo
 Examples:
 
 - forum support threads
+- Talkyard forum threads
+- Discord threads and channel discussions
 - email threads
 - bug reports
 - deployed-app feedback items

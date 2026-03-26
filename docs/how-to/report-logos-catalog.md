@@ -29,6 +29,11 @@ Use this before:
 - deciding how to classify a new source
 - checking whether a needed source kind is already modeled explicitly
 
+Current examples include both:
+
+- generic categories like `forum`
+- concrete current implementations like `talkyard`
+
 ## Notes
 
 - This is an allowlist report, not a dynamic taxonomy browser.

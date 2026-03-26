@@ -73,7 +73,7 @@ Already established:
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 - A first LOGOS source-model scaffold exists for source systems, intake channels, and signal kinds.
 - A first explicit LOGOS handling-policy model exists for sensitivity, sharing scope, sanitization status, and retention class.
-- Concrete non-chat LOGOS source systems now exist for forum, email, issue-tracker, and app-feedback surfaces.
+- Concrete non-chat LOGOS source systems now exist for forum, Talkyard, Discord, email, issue-tracker, and app-feedback surfaces.
 - A first LOGOS intake-note workflow exists for seeding non-chat intake into durable repo memory.
 - A first LOGOS derived sanitization workflow exists for creating safer notes without widening access to restricted raw intake.
 - A first LOGOS handling audit report exists for surfacing raw, restricted, and approved note states.

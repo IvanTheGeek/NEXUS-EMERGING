@@ -73,11 +73,27 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   create-logos-intake-note \
   --slug support-thread-123 \
   --title "Support Thread 123" \
-  --source-system forum \
+  --source-system talkyard \
   --intake-channel forum-thread \
   --signal-kind support-question \
-  --source-uri https://community.example.com/t/123 \
+  --source-uri https://forum.nexus.example/t/support-thread-123 \
   --tag support
+```
+
+Discord thread idea capture:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
+  create-logos-intake-note \
+  --slug fnhci-discord-thread-2026-03-26 \
+  --title "FnHCI Discord Thread" \
+  --source-system discord \
+  --intake-channel discord-thread \
+  --signal-kind conversation \
+  --entry-pool private \
+  --native-thread-id 1354987654321098765 \
+  --source-uri https://discord.com/channels/123/456/789 \
+  --summary "Discord discussion about FnHCI direction and UI substrate ideas."
 ```
 
 Deployed app feedback item:
@@ -119,14 +135,14 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   create-logos-intake-note \
   --slug public-release-note-2026-03 \
   --title "Public Release Note 2026-03" \
-  --source-system forum \
+  --source-system talkyard \
   --intake-channel forum-thread \
   --signal-kind feedback \
   --entry-pool public-safe \
   --sensitivity public \
   --sharing-scope public \
   --sanitization-status approved-for-sharing \
-  --source-uri https://community.example.com/releases/2026-03
+  --source-uri https://forum.nexus.example/t/releases-2026-03
 ```
 
 ## Why This Exists
