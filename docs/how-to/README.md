@@ -19,6 +19,7 @@ Current guides:
 - `create-logos-intake-note.md`
 - `create-logos-sanitized-note.md`
 - `export-codex-sessions.md`
+- `export-logos-public-notes.md`
 - `export-graphviz-dot.md`
 - `find-working-graph-nodes.md`
 - `git-auth-for-codex.md`

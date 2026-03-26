@@ -476,6 +476,160 @@ module LogosTests =
                               Expect.stringContains result.StandardOutput "support-thread-123.md" "Expected the source note path in the report."
                               Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report."))
 
+              testCase "LOGOS public export only emits notes that cross the public-safe pool boundary" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-public-export" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+                      let outputRoot = Path.Combine(tempRoot, "public")
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "support-thread-123"
+                                Title = "Support Thread 123"
+                                SourceSystemId = KnownSourceSystems.forum
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                Policy =
+                                    LogosHandlingPolicy.create
+                                        KnownSensitivities.customerConfidential
+                                        KnownSharingScopes.caseTeam
+                                        KnownSanitizationStatuses.raw
+                                        KnownRetentionClasses.caseBound
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let shareableResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-shareable"
+                                    Title = "Support Thread 123 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.publicAudience
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = Some "Approved for broader public sharing."
+                                    Tags = [ "shareable" ] }
+
+                          let teamOnlyResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-team"
+                                    Title = "Support Thread 123 (Team)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.redacted
+                                    SensitivityId = Some KnownSensitivities.internalRestricted
+                                    SharingScopeId = Some KnownSharingScopes.projectTeam
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = Some "Safe for team sharing, not public."
+                                    Tags = [ "team" ] }
+
+                          match shareableResult, teamOnlyResult with
+                          | Ok _, Ok _ ->
+                              match LogosPublicExports.export docsRoot outputRoot with
+                              | Error error ->
+                                  failtestf "Expected LOGOS public export to succeed. %s" error
+                              | Ok exportResult ->
+                                  let exportedPath = Path.Combine(outputRoot, "support-thread-123-shareable.md")
+                                  let skippedPath = Path.Combine(outputRoot, "support-thread-123-team.md")
+
+                                  Expect.equal exportResult.SanitizedNotesScanned 2 "Expected both sanitized notes to be evaluated."
+                                  Expect.equal exportResult.ExportedNotes.Length 1 "Expected only one note to cross the public-safe boundary."
+                                  Expect.equal exportResult.SkippedNotes.Length 1 "Expected one non-public sanitized note to be skipped."
+                                  Expect.isTrue (File.Exists(exportResult.ManifestPath)) "Expected a public export manifest."
+                                  Expect.isTrue (File.Exists(exportedPath)) "Expected the approved public-safe note to be exported."
+                                  Expect.isFalse (File.Exists(skippedPath)) "Expected the team-only note to stay out of the public export."
+                                  Expect.equal (exportResult.ExportedNotes |> List.head |> fun note -> note.Slug) "support-thread-123-shareable" "Expected the approved note slug to be exported."
+                                  Expect.stringContains
+                                      ((exportResult.SkippedNotes |> List.head).Reason)
+                                      "approved-for-sharing"
+                                      "Expected the skipped reason to explain the failed public-safe boundary."
+                          | Error error, _
+                          | _, Error error ->
+                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error))
+
+              testCase "CLI export-logos-public-notes writes only public-safe derived notes" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-public-export-cli" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+                      let outputRoot = Path.Combine(tempRoot, "public")
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "support-thread-123"
+                                Title = "Support Thread 123"
+                                SourceSystemId = KnownSourceSystems.forum
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                Policy =
+                                    LogosHandlingPolicy.create
+                                        KnownSensitivities.customerConfidential
+                                        KnownSharingScopes.caseTeam
+                                        KnownSanitizationStatuses.raw
+                                        KnownRetentionClasses.caseBound
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let shareableResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-shareable"
+                                    Title = "Support Thread 123 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.publicAudience
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          let teamOnlyResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-team"
+                                    Title = "Support Thread 123 (Team)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.redacted
+                                    SensitivityId = Some KnownSensitivities.internalRestricted
+                                    SharingScopeId = Some KnownSharingScopes.projectTeam
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          match shareableResult, teamOnlyResult with
+                          | Ok _, Ok _ ->
+                              let result =
+                                  TestHelpers.runCli
+                                      [ "export-logos-public-notes"
+                                        "--docs-root"
+                                        docsRoot
+                                        "--output-root"
+                                        outputRoot ]
+
+                              Expect.equal result.ExitCode 0 "Expected export-logos-public-notes to succeed."
+                              Expect.equal result.StandardError "" "Did not expect stderr from export-logos-public-notes."
+                              Expect.stringContains result.StandardOutput "LOGOS public-safe notes exported." "Expected the command header."
+                              Expect.stringContains result.StandardOutput "Exported notes: 1" "Expected exactly one exported note."
+                              Expect.stringContains result.StandardOutput "Skipped notes: 1" "Expected exactly one skipped note."
+                              Expect.isTrue (File.Exists(Path.Combine(outputRoot, "manifest.toml"))) "Expected the public export manifest."
+                              Expect.isTrue (File.Exists(Path.Combine(outputRoot, "support-thread-123-shareable.md"))) "Expected the public-safe note to be exported."
+                              Expect.isFalse (File.Exists(Path.Combine(outputRoot, "support-thread-123-team.md"))) "Expected the team-only note to stay out of the public export."
+                          | Error error, _
+                          | _, Error error ->
+                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error))
+
               testCase "LOGOS pool boundaries keep intake raw/private and gate public-safe promotion" (fun () ->
                   TestHelpers.withTempDirectory "nexus-logos-pools" (fun tempRoot ->
                       let docsRoot = Path.Combine(tempRoot, "docs")

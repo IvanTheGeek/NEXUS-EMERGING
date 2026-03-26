@@ -32,6 +32,7 @@ module Program =
         | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
         | ReportLogosCatalog
         | ReportLogosHandling of docsRoot: string * limit: int
+        | ExportLogosPublicNotes of docsRoot: string * outputRoot: string
         | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
@@ -77,6 +78,9 @@ module Program =
 
     let private defaultDocsRoot =
         Path.Combine(repoRoot, "docs")
+
+    let private defaultLogosPublicRoot =
+        Path.Combine(defaultDocsRoot, "logos-public")
 
     let private defaultCodexSnapshotRoot =
         Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
@@ -255,6 +259,24 @@ module Program =
                       "Use it to see which notes are still raw, which remain personal-private or customer-confidential, and which derivatives are marked approved-for-sharing."
                       "This is an audit report, not a publication gate by itself."
                       "Detailed guide: docs/how-to/report-logos-handling.md" ] }
+        | "export-logos-public-notes" ->
+            Some
+                { Name = name
+                  Summary = "Export only public-safe LOGOS sanitized notes into a dedicated output folder."
+                  Usage =
+                    [ sprintf "%s export-logos-public-notes" cliInvocation
+                      sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
+                  Options =
+                    [ "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot
+                      "--output-root <path>", sprintf "Override the public export root. Defaults to %s." defaultLogosPublicRoot ]
+                  Examples =
+                    [ sprintf "%s export-logos-public-notes" cliInvocation
+                      sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
+                  Notes =
+                    [ "This scans docs/logos-intake-derived/ and exports only notes that successfully cross the PublicSafe pool boundary."
+                      "Notes that are merely sanitized but not approved for public sharing are skipped with explicit reasons."
+                      "This is the first real public-facing workflow protected by PublicSafePoolItem<_>."
+                      "Detailed guide: docs/how-to/export-logos-public-notes.md" ] }
         | "report-conversation-overlap-candidates" ->
             Some
                 { Name = name
@@ -740,6 +762,7 @@ module Program =
           "report-current-ingestion"
           "report-logos-catalog"
           "report-logos-handling"
+          "export-logos-public-notes"
           "report-conversation-overlap-candidates"
           "rebuild-import-snapshots"
           "import-provider-export"
@@ -1704,6 +1727,24 @@ module Program =
 
             loop defaultDocsRoot 10 args
 
+    let private parseExportLogosPublicNotes (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "export-logos-public-notes"))
+        else
+            let rec loop docsRoot outputRoot remaining =
+                match remaining with
+                | [] -> Ok (ExportLogosPublicNotes(docsRoot, outputRoot))
+                | "--docs-root" :: value :: rest ->
+                    loop value outputRoot rest
+                | "--output-root" :: value :: rest ->
+                    loop docsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for export-logos-public-notes: %s" option
+                    printCommandHelp "export-logos-public-notes"
+                    Error 1
+
+            loop defaultDocsRoot defaultLogosPublicRoot args
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -2563,6 +2604,8 @@ module Program =
             parseReportLogosCatalog rest
         | "report-logos-handling" :: rest ->
             parseReportLogosHandling rest
+        | "export-logos-public-notes" :: rest ->
+            parseExportLogosPublicNotes rest
         | "report-conversation-overlap-candidates" :: rest ->
             parseReportConversationOverlapCandidates rest
         | "rebuild-import-snapshots" :: rest ->
@@ -3244,6 +3287,37 @@ module Program =
             printNotes "Personal-private" report.PersonalPrivateNotes
             printNotes "Customer-confidential" report.CustomerConfidentialNotes
             printNotes "Approved for sharing" report.ApprovedForSharingNotes
+            0
+
+    let private exportLogosPublicNotes docsRoot outputRoot =
+        match LogosPublicExports.export docsRoot outputRoot with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok result ->
+            printfn "LOGOS public-safe notes exported."
+            printfn "  Docs root: %s" result.DocsRoot
+            printfn "  Output root: %s" result.OutputRoot
+            printfn "  Manifest: %s" result.ManifestPath
+            printfn "  Sanitized notes scanned: %d" result.SanitizedNotesScanned
+            printfn "  Exported notes: %d" result.ExportedNotes.Length
+            printfn "  Skipped notes: %d" result.SkippedNotes.Length
+
+            if not result.ExportedNotes.IsEmpty then
+                printfn "  Exported:"
+
+                result.ExportedNotes
+                |> List.iter (fun note ->
+                    printfn "    %s | %s | %s" note.Slug note.OutputFileName (SharingScopeId.value note.Policy.SharingScopeId))
+
+            if not result.SkippedNotes.IsEmpty then
+                printfn "  Skipped:"
+
+                result.SkippedNotes
+                |> List.truncate 10
+                |> List.iter (fun note ->
+                    printfn "    %s | %s" note.RelativePath note.Reason)
+
             0
 
     let private timestampLabel (value: DateTimeOffset option) =
@@ -4156,6 +4230,8 @@ module Program =
             reportLogosCatalog ()
         | Ok (ReportLogosHandling(docsRoot, limit)) ->
             reportLogosHandling docsRoot limit
+        | Ok (ExportLogosPublicNotes(docsRoot, outputRoot)) ->
+            exportLogosPublicNotes docsRoot outputRoot
         | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
             reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->

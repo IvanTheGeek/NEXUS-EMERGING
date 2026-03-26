@@ -81,6 +81,13 @@ The CLI supports both:
 - This is an audit report, not a publication gate by itself.
 - Details: `docs/how-to/report-logos-handling.md`
 
+`export-logos-public-notes`
+
+- Exports only public-safe LOGOS sanitized notes into a dedicated output folder.
+- Use it when you need an actual public-facing note set rather than just a handling audit.
+- It depends on the explicit `PublicSafe` pool boundary, so merely sanitized or team-only notes are skipped.
+- Details: `docs/how-to/export-logos-public-notes.md`
+
 `report-conversation-overlap-candidates`
 
 - Reports conservative conversation-level overlap candidates between two providers' projection sets.
