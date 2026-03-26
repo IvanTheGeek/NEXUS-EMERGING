@@ -33,7 +33,7 @@ The conversation is centered on whether `DuckDB.NET` provides an API that feels 
 - provider conversation ids: `69c2de76-0160-8332-8b12-ae3ff702c3ce`
 - first occurred at: `2026-03-24T18:56:54.4309999Z`
 - last occurred at: `2026-03-24T19:26:33.157036Z`
-- projection file: `../../../../home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d299b-6609-774e-afb6-d52f9e00f5c5.toml`
+- projection file: `/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d299b-6609-774e-afb6-d52f9e00f5c5.toml`
 - graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d299b-6609-774e-afb6-d52f9e00f5c5`
 
 #### Excerpts
