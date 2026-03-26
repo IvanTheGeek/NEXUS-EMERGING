@@ -79,9 +79,13 @@ LaundryLog currently pressures the platform in these ways:
 
 ## Next LaundryLog Docs
 
-The next useful documents in this area are likely:
+The first concrete LaundryLog docs now live in:
 
-- LaundryLog requirements
-- LaundryLog screens and workflows
+- [`laundrylog/requirements.md`](laundrylog/requirements.md)
+- [`laundrylog/screens.md`](laundrylog/screens.md)
+- [`laundrylog/workflows.md`](laundrylog/workflows.md)
+
+Likely next docs after that:
+
 - LaundryLog convergence notes
 - LaundryLog data and sync boundaries

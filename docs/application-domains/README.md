@@ -13,4 +13,4 @@ Application-domain docs should describe the concrete system itself while still l
 
 Current application domains:
 
-- [`LaundryLog`](laundrylog-foundation.md)
+- [`LaundryLog`](laundrylog/README.md)
