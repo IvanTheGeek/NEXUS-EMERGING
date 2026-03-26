@@ -87,10 +87,12 @@ The first concrete LaundryLog docs now live in:
 - [`laundrylog/privacy-and-ownership.md`](laundrylog/privacy-and-ownership.md)
 - [`laundrylog/delivery.md`](laundrylog/delivery.md)
 - [`laundrylog/convergence.md`](laundrylog/convergence.md)
+- [`laundrylog/data-sync-boundaries.md`](laundrylog/data-sync-boundaries.md)
+- [`laundrylog/view-contracts.md`](laundrylog/view-contracts.md)
 - [`laundrylog/screens.md`](laundrylog/screens.md)
 - [`laundrylog/workflows.md`](laundrylog/workflows.md)
 
-Likely next docs after that:
+Current next code step after that:
 
-- LaundryLog convergence notes
-- LaundryLog data and sync boundaries
+- `Nexus.LaundryLog`
+- `Nexus.LaundryLog.UI`

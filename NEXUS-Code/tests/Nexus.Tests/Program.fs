@@ -8,6 +8,7 @@ module Program =
         testList
             "nexus"
             [ FnHCITests.tests
+              LaundryLogTests.tests
               KernelTests.tests
               LogosTests.tests
               ProviderAdapterTests.tests

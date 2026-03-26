@@ -11,6 +11,8 @@ Start here:
 - [`privacy-and-ownership.md`](privacy-and-ownership.md)
 - [`delivery.md`](delivery.md)
 - [`convergence.md`](convergence.md)
+- [`data-sync-boundaries.md`](data-sync-boundaries.md)
+- [`view-contracts.md`](view-contracts.md)
 - [`screens.md`](screens.md)
 - [`workflows.md`](workflows.md)
 
