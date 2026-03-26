@@ -171,7 +171,7 @@ The CLI supports both:
 
 - Exports the derived graph assertions as a Graphviz DOT file.
 - Use it when you want an external visual lens over the graph to spot structure, clusters, and relationships.
-- It now supports provider, provider-conversation, and import slices so you do not have to render the whole graph every time.
+- It now supports provider, provider-conversation, and import scopes so you do not have to render the whole graph every time.
 - It also supports `--working-node-id` for one node's immediate neighborhood inside a fresh working import batch.
 - It can also traceably verify a `--working-import-id` batch back to canonical events and raw object refs before writing the DOT file.
 - Details: `docs/how-to/export-graphviz-dot.md`

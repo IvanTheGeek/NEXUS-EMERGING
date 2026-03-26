@@ -174,11 +174,11 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "Command: export-graphviz-dot" "Expected the command header."
                   Expect.stringContains result.StandardOutput "--objects-root <path>" "Expected traceable objects-root guidance."
                   Expect.stringContains result.StandardOutput "--output <path>" "Expected custom output guidance."
-                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider slice guidance."
-                  Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation slice guidance."
-                  Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation slice guidance."
-                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import slice guidance."
-                  Expect.stringContains result.StandardOutput "--working-import-id <uuid>" "Expected graph working slice guidance."
+                  Expect.stringContains result.StandardOutput "--provider <chatgpt|claude|grok|codex>" "Expected provider scope guidance."
+                  Expect.stringContains result.StandardOutput "--conversation-id <uuid>" "Expected canonical conversation scope guidance."
+                  Expect.stringContains result.StandardOutput "--provider-conversation-id <id>" "Expected provider conversation scope guidance."
+                  Expect.stringContains result.StandardOutput "--import-id <uuid>" "Expected import scope guidance."
+                  Expect.stringContains result.StandardOutput "--working-import-id <uuid>" "Expected graph working batch guidance."
                   Expect.stringContains result.StandardOutput "--working-node-id <node-id>" "Expected graph working neighborhood guidance."
                   Expect.stringContains result.StandardOutput "--verification <none|traceable>" "Expected verification allowlist guidance."
                   Expect.stringContains result.StandardOutput "--output-root <path>" "Expected output-root guidance."
@@ -217,7 +217,7 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-working-graph-imports.md" "Expected the working-graph report guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-working-graph-imports.")
 
-              testCase "Working import conversation help exposes the conversation-centric slice workflow" (fun () ->
+              testCase "Working import conversation help exposes the conversation-centric batch workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "report-working-import-conversations" ]
 
                   Expect.equal result.ExitCode 0 "Expected help report-working-import-conversations to exit successfully."

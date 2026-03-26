@@ -26,7 +26,7 @@ Rules:
 - `main` is accepted truth.
 - merge accepted branches into `main` with `--no-ff`.
 - do not rely on fast-forward merges for accepted work.
-- prefer focused topic branches for coherent slices of work.
+- prefer focused topic branches for coherent work items.
 - use longer-lived epic branches only when a stream truly spans multiple merges over time.
 - multiple long-running branches may coexist when they represent genuinely different concerns.
 - when a topic branch is complete, merge it and then delete it.
@@ -41,7 +41,7 @@ Preferred branch names should describe the workstream itself.
 Examples:
 
 - `export-window-analysis`
-  short-lived, one coherent slice, merged and usually deleted
+  short-lived, one coherent work item, merged and usually deleted
 - `logos-intake-foundation`
   a longer-running stream when the work genuinely spans multiple merges
 - `graph-lens-spike`

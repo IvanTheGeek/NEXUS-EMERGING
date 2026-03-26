@@ -26,7 +26,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - total canonical events represented by those slices
 - total graph assertions represented by those slices
 - provider counts when the matching canonical import manifests are present
-- a short recent-slice list with:
+- a short recent-batch list with:
   - `import_id`
   - provider
   - window

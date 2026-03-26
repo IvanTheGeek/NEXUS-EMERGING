@@ -7,16 +7,16 @@ open Microsoft.Data.Sqlite
 open Nexus.Domain
 
 /// <summary>
-/// Summarizes one predicate count inside a graph working import slice.
+/// Summarizes one predicate count inside a graph working import batch.
 /// </summary>
-type WorkingGraphSlicePredicateCount =
+type WorkingGraphBatchPredicateCount =
     { Predicate: string
       Count: int }
 
 /// <summary>
-/// Summarizes one import-local graph working slice from the persisted SQLite index.
+/// Summarizes one import-local graph working batch from the persisted SQLite index.
 /// </summary>
-type WorkingGraphSliceReport =
+type WorkingGraphBatchReport =
     { IndexRelativePath: string
       ImportId: ImportId
       Provider: string option
@@ -30,7 +30,7 @@ type WorkingGraphSliceReport =
       LiteralAssertionCount: int
       WorkingRootRelativePath: string
       ManifestRelativePath: string
-      PredicateCounts: WorkingGraphSlicePredicateCount list }
+      PredicateCounts: WorkingGraphBatchPredicateCount list }
 
 /// <summary>
 /// Summarizes one graph node match discovered through the persisted SQLite working index.
@@ -50,7 +50,7 @@ type WorkingGraphNodeMatch =
       MatchReasons: string list }
 
 /// <summary>
-/// Describes one literal assertion attached directly to a node inside a graph working slice.
+/// Describes one literal assertion attached directly to a node inside a graph working batch.
 /// </summary>
 type WorkingGraphNeighborhoodLiteral =
     { FactId: FactId
@@ -59,7 +59,7 @@ type WorkingGraphNeighborhoodLiteral =
       Value: string }
 
 /// <summary>
-/// Describes one node-to-node connection inside a graph working slice neighborhood.
+/// Describes one node-to-node connection inside a graph working batch neighborhood.
 /// </summary>
 type WorkingGraphNeighborhoodConnection =
     { FactId: FactId
@@ -73,7 +73,7 @@ type WorkingGraphNeighborhoodConnection =
       RelatedMessageRoles: string list }
 
 /// <summary>
-/// Summarizes the local neighborhood of one node inside a graph working import slice.
+/// Summarizes the local neighborhood of one node inside a graph working import batch.
 /// </summary>
 type WorkingGraphNeighborhoodReport =
     { IndexRelativePath: string
@@ -98,7 +98,7 @@ type WorkingGraphNeighborhoodReport =
       IncomingConnections: WorkingGraphNeighborhoodConnection list }
 
 /// <summary>
-/// Summarizes one conversation node inside an import-local graph working slice.
+/// Summarizes one conversation node inside an import-local graph working batch.
 /// </summary>
 type WorkingImportConversationSummary =
     { ConversationNodeId: string
@@ -109,7 +109,7 @@ type WorkingImportConversationSummary =
       ArtifactCount: int }
 
 /// <summary>
-/// Summarizes the conversation nodes present inside one import-local graph working slice.
+/// Summarizes the conversation nodes present inside one import-local graph working batch.
 /// </summary>
 type WorkingImportConversationReport =
     { IndexRelativePath: string
@@ -124,7 +124,7 @@ type WorkingImportConversationReport =
       Items: WorkingImportConversationSummary list }
 
 /// <summary>
-/// Describes one conversation whose contribution counts differ between two import-local graph working slices.
+/// Describes one conversation whose contribution counts differ between two import-local graph working batches.
 /// </summary>
 type WorkingImportConversationDelta =
     { ConversationNodeId: string
@@ -140,10 +140,10 @@ type WorkingImportConversationDelta =
       CurrentArtifactCount: int }
 
 /// <summary>
-/// Compares the conversation contributions present in two import-local graph working slices.
+/// Compares the conversation contributions present in two import-local graph working batches.
 /// </summary>
 /// <remarks>
-/// This compares batch-local working-slice contributions, not full provider snapshot truth.
+/// This compares batch-local working-batch contributions, not full provider snapshot truth.
 /// Use it to understand what changed between two import batches inside the derived working layer.
 /// </remarks>
 type WorkingImportConversationComparisonReport =
@@ -172,7 +172,7 @@ type WorkingImportConversationComparisonReport =
 type WorkingGraphIndexRebuildResult =
     { IndexRelativePath: string
       CatalogRelativePath: string
-      WorkingSliceCount: int
+      WorkingBatchCount: int
       GraphAssertionCount: int }
 
 type private ImportManifestMetadata =
@@ -200,7 +200,7 @@ type private NodeSummary =
       MessageRoles: string list }
 
 /// <summary>
-/// Maintains a persisted SQLite index over graph working import slices.
+/// Maintains a persisted SQLite index over graph working import batches.
 /// </summary>
 /// <remarks>
 /// This is a rebuildable working index for the derived graph layer.
@@ -504,7 +504,7 @@ WHERE import_id = $import_id
         normalizePath indexRelativePath
 
     /// <summary>
-    /// Refreshes one import-local graph working slice inside the persisted SQLite index.
+    /// Refreshes one import-local graph working batch inside the persisted SQLite index.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="result">The import-batch materialization result whose assertion files should be indexed.</param>
@@ -638,7 +638,7 @@ INSERT INTO assertions (
         relativePath
 
     /// <summary>
-    /// Rebuilds the persisted SQLite working index from the current graph working import slices.
+    /// Rebuilds the persisted SQLite working index from the current graph working import batches.
     /// </summary>
     /// <param name="status">Receives human-readable rebuild progress updates.</param>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
@@ -651,31 +651,31 @@ INSERT INTO assertions (
             status $"Removing previous graph working SQLite index at {absolutePath}"
             File.Delete(absolutePath)
 
-        status $"Rebuilding graph working SQLite index from {catalog.Entries.Length} working slices."
+        status $"Rebuilding graph working SQLite index from {catalog.Entries.Length} working batches."
 
         let mutable totalAssertionCount = 0
 
         for entry in catalog.Entries |> List.sortBy (fun currentEntry -> currentEntry.MaterializedAt, ImportId.format currentEntry.ImportId) do
-            status $"Indexing working slice {ImportId.format entry.ImportId} from {entry.WorkingRootRelativePath}"
+            status $"Indexing working batch {ImportId.format entry.ImportId} from {entry.WorkingRootRelativePath}"
             let importBatchResult = importBatchResultFromCatalogEntry eventStoreRoot entry
             totalAssertionCount <- totalAssertionCount + importBatchResult.GraphAssertionCount
             refreshImportBatch eventStoreRoot importBatchResult |> ignore
 
-        status $"Graph working SQLite index rebuilt: {catalog.Entries.Length} slices, {totalAssertionCount} assertions."
+        status $"Graph working SQLite index rebuilt: {catalog.Entries.Length} batches, {totalAssertionCount} assertions."
 
         { IndexRelativePath = relativePath
           CatalogRelativePath = catalog.CatalogRelativePath
-          WorkingSliceCount = catalog.Entries.Length
+          WorkingBatchCount = catalog.Entries.Length
           GraphAssertionCount = totalAssertionCount }
 
     /// <summary>
-    /// Builds a summary for one import-local graph working slice from the persisted SQLite index.
+    /// Builds a summary for one import-local graph working batch from the persisted SQLite index.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="importId">The import batch to summarize.</param>
     /// <param name="limit">The maximum number of predicate counts to include.</param>
-    /// <returns>The slice summary when the import exists in the working index.</returns>
-    let tryBuildImportSliceReport eventStoreRoot importId limit =
+    /// <returns>The batch summary when the import exists in the working index.</returns>
+    let tryBuildImportBatchReport eventStoreRoot importId limit =
         withReadableConnection eventStoreRoot (fun connection ->
             use batchCommand = connection.CreateCommand()
             batchCommand.CommandText <-
@@ -751,7 +751,7 @@ LIMIT $limit;
                 predicateCommand.Parameters.AddWithValue("$limit", limit) |> ignore
 
                 use predicateReader = predicateCommand.ExecuteReader()
-                let predicateCounts = ResizeArray<WorkingGraphSlicePredicateCount>()
+                let predicateCounts = ResizeArray<WorkingGraphBatchPredicateCount>()
 
                 while predicateReader.Read() do
                     predicateCounts.Add
@@ -905,10 +905,10 @@ LIMIT $limit;
     /// Builds the local neighborhood of one node from the persisted SQLite working index.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
-    /// <param name="importId">The import batch whose working slice should be explored.</param>
+    /// <param name="importId">The import batch whose working batch should be explored.</param>
     /// <param name="nodeId">The node whose local neighborhood should be reported.</param>
     /// <param name="limit">The maximum number of literals, incoming connections, and outgoing connections to include.</param>
-    /// <returns>The local neighborhood report when both the slice and node exist in the working index.</returns>
+    /// <returns>The local neighborhood report when both the batch and node exist in the working index.</returns>
     let tryBuildNeighborhoodReport eventStoreRoot importId nodeId limit =
         withReadableConnection eventStoreRoot (fun connection ->
             use batchCommand = connection.CreateCommand()
@@ -1130,7 +1130,7 @@ LIMIT $limit;
         |> Option.flatten
 
     /// <summary>
-    /// Builds a conversation-centric summary for one import-local graph working slice from the persisted SQLite index.
+    /// Builds a conversation-centric summary for one import-local graph working batch from the persisted SQLite index.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="importId">The import batch whose conversation nodes should be summarized.</param>
@@ -1272,13 +1272,13 @@ LIMIT $limit;
         |> Option.flatten
 
     /// <summary>
-    /// Compares the conversation contributions present in two import-local graph working slices.
+    /// Compares the conversation contributions present in two import-local graph working batches.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="baseImportId">The older or reference import batch.</param>
     /// <param name="currentImportId">The newer or comparison import batch.</param>
     /// <param name="limit">The maximum number of detailed rows to include in each result bucket.</param>
-    /// <returns>The comparison report when both import-local working slices exist in the SQLite index.</returns>
+    /// <returns>The comparison report when both import-local working batches exist in the SQLite index.</returns>
     let tryBuildImportConversationComparisonReport eventStoreRoot baseImportId currentImportId limit =
         match
             tryBuildImportConversationReport eventStoreRoot baseImportId Int32.MaxValue,

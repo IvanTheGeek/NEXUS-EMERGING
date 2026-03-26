@@ -6,14 +6,14 @@ open System.IO
 open Nexus.Domain
 
 /// <summary>
-/// Describes one missing canonical event referenced by a graph working slice.
+/// Describes one missing canonical event referenced by a graph working batch.
 /// </summary>
 type MissingCanonicalEventReference =
     { EventId: CanonicalEventId
       ReferencedByFactId: FactId }
 
 /// <summary>
-/// Describes one missing raw object referenced by a graph working slice.
+/// Describes one missing raw object referenced by a graph working batch.
 /// </summary>
 type MissingRawObjectReference =
     { RelativePath: string
@@ -21,9 +21,9 @@ type MissingRawObjectReference =
       Kind: string option }
 
 /// <summary>
-/// Summarizes verification of one graph working import slice back to canonical and raw layers.
+/// Summarizes verification of one graph working import batch back to canonical and raw layers.
 /// </summary>
-type WorkingGraphSliceVerificationReport =
+type WorkingGraphBatchVerificationReport =
     { ImportId: ImportId
       WorkingRootRelativePath: string
       ManifestRelativePath: string
@@ -40,10 +40,10 @@ type WorkingGraphSliceVerificationReport =
       IndexAvailable: bool }
 
 /// <summary>
-/// Verifies graph working slices against canonical history and preserved raw objects.
+/// Verifies graph working batches against canonical history and preserved raw objects.
 /// </summary>
 /// <remarks>
-/// This module supports the NEXUS rule that derived indexes and derived slices must not sever
+/// This module supports the NEXUS rule that derived indexes and derived batches must not sever
 /// the verification path back to canonical and raw source layers.
 /// Full notes: docs/decisions/0007-traceable-verification-over-derived-indexes.md
 /// </remarks>
@@ -106,19 +106,19 @@ module GraphWorkingVerification =
             seen.Add(key))
 
     /// <summary>
-    /// Verifies one graph working import slice against canonical history and preserved raw objects.
+    /// Verifies one graph working import batch against canonical history and preserved raw objects.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="objectsRoot">The root of the preserved object workspace.</param>
-    /// <param name="importId">The import-local working slice to verify.</param>
-    /// <returns>A verification summary for the selected working slice.</returns>
-    let verifyImportSlice eventStoreRoot objectsRoot importId =
+    /// <param name="importId">The import-local working batch to verify.</param>
+    /// <returns>A verification summary for the selected working batch.</returns>
+    let verifyImportBatch eventStoreRoot objectsRoot importId =
         let catalog = GraphWorkingCatalog.load eventStoreRoot
 
         let entry =
             catalog.Entries
             |> List.tryFind (fun currentEntry -> currentEntry.ImportId = importId)
-            |> Option.defaultWith (fun () -> invalidArg "importId" $"No graph working slice found for import {ImportId.format importId}.")
+            |> Option.defaultWith (fun () -> invalidArg "importId" $"No graph working batch found for import {ImportId.format importId}.")
 
         let assertionsRoot =
             Path.Combine(Path.GetFullPath(eventStoreRoot), entry.WorkingRootRelativePath, "assertions")
@@ -127,7 +127,7 @@ module GraphWorkingVerification =
             invalidArg "importId" $"Graph working assertions directory not found for import {ImportId.format importId}: {assertionsRoot}"
 
         let indexAvailable =
-            GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importId 1
+            GraphWorkingIndex.tryBuildImportBatchReport eventStoreRoot importId 1
             |> Option.isSome
 
         let canonicalEvents = canonicalEventIdsByPath eventStoreRoot

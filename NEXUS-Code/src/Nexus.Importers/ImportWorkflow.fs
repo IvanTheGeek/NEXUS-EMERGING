@@ -649,7 +649,7 @@ module ImportWorkflow =
               Conversations = snapshotConversations |> Seq.toList }
 
         let importSnapshotResult = ImportSnapshots.write eventStoreRoot importSnapshot
-        emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
+        emitStatus status $"Materializing graph working batch for import {ImportId.format importId}."
         let workingGraph =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
         let workingGraphCatalogRelativePath =

@@ -58,7 +58,7 @@ module ConceptNoteTests =
                           Expect.stringContains text "# FnHCI" "Expected the concept note title heading."
                           Expect.stringContains text "Claude Fixture Conversation" "Expected the source conversation title."
                           Expect.stringContains text conversationId "Expected the canonical conversation ID in the note."
-                          Expect.stringContains text "export-graphviz-dot --conversation-id" "Expected a graph slice command for the source conversation."
+                          Expect.stringContains text "export-graphviz-dot --conversation-id" "Expected a graph scope command for the source conversation."
                           Expect.stringContains text "Hello from Claude fixture." "Expected message excerpts from the projection."))
 
               testCase "Concept note seed refuses to overwrite an existing note" (fun () ->

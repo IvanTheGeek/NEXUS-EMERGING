@@ -8,7 +8,7 @@ open System.Text
 [<RequireQualifiedAccess>]
 module GraphvizDot =
     /// <summary>
-    /// Narrows a Graphviz DOT export to a practical slice of the derived graph.
+    /// Narrows a Graphviz DOT export to a practical scope of the derived graph.
     /// </summary>
     type ExportFilter =
         { Provider: string option
@@ -91,7 +91,7 @@ module GraphvizDot =
             builder.ToString().Trim('-')
 
         if String.IsNullOrWhiteSpace(sanitized) then
-            "slice"
+            "scope"
         elif sanitized.Length <= 40 then
             sanitized
         else
@@ -361,7 +361,7 @@ module GraphvizDot =
           ScannedAssertionCount = allAssertions.Length }
 
     /// <summary>
-    /// Exports a filtered slice of the derived graph assertions under an event-store root as a Graphviz DOT file.
+    /// Exports a filtered scope of the derived graph assertions under an event-store root as a Graphviz DOT file.
     /// </summary>
     /// <param name="rootPath">Event-store root containing graph/assertions.</param>
     /// <param name="outputPath">
@@ -404,10 +404,10 @@ module GraphvizDot =
         exportFilteredWithRoot rootPath outputPath None filter
 
     /// <summary>
-    /// Exports one graph working import slice as a Graphviz DOT file without requiring a full durable graph rebuild.
+    /// Exports one graph working import batch as a Graphviz DOT file without requiring a full durable graph rebuild.
     /// </summary>
     /// <param name="rootPath">Event-store root containing graph/working/imports/&lt;import-id&gt;/assertions.</param>
-    /// <param name="importId">The import batch whose working graph slice should be exported.</param>
+    /// <param name="importId">The import batch whose working graph batch should be exported.</param>
     /// <param name="outputPath">
     /// Optional DOT output path. When omitted, the exporter writes to graph/working/exports using an import-aware file name.
     /// </param>
@@ -432,11 +432,11 @@ module GraphvizDot =
         exportWorkingImportBatchWithRoot rootPath importId outputPath None
 
     /// <summary>
-    /// Exports the immediate neighborhood of one node from a graph working import slice as a Graphviz DOT file.
+    /// Exports the immediate neighborhood of one node from a graph working import batch as a Graphviz DOT file.
     /// </summary>
     /// <param name="rootPath">Event-store root containing graph/working/imports/&lt;import-id&gt;/assertions.</param>
-    /// <param name="importId">The import batch whose working graph slice should be inspected.</param>
-    /// <param name="nodeId">The node whose immediate working-slice neighborhood should be exported.</param>
+    /// <param name="importId">The import batch whose working graph batch should be inspected.</param>
+    /// <param name="nodeId">The node whose immediate working-batch neighborhood should be exported.</param>
     /// <param name="outputPath">
     /// Optional DOT output path. When omitted, the exporter writes to graph/working/exports using an import-and-node-aware file name.
     /// </param>

@@ -28,43 +28,43 @@ Custom output root:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports
 ```
 
-Provider slice:
+Provider scope:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider claude
 ```
 
-Canonical conversation slice:
+Canonical conversation scope:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174e-e960-7507-8aa6-06ee0064e499
 ```
 
-Provider conversation slice:
+Provider conversation scope:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider chatgpt --provider-conversation-id <provider-conversation-id>
 ```
 
-Import slice:
+Import scope:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --import-id <import-id>
 ```
 
-Working import slice:
+Working import batch:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id>
 ```
 
-Working node neighborhood slice:
+Working node neighborhood scope:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id> --working-node-id <node-id>
 ```
 
-Traceably verified working import slice:
+Traceably verified working import batch:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --working-import-id <import-id> --verification traceable
@@ -89,7 +89,7 @@ When you use filters, the default file name becomes filter-aware, for example:
 - `nexus-graph__provider-chatgpt__conversation-abc123.dot`
 - `nexus-graph__import-019d....dot`
 
-Working import slices default to:
+Working import batches default to:
 
 - `graph/working/exports/nexus-working-graph__import-019d....dot`
 
@@ -156,7 +156,7 @@ dot -Tpng NEXUS-EventStore/graph/exports/nexus-graph.dot -o /tmp/nexus-graph.png
 - When `--verification traceable` is enabled, the command verifies the working batch back to canonical events and raw object refs before writing the DOT file.
 - Use `--objects-root` only with `--verification traceable` when the preserved objects are not under the repository default.
 - Use either `--output` or `--output-root`, not both.
-- Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying the canonical event layer.
+- Filters are applied from graph assertion provenance, which makes provider, conversation, and import scopes practical without replaying the canonical event layer.
 - `--conversation-id` uses the canonical conversation ID from a conversation projection and keeps only that conversation plus its immediate graph neighborhood.
 - `--working-import-id` cannot be combined with the durable-graph filter options because it already selects one explicit working batch.
 - The DOT file is an external lens, not the source of truth.

@@ -17,7 +17,7 @@ It creates a Markdown note under `docs/concepts/` with:
 - working-note prompts
 - provenance back to canonical conversation projections
 - short excerpts from source messages
-- a ready-to-run Graphviz slice command for each source conversation
+- a ready-to-run Graphviz scope command for each source conversation
 
 ## Basic Use
 

@@ -25,14 +25,14 @@ module GraphWorkingCatalogTests =
     let tests =
         testList
             "graph working catalog"
-            [ testCase "Graph working catalog report summarizes import-batch batches" (fun () ->
+            [ testCase "Graph working catalog report summarizes import batches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-catalog" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report = GraphWorkingCatalog.buildReport eventStoreRoot 10
 
-                      Expect.equal report.WorkingSliceCount 1 "Expected one graph working batch after the first import."
+                      Expect.equal report.WorkingBatchCount 1 "Expected one graph working batch after the first import."
                       Expect.equal report.TotalCanonicalEvents 7 "Expected the canonical event count from the fixture import."
                       Expect.equal report.TotalGraphAssertions 46 "Expected the graph assertion count from the fixture import."
                       Expect.equal report.ProviderCounts [ "claude", 1 ] "Expected the provider count to flow through from the import manifest."

@@ -181,14 +181,14 @@ module GraphMaterialization =
         let stopwatch = Diagnostics.Stopwatch.StartNew()
         let materializedAt = DateTimeOffset.UtcNow
         let derivation =
-            status $"Deriving graph working slice from {events.Length} canonical events for import {ImportId.format importId}."
+            status $"Deriving graph working batch from {events.Length} canonical events for import {ImportId.format importId}."
             GraphAssertions.deriveFromCanonicalEventsWithStatus status events
 
         let workingRootRelativePath = workingImportRootRelativePath importId
         let workingRootAbsolutePath = Path.Combine(eventStoreRoot, workingRootRelativePath)
 
         if Directory.Exists(workingRootAbsolutePath) then
-            status $"Removing previous graph working slice at {workingRootAbsolutePath}"
+            status $"Removing previous graph working batch at {workingRootAbsolutePath}"
             Directory.Delete(workingRootAbsolutePath, true)
 
         Directory.CreateDirectory(workingRootAbsolutePath) |> ignore
@@ -221,5 +221,5 @@ module GraphMaterialization =
               MaterializerVersion = importBatchMaterializerVersion }
 
         writeImportBatchManifest eventStoreRoot result
-        status $"Graph working slice materialized in {totalElapsed}"
+        status $"Graph working batch materialized in {totalElapsed}"
         result

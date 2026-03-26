@@ -21,7 +21,7 @@ module Program =
 
     type private GraphvizExportVerification =
         | NoVerification
-        | TraceableWorkingSlice
+        | TraceableWorkingBatch
 
     type private Command =
         | ShowHelp of commandName: string option
@@ -58,9 +58,9 @@ module Program =
         | ReportWorkingImportConversations of eventStoreRoot: string * importId: ImportId * limit: int
         | CompareWorkingImportConversations of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | FindWorkingGraphNodes of eventStoreRoot: string * importId: ImportId option * provider: string option * matchText: string option * semanticRole: string option * messageRole: string option * limit: int
-        | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
+        | ReportWorkingGraphBatch of eventStoreRoot: string * importId: ImportId * limit: int
         | ReportWorkingGraphNeighborhood of eventStoreRoot: string * importId: ImportId * nodeId: string * limit: int
-        | VerifyWorkingGraphSlice of eventStoreRoot: string * objectsRoot: string * importId: ImportId
+        | VerifyWorkingGraphBatch of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateLogosIntakeNote of request: CreateLogosIntakeNoteRequest
@@ -106,7 +106,7 @@ module Program =
 
         match normalized with
         | "none" -> Some NoVerification
-        | "traceable" -> Some TraceableWorkingSlice
+        | "traceable" -> Some TraceableWorkingBatch
         | _ -> None
 
     let private tryNormalizeGraphSlugFilter (value: string) =
@@ -458,8 +458,8 @@ module Program =
                       "Use --working-node-id together with --working-import-id when you want just one node's immediate neighborhood scope from the working batch."
                       "Traceable verification currently applies only to --working-import-id exports and checks the working batch back to canonical events and raw object refs before writing DOT output."
                       "Use either --output or --output-root, not both."
-                      "Canonical conversation slices use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
-                      "Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying canonical history."
+                      "Canonical conversation scopes use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
+                      "Filters are applied from graph assertion provenance, which makes provider, conversation, and import scopes practical without replaying canonical history."
                       "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
                       "Detailed guide: docs/how-to/export-graphviz-dot.md" ] }
         | "render-graphviz-dot" ->
@@ -1299,7 +1299,7 @@ module Program =
                                         workingNodeId))
                         | None, _, _, _, _ ->
                             match verification, objectsRootOverride, workingNodeId with
-                            | TraceableWorkingSlice, _, _ ->
+                            | TraceableWorkingBatch, _, _ ->
                                 eprintfn "Traceable verification for export-graphviz-dot is currently supported only with --working-import-id."
                                 printCommandHelp "export-graphviz-dot"
                                 Error 1
@@ -1879,7 +1879,7 @@ module Program =
 
             loop defaultEventStoreRoot None None None None None 20 args
 
-    let private parseReportWorkingGraphSlice (args: string list) =
+    let private parseReportWorkingGraphBatch (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "report-working-graph-batch"))
         else
@@ -1887,7 +1887,7 @@ module Program =
                 match remaining with
                 | [] ->
                     match importId with
-                    | Some importIdValue -> Ok (ReportWorkingGraphSlice(eventStoreRoot, importIdValue, limit))
+                    | Some importIdValue -> Ok (ReportWorkingGraphBatch(eventStoreRoot, importIdValue, limit))
                     | None ->
                         eprintfn "Missing required option: --import-id"
                         printCommandHelp "report-working-graph-batch"
@@ -1970,7 +1970,7 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
-    let private parseVerifyWorkingGraphSlice (args: string list) =
+    let private parseVerifyWorkingGraphBatch (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "verify-working-graph-batch"))
         else
@@ -1978,7 +1978,7 @@ module Program =
                 match remaining with
                 | [] ->
                     match importId with
-                    | Some importIdValue -> Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importIdValue))
+                    | Some importIdValue -> Ok (VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importIdValue))
                     | None ->
                         eprintfn "Missing required option: --import-id"
                         printCommandHelp "verify-working-graph-batch"
@@ -2940,12 +2940,12 @@ module Program =
             parseFindWorkingGraphNodes rest
         | "report-working-graph-batch" :: rest
         | "report-working-graph-slice" :: rest ->
-            parseReportWorkingGraphSlice rest
+            parseReportWorkingGraphBatch rest
         | "report-working-graph-neighborhood" :: rest ->
             parseReportWorkingGraphNeighborhood rest
         | "verify-working-graph-batch" :: rest
         | "verify-working-graph-slice" :: rest ->
-            parseVerifyWorkingGraphSlice rest
+            parseVerifyWorkingGraphBatch rest
         | "rebuild-working-graph-index" :: rest ->
             parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
@@ -3935,10 +3935,10 @@ module Program =
             let verificationResult =
                 match verification with
                 | NoVerification -> Ok None
-                | TraceableWorkingSlice ->
+                | TraceableWorkingBatch ->
                     let parsedImportId = ImportId.parse workingImportIdValue
                     printfn "  Verifying working-batch traceability before DOT export..."
-                    let report = GraphWorkingVerification.verifyImportSlice eventStoreRoot objectsRoot parsedImportId
+                    let report = GraphWorkingVerification.verifyImportBatch eventStoreRoot objectsRoot parsedImportId
 
                     if GraphWorkingVerification.isClean report then
                         Ok (Some report)
@@ -4074,7 +4074,7 @@ module Program =
         printfn "Graph working imports report."
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Catalog: %s" report.CatalogRelativePath
-        printfn "  Working batches: %d" report.WorkingSliceCount
+        printfn "  Working batches: %d" report.WorkingBatchCount
         printfn "  Total canonical events: %d" report.TotalCanonicalEvents
         printfn "  Total graph assertions: %d" report.TotalGraphAssertions
 
@@ -4256,7 +4256,7 @@ module Program =
             0
         | None ->
             eprintfn "No working-import conversation comparison could be built for the selected imports."
-            eprintfn "Import the batches first or refresh the working index from existing slices."
+            eprintfn "Import the batches first or refresh the working index from existing batches."
             1
 
     let private findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit =
@@ -4322,8 +4322,8 @@ module Program =
 
         0
 
-    let private reportWorkingGraphSlice eventStoreRoot importId limit =
-        match GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importId limit with
+    let private reportWorkingGraphBatch eventStoreRoot importId limit =
+        match GraphWorkingIndex.tryBuildImportBatchReport eventStoreRoot importId limit with
         | Some report ->
             printfn "Graph working batch report."
             printfn "  Event store root: %s" eventStoreRoot
@@ -4441,8 +4441,8 @@ module Program =
             eprintfn "Use find-working-graph-nodes to discover node IDs in the selected working batch."
             1
 
-    let private verifyWorkingGraphSlice eventStoreRoot objectsRoot importId =
-        let report = GraphWorkingVerification.verifyImportSlice eventStoreRoot objectsRoot importId
+    let private verifyWorkingGraphBatch eventStoreRoot objectsRoot importId =
+        let report = GraphWorkingVerification.verifyImportBatch eventStoreRoot objectsRoot importId
 
         printfn "Graph working batch verification."
         printfn "  Event store root: %s" eventStoreRoot
@@ -4493,7 +4493,7 @@ module Program =
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Catalog: %s" result.CatalogRelativePath
         printfn "  Index: %s" result.IndexRelativePath
-        printfn "  Working batches indexed: %d" result.WorkingSliceCount
+        printfn "  Working batches indexed: %d" result.WorkingBatchCount
         printfn "  Graph assertions indexed: %d" result.GraphAssertionCount
         0
 
@@ -4620,12 +4620,12 @@ module Program =
             compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit
         | Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit)) ->
             findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
-        | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
-            reportWorkingGraphSlice eventStoreRoot importId limit
+        | Ok (ReportWorkingGraphBatch(eventStoreRoot, importId, limit)) ->
+            reportWorkingGraphBatch eventStoreRoot importId limit
         | Ok (ReportWorkingGraphNeighborhood(eventStoreRoot, importId, nodeId, limit)) ->
             reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit
-        | Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importId)) ->
-            verifyWorkingGraphSlice eventStoreRoot objectsRoot importId
+        | Ok (VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importId)) ->
+            verifyWorkingGraphBatch eventStoreRoot objectsRoot importId
         | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
             rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->

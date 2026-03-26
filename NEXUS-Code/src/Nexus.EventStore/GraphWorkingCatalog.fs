@@ -6,7 +6,7 @@ open System.IO
 open Nexus.Domain
 
 /// <summary>
-/// Summarizes one import-batch-local graph working slice.
+/// Summarizes one import-batch-local graph working batch.
 /// </summary>
 type WorkingImportCatalogEntry =
     { ImportId: ImportId
@@ -21,7 +21,7 @@ type WorkingImportCatalogEntry =
       ImportManifestRelativePath: string }
 
 /// <summary>
-/// Represents the durable catalog over graph working import slices.
+/// Represents the durable catalog over graph working import batches.
 /// </summary>
 type WorkingImportCatalog =
     { CatalogRelativePath: string
@@ -29,7 +29,7 @@ type WorkingImportCatalog =
       Entries: WorkingImportCatalogEntry list }
 
 /// <summary>
-/// Represents one operator-facing graph working slice report item.
+/// Represents one operator-facing graph working batch report item.
 /// </summary>
 type WorkingImportReportItem =
     { ImportId: ImportId
@@ -45,18 +45,18 @@ type WorkingImportReportItem =
       ImportManifestRelativePath: string }
 
 /// <summary>
-/// Summarizes the current graph working import slices for operator-facing reporting.
+/// Summarizes the current graph working import batches for operator-facing reporting.
 /// </summary>
 type WorkingImportReport =
     { CatalogRelativePath: string
-      WorkingSliceCount: int
+      WorkingBatchCount: int
       TotalCanonicalEvents: int
       TotalGraphAssertions: int
       ProviderCounts: (string * int) list
       Items: WorkingImportReportItem list }
 
 /// <summary>
-/// Reads, writes, and summarizes the graph working-slice catalog.
+/// Reads, writes, and summarizes the graph working-batch catalog.
 /// </summary>
 /// <remarks>
 /// Full working-layer notes: docs/nexus-graph-materialization-plan.md
@@ -239,7 +239,7 @@ module GraphWorkingCatalog =
               Entries = scanImportBatchManifests eventStoreRoot }
 
     /// <summary>
-    /// Upserts one import-batch graph working slice into the durable catalog.
+    /// Upserts one import-batch graph working batch into the durable catalog.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="result">The import-batch materialization result to record.</param>
@@ -268,7 +268,7 @@ module GraphWorkingCatalog =
         normalizePath catalogRelativePath
 
     /// <summary>
-    /// Builds an operator-facing report over graph working import slices.
+    /// Builds an operator-facing report over graph working import batches.
     /// </summary>
     /// <param name="eventStoreRoot">The root of the event-store workspace.</param>
     /// <param name="limit">The maximum number of detailed items to include.</param>
@@ -317,7 +317,7 @@ module GraphWorkingCatalog =
             |> Seq.toList
 
         { CatalogRelativePath = normalizePath catalogRelativePath
-          WorkingSliceCount = catalog.Entries.Length
+          WorkingBatchCount = catalog.Entries.Length
           TotalCanonicalEvents = catalog.Entries |> List.sumBy (fun entry -> entry.CanonicalEventCount)
           TotalGraphAssertions = catalog.Entries |> List.sumBy (fun entry -> entry.GraphAssertionCount)
           ProviderCounts = providerCounts

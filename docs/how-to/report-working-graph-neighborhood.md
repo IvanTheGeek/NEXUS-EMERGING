@@ -23,6 +23,6 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working
 
 ## Notes
 
-- This command stays inside one working import slice, so you must provide `--import-id`.
+- This command stays inside one working import batch, so you must provide `--import-id`.
 - Use `find-working-graph-nodes` first if you need help discovering node IDs.
 - This is an indexed working-layer view, not canonical truth.
