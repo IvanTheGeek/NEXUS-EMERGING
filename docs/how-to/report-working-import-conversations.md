@@ -1,6 +1,6 @@
 # Report Working Import Conversations
 
-Use this command when you want to understand one import-local working slice in conversation terms instead of raw graph-node terms.
+Use this command when you want to understand one import-local working batch in conversation terms instead of raw graph-node terms.
 
 ## Command
 
@@ -18,7 +18,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working
 
 - conversation node ID
 - title or slug
-- message count in that conversation for the selected import slice
+- message count in that conversation for the selected import batch
 - distinct referenced artifact count for that conversation
 
 ## Notes

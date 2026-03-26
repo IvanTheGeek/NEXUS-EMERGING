@@ -84,7 +84,7 @@ Changed rows show normalized deltas like:
 
 `compare-working-import-conversations`
 
-- derived batch-local working-slice comparison
+- derived batch-local working-batch comparison
 - compares additive graph-working contributions, not full snapshot truth
 
 ## Notes

@@ -26,32 +26,38 @@ Rules:
 - `main` is accepted truth.
 - merge accepted branches into `main` with `--no-ff`.
 - do not rely on fast-forward merges for accepted work.
-- prefer focused topic branches for coherent slices of work.
+- prefer focused topic branches for coherent work items.
 - use longer-lived epic branches only when a stream truly spans multiple merges over time.
+- multiple long-running branches may coexist when they represent genuinely different concerns.
 - when a topic branch is complete, merge it and then delete it.
 - when a branch represents an ongoing stream, keep it alive across multiple merges until that stream is actually done.
+- periodically merge active long-running branches with `main` or with each other when convergence matters.
 - tag important milestones before or at merge points when the milestone itself should remain easy to find later.
 
 ## Working Shape
 
-Preferred branch kinds:
+Preferred branch names should describe the workstream itself.
 
-- `codex/feature/...`
-  short-lived, one coherent slice, merged and usually deleted
-- `codex/epic/...`
-  longer-running stream with repeated merges into `main`
-- `codex/spike/...`
+Examples:
+
+- `export-window-analysis`
+  short-lived, one coherent work item, merged and usually deleted
+- `logos-intake-foundation`
+  a longer-running stream when the work genuinely spans multiple merges
+- `graph-lens-spike`
   exploratory or experimental work that may or may not graduate
+
+Avoid agent-qualified prefixes unless they add real meaning.
+
+The branch graph should primarily describe the work, not which tool or agent happened to perform it.
 
 ## Initial Application
 
-The bootstrap branch:
+The first ingestion-foundation workstream has already been preserved as a milestone:
 
-- `codex/nexus-ingestion-foundation`
+- merge milestone tag: `ingestion-foundation-v0`
 
-is treated as the first milestone branch for the ingestion foundation.
-
-It should be merged into `main` with `--no-ff` and tagged as a milestone so the bootstrap line remains easy to identify in the graph.
+That milestone marks the bootstrap phase without keeping the older agent-qualified branch name as the ongoing naming pattern.
 
 ## Consequences
 

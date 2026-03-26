@@ -32,41 +32,41 @@ module GraphWorkingIndexTests =
     let tests =
         testList
             "graph working index"
-            [ testCase "Graph working SQLite index summarizes one imported slice" (fun () ->
+            [ testCase "Graph working SQLite index summarizes one imported batch" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report =
-                          GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importResult.ImportId 10
-                          |> Option.defaultWith (fun () -> failwith "Expected a graph working SQLite report for the imported slice.")
+                          GraphWorkingIndex.tryBuildImportBatchReport eventStoreRoot importResult.ImportId 10
+                          |> Option.defaultWith (fun () -> failwith "Expected a graph working SQLite report for the imported batch.")
 
                       Expect.equal report.IndexRelativePath "graph/working/index/graph-working.sqlite" "Expected the stable working-index path."
-                      Expect.equal report.ImportId importResult.ImportId "Expected the report to target the imported slice."
+                      Expect.equal report.ImportId importResult.ImportId "Expected the report to target the imported batch."
                       Expect.equal report.Provider (Some "claude") "Expected provider enrichment from the import manifest."
                       Expect.equal report.Window (Some "full") "Expected window enrichment from the import manifest."
                       Expect.equal report.CanonicalEventCount 7 "Expected the canonical event count from the fixture import."
                       Expect.equal report.GraphAssertionCount 46 "Expected the graph assertion count from the fixture import."
-                      Expect.equal report.DistinctSubjectCount 8 "Expected the fixture working slice subject count."
-                      Expect.equal report.NodeRefAssertionCount 22 "Expected the fixture working slice node-ref count."
-                      Expect.equal report.LiteralAssertionCount 24 "Expected the fixture working slice literal count."
-                      Expect.isGreaterThan report.PredicateCounts.Length 0 "Expected predicate counts in the slice summary."
+                      Expect.equal report.DistinctSubjectCount 8 "Expected the fixture working batch subject count."
+                      Expect.equal report.NodeRefAssertionCount 22 "Expected the fixture working batch node-ref count."
+                      Expect.equal report.LiteralAssertionCount 24 "Expected the fixture working batch literal count."
+                      Expect.isGreaterThan report.PredicateCounts.Length 0 "Expected predicate counts in the batch summary."
                       Expect.equal report.PredicateCounts.Head.Predicate "has_node_kind" "Expected the most common fixture predicate to be has_node_kind."
-                      Expect.equal report.PredicateCounts.Head.Count 8 "Expected the top predicate count for the fixture slice."))
+                      Expect.equal report.PredicateCounts.Head.Count 8 "Expected the top predicate count for the fixture batch."))
 
-              testCase "Graph working SQLite index can summarize conversations inside one import slice" (fun () ->
+              testCase "Graph working SQLite index can summarize conversations inside one import batch" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-conversations" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let report =
                           GraphWorkingIndex.tryBuildImportConversationReport eventStoreRoot importResult.ImportId 10
-                          |> Option.defaultWith (fun () -> failwith "Expected a working-import conversation report for the imported slice.")
+                          |> Option.defaultWith (fun () -> failwith "Expected a working-import conversation report for the imported batch.")
 
-                      Expect.equal report.ImportId importResult.ImportId "Expected the report to target the imported slice."
+                      Expect.equal report.ImportId importResult.ImportId "Expected the report to target the imported batch."
                       Expect.equal report.Provider (Some "claude") "Expected provider enrichment in the conversation report."
                       Expect.equal report.Window (Some "full") "Expected window enrichment in the conversation report."
-                      Expect.equal report.ConversationCount 1 "Expected one conversation node in the fixture slice."
+                      Expect.equal report.ConversationCount 1 "Expected one conversation node in the fixture batch."
                       Expect.equal report.Items.Length 1 "Expected one conversation summary row."
                       Expect.equal report.Items.Head.Title (Some "Claude Fixture Conversation") "Expected the fixture conversation title."
                       Expect.equal report.Items.Head.MessageCount 2 "Expected two fixture messages in the conversation."
@@ -93,7 +93,7 @@ module GraphWorkingIndexTests =
                       Expect.equal matches.Head.NodeKind (Some "conversation_node") "Expected the conversation node kind."
                       Expect.contains matches.Head.MatchReasons "title_or_slug" "Expected a title/slug match reason."))
 
-              testCase "Graph working SQLite index can report a node neighborhood inside one import slice" (fun () ->
+              testCase "Graph working SQLite index can report a node neighborhood inside one import batch" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-neighborhood" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -124,14 +124,14 @@ module GraphWorkingIndexTests =
                           (report.IncomingConnections |> List.exists (fun item -> item.Predicate = "belongs_to_conversation"))
                           "Expected messages to point into the conversation neighborhood."))
 
-              testCase "CLI report-working-graph-slice shows SQLite working-index details" (fun () ->
+              testCase "CLI report-working-graph-batch shows SQLite working-index details" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-cli" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
 
                       let cliResult =
                           TestHelpers.runCli
-                              [ "report-working-graph-slice"
+                              [ "report-working-graph-batch"
                                 "--event-store-root"
                                 eventStoreRoot
                                 "--import-id"
@@ -139,9 +139,9 @@ module GraphWorkingIndexTests =
                                 "--limit"
                                 "5" ]
 
-                      Expect.equal cliResult.ExitCode 0 "Expected the working-index slice report command to succeed."
-                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-index slice report command."
-                      Expect.stringContains cliResult.StandardOutput "Graph working slice report." "Expected the slice report header."
+                      Expect.equal cliResult.ExitCode 0 "Expected the working-index batch report command to succeed."
+                      Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-index batch report command."
+                      Expect.stringContains cliResult.StandardOutput "Graph working batch report." "Expected the batch report header."
                       Expect.stringContains cliResult.StandardOutput "Index: graph/working/index/graph-working.sqlite" "Expected the SQLite index path in the report."
                       Expect.stringContains cliResult.StandardOutput "Provider: claude" "Expected provider enrichment in the report."
                       Expect.stringContains cliResult.StandardOutput "Graph assertions: 46" "Expected the graph assertion count in the report."
@@ -165,7 +165,7 @@ module GraphWorkingIndexTests =
                       Expect.equal cliResult.ExitCode 0 "Expected the working-import conversation report command to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import conversation report command."
                       Expect.stringContains cliResult.StandardOutput "Working import conversations report." "Expected the conversation report header."
-                      Expect.stringContains cliResult.StandardOutput "Conversations in slice: 1" "Expected the conversation count in the report."
+                      Expect.stringContains cliResult.StandardOutput "Conversations in batch: 1" "Expected the conversation count in the report."
                       Expect.stringContains cliResult.StandardOutput "Claude Fixture Conversation" "Expected the fixture conversation title in the report."
                       Expect.stringContains cliResult.StandardOutput "messages=2 artifacts=1" "Expected the message and artifact counts in the report."))
 
@@ -187,7 +187,7 @@ module GraphWorkingIndexTests =
 
                       Expect.equal report.BaseImportId baseResult.ImportId "Expected the base import ID in the comparison report."
                       Expect.equal report.CurrentImportId currentResult.ImportId "Expected the current import ID in the comparison report."
-                      Expect.equal report.AddedConversationCount 1 "Expected one newly contributed conversation in the follow-on slice."
+                      Expect.equal report.AddedConversationCount 1 "Expected one newly contributed conversation in the follow-on batch."
                       Expect.equal report.RemovedConversationCount 0 "Expected no removed conversations in this fixture progression."
                       Expect.equal report.ChangedConversationCount 1 "Expected the existing fixture conversation contribution to differ."
                       Expect.equal report.UnchangedConversationCount 0 "Expected no unchanged shared conversations in the fixture progression."
@@ -198,9 +198,9 @@ module GraphWorkingIndexTests =
                       Expect.equal report.AddedConversations.Head.MessageCount 1 "Expected the new follow-on conversation contribution count."
                       Expect.equal report.ChangedConversations.Head.BaseTitle (Some "Claude Fixture Conversation") "Expected the shared fixture conversation label."
                       Expect.equal report.ChangedConversations.Head.BaseMessageCount 2 "Expected the base conversation contribution to include two messages."
-                      Expect.equal report.ChangedConversations.Head.CurrentMessageCount 1 "Expected the follow-on slice to contribute one new message."
-                      Expect.equal report.ChangedConversations.Head.BaseArtifactCount 1 "Expected one artifact in the base slice contribution."
-                      Expect.equal report.ChangedConversations.Head.CurrentArtifactCount 0 "Expected no new artifact references in the follow-on slice contribution."))
+                      Expect.equal report.ChangedConversations.Head.CurrentMessageCount 1 "Expected the follow-on batch to contribute one new message."
+                      Expect.equal report.ChangedConversations.Head.BaseArtifactCount 1 "Expected one artifact in the base batch contribution."
+                      Expect.equal report.ChangedConversations.Head.CurrentArtifactCount 0 "Expected no new artifact references in the follow-on batch contribution."))
 
               testCase "CLI find-working-graph-nodes shows indexed matches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-find-cli" (fun tempRoot ->
@@ -289,7 +289,7 @@ module GraphWorkingIndexTests =
                       Expect.stringContains cliResult.StandardOutput "Incoming:" "Expected incoming neighborhood rows."
                       Expect.stringContains cliResult.StandardOutput "belongs_to_conversation" "Expected relationship detail in the neighborhood output."))
 
-              testCase "CLI rebuild-working-graph-index recreates the SQLite index from working slices" (fun () ->
+              testCase "CLI rebuild-working-graph-index recreates the SQLite index from working batches" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-index-rebuild" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -312,16 +312,16 @@ module GraphWorkingIndexTests =
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-index rebuild command."
                       Expect.isTrue (File.Exists(indexPath)) "Expected the SQLite graph working index to be recreated."
                       Expect.stringContains cliResult.StandardOutput "Graph working SQLite index rebuilt." "Expected the rebuild header."
-                      Expect.stringContains cliResult.StandardOutput "Working slices indexed: 1" "Expected the indexed slice count."
+                      Expect.stringContains cliResult.StandardOutput "Working batches indexed: 1" "Expected the indexed batch count."
                       Expect.stringContains cliResult.StandardOutput "Graph assertions indexed: 46" "Expected the indexed assertion count."
 
                       let report =
-                          GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importResult.ImportId 5
-                          |> Option.defaultWith (fun () -> failwith "Expected the rebuilt SQLite index to answer slice queries.")
+                          GraphWorkingIndex.tryBuildImportBatchReport eventStoreRoot importResult.ImportId 5
+                          |> Option.defaultWith (fun () -> failwith "Expected the rebuilt SQLite index to answer batch queries.")
 
-                      Expect.equal report.GraphAssertionCount 46 "Expected the rebuilt SQLite index to restore the slice."))
+                      Expect.equal report.GraphAssertionCount 46 "Expected the rebuilt SQLite index to restore the batch."))
 
-              testCase "CLI verify-working-graph-slice succeeds for a clean fixture import" (fun () ->
+              testCase "CLI verify-working-graph-batch succeeds for a clean fixture import" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-verify-clean" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let objectsRoot = Path.Combine(tempRoot, "objects")
@@ -329,7 +329,7 @@ module GraphWorkingIndexTests =
 
                       let cliResult =
                           TestHelpers.runCli
-                              [ "verify-working-graph-slice"
+                              [ "verify-working-graph-batch"
                                 "--event-store-root"
                                 eventStoreRoot
                                 "--objects-root"
@@ -337,13 +337,13 @@ module GraphWorkingIndexTests =
                                 "--import-id"
                                 (ImportId.format importResult.ImportId) ]
 
-                      Expect.equal cliResult.ExitCode 0 "Expected graph working verification to succeed for the clean fixture import."
+                      Expect.equal cliResult.ExitCode 0 "Expected graph working batch verification to succeed for the clean fixture import."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the clean verification command."
-                      Expect.stringContains cliResult.StandardOutput "Graph working slice verification." "Expected the verification header."
+                      Expect.stringContains cliResult.StandardOutput "Graph working batch verification." "Expected the verification header."
                       Expect.stringContains cliResult.StandardOutput "Missing canonical event refs: 0" "Expected no missing canonical events."
                       Expect.stringContains cliResult.StandardOutput "Missing raw object refs: 0" "Expected no missing raw objects."))
 
-              testCase "CLI verify-working-graph-slice fails when a canonical event is missing" (fun () ->
+              testCase "CLI verify-working-graph-batch fails when a canonical event is missing" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graph-working-verify-broken" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeFixtureImportRequest tempRoot
                       let objectsRoot = Path.Combine(tempRoot, "objects")
@@ -358,7 +358,7 @@ module GraphWorkingIndexTests =
 
                       let cliResult =
                           TestHelpers.runCli
-                              [ "verify-working-graph-slice"
+                              [ "verify-working-graph-batch"
                                 "--event-store-root"
                                 eventStoreRoot
                                 "--objects-root"

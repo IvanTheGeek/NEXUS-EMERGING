@@ -1,12 +1,12 @@
 # Rebuild Working Graph Index
 
-This command rebuilds the persisted SQLite working index from the existing graph working import slices.
+This command rebuilds the persisted SQLite working index from the existing graph working import batches.
 
 Use it when:
 
 - `graph/working/index/graph-working.sqlite` is missing
 - you intentionally deleted or reset the index
-- you want to prove the SQLite layer is rebuildable from the working-slice files
+- you want to prove the SQLite layer is rebuildable from the working-batch files
 
 ## Command
 
@@ -25,10 +25,10 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 
 ## What It Does
 
-1. Reads the current graph working catalog and import-slice manifests
+1. Reads the current graph working catalog and import-batch manifests
 2. Scans `graph/working/imports/<import-id>/assertions/`
 3. Rebuilds `graph/working/index/graph-working.sqlite`
-4. Restores per-import working-slice summaries for later CLI queries
+4. Restores per-import working-batch summaries for later CLI queries
 
 ## Notes
 
@@ -41,5 +41,5 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-imports
-dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-slice --import-id <uuid>
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working-graph-batch --import-id <uuid>
 ```

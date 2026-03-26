@@ -8,6 +8,7 @@ open Nexus.Curation
 open Nexus.Domain
 open Nexus.EventStore
 open Nexus.Importers
+open Nexus.Logos
 
 module Program =
     type private CommandHelp =
@@ -20,7 +21,7 @@ module Program =
 
     type private GraphvizExportVerification =
         | NoVerification
-        | TraceableWorkingSlice
+        | TraceableWorkingBatch
 
     type private Command =
         | ShowHelp of commandName: string option
@@ -29,6 +30,9 @@ module Program =
         | CompareImportSnapshots of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
         | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
+        | ReportLogosCatalog
+        | ReportLogosHandling of docsRoot: string * limit: int
+        | ExportLogosPublicNotes of docsRoot: string * outputRoot: string
         | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
@@ -54,11 +58,13 @@ module Program =
         | ReportWorkingImportConversations of eventStoreRoot: string * importId: ImportId * limit: int
         | CompareWorkingImportConversations of eventStoreRoot: string * baseImportId: ImportId * currentImportId: ImportId * limit: int
         | FindWorkingGraphNodes of eventStoreRoot: string * importId: ImportId option * provider: string option * matchText: string option * semanticRole: string option * messageRole: string option * limit: int
-        | ReportWorkingGraphSlice of eventStoreRoot: string * importId: ImportId * limit: int
+        | ReportWorkingGraphBatch of eventStoreRoot: string * importId: ImportId * limit: int
         | ReportWorkingGraphNeighborhood of eventStoreRoot: string * importId: ImportId * nodeId: string * limit: int
-        | VerifyWorkingGraphSlice of eventStoreRoot: string * objectsRoot: string * importId: ImportId
+        | VerifyWorkingGraphBatch of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
+        | CreateLogosIntakeNote of request: CreateLogosIntakeNoteRequest
+        | CreateLogosSanitizedNote of request: CreateLogosSanitizedNoteRequest
         | CreateConceptNote of request: CreateConceptNoteRequest
 
     let private repoRoot =
@@ -72,6 +78,9 @@ module Program =
 
     let private defaultDocsRoot =
         Path.Combine(repoRoot, "docs")
+
+    let private defaultLogosPublicRoot =
+        Path.Combine(defaultDocsRoot, "logos-public")
 
     let private defaultCodexSnapshotRoot =
         Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
@@ -97,7 +106,7 @@ module Program =
 
         match normalized with
         | "none" -> Some NoVerification
-        | "traceable" -> Some TraceableWorkingSlice
+        | "traceable" -> Some TraceableWorkingBatch
         | _ -> None
 
     let private tryNormalizeGraphSlugFilter (value: string) =
@@ -178,7 +187,7 @@ module Program =
                       sprintf "%s compare-import-snapshots --event-store-root /tmp/nexus-event-store --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
                   Notes =
                     [ "This compares normalized per-import snapshots derived from parsed provider payloads before canonical dedupe."
-                      "Use it when you want snapshot semantics at the normalized layer, rather than additive batch-local working slices."
+                      "Use it when you want snapshot semantics at the normalized layer, rather than additive batch-local working-batch contributions."
                       "Absence from the current snapshot means absence from that import payload only; it does not imply canonical deletion."
                       "Older imports may predate snapshot materialization and can be backfilled with rebuild-import-snapshots."
                       "Detailed guide: docs/how-to/compare-import-snapshots.md" ] }
@@ -198,7 +207,7 @@ module Program =
                     [ sprintf "%s report-provider-import-history --provider chatgpt" cliInvocation
                       sprintf "%s report-provider-import-history --provider claude --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --limit 10" cliInvocation ]
                   Notes =
-                    [ "This uses normalized import snapshots, not additive working-slice contributions."
+                    [ "This uses normalized import snapshots, not additive working-batch contributions."
                       "When the preserved raw artifact still exists, the report also prints its SHA-256."
                       "Each row shows one import snapshot plus the delta from the previous snapshot for that provider."
                       "If older imports are missing snapshot files, run rebuild-import-snapshots first."
@@ -221,6 +230,53 @@ module Program =
                       "Providers like Codex currently report from import-manifest counts because they do not yet write normalized import snapshots."
                       "When the preserved root artifact still exists, the report also prints its SHA-256."
                       "Detailed guide: docs/how-to/report-current-ingestion.md" ] }
+        | "report-logos-catalog" ->
+            Some
+                { Name = name
+                  Summary = "Report the explicit allowlisted LOGOS source, access, acquisition, rights, and handling vocabulary."
+                  Usage = [ sprintf "%s report-logos-catalog" cliInvocation ]
+                  Options = []
+                  Examples = [ sprintf "%s report-logos-catalog" cliInvocation ]
+                  Notes =
+                    [ "This is the concrete LOGOS intake vocabulary currently recognized by the codebase."
+                      "Use it before seeding intake notes so source-system, source-instance, access, acquisition, rights, and handling-policy dimensions stay explicit."
+                      "Detailed guide: docs/how-to/report-logos-catalog.md" ] }
+        | "report-logos-handling" ->
+            Some
+                { Name = name
+                  Summary = "Audit LOGOS intake and derived notes by access, rights, and handling metadata so restricted and shareable notes stay visible."
+                  Usage =
+                    [ sprintf "%s report-logos-handling" cliInvocation
+                      sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
+                  Options =
+                    [ "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot
+                      "--limit <n>", "Limit note rows shown in each flagged section. Defaults to 10." ]
+                  Examples =
+                    [ sprintf "%s report-logos-handling" cliInvocation
+                      sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively for LOGOS notes with handling metadata."
+                      "Use it to see which notes are still raw, which remain personal-private or customer-confidential, which notes are approved-for-sharing, which rights are still review-required, and which materials likely require attribution."
+                      "This is an audit report, not a publication gate by itself."
+                      "Detailed guide: docs/how-to/report-logos-handling.md" ] }
+        | "export-logos-public-notes" ->
+            Some
+                { Name = name
+                  Summary = "Export only public-safe LOGOS notes into a dedicated output folder."
+                  Usage =
+                    [ sprintf "%s export-logos-public-notes" cliInvocation
+                      sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
+                  Options =
+                    [ "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot
+                      "--output-root <path>", sprintf "Override the public export root. Defaults to %s." defaultLogosPublicRoot ]
+                  Examples =
+                    [ sprintf "%s export-logos-public-notes" cliInvocation
+                      sprintf "%s export-logos-public-notes --docs-root /tmp/nexus-docs --output-root /tmp/nexus-public" cliInvocation ]
+                  Notes =
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ recursively and exports only notes that successfully cross the PublicSafe pool boundary with rights that also allow public distribution."
+                      "Notes that are merely sanitized, raw, team-only, personal-training-only, contract-restricted, or missing required attribution are skipped with explicit reasons."
+                      "This is the first real public-facing workflow protected by PublicSafePoolItem<_> plus explicit rights-policy checks."
+                      "Detailed guide: docs/how-to/export-logos-public-notes.md" ] }
         | "report-conversation-overlap-candidates" ->
             Some
                 { Name = name
@@ -377,7 +433,7 @@ module Program =
                       sprintf "%s export-graphviz-dot --provider claude --output-root /tmp/nexus-graph-exports" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--objects-root <path>", sprintf "Override the objects root for traceable working-slice verification. Defaults to %s." defaultObjectsRoot
+                      "--objects-root <path>", sprintf "Override the objects root for traceable working-batch verification. Defaults to %s." defaultObjectsRoot
                       "--output <path>", "Optional DOT output path. Defaults to a filter-aware name under <event-store-root>/graph/exports."
                       "--output-root <path>", "Optional output directory root. NEXUS will place the default file name under this directory."
                       "--verification <none|traceable>", "Verification mode. Defaults to none. traceable is currently supported only with --working-import-id."
@@ -385,8 +441,8 @@ module Program =
                       "--conversation-id <uuid>", "Only include the selected canonical conversation and its immediate graph neighborhood."
                       "--provider-conversation-id <id>", "Only include assertions whose provenance references the selected provider-native conversation ID."
                       "--import-id <uuid>", "Only include assertions whose provenance import_id matches the selected import."
-                      "--working-import-id <uuid>", "Export one graph working import slice directly, without reading graph/assertions/."
-                      "--working-node-id <node-id>", "When used with --working-import-id, export only that node's immediate neighborhood from the working slice." ]
+                      "--working-import-id <uuid>", "Export one graph working import batch directly, without reading graph/assertions/."
+                      "--working-node-id <node-id>", "When used with --working-import-id, export only that node's immediate neighborhood scope from the working batch." ]
                   Examples =
                     [ sprintf "%s export-graphviz-dot" cliInvocation
                       sprintf "%s export-graphviz-dot --provider claude" cliInvocation
@@ -398,12 +454,12 @@ module Program =
                       sprintf "%s export-graphviz-dot --provider codex --output /tmp/codex-graph.dot" cliInvocation ]
                   Notes =
                     [ "Run rebuild-graph-assertions first when the derived graph may be stale."
-                      "Use --working-import-id when you want the graph working slice from a fresh import batch without a full durable-graph rebuild."
-                      "Use --working-node-id together with --working-import-id when you want just one node's immediate neighborhood from the working slice."
-                      "Traceable verification currently applies only to --working-import-id exports and checks the working slice back to canonical events and raw object refs before writing DOT output."
+                      "Use --working-import-id when you want the graph working batch from a fresh import batch without a full durable-graph rebuild."
+                      "Use --working-node-id together with --working-import-id when you want just one node's immediate neighborhood scope from the working batch."
+                      "Traceable verification currently applies only to --working-import-id exports and checks the working batch back to canonical events and raw object refs before writing DOT output."
                       "Use either --output or --output-root, not both."
-                      "Canonical conversation slices use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
-                      "Filters are applied from graph assertion provenance, which makes provider, conversation, and import slices practical without replaying canonical history."
+                      "Canonical conversation scopes use the conversation_id from conversation projections and include the conversation plus its immediate graph neighborhood."
+                      "Filters are applied from graph assertion provenance, which makes provider, conversation, and import scopes practical without replaying canonical history."
                       "This is an external lens over derived graph assertions, useful for surfacing patterns outside current NEXUS views."
                       "Detailed guide: docs/how-to/export-graphviz-dot.md" ] }
         | "render-graphviz-dot" ->
@@ -449,7 +505,7 @@ module Program =
         | "report-working-graph-imports" ->
             Some
                 { Name = name
-                  Summary = "Summarize the import-batch graph working slices without rereading every assertion TOML file."
+                  Summary = "Summarize graph working batches by import without rereading every assertion TOML file."
                   Usage =
                     [ sprintf "%s report-working-graph-imports" cliInvocation
                       sprintf "%s report-working-graph-imports --limit 10" cliInvocation ]
@@ -461,43 +517,43 @@ module Program =
                       sprintf "%s report-working-graph-imports --event-store-root /tmp/nexus-event-store --limit 5" cliInvocation ]
                   Notes =
                     [ "This report prefers the graph working catalog under graph/working/catalog/ and falls back to manifest scanning if needed."
-                      "The detail list joins each working-slice entry back to the canonical import manifest when present."
+                      "The detail list joins each working-batch entry back to the canonical import manifest when present."
                       "Detailed guide: docs/how-to/report-working-graph-imports.md" ] }
         | "report-working-import-conversations" ->
             Some
                 { Name = name
-                  Summary = "Summarize the conversation nodes present in one import-local graph working slice."
+                  Summary = "Summarize the conversation nodes present in one import-local graph working batch."
                   Usage =
                     [ sprintf "%s report-working-import-conversations --import-id <uuid>" cliInvocation
                       sprintf "%s report-working-import-conversations --import-id <uuid> --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--import-id <uuid>", "Required. Select the import-local graph working slice to summarize."
+                      "--import-id <uuid>", "Required. Select the import-local graph working batch to summarize."
                       "--limit <n>", "Limit conversation rows. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s report-working-import-conversations --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
                       sprintf "%s report-working-import-conversations --event-store-root /tmp/nexus-event-store --import-id <uuid> --limit 10" cliInvocation ]
                   Notes =
-                    [ "This report reads the SQLite working index and presents the import slice in conversation terms rather than graph-node terms."
+                    [ "This report reads the SQLite working index and presents the import batch in conversation terms rather than graph-node terms."
                       "It is useful for understanding what a fresh provider export contributed before you dive into individual neighborhoods."
                       "Detailed guide: docs/how-to/report-working-import-conversations.md" ] }
         | "compare-working-import-conversations" ->
             Some
                 { Name = name
-                  Summary = "Compare the conversation contributions present in two import-local graph working slices."
+                  Summary = "Compare the conversation contributions present in two import-local graph working batches."
                   Usage =
                     [ sprintf "%s compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid>" cliInvocation
                       sprintf "%s compare-working-import-conversations --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--base-import-id <uuid>", "Required. Select the older or reference import-local graph working slice."
-                      "--current-import-id <uuid>", "Required. Select the newer or comparison import-local graph working slice."
+                      "--base-import-id <uuid>", "Required. Select the older or reference import-local graph working batch."
+                      "--current-import-id <uuid>", "Required. Select the newer or comparison import-local graph working batch."
                       "--limit <n>", "Limit detailed rows per bucket. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s compare-working-import-conversations --base-import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --current-import-id 019d1f70-b326-7d1e-a106-73dbd399f911" cliInvocation
                       sprintf "%s compare-working-import-conversations --event-store-root /tmp/nexus-event-store --base-import-id <uuid> --current-import-id <uuid> --limit 10" cliInvocation ]
                   Notes =
-                    [ "This compares batch-local working-slice conversation contributions, not full provider snapshot truth."
+                    [ "This compares batch-local working-batch conversation contributions, not full provider snapshot truth."
                       "Use it to understand what changed between two import batches before deciding whether you need deeper canonical or raw-layer inspection."
                       "Detailed guide: docs/how-to/compare-working-import-conversations.md" ] }
         | "find-working-graph-nodes" ->
@@ -524,65 +580,69 @@ module Program =
                     [ "At least one of --match, --semantic-role, or --message-role is required."
                       "Use this to discover candidate node IDs before running report-working-graph-neighborhood."
                       "Detailed guide: docs/how-to/find-working-graph-nodes.md" ] }
+        | "report-working-graph-batch"
         | "report-working-graph-slice" ->
             Some
-                { Name = name
-                  Summary = "Summarize one import-batch graph working slice from the persisted SQLite index."
+                { Name = "report-working-graph-batch"
+                  Summary = "Summarize one import-batch graph working batch from the persisted SQLite index."
                   Usage =
-                    [ sprintf "%s report-working-graph-slice --import-id <uuid>" cliInvocation
-                      sprintf "%s report-working-graph-slice --import-id <uuid> --limit 10" cliInvocation ]
+                    [ sprintf "%s report-working-graph-batch --import-id <uuid>" cliInvocation
+                      sprintf "%s report-working-graph-batch --import-id <uuid> --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--import-id <uuid>", "Required. Select the graph working import slice to summarize."
+                      "--import-id <uuid>", "Required. Select the graph working import batch to summarize."
                       "--limit <n>", "Limit predicate-count rows. Defaults to 10." ]
                   Examples =
-                    [ sprintf "%s report-working-graph-slice --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
-                      sprintf "%s report-working-graph-slice --event-store-root /tmp/nexus-event-store --import-id <uuid> --limit 5" cliInvocation ]
+                    [ sprintf "%s report-working-graph-batch --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s report-working-graph-batch --event-store-root /tmp/nexus-event-store --import-id <uuid> --limit 5" cliInvocation ]
                   Notes =
                     [ "This report reads the SQLite working index under graph/working/index/."
-                      "Working slices remain derived and rebuildable from canonical history."
-                      "Detailed guide: docs/how-to/report-working-graph-slice.md" ] }
+                      "Working batches remain derived and rebuildable from canonical history."
+                      "Legacy alias: report-working-graph-slice"
+                      "Detailed guide: docs/how-to/report-working-graph-batch.md" ] }
         | "report-working-graph-neighborhood" ->
             Some
                 { Name = name
-                  Summary = "Show the local neighborhood of one node inside an import-local graph working slice."
+                  Summary = "Show the local neighborhood of one node inside an import-local graph working batch."
                   Usage =
                     [ sprintf "%s report-working-graph-neighborhood --import-id <uuid> --node-id <node-id>" cliInvocation
                       sprintf "%s report-working-graph-neighborhood --import-id <uuid> --node-id <node-id> --limit 10" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
-                      "--import-id <uuid>", "Required. Select the graph working import slice to inspect."
+                      "--import-id <uuid>", "Required. Select the graph working import batch to inspect."
                       "--node-id <node-id>", "Required. Select the node to inspect."
                       "--limit <n>", "Limit outgoing, incoming, and literal rows. Defaults to 20." ]
                   Examples =
                     [ sprintf "%s report-working-graph-neighborhood --import-id 019d174e-e953-7e8b-b506-5f1475399fc7 --node-id 019d174e-e960-7507-8aa6-06ee0064e499" cliInvocation
                       sprintf "%s report-working-graph-neighborhood --event-store-root /tmp/nexus-event-store --import-id <uuid> --node-id <node-id> --limit 10" cliInvocation ]
                   Notes =
-                    [ "This report reads the SQLite working index and stays scoped to one import-local working slice."
+                    [ "This report reads the SQLite working index and stays scoped to one import-local working batch."
                       "Use find-working-graph-nodes first if you need help locating node IDs."
                       "Detailed guide: docs/how-to/report-working-graph-neighborhood.md" ] }
+        | "verify-working-graph-batch"
         | "verify-working-graph-slice" ->
             Some
-                { Name = name
-                  Summary = "Verify one graph working slice back to canonical events and preserved raw objects."
+                { Name = "verify-working-graph-batch"
+                  Summary = "Verify one graph working batch back to canonical events and preserved raw objects."
                   Usage =
-                    [ sprintf "%s verify-working-graph-slice --import-id <uuid>" cliInvocation
-                      sprintf "%s verify-working-graph-slice --import-id <uuid> --objects-root /tmp/nexus-objects" cliInvocation ]
+                    [ sprintf "%s verify-working-graph-batch --import-id <uuid>" cliInvocation
+                      sprintf "%s verify-working-graph-batch --import-id <uuid> --objects-root /tmp/nexus-objects" cliInvocation ]
                   Options =
                     [ "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
                       "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
-                      "--import-id <uuid>", "Required. Select the graph working import slice to verify." ]
+                      "--import-id <uuid>", "Required. Select the graph working import batch to verify." ]
                   Examples =
-                    [ sprintf "%s verify-working-graph-slice --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
-                      sprintf "%s verify-working-graph-slice --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --import-id <uuid>" cliInvocation ]
+                    [ sprintf "%s verify-working-graph-batch --import-id 019d174e-e953-7e8b-b506-5f1475399fc7" cliInvocation
+                      sprintf "%s verify-working-graph-batch --event-store-root /tmp/nexus-event-store --objects-root /tmp/nexus-objects --import-id <uuid>" cliInvocation ]
                   Notes =
-                    [ "This command verifies the traceability chain from the working slice back to canonical events and raw object refs."
+                    [ "This command verifies the traceability chain from the working batch back to canonical events and raw object refs."
                       "It exits non-zero when canonical event links or raw object refs are missing."
-                      "Detailed guide: docs/how-to/verify-working-graph-slice.md" ] }
+                      "Legacy alias: verify-working-graph-slice"
+                      "Detailed guide: docs/how-to/verify-working-graph-batch.md" ] }
         | "rebuild-working-graph-index" ->
             Some
                 { Name = name
-                  Summary = "Rebuild the SQLite graph working index from the existing graph working import slices."
+                  Summary = "Rebuild the SQLite graph working index from the existing graph working import batches."
                   Usage =
                     [ sprintf "%s rebuild-working-graph-index" cliInvocation
                       sprintf "%s rebuild-working-graph-index --event-store-root /tmp/nexus-event-store" cliInvocation ]
@@ -631,6 +691,75 @@ module Program =
                     [ "This writes a Markdown note under docs/concepts/ and keeps source provenance back to canonical conversation projections."
                       "Seed notes are meant to be edited and refined by humans and AI after creation."
                       "Detailed guide: docs/how-to/create-concept-note.md" ] }
+        | "create-logos-intake-note" ->
+            Some
+                { Name = name
+                  Summary = "Create a durable LOGOS intake seed note from explicit source, access, acquisition, rights, locator, and handling metadata."
+                  Usage =
+                    [ sprintf "%s create-logos-intake-note --slug <slug> --title <title> --source-system <slug> --intake-channel <slug> --signal-kind <slug> --source-uri <uri>" cliInvocation
+                      sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation ]
+                  Options =
+                    [ "--slug <slug>", "Required. Explicit file-safe slug using lowercase ascii letters, digits, and '-'."
+                      "--title <title>", "Required. Human-readable title for the intake note."
+                      "--source-system <slug>", "Required. Explicit allowlisted source system. Run report-logos-catalog to inspect values."
+                      "--source-instance <slug>", "Optional stable source-instance slug such as one concrete forum host or repo surface."
+                      "--access-context <public-anonymous|registered-user|owner|admin|bot|api-client>", "Explicit access context. Defaults to owner."
+                      "--acquisition-kind <manual-note|web-scrape|api-pull|manual-export|live-capture>", "Explicit acquisition kind. Defaults to manual-note."
+                      "--intake-channel <slug>", "Required. Explicit allowlisted intake channel."
+                      "--signal-kind <slug>", "Required. Explicit allowlisted signal kind."
+                      "--entry-pool <raw|private|public-safe>", "Choose which LOGOS pool path the new note enters. Defaults to raw."
+                      "--rights-policy <owner-controlled|personal-training-only|site-terms-restricted|cc-by|cc-by-sa|api-contract-restricted|customer-confidential|review-required>", "Explicit rights-policy classification. Defaults to review-required."
+                      "--attribution-reference <text>", "Optional attribution, license, or source-reference text to carry forward for later UI/help visibility."
+                      "--sensitivity <slug>", "Optional explicit allowlisted sensitivity. Defaults to internal-restricted."
+                      "--sharing-scope <slug>", "Optional explicit allowlisted sharing scope. Defaults to owner-only."
+                      "--sanitization-status <slug>", "Optional explicit allowlisted sanitization status. Defaults to raw."
+                      "--retention-class <slug>", "Optional explicit allowlisted retention class. Defaults to durable."
+                      "--native-item-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--native-thread-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--native-message-id <id>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--source-uri <uri>", "Optional explicit source locator. Repeatable with other locator options."
+                      "--captured-at <iso-8601>", "Optional capture timestamp."
+                      "--summary <text>", "Optional seed summary."
+                      "--tag <slug>", "Optional explicit tag slug. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
+                  Examples =
+                    [ sprintf "%s create-logos-intake-note --slug support-thread-123 --title \"Support Thread 123\" --source-system forum --intake-channel forum-thread --signal-kind support-question --source-uri https://community.example.com/t/123" cliInvocation
+                      sprintf "%s create-logos-intake-note --slug startup-feedback-2026-03 --title \"Startup Feedback\" --source-system app-feedback-surface --access-context public-anonymous --acquisition-kind web-scrape --rights-policy review-required --intake-channel app-feedback --signal-kind feedback --entry-pool private --native-item-id fb-2026-03-25-001 --tag deployed-app" cliInvocation ]
+                  Notes =
+                    [ "This writes a Markdown seed note under docs/logos-intake/<pool>/."
+                      "Use it to represent early LOGOS intake before a full ingestion pipeline exists for that source type."
+                      "Access context and rights policy are explicit because technical visibility does not imply publication permission."
+                      "New notes default to a restricted handling policy unless you explicitly choose other allowlisted values."
+                      "Choosing public-safe at entry requires a policy that crosses the explicit PublicSafe pool boundary."
+                      "At least one explicit locator is required."
+                      "Detailed guide: docs/how-to/create-logos-intake-note.md" ] }
+        | "create-logos-sanitized-note" ->
+            Some
+                { Name = name
+                  Summary = "Create a derived sanitized LOGOS note from an existing restricted intake note."
+                  Usage =
+                    [ sprintf "%s create-logos-sanitized-note --source-slug <slug> --slug <slug> --title <title> --sanitization-status <slug>" cliInvocation
+                      sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation ]
+                  Options =
+                    [ "--source-slug <slug>", "Required. Select the source LOGOS intake note under docs/logos-intake/ recursively."
+                      "--slug <slug>", "Required. Explicit file-safe slug for the derived note."
+                      "--title <title>", "Required. Explicit sanitized title. This is not copied from the source note."
+                      "--sanitization-status <redacted|anonymized|approved-for-sharing>", "Required. Explicit derived sanitization status."
+                      "--sensitivity <slug>", "Optional explicit allowlisted sensitivity. Defaults to the source note value."
+                      "--sharing-scope <slug>", "Optional explicit allowlisted sharing scope. Defaults to the source note value."
+                      "--retention-class <slug>", "Optional explicit allowlisted retention class. Defaults to the source note value."
+                      "--summary <text>", "Optional sanitized summary. Defaults to a placeholder."
+                      "--tag <slug>", "Optional explicit tag slug. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
+                  Examples =
+                    [ sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation
+                      sprintf "%s create-logos-sanitized-note --source-slug cheddarbooks-debug-case-42 --slug cheddarbooks-case-42-anonymized --title \"CheddarBooks Case 42 (Anonymized)\" --sanitization-status anonymized --sharing-scope project-team" cliInvocation ]
+                  Notes =
+                    [ "This writes a derived note under docs/logos-intake-derived/<pool>/."
+                      "Raw locators and raw source text remain in the restricted source intake note."
+                      "Use this as an explicit derived sanitization step rather than widening access to the raw note."
+                      "approved-for-sharing requires an explicit --sharing-scope."
+                      "Detailed guide: docs/how-to/create-logos-sanitized-note.md" ] }
         | _ -> None
 
     let private availableCommands () =
@@ -639,6 +768,9 @@ module Program =
           "compare-import-snapshots"
           "report-provider-import-history"
           "report-current-ingestion"
+          "report-logos-catalog"
+          "report-logos-handling"
+          "export-logos-public-notes"
           "report-conversation-overlap-candidates"
           "rebuild-import-snapshots"
           "import-provider-export"
@@ -653,11 +785,13 @@ module Program =
           "report-working-import-conversations"
           "compare-working-import-conversations"
           "find-working-graph-nodes"
-          "report-working-graph-slice"
+          "report-working-graph-batch"
           "report-working-graph-neighborhood"
-          "verify-working-graph-slice"
+          "verify-working-graph-batch"
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
+          "create-logos-intake-note"
+          "create-logos-sanitized-note"
           "create-concept-note" ]
         |> List.choose (fun name ->
             commandHelp name
@@ -1165,7 +1299,7 @@ module Program =
                                         workingNodeId))
                         | None, _, _, _, _ ->
                             match verification, objectsRootOverride, workingNodeId with
-                            | TraceableWorkingSlice, _, _ ->
+                            | TraceableWorkingBatch, _, _ ->
                                 eprintfn "Traceable verification for export-graphviz-dot is currently supported only with --working-import-id."
                                 printCommandHelp "export-graphviz-dot"
                                 Error 1
@@ -1268,6 +1402,9 @@ module Program =
         | "svg" -> Some Svg
         | "png" -> Some Png
         | _ -> None
+
+    let private parseLogosPool (value: string) =
+        LogosPool.tryParse value
 
     let private parseRenderGraphvizDot (args: string list) =
         if containsHelpSwitch args then
@@ -1566,6 +1703,59 @@ module Program =
 
             loop defaultEventStoreRoot defaultObjectsRoot args
 
+    let private parseReportLogosCatalog (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-logos-catalog"))
+        else
+            match args with
+            | [] -> Ok ReportLogosCatalog
+            | option :: _ ->
+                eprintfn "Unknown option for report-logos-catalog: %s" option
+                printCommandHelp "report-logos-catalog"
+                Error 1
+
+    let private parseReportLogosHandling (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-logos-handling"))
+        else
+            let rec loop docsRoot limit remaining =
+                match remaining with
+                | [] -> Ok (ReportLogosHandling(docsRoot, limit))
+                | "--docs-root" :: value :: rest ->
+                    loop value limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop docsRoot parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-logos-handling"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-logos-handling: %s" option
+                    printCommandHelp "report-logos-handling"
+                    Error 1
+
+            loop defaultDocsRoot 10 args
+
+    let private parseExportLogosPublicNotes (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "export-logos-public-notes"))
+        else
+            let rec loop docsRoot outputRoot remaining =
+                match remaining with
+                | [] -> Ok (ExportLogosPublicNotes(docsRoot, outputRoot))
+                | "--docs-root" :: value :: rest ->
+                    loop value outputRoot rest
+                | "--output-root" :: value :: rest ->
+                    loop docsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for export-logos-public-notes: %s" option
+                    printCommandHelp "export-logos-public-notes"
+                    Error 1
+
+            loop defaultDocsRoot defaultLogosPublicRoot args
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -1689,18 +1879,18 @@ module Program =
 
             loop defaultEventStoreRoot None None None None None 20 args
 
-    let private parseReportWorkingGraphSlice (args: string list) =
+    let private parseReportWorkingGraphBatch (args: string list) =
         if containsHelpSwitch args then
-            Ok (ShowHelp (Some "report-working-graph-slice"))
+            Ok (ShowHelp (Some "report-working-graph-batch"))
         else
             let rec loop eventStoreRoot importId limit remaining =
                 match remaining with
                 | [] ->
                     match importId with
-                    | Some importIdValue -> Ok (ReportWorkingGraphSlice(eventStoreRoot, importIdValue, limit))
+                    | Some importIdValue -> Ok (ReportWorkingGraphBatch(eventStoreRoot, importIdValue, limit))
                     | None ->
                         eprintfn "Missing required option: --import-id"
-                        printCommandHelp "report-working-graph-slice"
+                        printCommandHelp "report-working-graph-batch"
                         Error 1
                 | "--event-store-root" :: value :: rest ->
                     loop value importId limit rest
@@ -1710,7 +1900,7 @@ module Program =
                         loop eventStoreRoot (Some (ImportId.parse value)) limit rest
                     | false, _ ->
                         eprintfn "Invalid import ID: %s" value
-                        printCommandHelp "report-working-graph-slice"
+                        printCommandHelp "report-working-graph-batch"
                         Error 1
                 | "--limit" :: value :: rest ->
                     match Int32.TryParse(value) with
@@ -1719,11 +1909,11 @@ module Program =
                     | true, _
                     | false, _ ->
                         eprintfn "Invalid limit: %s" value
-                        printCommandHelp "report-working-graph-slice"
+                        printCommandHelp "report-working-graph-batch"
                         Error 1
                 | option :: _ ->
-                    eprintfn "Unknown option for report-working-graph-slice: %s" option
-                    printCommandHelp "report-working-graph-slice"
+                    eprintfn "Unknown option for report-working-graph-batch: %s" option
+                    printCommandHelp "report-working-graph-batch"
                     Error 1
 
             loop defaultEventStoreRoot None 10 args
@@ -1780,18 +1970,18 @@ module Program =
 
             loop defaultEventStoreRoot None None 20 args
 
-    let private parseVerifyWorkingGraphSlice (args: string list) =
+    let private parseVerifyWorkingGraphBatch (args: string list) =
         if containsHelpSwitch args then
-            Ok (ShowHelp (Some "verify-working-graph-slice"))
+            Ok (ShowHelp (Some "verify-working-graph-batch"))
         else
             let rec loop eventStoreRoot objectsRoot importId remaining =
                 match remaining with
                 | [] ->
                     match importId with
-                    | Some importIdValue -> Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importIdValue))
+                    | Some importIdValue -> Ok (VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importIdValue))
                     | None ->
                         eprintfn "Missing required option: --import-id"
-                        printCommandHelp "verify-working-graph-slice"
+                        printCommandHelp "verify-working-graph-batch"
                         Error 1
                 | "--event-store-root" :: value :: rest ->
                     loop value objectsRoot importId rest
@@ -1803,11 +1993,11 @@ module Program =
                         loop eventStoreRoot objectsRoot (Some (ImportId.parse value)) rest
                     | false, _ ->
                         eprintfn "Invalid import ID: %s" value
-                        printCommandHelp "verify-working-graph-slice"
+                        printCommandHelp "verify-working-graph-batch"
                         Error 1
                 | option :: _ ->
-                    eprintfn "Unknown option for verify-working-graph-slice: %s" option
-                    printCommandHelp "verify-working-graph-slice"
+                    eprintfn "Unknown option for verify-working-graph-batch: %s" option
+                    printCommandHelp "verify-working-graph-batch"
                     Error 1
 
             loop defaultEventStoreRoot defaultObjectsRoot None args
@@ -1827,6 +2017,865 @@ module Program =
                     Error 1
 
             loop defaultEventStoreRoot args
+
+    let private parseCreateLogosIntakeNote (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "create-logos-intake-note"))
+        else
+            let defaultPolicy = LogosHandlingPolicy.restrictedDefault
+            let defaultAccess = LogosAccessContext.restrictedDefault
+            let defaultRights = LogosRightsContext.restrictedDefault
+
+            let rec loop
+                docsRoot
+                slug
+                title
+                sourceSystem
+                sourceInstance
+                accessContext
+                acquisitionKind
+                intakeChannel
+                signalKind
+                entryPool
+                rightsPolicy
+                attributionReference
+                sensitivity
+                sharingScope
+                sanitizationStatus
+                retentionClass
+                locators
+                capturedAt
+                summary
+                tags
+                remaining
+                =
+                match remaining with
+                | [] ->
+                    match slug, title, sourceSystem, intakeChannel, signalKind with
+                    | None, _, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --slug"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, None, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --title"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, None, _, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --source-system"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, _, None, _ ->
+                        eprintfn "Missing required option for create-logos-intake-note: --intake-channel"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | _, _, _, _, None ->
+                        eprintfn "Missing required option for create-logos-intake-note: --signal-kind"
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    | Some slugValue, Some titleValue, Some sourceSystemValue, Some intakeChannelValue, Some signalKindValue ->
+                        match locators with
+                        | [] ->
+                            eprintfn "At least one explicit locator is required."
+                            printCommandHelp "create-logos-intake-note"
+                            Error 1
+                        | _ ->
+                            let access =
+                                LogosAccessContext.create
+                                    sourceInstance
+                                    (defaultArg accessContext defaultAccess.AccessContextId)
+                                    (defaultArg acquisitionKind defaultAccess.AcquisitionKindId)
+
+                            let rights =
+                                LogosRightsContext.create
+                                    (defaultArg rightsPolicy defaultRights.RightsPolicyId)
+                                    attributionReference
+
+                            let policy =
+                                LogosHandlingPolicy.create
+                                    (defaultArg sensitivity defaultPolicy.SensitivityId)
+                                    (defaultArg sharingScope defaultPolicy.SharingScopeId)
+                                    (defaultArg sanitizationStatus defaultPolicy.SanitizationStatusId)
+                                    (defaultArg retentionClass defaultPolicy.RetentionClassId)
+
+                            Ok
+                                (CreateLogosIntakeNote
+                                    { DocsRoot = docsRoot
+                                      Slug = slugValue
+                                      Title = titleValue
+                                      SourceSystemId = sourceSystemValue
+                                      AccessContext = access
+                                      IntakeChannelId = intakeChannelValue
+                                      SignalKindId = signalKindValue
+                                      EntryPool = entryPool
+                                      Policy = policy
+                                      RightsContext = rights
+                                      Locators = List.rev locators
+                                      CapturedAt = capturedAt
+                                      Summary = summary
+                                      Tags = List.rev tags })
+                | "--docs-root" :: value :: rest ->
+                    loop
+                        value
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        locators
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid slug: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop
+                            docsRoot
+                            (Some normalized)
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                | "--title" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid title: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop
+                            docsRoot
+                            slug
+                            (Some normalized)
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                | "--source-system" :: value :: rest ->
+                    match KnownSourceSystems.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            (Some identifier)
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS source system: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--source-instance" :: value :: rest ->
+                    try
+                        let identifier = SourceInstanceId.create value
+
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            (Some identifier)
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    with :? ArgumentException ->
+                        eprintfn "Unsupported LOGOS source instance: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--access-context" :: value :: rest ->
+                    match KnownAccessContexts.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            (Some identifier)
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS access context: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--acquisition-kind" :: value :: rest ->
+                    match KnownAcquisitionKinds.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            (Some identifier)
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS acquisition kind: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--intake-channel" :: value :: rest ->
+                    match CoreIntakeChannels.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            (Some identifier)
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS intake channel: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--signal-kind" :: value :: rest ->
+                    match CoreSignalKinds.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            (Some identifier)
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS signal kind: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--entry-pool" :: value :: rest ->
+                    match parseLogosPool value with
+                    | Some pool ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            pool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS entry pool: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--rights-policy" :: value :: rest ->
+                    match KnownRightsPolicies.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            (Some identifier)
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS rights policy: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--attribution-reference" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        (Some value)
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        locators
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--sensitivity" :: value :: rest ->
+                    match KnownSensitivities.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            (Some identifier)
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sensitivity: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--sharing-scope" :: value :: rest ->
+                    match KnownSharingScopes.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            (Some identifier)
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sharing scope: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--sanitization-status" :: value :: rest ->
+                    match KnownSanitizationStatuses.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            (Some identifier)
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sanitization status: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--retention-class" :: value :: rest ->
+                    match KnownRetentionClasses.tryFind value with
+                    | Some identifier ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            (Some identifier)
+                            locators
+                            capturedAt
+                            summary
+                            tags
+                            rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS retention class: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--native-item-id" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        (LogosLocator.nativeItemId value :: locators)
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--native-thread-id" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        (LogosLocator.nativeThreadId value :: locators)
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--native-message-id" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        (LogosLocator.nativeMessageId value :: locators)
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--source-uri" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        (LogosLocator.sourceUri value :: locators)
+                        capturedAt
+                        summary
+                        tags
+                        rest
+                | "--captured-at" :: value :: rest ->
+                    match DateTimeOffset.TryParse(value) with
+                    | true, parsedValue ->
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            (Some parsedValue)
+                            summary
+                            tags
+                            rest
+                    | false, _ ->
+                        eprintfn "Invalid captured-at timestamp: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                | "--summary" :: value :: rest ->
+                    loop
+                        docsRoot
+                        slug
+                        title
+                        sourceSystem
+                        sourceInstance
+                        accessContext
+                        acquisitionKind
+                        intakeChannel
+                        signalKind
+                        entryPool
+                        rightsPolicy
+                        attributionReference
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        locators
+                        capturedAt
+                        (Some value)
+                        tags
+                        rest
+                | "--tag" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid tag: %s" value
+                        printCommandHelp "create-logos-intake-note"
+                        Error 1
+                    else
+                        loop
+                            docsRoot
+                            slug
+                            title
+                            sourceSystem
+                            sourceInstance
+                            accessContext
+                            acquisitionKind
+                            intakeChannel
+                            signalKind
+                            entryPool
+                            rightsPolicy
+                            attributionReference
+                            sensitivity
+                            sharingScope
+                            sanitizationStatus
+                            retentionClass
+                            locators
+                            capturedAt
+                            summary
+                            (normalized :: tags)
+                            rest
+                | option :: _ ->
+                    eprintfn "Unknown option for create-logos-intake-note: %s" option
+                    printCommandHelp "create-logos-intake-note"
+                    Error 1
+
+            loop defaultDocsRoot None None None None None None None None LogosPool.Raw None None None None None None [] None None [] args
+
+    let private parseCreateLogosSanitizedNote (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "create-logos-sanitized-note"))
+        else
+            let rec loop
+                docsRoot
+                sourceSlug
+                slug
+                title
+                sanitizationStatus
+                sensitivity
+                sharingScope
+                retentionClass
+                summary
+                tags
+                remaining
+                =
+                match remaining with
+                | [] ->
+                    match sourceSlug, slug, title, sanitizationStatus with
+                    | None, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --source-slug"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, None, _, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --slug"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, _, None, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --title"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, _, _, None ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --sanitization-status"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | Some sourceSlugValue, Some slugValue, Some titleValue, Some sanitizationStatusValue ->
+                        Ok
+                            (CreateLogosSanitizedNote
+                                { DocsRoot = docsRoot
+                                  SourceSlug = sourceSlugValue
+                                  Slug = slugValue
+                                  Title = titleValue
+                                  SanitizationStatusId = sanitizationStatusValue
+                                  SensitivityId = sensitivity
+                                  SharingScopeId = sharingScope
+                                  RetentionClassId = retentionClass
+                                  Summary = summary
+                                  Tags = List.rev tags })
+                | "--docs-root" :: value :: rest ->
+                    loop value sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--source-slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid source slug: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot (Some normalized) slug title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid slug: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug (Some normalized) title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--title" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid title: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug slug (Some normalized) sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--sanitization-status" :: value :: rest ->
+                    match KnownSanitizationStatuses.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title (Some identifier) sensitivity sharingScope retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sanitization status: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--sensitivity" :: value :: rest ->
+                    match KnownSensitivities.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus (Some identifier) sharingScope retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sensitivity: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--sharing-scope" :: value :: rest ->
+                    match KnownSharingScopes.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity (Some identifier) retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sharing scope: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--retention-class" :: value :: rest ->
+                    match KnownRetentionClasses.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope (Some identifier) summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS retention class: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--summary" :: value :: rest ->
+                    loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass (Some value) tags rest
+                | "--tag" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid tag: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass summary (normalized :: tags) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for create-logos-sanitized-note: %s" option
+                    printCommandHelp "create-logos-sanitized-note"
+                    Error 1
+
+            loop defaultDocsRoot None None None None None None None None [] args
 
     let private parseCommand args =
         match args with
@@ -1855,6 +2904,12 @@ module Program =
             parseReportProviderImportHistory rest
         | "report-current-ingestion" :: rest ->
             parseReportCurrentIngestion rest
+        | "report-logos-catalog" :: rest ->
+            parseReportLogosCatalog rest
+        | "report-logos-handling" :: rest ->
+            parseReportLogosHandling rest
+        | "export-logos-public-notes" :: rest ->
+            parseExportLogosPublicNotes rest
         | "report-conversation-overlap-candidates" :: rest ->
             parseReportConversationOverlapCandidates rest
         | "rebuild-import-snapshots" :: rest ->
@@ -1883,16 +2938,22 @@ module Program =
             parseCompareWorkingImportConversations rest
         | "find-working-graph-nodes" :: rest ->
             parseFindWorkingGraphNodes rest
+        | "report-working-graph-batch" :: rest
         | "report-working-graph-slice" :: rest ->
-            parseReportWorkingGraphSlice rest
+            parseReportWorkingGraphBatch rest
         | "report-working-graph-neighborhood" :: rest ->
             parseReportWorkingGraphNeighborhood rest
+        | "verify-working-graph-batch" :: rest
         | "verify-working-graph-slice" :: rest ->
-            parseVerifyWorkingGraphSlice rest
+            parseVerifyWorkingGraphBatch rest
         | "rebuild-working-graph-index" :: rest ->
             parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
+        | "create-logos-intake-note" :: rest ->
+            parseCreateLogosIntakeNote rest
+        | "create-logos-sanitized-note" :: rest ->
+            parseCreateLogosSanitizedNote rest
         | "create-concept-note" :: rest ->
             parseCreateConceptNote rest
         | command :: _ ->
@@ -2135,6 +3196,7 @@ module Program =
               Window = Some Full
               ImportedAt = importedAtValue
               RootArtifact = rootArtifact
+              LogosMetadata = ProviderLogosImportMetadata.tryBuild Claude
               Counts = counts
               NewCanonicalEventIds = events |> List.map (fun event -> event.Envelope.EventId)
               Notes = [ "Sample event-store smoke test" ] }
@@ -2428,6 +3490,17 @@ module Program =
                     | values -> printfn "      logos related_signals=%s" (String.concat ", " values)
                 | _ -> ()
 
+                match entry.LogosSensitivity, entry.LogosSharingScope, entry.LogosSanitizationStatus, entry.LogosRetentionClass, entry.LogosEntryPool with
+                | Some sensitivity, Some sharingScope, Some sanitizationStatus, Some retentionClass, Some entryPool ->
+                    printfn
+                        "      logos handling sensitivity=%s sharing_scope=%s sanitization_status=%s retention_class=%s entry_pool=%s"
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        entryPool
+                | _ -> ()
+
                 match entry.RootArtifactRelativePath with
                 | Some value ->
                     printfn "      root_artifact_relative_path=%s" value
@@ -2460,6 +3533,139 @@ module Program =
                 | _ -> ())
 
         0
+
+    let private reportLogosCatalog () =
+        let report = LogosCatalog.build ()
+
+        let printItems (heading: string) (items: LogosCatalogItem list) =
+            printfn "  %s (%d):" heading items.Length
+
+            items
+            |> List.iter (fun item ->
+                printfn "    %s" item.Slug
+                printfn "      %s" item.Summary)
+
+        printfn "LOGOS catalog."
+        printfn "  This catalog is an explicit allowlist, not an open-ended taxonomy."
+        printItems "Source systems" report.SourceSystems
+        printItems "Intake channels" report.IntakeChannels
+        printItems "Signal kinds" report.SignalKinds
+        printItems "Access contexts" report.AccessContexts
+        printItems "Acquisition kinds" report.AcquisitionKinds
+        printItems "Rights policies" report.RightsPolicies
+        printItems "Sensitivities" report.Sensitivities
+        printItems "Sharing scopes" report.SharingScopes
+        printItems "Sanitization statuses" report.SanitizationStatuses
+        printItems "Retention classes" report.RetentionClasses
+        0
+
+    let private reportLogosHandling docsRoot limit =
+        let printCounts heading (items: LogosHandlingCount list) =
+            printfn "  %s:" heading
+
+            match items with
+            | [] ->
+                printfn "    none"
+            | values ->
+                values
+                |> List.iter (fun item ->
+                    printfn "    %s (%d)" item.Slug item.Count)
+
+        let printNotes heading (notes: LogosHandlingNote list) =
+            printfn "  %s:" heading
+
+            match notes |> List.truncate limit with
+            | [] ->
+                printfn "    none"
+            | values ->
+                values
+                |> List.iter (fun note ->
+                    printfn
+                        "    %s | %s | %s | %s | %s | %s | %s | %s | %s | %s"
+                        note.RelativePath
+                        note.NoteKind
+                        (note.EntryPool |> Option.map LogosPool.value |> Option.defaultValue "(unspecified)")
+                        (note.AccessContextId |> Option.map AccessContextId.value |> Option.defaultValue "(unspecified)")
+                        (note.AcquisitionKindId |> Option.map AcquisitionKindId.value |> Option.defaultValue "(unspecified)")
+                        (SourceSystemId.value note.SourceSystemId)
+                        (SensitivityId.value note.Policy.SensitivityId)
+                        (SanitizationStatusId.value note.Policy.SanitizationStatusId)
+                        (note.RightsPolicyId |> Option.map RightsPolicyId.value |> Option.defaultValue "(unspecified)")
+                        (note.AttributionReference |> Option.defaultValue "(none)"))
+
+        match LogosHandlingReports.build docsRoot with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok report ->
+            printfn "LOGOS handling report."
+            printfn "  Docs root: %s" docsRoot
+            printfn "  Notes scanned: %d" report.Notes.Length
+            printfn "  Limit per flagged section: %d" limit
+            printCounts "Note kinds" report.NoteKinds
+            printCounts "Entry pools" report.EntryPools
+            printCounts "Access contexts" report.AccessContexts
+            printCounts "Acquisition kinds" report.AcquisitionKinds
+            printCounts "Sensitivities" report.Sensitivities
+            printCounts "Sharing scopes" report.SharingScopes
+            printCounts "Sanitization statuses" report.SanitizationStatuses
+            printCounts "Retention classes" report.RetentionClasses
+            printCounts "Rights policies" report.RightsPolicies
+            printNotes "Still raw" report.RawNotes
+            printNotes "Personal-private" report.PersonalPrivateNotes
+            printNotes "Customer-confidential" report.CustomerConfidentialNotes
+            printNotes "Approved for sharing" report.ApprovedForSharingNotes
+            printNotes "Rights review required" report.RightsReviewRequiredNotes
+            printNotes "Attribution likely required" report.AttributionRequiredNotes
+            0
+
+    let private exportLogosPublicNotes docsRoot outputRoot =
+        match LogosPublicExports.export docsRoot outputRoot with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok result ->
+            printfn "LOGOS public-safe notes exported."
+            printfn "  Docs root: %s" result.DocsRoot
+            printfn "  Output root: %s" result.OutputRoot
+            printfn "  Manifest: %s" result.ManifestPath
+            printfn "  Eligible notes scanned: %d" result.EligibleNotesScanned
+            printfn "  Exported notes: %d" result.ExportedNotes.Length
+            printfn "  Attribution requirements: %d" result.AttributionRequirements.Length
+            printfn "  Skipped notes: %d" result.SkippedNotes.Length
+
+            if not result.ExportedNotes.IsEmpty then
+                printfn "  Exported:"
+
+                result.ExportedNotes
+                |> List.iter (fun note ->
+                    printfn
+                        "    %s | %s | %s | %s"
+                        note.Slug
+                        note.OutputFileName
+                        (SharingScopeId.value note.Policy.SharingScopeId)
+                        (RightsPolicyId.value note.RightsContext.RightsPolicyId))
+
+            if not result.AttributionRequirements.IsEmpty then
+                printfn "  Attribution required:"
+
+                result.AttributionRequirements
+                |> List.iter (fun requirement ->
+                    printfn
+                        "    %s | %s | %s"
+                        requirement.Slug
+                        (RightsPolicyId.value requirement.RightsPolicyId)
+                        requirement.AttributionReference)
+
+            if not result.SkippedNotes.IsEmpty then
+                printfn "  Skipped:"
+
+                result.SkippedNotes
+                |> List.truncate 10
+                |> List.iter (fun note ->
+                    printfn "    %s | %s" note.RelativePath note.Reason)
+
+            0
 
     let private timestampLabel (value: DateTimeOffset option) =
         value
@@ -2729,10 +3935,10 @@ module Program =
             let verificationResult =
                 match verification with
                 | NoVerification -> Ok None
-                | TraceableWorkingSlice ->
+                | TraceableWorkingBatch ->
                     let parsedImportId = ImportId.parse workingImportIdValue
-                    printfn "  Verifying working-slice traceability before DOT export..."
-                    let report = GraphWorkingVerification.verifyImportSlice eventStoreRoot objectsRoot parsedImportId
+                    printfn "  Verifying working-batch traceability before DOT export..."
+                    let report = GraphWorkingVerification.verifyImportBatch eventStoreRoot objectsRoot parsedImportId
 
                     if GraphWorkingVerification.isClean report then
                         Ok (Some report)
@@ -2741,13 +3947,13 @@ module Program =
 
             match verificationResult with
             | Error report ->
-                eprintfn "Working-slice traceability verification failed."
+                eprintfn "Working-batch traceability verification failed."
                 eprintfn "  Event store root: %s" eventStoreRoot
                 eprintfn "  Objects root: %s" objectsRoot
                 eprintfn "  Working import ID: %s" workingImportIdValue
                 eprintfn "  Missing canonical event refs: %d" report.MissingCanonicalEventReferences.Length
                 eprintfn "  Missing raw object refs: %d" report.MissingRawObjectReferences.Length
-                eprintfn "  Re-run verify-working-graph-slice for the full verification report."
+                eprintfn "  Re-run verify-working-graph-batch for the full verification report."
                 2
             | Ok verificationReport ->
                 let result =
@@ -2760,8 +3966,8 @@ module Program =
                 printfn "Graphviz DOT exported."
                 printfn "  Event store root: %s" eventStoreRoot
                 match workingNodeId with
-                | Some _ -> printfn "  Source: graph working slice neighborhood"
-                | None -> printfn "  Source: graph working slice"
+                | Some _ -> printfn "  Source: graph working batch neighborhood"
+                | None -> printfn "  Source: graph working batch"
                 printfn "  Working import ID: %s" workingImportIdValue
 
                 match workingNodeId with
@@ -2868,7 +4074,7 @@ module Program =
         printfn "Graph working imports report."
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Catalog: %s" report.CatalogRelativePath
-        printfn "  Working slices: %d" report.WorkingSliceCount
+        printfn "  Working batches: %d" report.WorkingBatchCount
         printfn "  Total canonical events: %d" report.TotalCanonicalEvents
         printfn "  Total graph assertions: %d" report.TotalGraphAssertions
 
@@ -2880,7 +4086,7 @@ module Program =
                 printfn "    %s: %d" providerValue count)
 
         if not report.Items.IsEmpty then
-            printfn "  Recent slices:"
+            printfn "  Recent batches:"
 
             report.Items
             |> List.iter (fun item ->
@@ -2937,7 +4143,7 @@ module Program =
             printfn "  Materialized at: %s" (report.MaterializedAt.ToUniversalTime().ToString("O"))
             printfn "  Working root: %s" report.WorkingRootRelativePath
             printfn "  Manifest: %s" report.ManifestRelativePath
-            printfn "  Conversations in slice: %d" report.ConversationCount
+            printfn "  Conversations in batch: %d" report.ConversationCount
 
             if not report.Items.IsEmpty then
                 printfn "  Conversations:"
@@ -2959,7 +4165,7 @@ module Program =
             0
         | None ->
             eprintfn "No working-import conversation summary found for import %s." (ImportId.format importId)
-            eprintfn "Import a batch first or refresh the working index from existing slices."
+            eprintfn "Import a batch first or refresh the working index from existing batches."
             1
 
     let private compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit =
@@ -3050,7 +4256,7 @@ module Program =
             0
         | None ->
             eprintfn "No working-import conversation comparison could be built for the selected imports."
-            eprintfn "Import the batches first or refresh the working index from existing slices."
+            eprintfn "Import the batches first or refresh the working index from existing batches."
             1
 
     let private findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit =
@@ -3116,10 +4322,10 @@ module Program =
 
         0
 
-    let private reportWorkingGraphSlice eventStoreRoot importId limit =
-        match GraphWorkingIndex.tryBuildImportSliceReport eventStoreRoot importId limit with
+    let private reportWorkingGraphBatch eventStoreRoot importId limit =
+        match GraphWorkingIndex.tryBuildImportBatchReport eventStoreRoot importId limit with
         | Some report ->
-            printfn "Graph working slice report."
+            printfn "Graph working batch report."
             printfn "  Event store root: %s" eventStoreRoot
             printfn "  Index: %s" report.IndexRelativePath
             printfn "  Import ID: %s" (ImportId.format report.ImportId)
@@ -3154,7 +4360,7 @@ module Program =
 
             0
         | None ->
-            eprintfn "No graph working slice found in the SQLite index for import %s." (ImportId.format importId)
+            eprintfn "No graph working batch found in the SQLite index for import %s." (ImportId.format importId)
             eprintfn "Import a batch first or refresh the working index from a new import."
             1
 
@@ -3232,13 +4438,13 @@ module Program =
             0
         | None ->
             eprintfn "No graph working neighborhood found for import %s and node %s." (ImportId.format importId) nodeId
-            eprintfn "Use find-working-graph-nodes to discover node IDs in the selected working slice."
+            eprintfn "Use find-working-graph-nodes to discover node IDs in the selected working batch."
             1
 
-    let private verifyWorkingGraphSlice eventStoreRoot objectsRoot importId =
-        let report = GraphWorkingVerification.verifyImportSlice eventStoreRoot objectsRoot importId
+    let private verifyWorkingGraphBatch eventStoreRoot objectsRoot importId =
+        let report = GraphWorkingVerification.verifyImportBatch eventStoreRoot objectsRoot importId
 
-        printfn "Graph working slice verification."
+        printfn "Graph working batch verification."
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Objects root: %s" objectsRoot
         printfn "  Import ID: %s" (ImportId.format report.ImportId)
@@ -3287,9 +4493,62 @@ module Program =
         printfn "  Event store root: %s" eventStoreRoot
         printfn "  Catalog: %s" result.CatalogRelativePath
         printfn "  Index: %s" result.IndexRelativePath
-        printfn "  Working slices indexed: %d" result.WorkingSliceCount
+        printfn "  Working batches indexed: %d" result.WorkingBatchCount
         printfn "  Graph assertions indexed: %d" result.GraphAssertionCount
         0
+
+    let private createLogosIntakeNote request =
+        match LogosIntakeNotes.create request with
+        | Ok result ->
+            let source = LogosSignal.source result.Signal
+            let policy = result.Policy
+            let access = request.AccessContext
+            let rights = request.RightsContext
+
+            printfn "LOGOS intake note created."
+            printfn "  Output path: %s" result.OutputPath
+            printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Source system: %s" (LogosSourceRef.sourceSystemId source |> SourceSystemId.value)
+            access.SourceInstanceId
+            |> Option.iter (fun sourceInstanceId ->
+                printfn "  Source instance: %s" (SourceInstanceId.value sourceInstanceId))
+            printfn "  Access context: %s" (AccessContextId.value access.AccessContextId)
+            printfn "  Acquisition kind: %s" (AcquisitionKindId.value access.AcquisitionKindId)
+            printfn "  Intake channel: %s" (LogosSourceRef.intakeChannelId source |> IntakeChannelId.value)
+            printfn "  Signal kind: %s" (LogosSignal.signalKindId result.Signal |> SignalKindId.value)
+            printfn "  Entry pool: %s" (LogosPool.value result.EntryPool)
+            printfn "  Rights policy: %s" (RightsPolicyId.value rights.RightsPolicyId)
+            rights.AttributionReference
+            |> Option.iter (fun attributionReference ->
+                printfn "  Attribution reference: %s" attributionReference)
+            printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
+            printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
+            printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)
+            printfn "  Retention class: %s" (RetentionClassId.value policy.RetentionClassId)
+            printfn "  Locators: %d" (LogosSourceRef.locators source |> List.length)
+            0
+        | Error error ->
+            eprintfn "%s" error
+            1
+
+    let private createLogosSanitizedNote request =
+        match LogosSanitizedNotes.create request with
+        | Ok result ->
+            let policy = result.Policy
+
+            printfn "Sanitized LOGOS note created."
+            printfn "  Output path: %s" result.OutputPath
+            printfn "  Source note path: %s" result.SourceNotePath
+            printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Entry pool: %s" (LogosPool.value result.EntryPool)
+            printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
+            printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
+            printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)
+            printfn "  Retention class: %s" (RetentionClassId.value policy.RetentionClassId)
+            0
+        | Error error ->
+            eprintfn "%s" error
+            1
 
     let private createConceptNote request =
         match ConceptNotes.create request with
@@ -3327,6 +4586,12 @@ module Program =
             reportProviderImportHistory eventStoreRoot objectsRoot provider limit
         | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
             reportCurrentIngestion eventStoreRoot objectsRoot
+        | Ok ReportLogosCatalog ->
+            reportLogosCatalog ()
+        | Ok (ReportLogosHandling(docsRoot, limit)) ->
+            reportLogosHandling docsRoot limit
+        | Ok (ExportLogosPublicNotes(docsRoot, outputRoot)) ->
+            exportLogosPublicNotes docsRoot outputRoot
         | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
             reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
@@ -3355,16 +4620,20 @@ module Program =
             compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit
         | Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit)) ->
             findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
-        | Ok (ReportWorkingGraphSlice(eventStoreRoot, importId, limit)) ->
-            reportWorkingGraphSlice eventStoreRoot importId limit
+        | Ok (ReportWorkingGraphBatch(eventStoreRoot, importId, limit)) ->
+            reportWorkingGraphBatch eventStoreRoot importId limit
         | Ok (ReportWorkingGraphNeighborhood(eventStoreRoot, importId, nodeId, limit)) ->
             reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit
-        | Ok (VerifyWorkingGraphSlice(eventStoreRoot, objectsRoot, importId)) ->
-            verifyWorkingGraphSlice eventStoreRoot objectsRoot importId
+        | Ok (VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importId)) ->
+            verifyWorkingGraphBatch eventStoreRoot objectsRoot importId
         | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
             rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
+        | Ok (CreateLogosIntakeNote request) ->
+            createLogosIntakeNote request
+        | Ok (CreateLogosSanitizedNote request) ->
+            createLogosSanitizedNote request
         | Ok (CreateConceptNote request) ->
             createConceptNote request
         | Error exitCode ->

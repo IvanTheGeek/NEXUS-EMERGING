@@ -49,7 +49,7 @@ type CreateConceptNoteResult =
 /// </summary>
 [<RequireQualifiedAccess>]
 module ConceptNotes =
-    let private cliGraphSliceCommand conversationId =
+    let private cliGraphScopeCommand conversationId =
         sprintf
             "dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id %s"
             conversationId
@@ -201,7 +201,7 @@ module ConceptNotes =
             builder.AppendLine(sprintf "- last occurred at: `%s`" value) |> ignore)
 
         builder.AppendLine(sprintf "- projection file: `%s`" source.ProjectionRelativePath) |> ignore
-        builder.AppendLine(sprintf "- graph slice command: `%s`" (cliGraphSliceCommand source.ConversationId)) |> ignore
+        builder.AppendLine(sprintf "- graph scope command: `%s`" (cliGraphScopeCommand source.ConversationId)) |> ignore
         builder.AppendLine() |> ignore
         builder.AppendLine("#### Excerpts") |> ignore
 

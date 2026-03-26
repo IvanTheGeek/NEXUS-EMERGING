@@ -1,6 +1,6 @@
 # Report Working Graph Imports
 
-This command summarizes the incremental graph working slices created by provider imports.
+This command summarizes the incremental graph working batches created by provider imports.
 
 Use it when you want a quick operator view of the secondary graph working layer without rereading every graph assertion TOML file.
 
@@ -26,7 +26,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - total canonical events represented by those slices
 - total graph assertions represented by those slices
 - provider counts when the matching canonical import manifests are present
-- a short recent-slice list with:
+- a short recent-batch list with:
   - `import_id`
   - provider
   - window

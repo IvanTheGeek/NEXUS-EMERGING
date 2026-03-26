@@ -10,8 +10,8 @@ NEXUS now has multiple derived layers over canonical history:
 
 - projections
 - durable graph assertions
-- graph working slices
-- a persisted SQLite working index over graph working slices
+- graph working batches
+- a persisted SQLite working index over graph working batches
 
 These layers exist to make practical work faster.
 
@@ -19,7 +19,7 @@ They do not replace source truth.
 
 As NEXUS grows, some flows will matter more than others.
 For ordinary exploration, the index-first path is appropriate.
-For important slices, sensitive decisions, or higher-confidence workflows, NEXUS must preserve the ability to verify results against more authoritative layers.
+For important batches, sensitive decisions, or higher-confidence workflows, NEXUS must preserve the ability to verify results against more authoritative layers.
 
 The current architecture already separates:
 
@@ -34,12 +34,12 @@ This decision makes the verification requirement explicit.
 
 Derived indexes and projections may accelerate access, but they may not become the final authority.
 
-NEXUS must preserve the ability to verify important slice flows by tracing from derived working results back through authoritative layers.
+NEXUS must preserve the ability to verify important flows by tracing from derived working results back through authoritative layers.
 
 The intended verification chain is:
 
 1. working index
-2. working slice assertions
+2. working batch assertions
 3. canonical events
 4. raw source references
 5. provider artifact or preserved source object when needed
@@ -61,7 +61,7 @@ Fast path and authoritative path are distinct.
 Use derived indexes and derived read models for:
 
 - interactive exploration
-- quick slice summaries
+- quick batch summaries
 - operator-facing reports
 - visualization preparation
 - normal exploratory graph work
@@ -70,7 +70,7 @@ Use derived indexes and derived read models for:
 
 Use deeper verification when confidence matters more than latency, such as:
 
-- validating an important slice before acting on it
+- validating an important batch before acting on it
 - checking whether derived state is stale or inconsistent
 - auditing provenance for a concept, note, or claim
 - troubleshooting surprising graph results

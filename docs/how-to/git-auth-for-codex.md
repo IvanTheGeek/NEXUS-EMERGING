@@ -106,7 +106,7 @@ origin  git@github.com:IvanTheGeek/NEXUS-EMERGING.git (push)
 ### 6. Push the branch
 
 ```bash
-git push -u origin codex/nexus-ingestion-foundation
+git push -u origin <branch-name>
 ```
 
 ## Making It Work After Reboot

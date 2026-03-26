@@ -20,6 +20,8 @@ At the current understanding, LOGOS is where many input sources can converge:
 
 - AI conversations
 - forum discussions
+- Talkyard forum threads
+- Discord channels and threads
 - email threads
 - user feedback from deployed apps
 - bug reports
@@ -32,7 +34,7 @@ Vector search or a vector database may later be useful inside this area for retr
 
 ## Working Notes
 
-- Related design note: `../logos-source-model-v0.md`
+- Related design note: [`../logos-source-model-v0.md`](../logos-source-model-v0.md)
 - How should LOGOS distinguish raw intake, refined knowledge, and durable doctrine?
 - Which parts of LOGOS belong in canonical history versus derived knowledge projections?
 - How should retrieval aids like vector search relate to the broader LOGOS knowledge model without becoming the model itself?
@@ -47,7 +49,7 @@ Vector search or a vector database may later be useful inside this area for retr
 - first occurred at: `2026-03-05T17:17:44.3218319Z`
 - last occurred at: `2026-03-08T11:18:14.025072Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2c98-71ab-a7b8-ccb6509117e9.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2c98-71ab-a7b8-ccb6509117e9`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2c98-71ab-a7b8-ccb6509117e9`
 
 #### Excerpts
 - `human`: I am planning to bring in all resources and can about event modeling in one place and networking routers from OneMarcFifty. Both have websites which can be lin…
@@ -62,7 +64,7 @@ Vector search or a vector database may later be useful inside this area for retr
 - first occurred at: `2026-03-10T17:38:25.850197Z`
 - last occurred at: `2026-03-11T14:59:04.685873Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2cb7-718e-b30a-68e68982967a.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cb7-718e-b30a-68e68982967a`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cb7-718e-b30a-68e68982967a`
 
 #### Excerpts
 - `human`: Another avenue I have thought about. If I had an app, say CheddarBooks that was an accounting app (think QuickBooks or Zero replacement). A person is fully abl…
@@ -77,7 +79,7 @@ Vector search or a vector database may later be useful inside this area for retr
 - first occurred at: `2026-03-09T14:19:37.7669999Z`
 - last occurred at: `2026-03-12T09:49:59.177695Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2ca1-71ee-9faf-95e499c9ef92.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2ca1-71ee-9faf-95e499c9ef92`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2ca1-71ee-9faf-95e499c9ef92`
 
 #### Excerpts
 - `human`: what are the meanings of context and construct and how they relate to each other

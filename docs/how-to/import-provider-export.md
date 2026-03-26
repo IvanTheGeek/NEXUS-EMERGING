@@ -52,10 +52,12 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 4. Parses provider conversations and messages
 5. Writes canonical events into `NEXUS-EventStore/events/...`
 6. Writes an import manifest into `NEXUS-EventStore/imports/...`
-7. Writes a normalized import snapshot under `NEXUS-EventStore/snapshots/imports/<import-id>/...`
-8. Materializes an import-local graph working slice under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
-9. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
-10. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
+7. Records restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata on the import manifest
+8. Writes a normalized import snapshot under `NEXUS-EventStore/snapshots/imports/<import-id>/...`
+9. Carries the same LOGOS metadata into the normalized import-snapshot manifest
+10. Materializes an import-local graph working batch under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
+11. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
+12. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
 
 ## Progress Output
 
@@ -71,6 +73,7 @@ Typical phases:
 - writing canonical events
 - writing the import manifest
 - writing the normalized import snapshot
+- materializing LOGOS intake metadata for the import
 - completion summary with elapsed time and counts
 
 Larger imports also emit periodic conversation-processing updates with running message, artifact, duplicate, revision, and reparse counts.
@@ -123,6 +126,12 @@ Optional overrides:
 - The canonical event store is intended to be committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
 - Each provider import now also records a normalized per-import snapshot so later full exports and rolling windows can be compared without confusing additive dedupe behavior for snapshot truth.
+- Provider-export imports now also enter NEXUS with restricted-by-default LOGOS metadata:
+  - `sensitivity = internal-restricted`
+  - `sharing_scope = owner-only`
+  - `sanitization_status = raw`
+  - `retention_class = durable`
+  - `entry_pool = raw`
 - Older imports that predate this snapshot layer can be backfilled with `rebuild-import-snapshots`.
 - The current importer baseline is `provider-export-v1`. Earlier history without explicit versioning is treated as the legacy `provider-export-v0` baseline for reparse comparisons.
 - Re-importing the same provider objects under the same normalization version will skip duplicates and emit revision events only when a known provider message is observed with changed canonical content.

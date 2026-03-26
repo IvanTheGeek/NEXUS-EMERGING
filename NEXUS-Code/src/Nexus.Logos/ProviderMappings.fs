@@ -13,7 +13,9 @@ type ProviderLogosClassification =
     { SourceSystemId: SourceSystemId
       IntakeChannelId: IntakeChannelId
       PrimarySignalKind: SignalKindId
-      RelatedSignalKinds: SignalKindId list }
+      RelatedSignalKinds: SignalKindId list
+      DefaultHandlingPolicy: LogosHandlingPolicy
+      EntryPool: LogosPool }
 
 /// <summary>
 /// Maps currently known providers into LOGOS source/channel/signal classifications.
@@ -24,7 +26,9 @@ module ProviderLogosClassification =
         { SourceSystemId = sourceSystem
           IntakeChannelId = intakeChannel
           PrimarySignalKind = primarySignal
-          RelatedSignalKinds = relatedSignals }
+          RelatedSignalKinds = relatedSignals
+          DefaultHandlingPolicy = LogosHandlingPolicy.restrictedDefault
+          EntryPool = LogosPool.Raw }
 
     let private knownMappings =
         [ "chatgpt",

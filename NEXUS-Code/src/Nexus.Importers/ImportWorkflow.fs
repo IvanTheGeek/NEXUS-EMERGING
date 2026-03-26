@@ -619,6 +619,7 @@ module ImportWorkflow =
         appendEvent events importCompletedEvent
 
         let eventList = events |> Seq.toList
+        let logosMetadata = ProviderLogosImportMetadata.tryBuild request.Provider
         let manifest =
             { ImportId = importId
               Provider = request.Provider
@@ -627,6 +628,7 @@ module ImportWorkflow =
               Window = request.Window
               ImportedAt = intake.ImportedAt
               RootArtifact = intake.RootArtifact
+              LogosMetadata = logosMetadata
               Counts = importCompletedCounts
               NewCanonicalEventIds = eventList |> List.map (fun event -> event.Envelope.EventId)
               Notes = parsedImport.Notes }
@@ -643,10 +645,11 @@ module ImportWorkflow =
               ImportedAt = importedAtValue intake.ImportedAt
               NormalizationVersion = Some (NormalizationNaming.value currentNormalizationVersion)
               SourceArtifactRelativePath = Some intake.ArchivedZipRelativePath
+              LogosMetadata = logosMetadata
               Conversations = snapshotConversations |> Seq.toList }
 
         let importSnapshotResult = ImportSnapshots.write eventStoreRoot importSnapshot
-        emitStatus status $"Materializing graph working slice for import {ImportId.format importId}."
+        emitStatus status $"Materializing graph working batch for import {ImportId.format importId}."
         let workingGraph =
             GraphMaterialization.materializeImportBatchWithStatus status eventStoreRoot importId eventList
         let workingGraphCatalogRelativePath =

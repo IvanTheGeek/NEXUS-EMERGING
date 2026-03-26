@@ -29,7 +29,7 @@ The first code scaffold is intentionally small and centered on the canonical ing
   concept-note seeding over conversation projections for durable repo memory
 - `src/Nexus.Cli/`
   manual command-line entry points for smoke tests and provider imports
-- `docs/v0-module-map.md`
+- [`docs/v0-module-map.md`](docs/v0-module-map.md)
   a short module and responsibility map for the first pass
 - `scripts/export_codex_sessions.fsx`
   copies local Codex session transcripts into the NEXUS object layer as raw source artifacts
@@ -55,21 +55,22 @@ Use built-in CLI help for quick guidance:
 
 See:
 
-- `/docs/how-to/cli-commands.md`
-- `/docs/how-to/capture-artifact-payload.md`
-- `/docs/how-to/import-provider-export.md`
-- `/docs/how-to/import-codex-sessions.md`
-- `/docs/how-to/rebuild-artifact-projections.md`
-- `/docs/how-to/rebuild-conversation-projections.md`
-- `/docs/how-to/create-concept-note.md`
-- `/docs/how-to/rebuild-graph-assertions.md`
-- `/docs/how-to/export-graphviz-dot.md`
-- `/docs/how-to/report-unresolved-artifacts.md`
-- `/docs/how-to/export-codex-sessions.md`
-- `/docs/how-to/run-tests.md`
-- `/docs/nexus-ontology-imprint-alignment.md`
-- `/docs/logos-source-model-v0.md`
-- `/docs/fsharp-documentation-convention.md`
+- [`docs/how-to/cli-commands.md`](../docs/how-to/cli-commands.md)
+- [`docs/how-to/capture-artifact-payload.md`](../docs/how-to/capture-artifact-payload.md)
+- [`docs/how-to/import-provider-export.md`](../docs/how-to/import-provider-export.md)
+- [`docs/how-to/import-codex-sessions.md`](../docs/how-to/import-codex-sessions.md)
+- [`docs/how-to/rebuild-artifact-projections.md`](../docs/how-to/rebuild-artifact-projections.md)
+- [`docs/how-to/rebuild-conversation-projections.md`](../docs/how-to/rebuild-conversation-projections.md)
+- [`docs/how-to/create-concept-note.md`](../docs/how-to/create-concept-note.md)
+- [`docs/how-to/rebuild-graph-assertions.md`](../docs/how-to/rebuild-graph-assertions.md)
+- [`docs/how-to/export-graphviz-dot.md`](../docs/how-to/export-graphviz-dot.md)
+- [`docs/how-to/report-unresolved-artifacts.md`](../docs/how-to/report-unresolved-artifacts.md)
+- [`docs/how-to/export-codex-sessions.md`](../docs/how-to/export-codex-sessions.md)
+- [`docs/how-to/run-tests.md`](../docs/how-to/run-tests.md)
+- [`docs/nexus-ontology-imprint-alignment.md`](../docs/nexus-ontology-imprint-alignment.md)
+- [`docs/logos-source-model-v0.md`](../docs/logos-source-model-v0.md)
+- [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
+- [`docs/fsharp-documentation-convention.md`](../docs/fsharp-documentation-convention.md)
 
 ## Testing Approach
 

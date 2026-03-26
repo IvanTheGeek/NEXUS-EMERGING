@@ -29,6 +29,85 @@ module KnownSourceSystems =
     /// </summary>
     let codex = SourceSystemId.create "codex"
 
+    /// <summary>
+    /// Forum-originated intake sources.
+    /// </summary>
+    let forum = SourceSystemId.create "forum"
+
+    /// <summary>
+    /// Talkyard forum-originated intake sources.
+    /// </summary>
+    let talkyard = SourceSystemId.create "talkyard"
+
+    /// <summary>
+    /// Discord-originated intake sources.
+    /// </summary>
+    let discord = SourceSystemId.create "discord"
+
+    /// <summary>
+    /// Email-originated intake sources.
+    /// </summary>
+    let email = SourceSystemId.create "email"
+
+    /// <summary>
+    /// Issue-tracker or bug-tracker intake sources.
+    /// </summary>
+    let issueTracker = SourceSystemId.create "issue-tracker"
+
+    /// <summary>
+    /// Deployed-app feedback surfaces.
+    /// </summary>
+    let appFeedbackSurface = SourceSystemId.create "app-feedback-surface"
+
+    /// <summary>
+    /// The explicit allowlist of recognized LOGOS source systems.
+    /// </summary>
+    let all =
+        [ chatgpt
+          claude
+          grok
+          codex
+          forum
+          talkyard
+          discord
+          email
+          issueTracker
+          appFeedbackSurface ]
+
+    let private catalog =
+        [ chatgpt, "ChatGPT provider capture and export sources."
+          claude, "Claude provider capture and export sources."
+          grok, "Grok provider capture and export sources."
+          codex, "Local Codex session capture sources."
+          forum, "Forum-originated intake sources."
+          talkyard, "Talkyard forum-originated intake sources."
+          discord, "Discord-originated intake sources."
+          email, "Email-originated intake sources."
+          issueTracker, "Issue-tracker or bug-tracker intake sources."
+          appFeedbackSurface, "Deployed-app feedback surfaces." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, _) -> SourceSystemId.value identifier, identifier)
+        |> Map.ofList
+
+    /// <summary>
+    /// Looks up a source system by its explicit allowlisted slug.
+    /// </summary>
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            Map.tryFind normalized bySlug
+
+    /// <summary>
+    /// Lists the allowlisted source systems with human-facing summaries.
+    /// </summary>
+    let described =
+        catalog |> List.map (fun (identifier, summary) -> SourceSystemId.value identifier, summary)
+
 /// <summary>
 /// Stable intake-channel identifiers for early LOGOS work.
 /// </summary>
@@ -49,6 +128,16 @@ module CoreIntakeChannels =
     let forumThread = IntakeChannelId.create "forum-thread"
 
     /// <summary>
+    /// Discord channel intake.
+    /// </summary>
+    let discordChannel = IntakeChannelId.create "discord-channel"
+
+    /// <summary>
+    /// Discord thread intake.
+    /// </summary>
+    let discordThread = IntakeChannelId.create "discord-thread"
+
+    /// <summary>
     /// Email-thread intake.
     /// </summary>
     let emailThread = IntakeChannelId.create "email-thread"
@@ -62,6 +151,49 @@ module CoreIntakeChannels =
     /// Deployed-app feedback intake.
     /// </summary>
     let appFeedback = IntakeChannelId.create "app-feedback"
+
+    /// <summary>
+    /// The explicit allowlist of recognized LOGOS intake channels.
+    /// </summary>
+    let all =
+        [ aiConversation
+          forumThread
+          discordChannel
+          discordThread
+          emailThread
+          bugReport
+          appFeedback ]
+
+    let private catalog =
+        [ aiConversation, "AI conversational intake such as chat or session transcripts."
+          forumThread, "Forum-thread intake."
+          discordChannel, "Discord channel intake."
+          discordThread, "Discord thread intake."
+          emailThread, "Email-thread intake."
+          bugReport, "Bug-report intake."
+          appFeedback, "Deployed-app feedback intake." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, _) -> IntakeChannelId.value identifier, identifier)
+        |> Map.ofList
+
+    /// <summary>
+    /// Looks up an intake channel by its explicit allowlisted slug.
+    /// </summary>
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            Map.tryFind normalized bySlug
+
+    /// <summary>
+    /// Lists the allowlisted intake channels with human-facing summaries.
+    /// </summary>
+    let described =
+        catalog |> List.map (fun (identifier, summary) -> IntakeChannelId.value identifier, summary)
 
 /// <summary>
 /// Stable signal-kind identifiers for early LOGOS work.
@@ -96,3 +228,42 @@ module CoreSignalKinds =
     /// A support question viewed as a LOGOS signal.
     /// </summary>
     let supportQuestion = SignalKindId.create "support-question"
+
+    /// <summary>
+    /// The explicit allowlist of recognized LOGOS signal kinds.
+    /// </summary>
+    let all =
+        [ conversation
+          message
+          bugReport
+          feedback
+          supportQuestion ]
+
+    let private catalog =
+        [ conversation, "A conversational thread or session viewed as a LOGOS signal."
+          message, "An individual message viewed as a LOGOS signal."
+          bugReport, "A bug report viewed as a LOGOS signal."
+          feedback, "A feedback submission viewed as a LOGOS signal."
+          supportQuestion, "A support question viewed as a LOGOS signal." ]
+
+    let private bySlug =
+        catalog
+        |> List.map (fun (identifier, _) -> SignalKindId.value identifier, identifier)
+        |> Map.ofList
+
+    /// <summary>
+    /// Looks up a signal kind by its explicit allowlisted slug.
+    /// </summary>
+    let tryFind (value: string) =
+        let normalized = value.Trim().ToLowerInvariant()
+
+        if System.String.IsNullOrWhiteSpace(normalized) then
+            None
+        else
+            Map.tryFind normalized bySlug
+
+    /// <summary>
+    /// Lists the allowlisted signal kinds with human-facing summaries.
+    /// </summary>
+    let described =
+        catalog |> List.map (fun (identifier, summary) -> SignalKindId.value identifier, summary)

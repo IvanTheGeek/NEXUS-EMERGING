@@ -50,7 +50,7 @@ The newer `FnHCI Concept Overview` conversation reinforces that this is not just
 - first occurred at: `2026-03-16T06:45:30.047614Z`
 - last occurred at: `2026-03-16T07:57:02.4032912Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2cc4-781d-8a81-8936b3b29c99.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cc4-781d-8a81-8936b3b29c99`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cc4-781d-8a81-8936b3b29c99`
 
 #### Excerpts
 - `human`: The difference in bolero between using HTML templates and doing F# HTML dsl
@@ -64,7 +64,7 @@ The newer `FnHCI Concept Overview` conversation reinforces that this is not just
 - first occurred at: `2026-03-19T21:23:24.3719999Z`
 - last occurred at: `2026-03-20T11:07:33.4083769Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cd6-772c-97db-8fdcb16a0050`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2cd6-772c-97db-8fdcb16a0050`
 
 #### Excerpts
 - `human`: is F# paket still the accepted way to handle dependencies or is there a ms solution now
@@ -78,7 +78,7 @@ The newer `FnHCI Concept Overview` conversation reinforces that this is not just
 - first occurred at: `2026-03-20T11:54:47.6638159Z`
 - last occurred at: `2026-03-20T13:25:55.5672249Z`
 - projection file: `../../NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`
-- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2ce1-7496-a7f3-2e5cae80727e`
+- graph scope command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d174f-2ce1-7496-a7f3-2e5cae80727e`
 
 #### Excerpts
 - `human`: HTML with relation to the artifact of text of an HTML file and graph theory is described how.

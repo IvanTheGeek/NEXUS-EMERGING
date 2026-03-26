@@ -53,10 +53,10 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.NewEventsAppended 7 "Expected the full first import event set."
                       Expect.isSome firstImport.ImportSnapshotManifestRelativePath "Expected the import to write a normalized import snapshot manifest."
                       Expect.isSome firstImport.ImportSnapshotConversationsRelativePath "Expected the import to write a normalized import snapshot conversation file."
-                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working slice."
+                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected the import to materialize a graph working batch."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected the import to update the graph working catalog."
                       Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected the import to refresh the SQLite graph working index."
-                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working slice assertion count for the fixture import."
+                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 46) "Expected the graph working batch assertion count for the fixture import."
 
                       let importSnapshotManifestPath =
                           firstImport.ImportSnapshotManifestRelativePath
@@ -66,6 +66,15 @@ module WorkflowTests =
                       let importSnapshotManifest = TestHelpers.readToml importSnapshotManifestPath
                       Expect.equal (TomlDocument.tryScalar "snapshot_kind" importSnapshotManifest) (Some "normalized_import_snapshot") "Expected the normalized import snapshot manifest kind."
                       Expect.equal (TomlDocument.tryTableValue "counts" "conversations_seen" importSnapshotManifest) (Some "1") "Expected one conversation in the normalized import snapshot."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "source_system" importSnapshotManifest) (Some "claude") "Expected the snapshot manifest to persist the LOGOS source system."
+                      Expect.equal (TomlDocument.tryTableValue "logos.handling_policy" "sanitization_status" importSnapshotManifest) (Some "raw") "Expected the snapshot manifest to persist the LOGOS handling policy."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "entry_pool" importSnapshotManifest) (Some "raw") "Expected the snapshot manifest to persist the LOGOS entry pool."
+
+                      let importManifestPath = Path.Combine(eventStoreRoot, firstImport.ManifestRelativePath)
+                      let importManifest = TestHelpers.readToml importManifestPath
+                      Expect.equal (TomlDocument.tryTableValue "logos" "source_system" importManifest) (Some "claude") "Expected the import manifest to persist the LOGOS source system."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "intake_channel" importManifest) (Some "ai-conversation") "Expected the import manifest to persist the LOGOS intake channel."
+                      Expect.equal (TomlDocument.tryTableValue "logos.handling_policy" "sharing_scope" importManifest) (Some "owner-only") "Expected the import manifest to persist the LOGOS sharing scope."
 
                       let workingManifestPath =
                           firstImport.WorkingGraphManifestRelativePath
@@ -205,10 +214,10 @@ module WorkflowTests =
                       Expect.equal firstImport.Counts.ConversationsSeen 1 "Expected one Codex conversation."
                       Expect.equal firstImport.Counts.MessagesSeen 2 "Expected two Codex fixture messages."
                       Expect.equal firstImport.Counts.NewEventsAppended 5 "Expected artifact, conversation, two messages, and import completion events."
-                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected Codex import to materialize a graph working slice."
+                      Expect.isSome firstImport.WorkingGraphManifestRelativePath "Expected Codex import to materialize a graph working batch."
                       Expect.isSome firstImport.WorkingGraphCatalogRelativePath "Expected Codex import to update the graph working catalog."
                       Expect.isSome firstImport.WorkingGraphIndexRelativePath "Expected Codex import to refresh the SQLite graph working index."
-                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 36) "Expected the Codex graph working slice assertion count for the fixture import."
+                      Expect.equal firstImport.WorkingGraphAssertionCount (Some 36) "Expected the Codex graph working batch assertion count for the fixture import."
 
                       let secondImport = CodexImportWorkflow.run request
                       Expect.equal secondImport.Counts.NewEventsAppended 2 "Expected only import-stream events on duplicate Codex import."

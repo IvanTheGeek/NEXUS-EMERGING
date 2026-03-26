@@ -1,6 +1,6 @@
 # Find Working Graph Nodes
 
-Use this command when you want to discover candidate node IDs from the SQLite graph working index before drilling into a neighborhood or exporting a verified slice.
+Use this command when you want to discover candidate node IDs from the SQLite graph working index before drilling into a neighborhood or exporting a verified batch.
 
 ## Command
 
@@ -16,7 +16,7 @@ Semantic-role scoped search:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- find-working-graph-nodes --semantic-role imprint --provider claude
 ```
 
-Message-role search inside one import slice:
+Message-role search inside one import batch:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- find-working-graph-nodes --message-role assistant --import-id <import-id>

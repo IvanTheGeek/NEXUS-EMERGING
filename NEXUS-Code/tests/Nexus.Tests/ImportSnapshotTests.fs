@@ -111,6 +111,8 @@ module ImportSnapshotTests =
                           |> Option.defaultWith (fun () -> failwith "Expected the normalized import snapshot to be recreated.")
 
                       Expect.equal rebuiltReport.Provider "claude" "Expected the rebuilt snapshot to preserve the provider slug."
+                      Expect.equal (rebuiltReport.LogosMetadata |> Option.map (fun value -> value.SourceSystem)) (Some "claude") "Expected the rebuilt snapshot to preserve LOGOS source metadata."
+                      Expect.equal (rebuiltReport.LogosMetadata |> Option.map (fun value -> value.HandlingPolicy.SanitizationStatus)) (Some "raw") "Expected the rebuilt snapshot to preserve the LOGOS handling policy."
                       Expect.equal rebuiltReport.ConversationCount 1 "Expected one conversation in the rebuilt snapshot."
                       Expect.equal rebuiltReport.MessageCount 2 "Expected two messages in the rebuilt snapshot."
                       Expect.equal rebuiltReport.ArtifactReferenceCount 1 "Expected one artifact reference in the rebuilt snapshot."

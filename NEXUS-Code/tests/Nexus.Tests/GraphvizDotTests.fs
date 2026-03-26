@@ -75,33 +75,33 @@ module GraphvizDotTests =
                       Expect.stringContains firstDot "semantic: imprint" "Expected semantic role annotations in the node labels."
                       Expect.stringContains firstDot "message: assistant" "Expected message role annotations in the node labels."))
 
-              testCase "Provider slice export reduces the graph to a practical subgraph" (fun () ->
-                  TestHelpers.withTempDirectory "nexus-graphviz-dot-slice" (fun tempRoot ->
+              testCase "Provider scope export reduces the graph to a practical subgraph" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-dot-scope" (fun tempRoot ->
                       let eventStoreRoot = buildMixedGraphStore tempRoot
-                      let outputPath = Path.Combine(tempRoot, "codex-slice.dot")
+                      let outputPath = Path.Combine(tempRoot, "codex-scope.dot")
 
                       let fullResult = GraphvizDot.export eventStoreRoot None
 
-                      let sliceResult =
+                      let scopeResult =
                           GraphvizDot.exportFiltered
                               eventStoreRoot
                               (Some outputPath)
                               { GraphvizDot.ExportFilter.empty with
                                   Provider = Some "codex" }
 
-                      let sliceDot = File.ReadAllText(sliceResult.OutputPath)
+                      let scopeDot = File.ReadAllText(scopeResult.OutputPath)
 
-                      Expect.isTrue (File.Exists(sliceResult.OutputPath)) "Expected the provider slice DOT file to exist."
-                      Expect.equal sliceResult.ScannedAssertionCount fullResult.ScannedAssertionCount "Expected the slice to scan the same assertion corpus."
-                      Expect.isLessThan sliceResult.AssertionCount fullResult.AssertionCount "Expected the provider slice to include fewer assertions than the full graph."
-                      Expect.isLessThan sliceResult.NodeCount fullResult.NodeCount "Expected the provider slice to include fewer nodes than the full graph."
-                      Expect.stringContains sliceDot "Codex Fixture Session" "Expected the Codex conversation to appear in the provider slice."
+                      Expect.isTrue (File.Exists(scopeResult.OutputPath)) "Expected the provider scope DOT file to exist."
+                      Expect.equal scopeResult.ScannedAssertionCount fullResult.ScannedAssertionCount "Expected the scope to scan the same assertion corpus."
+                      Expect.isLessThan scopeResult.AssertionCount fullResult.AssertionCount "Expected the provider scope to include fewer assertions than the full graph."
+                      Expect.isLessThan scopeResult.NodeCount fullResult.NodeCount "Expected the provider scope to include fewer nodes than the full graph."
+                      Expect.stringContains scopeDot "Codex Fixture Session" "Expected the Codex conversation to appear in the provider scope."
                       Expect.isFalse
-                          (sliceDot.Contains("Mermaid sequence diagram for chat", System.StringComparison.Ordinal))
-                          "Did not expect the Claude conversation title in the Codex slice."))
+                          (scopeDot.Contains("Mermaid sequence diagram for chat", System.StringComparison.Ordinal))
+                          "Did not expect the Claude conversation title in the Codex scope."))
 
-              testCase "Canonical conversation slice keeps a focused local neighborhood" (fun () ->
-                  TestHelpers.withTempDirectory "nexus-graphviz-conversation-slice" (fun tempRoot ->
+              testCase "Canonical conversation scope keeps a focused local neighborhood" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-graphviz-conversation-scope" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let _ = ImportWorkflow.run request
                       let _ = GraphAssertions.rebuild eventStoreRoot
@@ -122,22 +122,22 @@ module GraphvizDotTests =
 
                       let fullResult = GraphvizDot.export eventStoreRoot None
 
-                      let sliceResult =
+                      let scopeResult =
                           GraphvizDot.exportFiltered
                               eventStoreRoot
                               None
                               { GraphvizDot.ExportFilter.empty with
                                   ConversationId = Some conversationId }
 
-                      let sliceDot = File.ReadAllText(sliceResult.OutputPath)
+                      let scopeDot = File.ReadAllText(scopeResult.OutputPath)
 
-                      Expect.isLessThan sliceResult.AssertionCount fullResult.AssertionCount "Expected a conversation slice to include fewer assertions than the full graph."
-                      Expect.isLessThan sliceResult.NodeCount fullResult.NodeCount "Expected a conversation slice to include fewer nodes than the full graph."
-                      Expect.stringContains sliceDot conversationTitle "Expected the selected conversation title in the slice."
-                      Expect.stringContains sliceDot "references_artifact" "Expected local relationship edges around the conversation."
-                      Expect.stringContains sliceDot "semantic: imprint" "Expected node metadata for the local neighborhood."))
+                      Expect.isLessThan scopeResult.AssertionCount fullResult.AssertionCount "Expected a conversation scope to include fewer assertions than the full graph."
+                      Expect.isLessThan scopeResult.NodeCount fullResult.NodeCount "Expected a conversation scope to include fewer nodes than the full graph."
+                      Expect.stringContains scopeDot conversationTitle "Expected the selected conversation title in the scope."
+                      Expect.stringContains scopeDot "references_artifact" "Expected local relationship edges around the conversation."
+                      Expect.stringContains scopeDot "semantic: imprint" "Expected node metadata for the local neighborhood."))
 
-              testCase "Working import slice export works without a durable graph rebuild" (fun () ->
+              testCase "Working import batch export works without a durable graph rebuild" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-import" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -151,9 +151,9 @@ module GraphvizDotTests =
 
                       let dotText = File.ReadAllText(moduleResult.OutputPath)
 
-                      Expect.isTrue (File.Exists(moduleResult.OutputPath)) "Expected the working-slice DOT file to exist."
-                      Expect.equal moduleResult.ScannedAssertionCount 46 "Expected the working slice to read only its own assertion batch."
-                      Expect.equal moduleResult.AssertionCount 46 "Expected the exported working slice assertion count."
+                      Expect.isTrue (File.Exists(moduleResult.OutputPath)) "Expected the working-batch DOT file to exist."
+                      Expect.equal moduleResult.ScannedAssertionCount 46 "Expected the working batch to read only its own assertion batch."
+                      Expect.equal moduleResult.AssertionCount 46 "Expected the exported working-batch assertion count."
                       Expect.stringContains dotText "Claude Fixture Conversation" "Expected the working import graph to include the imported conversation title."
 
                       let cliResult =
@@ -168,9 +168,9 @@ module GraphvizDotTests =
 
                       Expect.equal cliResult.ExitCode 0 "Expected working-import Graphviz export through the CLI to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-import Graphviz export."
-                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice" "Expected the CLI to report the working-slice source kind."))
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working batch" "Expected the CLI to report the working-batch source kind."))
 
-              testCase "Working node neighborhood export scopes one node inside a working import slice" (fun () ->
+              testCase "Working node neighborhood export scopes one node inside a working import batch" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-node" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -202,8 +202,8 @@ module GraphvizDotTests =
                       let dotText = File.ReadAllText(neighborhoodResult.OutputPath)
 
                       Expect.isTrue (File.Exists(neighborhoodResult.OutputPath)) "Expected the working-node DOT file to exist."
-                      Expect.isLessThan neighborhoodResult.AssertionCount fullResult.AssertionCount "Expected the node neighborhood to export fewer assertions than the full working slice."
-                      Expect.isLessThan neighborhoodResult.NodeCount fullResult.NodeCount "Expected the node neighborhood to export fewer nodes than the full working slice."
+                      Expect.isLessThan neighborhoodResult.AssertionCount fullResult.AssertionCount "Expected the node neighborhood to export fewer assertions than the full working batch."
+                      Expect.isLessThan neighborhoodResult.NodeCount fullResult.NodeCount "Expected the node neighborhood to export fewer nodes than the full working batch."
                       Expect.stringContains dotText "Claude Fixture Conversation" "Expected the selected working node to remain in the neighborhood export."
                       Expect.stringContains dotText "belongs_to_conversation" "Expected local neighborhood edges around the selected node."))
 
@@ -240,10 +240,10 @@ module GraphvizDotTests =
                       Expect.equal cliResult.ExitCode 0 "Expected working-node Graphviz export through the CLI to succeed."
                       Expect.equal cliResult.StandardError "" "Did not expect stderr from the working-node Graphviz export."
                       Expect.isTrue (File.Exists(outputPath)) "Expected the CLI working-node DOT file to exist."
-                      Expect.stringContains cliResult.StandardOutput "Source: graph working slice neighborhood" "Expected the CLI to report the neighborhood source kind."
+                      Expect.stringContains cliResult.StandardOutput "Source: graph working batch neighborhood" "Expected the CLI to report the neighborhood source kind."
                       Expect.stringContains cliResult.StandardOutput nodeMatch.NodeId "Expected the CLI summary to report the selected working node.")) 
 
-              testCase "Working import slice export can require traceable verification before writing DOT output" (fun () ->
+              testCase "Working import batch export can require traceable verification before writing DOT output" (fun () ->
                   TestHelpers.withTempDirectory "nexus-graphviz-working-import-verified" (fun tempRoot ->
                       let request, eventStoreRoot = buildClaudeImportRequest tempRoot
                       let importResult = ImportWorkflow.run request
@@ -294,7 +294,7 @@ module GraphvizDotTests =
                                 outputPath ]
 
                       Expect.equal cliResult.ExitCode 2 "Expected broken traceable verification to refuse export."
-                      Expect.stringContains cliResult.StandardError "Working-slice traceability verification failed." "Expected a clear verification failure."
+                      Expect.stringContains cliResult.StandardError "Working-batch traceability verification failed." "Expected a clear verification failure."
                       Expect.stringContains cliResult.StandardError "Missing raw object refs:" "Expected the missing raw object count in stderr."
                       Expect.isFalse (File.Exists(outputPath)) "Did not expect a DOT file after verification failure."))
 

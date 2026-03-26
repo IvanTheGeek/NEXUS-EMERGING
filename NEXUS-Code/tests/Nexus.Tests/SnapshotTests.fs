@@ -10,6 +10,7 @@ open VerifyExpecto
 
 [<RequireQualifiedAccess>]
 module SnapshotTests =
+    do VerifierSettings.UseUtf8NoBom()
     do Verifier.UseProjectRelativeDirectory("snapshots")
 
     let private sourceFilePath =
@@ -104,6 +105,18 @@ module SnapshotTests =
           Window = Some Full
           ImportedAt = ImportedAt fixedImportedAt
           RootArtifact = rootArtifact
+          LogosMetadata =
+            Some
+                { SourceSystem = "claude"
+                  IntakeChannel = "ai-conversation"
+                  PrimarySignalKind = "conversation"
+                  RelatedSignalKinds = [ "message" ]
+                  HandlingPolicy =
+                    { Sensitivity = "internal-restricted"
+                      SharingScope = "owner-only"
+                      SanitizationStatus = "raw"
+                      RetentionClass = "durable" }
+                  EntryPool = "raw" }
           Counts =
             { ConversationsSeen = 1
               MessagesSeen = 2

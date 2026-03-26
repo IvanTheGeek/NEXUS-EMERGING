@@ -97,7 +97,7 @@ It should be a local materialized working substrate optimized for:
 
 - interactive graph queries
 - visualization preparation
-- slice generation
+- batch generation
 - lens experimentation
 - incremental updates
 
@@ -128,7 +128,7 @@ Practical units of work:
 - artifact-scoped updates
 - later lens-scoped or domain-scoped updates
 
-### Prefer Slice-First Work
+### Prefer Scoped Work
 
 Most human workflows do not need the whole graph at once.
 
@@ -136,9 +136,9 @@ The common working unit is more likely to be:
 
 - a conversation cluster
 - a concept cluster such as `FnHCI`
-- a provider slice
-- an import slice
-- a domain or bounded-context slice
+- a provider scope
+- an import batch
+- a domain or bounded-context scope
 
 This aligns with the earlier Graphviz experiments: smaller scoped graphs are more useful than one giant picture.
 
@@ -197,7 +197,7 @@ Current recommendation:
 
 See also:
 
-- `docs/decisions/0006-storage-roles-by-bounded-context.md`
+- [`docs/decisions/0006-storage-roles-by-bounded-context.md`](decisions/0006-storage-roles-by-bounded-context.md)
 
 ## Recommended Next Implementation Steps
 

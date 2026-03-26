@@ -2,6 +2,7 @@ namespace Nexus.Importers
 
 open System
 open Nexus.Domain
+open Nexus.Logos
 
 /// <summary>
 /// Converts provider identifiers to the stable slugs used in paths, manifests, and CLI-facing values.
@@ -118,6 +119,29 @@ module NormalizationNaming =
     /// </summary>
     let value normalizationVersion =
         NormalizationVersion.value normalizationVersion
+
+/// <summary>
+/// Bridges known provider imports into persisted LOGOS intake metadata.
+/// </summary>
+[<RequireQualifiedAccess>]
+module ProviderLogosImportMetadata =
+    /// <summary>
+    /// Builds the persisted LOGOS intake metadata for a known provider kind when available.
+    /// </summary>
+    let tryBuild provider =
+        ProviderNaming.slug provider
+        |> ProviderLogosClassification.tryFind
+        |> Option.map (fun classification ->
+            { SourceSystem = SourceSystemId.value classification.SourceSystemId
+              IntakeChannel = IntakeChannelId.value classification.IntakeChannelId
+              PrimarySignalKind = SignalKindId.value classification.PrimarySignalKind
+              RelatedSignalKinds = classification.RelatedSignalKinds |> List.map SignalKindId.value
+              HandlingPolicy =
+                { Sensitivity = SensitivityId.value classification.DefaultHandlingPolicy.SensitivityId
+                  SharingScope = SharingScopeId.value classification.DefaultHandlingPolicy.SharingScopeId
+                  SanitizationStatus = SanitizationStatusId.value classification.DefaultHandlingPolicy.SanitizationStatusId
+                  RetentionClass = RetentionClassId.value classification.DefaultHandlingPolicy.RetentionClassId }
+              EntryPool = LogosPool.value classification.EntryPool })
 
 /// <summary>
 /// A normalized artifact reference discovered while parsing provider content.

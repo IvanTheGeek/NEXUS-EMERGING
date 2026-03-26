@@ -14,6 +14,8 @@ This is especially relevant for later sources such as:
 
 - AI conversations
 - forum threads
+- Talkyard forum threads
+- Discord channels and threads
 - email threads
 - bug reports
 - support requests
@@ -25,16 +27,32 @@ The `v0` LOGOS source model introduces:
 
 - `SourceSystemId`
   the stable slug for the originating system or source surface
+- `SourceInstanceId`
+  the stable slug for one concrete source authority or deployment within that source system
 - `IntakeChannelId`
   the stable slug for the intake channel or path
 - `SignalKindId`
   the stable slug for the kind of knowledge-bearing signal
+- `AccessContextId`
+  the stable slug for the visibility or authority context under which the material was observed
+- `AcquisitionKindId`
+  the stable slug for how the material entered NEXUS
+- `RightsPolicyId`
+  the stable slug for the reuse boundary governing the material
 - `LogosLocator`
   a concrete locator back to the originating source item
 - `LogosSourceRef`
   the source-system + intake-channel + locator grouping
 - `LogosSignal`
   a small semantic envelope for a captured signal
+- `LogosHandlingPolicy`
+  a small explicit handling envelope covering sensitivity, sharing scope, sanitization status, and retention class
+- `LogosAccessContext`
+  the explicit source-instance + access-context + acquisition-kind envelope
+- `LogosRightsContext`
+  the explicit rights-policy + attribution-reference envelope
+- pool boundary types
+  explicit `raw`, `private`, and `public-safe` handling boundaries for downstream use
 
 ## Relation To Existing NEXUS Layers
 
@@ -44,6 +62,9 @@ Instead:
 
 - canonical history still records what was observed or imported
 - LOGOS source types classify the source and meaning of knowledge-bearing intake
+- handling policy describes the material
+- pool boundary types constrain what downstream workflows may do with it
+- provider and Codex imports can now carry LOGOS metadata from the moment they enter NEXUS
 - later curation, refinement, retrieval, and doctrine can build on both
 
 In other words:
@@ -66,7 +87,7 @@ That overlap should be preserved separately first and reconciled explicitly late
 
 See:
 
-- `docs/decisions/0009-overlap-reconciliation-is-explicit.md`
+- [`docs/decisions/0009-overlap-reconciliation-is-explicit.md`](decisions/0009-overlap-reconciliation-is-explicit.md)
 
 ## v0 Scope
 
@@ -76,6 +97,14 @@ The `v0` scope is intentionally narrow:
 - stable intake-channel identifiers
 - stable signal-kind identifiers
 - minimal source references and signal envelopes
+- explicit access and rights metadata for manual LOGOS intake notes
+- a small durable note workflow for seeding non-chat intake before full ingestion exists
+- a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
+- a first handling-policy audit report over LOGOS note material
+- first explicit pool boundary types for `raw`, `private`, and `public-safe` use, with public-safe export now also constrained by rights policy
+- explicit pool-aware intake and derived note paths under `docs/logos-intake/<pool>/` and `docs/logos-intake-derived/<pool>/`
+- provider and Codex imports entering the system with restricted-by-default LOGOS handling metadata
+- attribution requirements surfaced into public export manifests
 
 Deferred:
 
@@ -84,6 +113,7 @@ Deferred:
 - retrieval ranking
 - clustering
 - doctrine/refinement workflows
+- broader redaction and anonymization workflows beyond the first derived-note path
 - cross-source overlap reconciliation implementation
 
 ## Design Notes
@@ -91,3 +121,116 @@ Deferred:
 `v0` LOGOS identifiers use explicit allowlisted slug validation rather than permissive acceptance.
 
 That keeps this layer aligned with the repo rule that stable recognized forms should be narrow and deterministic.
+
+Current concrete source-system allowlist:
+
+- `chatgpt`
+- `claude`
+- `grok`
+- `codex`
+- `forum`
+- `talkyard`
+- `discord`
+- `email`
+- `issue-tracker`
+- `app-feedback-surface`
+
+Current concrete intake-channel allowlist:
+
+- `ai-conversation`
+- `forum-thread`
+- `discord-channel`
+- `discord-thread`
+- `email-thread`
+- `bug-report`
+- `app-feedback`
+
+Current concrete signal-kind allowlist:
+
+- `conversation`
+- `message`
+- `bug-report`
+- `feedback`
+- `support-question`
+
+Current handling-policy allowlists:
+
+- sensitivities:
+  - `personal-private`
+  - `customer-confidential`
+  - `internal-restricted`
+  - `public`
+- sharing scopes:
+  - `owner-only`
+  - `case-team`
+  - `project-team`
+  - `public`
+- sanitization statuses:
+  - `raw`
+  - `redacted`
+  - `anonymized`
+  - `approved-for-sharing`
+- retention classes:
+  - `ephemeral`
+  - `case-bound`
+  - `durable`
+
+Current access and rights allowlists:
+
+- access contexts:
+  - `public-anonymous`
+  - `registered-user`
+  - `owner`
+  - `admin`
+  - `bot`
+  - `api-client`
+- acquisition kinds:
+  - `manual-note`
+  - `web-scrape`
+  - `api-pull`
+  - `manual-export`
+  - `live-capture`
+- rights policies:
+  - `owner-controlled`
+  - `personal-training-only`
+  - `site-terms-restricted`
+  - `cc-by`
+  - `cc-by-sa`
+  - `api-contract-restricted`
+  - `customer-confidential`
+  - `review-required`
+
+Current provider-import baseline:
+
+- provider and Codex imports enter with restricted-by-default handling metadata
+- current default handling is:
+  - `sensitivity = internal-restricted`
+  - `sharing_scope = owner-only`
+  - `sanitization_status = raw`
+  - `retention_class = durable`
+  - `entry_pool = raw`
+
+Current non-chat LOGOS note baseline:
+
+- manual intake notes now enter a declared pool at creation time
+- manual intake notes now also persist explicit source-instance, access, acquisition, rights, and optional attribution-reference metadata
+- the default entry pool is:
+  - `entry_pool = raw`
+- the default access/rights posture is:
+  - `access_context = owner`
+  - `acquisition_kind = manual-note`
+  - `rights_policy = review-required`
+- derived sanitized notes resolve into:
+  - `private` when the resulting policy is still restricted
+  - `public-safe` only when the explicit public-safe policy boundary is crossed for both handling and rights
+
+Discord note:
+
+- Discord is modeled as a LOGOS source now so later inbound ingestion and later outbound NEXUS-to-Discord flows can share the same source vocabulary.
+- The current scope is intake classification only, not outbound transport or live Discord integration.
+
+Talkyard note:
+
+- `forum` remains the generic category.
+- `talkyard` is now the explicit current forum implementation source system.
+- That lets NEXUS model real Talkyard intake now without losing the broader forum abstraction later.

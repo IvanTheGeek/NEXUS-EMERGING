@@ -8,6 +8,7 @@ This command:
 - follows preserved raw export paths in `NEXUS-Objects/`
 - reparses the preserved export with the current provider-export parser
 - rewrites normalized import snapshot files under `NEXUS-EventStore/snapshots/imports/<import-id>/`
+- backfills current LOGOS source, signal, handling-policy, and entry-pool metadata into the rebuilt snapshot manifest
 
 It does **not** append canonical events.
 

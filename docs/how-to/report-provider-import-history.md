@@ -11,7 +11,7 @@ This is especially useful for export-window analysis, because it shows:
 Important:
 
 - this is based on normalized import snapshots
-- it is not based on additive working-slice contributions
+- it is not based on additive working-batch contributions
 - it reflects parsed provider payload membership before canonical dedupe
 
 ## Command

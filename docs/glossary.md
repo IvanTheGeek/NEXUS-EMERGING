@@ -45,6 +45,10 @@ In the current bounded context, it is the canonical store for observed acquisiti
 
 A broad area of reality or work that a part of the graph concerns, such as `Ingestion` or `SoftwareDevelopment`.
 
+## Flow
+
+An ordered sequence of Event Modeling slices that accomplishes something useful.
+
 ## Event
 
 An append-only record in the canonical history that states what was observed, referenced, captured, or completed.
@@ -67,13 +71,73 @@ In the current ontology direction, `Imprint` is a role, not a structural primiti
 
 A single acquisition run that processes one or more provider artifacts and appends canonical history.
 
+## Intake Channel
+
+A stable classification for the path through which a LOGOS signal entered NEXUS, such as AI conversation, forum thread, Discord thread, email thread, bug report, or app feedback.
+
+## Access Context
+
+A stable classification for the visibility or authority level under which material was observed, such as `public-anonymous`, `registered-user`, `owner`, `admin`, `bot`, or `api-client`.
+
+## Acquisition Kind
+
+A stable classification for how material entered NEXUS, such as `manual-note`, `web-scrape`, `api-pull`, `manual-export`, or `live-capture`.
+
+## Attribution Reference
+
+The explicit license, source, or attribution text/reference that should be carried forward when a rights policy requires prominent attribution in later public-facing use.
+
 ## Lens
 
 A perspective over the underlying graph that localizes meaning, naming, grouping, and emphasis for a purpose or audience.
 
+## LOGOS
+
+The NEXUS concept area for intake, refinement, and retention of knowledge-bearing signals.
+
+LOGOS is broader than any one storage or retrieval technology.
+
+## LOGOS Intake Note
+
+A durable Markdown seed note under `docs/logos-intake/<pool>/` that records explicit source-system, source-instance, access, acquisition, rights, locator, and handling metadata for an intake signal before full ingestion exists for that source type.
+
+## LOGOS Sanitized Note
+
+A derived Markdown note under `docs/logos-intake-derived/<pool>/` that preserves source classification, access, rights, and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
+
+## LOGOS Handling Policy
+
+An explicit handling classification for a LOGOS intake signal covering sensitivity, sharing scope, sanitization status, and retention class.
+
+## LOGOS Handling Report
+
+A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for access, acquisition, rights, sensitivity, sharing scope, sanitization status, retention, and likely attribution obligations.
+
+## Entry Pool
+
+The explicit pool path where a LOGOS note enters or lands: `raw`, `private`, or `public-safe`.
+
+## Private Pool
+
+A handling pool for owner or restricted internal use where sensitive detail may still be retained for legitimate work.
+
+## Public-Safe Pool
+
+A handling pool for explicitly approved material that is safe for public-facing or broadly shared downstream use only when both handling and rights boundaries are satisfied.
+
+## Raw Pool
+
+A handling pool for preserved intake with maximal fidelity and provenance, regardless of whether the material is safe for broader sharing.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.
+
+## Normalized Import Snapshot
+
+A per-import derived snapshot written from one parsed provider payload before canonical dedupe.
+
+It captures what that import payload contained at the normalized layer, so imports can be compared with snapshot semantics instead of only additive canonical changes.
 
 ## Normalization Version
 
@@ -92,6 +156,10 @@ The provenance-first layer that records what NEXUS actually encountered from exp
 
 A rebuildable materialized view derived from canonical history.
 
+## Retention Class
+
+A stable classification for how long or how durably an intake signal should be retained, such as `ephemeral`, `case-bound`, or `durable`.
+
 ## Provider Artifact
 
 An original source object received from a provider, such as a ChatGPT, Claude, or Grok export zip.
@@ -99,3 +167,49 @@ An original source object received from a provider, such as a ChatGPT, Claude, o
 ## Raw Object
 
 A preserved source or derived extraction stored in the object layer.
+
+## Sanitization Status
+
+A stable classification for whether an intake signal or derived artifact is still raw, has been redacted, has been anonymized, or has been approved for wider sharing.
+
+## Scope
+
+An explicit filtered boundary over data or graph material, such as one provider, one conversation, one import batch, or one node neighborhood.
+
+## Sensitivity
+
+A stable classification for how sensitive an intake signal is, such as `personal-private`, `customer-confidential`, `internal-restricted`, or `public`.
+
+## Sharing Scope
+
+A stable classification for who may access or use an intake signal or derivative, such as `owner-only`, `case-team`, `project-team`, or `public`.
+
+## Slice
+
+In NEXUS terminology, `Slice` is reserved for the Event Modeling sense: a unit of change or read.
+
+## Overlap Reconciliation
+
+The explicit, traceable, and reversible process of linking multiple acquisition sources that may describe the same underlying interaction.
+
+In NEXUS, overlap is preserved separately first and reconciled later by explicit logic rather than silently collapsed during import.
+
+## Signal Kind
+
+A stable classification for the kind of knowledge-bearing signal represented in LOGOS, such as conversation, message, feedback, bug report, or support question.
+
+## Source System
+
+A stable classification for the originating system or surface from which a LOGOS signal came, such as ChatGPT, Claude, Grok, Codex, a forum, Talkyard, Discord, or an app feedback surface.
+
+## Source Instance
+
+A stable slug for one concrete source authority or deployment within a broader source system, such as one specific Talkyard host, Discord server, wiki, or repository surface.
+
+## Rights Policy
+
+A stable classification for the reuse boundary governing a LOGOS signal or derivative, such as `owner-controlled`, `personal-training-only`, `site-terms-restricted`, `cc-by`, `cc-by-sa`, `api-contract-restricted`, `customer-confidential`, or `review-required`.
+
+## Batch
+
+An import-bounded or materialization-bounded contribution unit, especially in the graph working layer.

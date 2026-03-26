@@ -309,6 +309,7 @@ module CodexImportWorkflow =
                              | None -> "Imported Codex local session export snapshot.") } }
 
         let eventList = events |> Seq.toList
+        let logosMetadata = ProviderLogosImportMetadata.tryBuild Codex
         let manifest =
             { ImportId = importId
               Provider = Codex
@@ -317,6 +318,7 @@ module CodexImportWorkflow =
               Window = None
               ImportedAt = importedAt
               RootArtifact = intake.RootArtifact
+              LogosMetadata = logosMetadata
               Counts = counts
               NewCanonicalEventIds = eventList |> List.map (fun event -> event.Envelope.EventId)
               Notes = intake.Notes }
