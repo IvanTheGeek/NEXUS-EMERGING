@@ -128,6 +128,19 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/create-logos-intake-note.md" "Expected the intake note guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help create-logos-intake-note.")
 
+              testCase "LOGOS sanitized note help exposes the derived sanitization workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "create-logos-sanitized-note" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help create-logos-sanitized-note to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: create-logos-sanitized-note" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--source-slug <slug>" "Expected source-slug guidance."
+                  Expect.stringContains result.StandardOutput "--sanitization-status <redacted|anonymized|approved-for-sharing>" "Expected derived sanitization allowlist guidance."
+                  Expect.stringContains result.StandardOutput "--sharing-scope <slug>" "Expected sharing-scope guidance."
+                  Expect.stringContains result.StandardOutput "Raw locators and raw source text remain in the restricted source intake note." "Expected the explicit raw-data boundary note."
+                  Expect.stringContains result.StandardOutput "approved-for-sharing requires an explicit --sharing-scope." "Expected the explicit sharing-scope requirement."
+                  Expect.stringContains result.StandardOutput "docs/how-to/create-logos-sanitized-note.md" "Expected the sanitized-note guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help create-logos-sanitized-note.")
+
               testCase "Graphviz help exposes the external graph export workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "export-graphviz-dot" ]
 

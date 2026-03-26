@@ -89,6 +89,10 @@ LOGOS is broader than any one storage or retrieval technology.
 
 A durable Markdown seed note under `docs/logos-intake/` that records explicit source-system, intake-channel, signal-kind, and locator metadata for an intake signal before full ingestion exists for that source type.
 
+## LOGOS Sanitized Note
+
+A derived Markdown note under `docs/logos-intake-derived/` that preserves source classification and handling-policy provenance while intentionally excluding raw locators and raw copied source text.
+
 ## LOGOS Handling Policy
 
 An explicit handling classification for a LOGOS intake signal covering sensitivity, sharing scope, sanitization status, and retention class.

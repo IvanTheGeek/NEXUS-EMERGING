@@ -17,6 +17,7 @@ Current guides:
 - `compare-working-import-conversations.md`
 - `create-concept-note.md`
 - `create-logos-intake-note.md`
+- `create-logos-sanitized-note.md`
 - `export-codex-sessions.md`
 - `export-graphviz-dot.md`
 - `find-working-graph-nodes.md`

@@ -79,6 +79,7 @@ The `v0` scope is intentionally narrow:
 - stable signal-kind identifiers
 - minimal source references and signal envelopes
 - a small durable note workflow for seeding non-chat intake before full ingestion exists
+- a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
 
 Deferred:
 
@@ -87,7 +88,7 @@ Deferred:
 - retrieval ranking
 - clustering
 - doctrine/refinement workflows
-- redaction and anonymization workflows as explicit derived steps
+- broader redaction and anonymization workflows beyond the first derived-note path
 - cross-source overlap reconciliation implementation
 
 ## Design Notes

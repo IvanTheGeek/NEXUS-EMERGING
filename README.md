@@ -74,6 +74,7 @@ Already established:
 - A first explicit LOGOS handling-policy model exists for sensitivity, sharing scope, sanitization status, and retention class.
 - Concrete non-chat LOGOS source systems now exist for forum, email, issue-tracker, and app-feedback surfaces.
 - A first LOGOS intake-note workflow exists for seeding non-chat intake into durable repo memory.
+- A first LOGOS derived sanitization workflow exists for creating safer notes without widening access to restricted raw intake.
 - Restricted-by-default intake and explicit publication are now named architectural rules.
 - A first explicit overlap-candidate report exists without collapsing acquisition history automatically.
 - Full graph rebuilds are now explicitly treated as heavyweight operations, and a secondary graph working layer is planned next.

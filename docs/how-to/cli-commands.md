@@ -128,6 +128,13 @@ The CLI supports both:
 - New notes default to a restricted handling policy unless you explicitly choose other allowlisted values.
 - Details: `docs/how-to/create-logos-intake-note.md`
 
+`create-logos-sanitized-note`
+
+- Creates a derived sanitized LOGOS note from an existing restricted intake note.
+- Use it when the source note should stay restricted but a redacted, anonymized, or explicitly shareable derivative is needed.
+- The derived note keeps source classification and policy provenance but does not copy raw locators or raw source text forward.
+- Details: `docs/how-to/create-logos-sanitized-note.md`
+
 `rebuild-artifact-projections`
 
 - Rebuilds artifact read models from canonical artifact events.
@@ -259,7 +266,9 @@ LOGOS intake seeding:
 
 1. Run `report-logos-catalog`.
 2. Run `create-logos-intake-note`.
-3. Refine the note under `docs/logos-intake/`.
+3. Run `create-logos-sanitized-note` if the source note needs a safer derivative for broader sharing.
+4. Keep the restricted source note under `docs/logos-intake/`.
+5. Refine the derived note under `docs/logos-intake-derived/` for the intended sharing scope.
 
 Manual artifact hydration:
 
@@ -287,6 +296,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/rebuild-conversation-projections.md`
 - `docs/how-to/create-concept-note.md`
 - `docs/how-to/create-logos-intake-note.md`
+- `docs/how-to/create-logos-sanitized-note.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/rebuild-working-graph-index.md`

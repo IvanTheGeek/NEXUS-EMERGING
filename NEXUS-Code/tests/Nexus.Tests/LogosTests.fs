@@ -159,4 +159,175 @@ module LogosTests =
                       Expect.stringContains cliResult.StandardOutput "Sensitivity: customer-confidential" "Expected the CLI summary to print the sensitivity."
                       Expect.stringContains cliResult.StandardOutput "Sharing scope: case-team" "Expected the CLI summary to print the sharing scope."
                       Expect.stringContains text "sanitization_status = \"redacted\"" "Expected the CLI-created note to persist the sanitization status."
-                      Expect.stringContains text "retention_class = \"case-bound\"" "Expected the CLI-created note to persist the retention class.")) ]
+                      Expect.stringContains text "retention_class = \"case-bound\"" "Expected the CLI-created note to persist the retention class."))
+
+              testCase "LOGOS sanitized note derives from a restricted intake note without copying raw locators" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-sanitized-note" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let sourcePolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.customerConfidential
+                              KnownSharingScopes.caseTeam
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "cheddarbooks-debug-case-42"
+                                Title = "CheddarBooks Debug Case 42"
+                                SourceSystemId = KnownSourceSystems.issueTracker
+                                IntakeChannelId = CoreIntakeChannels.bugReport
+                                SignalKindId = CoreSignalKinds.bugReport
+                                Policy = sourcePolicy
+                                Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
+                                CapturedAt = None
+                                Summary = Some "Customer shared a support case with sensitive financial details."
+                                Tags = [ "support"; "customer" ] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let result =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "cheddarbooks-debug-case-42"
+                                    Slug = "cheddarbooks-case-42-anonymized"
+                                    Title = "CheddarBooks Case 42 (Anonymized)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.anonymized
+                                    SensitivityId = Some KnownSensitivities.internalRestricted
+                                    SharingScopeId = Some KnownSharingScopes.projectTeam
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = Some "Sensitive customer-identifying details removed while preserving the debugging pattern."
+                                    Tags = [ "anonymized"; "case-study" ] }
+
+                          match result with
+                          | Error error ->
+                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error
+                          | Ok note ->
+                              let text = File.ReadAllText(note.OutputPath)
+
+                              Expect.isTrue (File.Exists(note.OutputPath)) "Expected the sanitized LOGOS note file to exist."
+                              Expect.equal note.NormalizedSlug "cheddarbooks-case-42-anonymized" "Expected the derived slug to stay stable."
+                              Expect.stringContains text "note_kind = \"logos_intake_sanitized\"" "Expected the derived note kind."
+                              Expect.stringContains text "derived_from = \"logos-intake/cheddarbooks-debug-case-42.md\"" "Expected the derived note to retain a source pointer."
+                              Expect.stringContains text "source_system = \"issue-tracker\"" "Expected the source system classification to be preserved."
+                              Expect.stringContains text "source_sanitization_status = \"raw\"" "Expected the source policy to remain visible."
+                              Expect.stringContains text "sanitization_status = \"anonymized\"" "Expected the derived sanitization status."
+                              Expect.stringContains text "sharing_scope = \"project-team\"" "Expected the derived sharing scope."
+                              Expect.stringContains text "retention_class = \"durable\"" "Expected the derived retention class."
+                              Expect.stringContains text "Sensitive customer-identifying details removed while preserving the debugging pattern." "Expected the derived summary."
+                              Expect.isFalse (text.Contains("https://support.example.com/cases/42")) "Expected raw locators to stay out of the derived note."
+                              Expect.isFalse (text.Contains("## Locators")) "Expected the derived note to avoid copying the source locator section."))
+
+              testCase "LOGOS sanitized note rejects approved-for-sharing without an explicit sharing scope" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-sanitized-note-policy" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let sourcePolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.personalPrivate
+                              KnownSharingScopes.ownerOnly
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "personal-chat-1"
+                                Title = "Personal Chat 1"
+                                SourceSystemId = KnownSourceSystems.chatgpt
+                                IntakeChannelId = CoreIntakeChannels.aiConversation
+                                SignalKindId = CoreSignalKinds.conversation
+                                Policy = sourcePolicy
+                                Locators = [ LogosLocator.nativeThreadId "thread-1" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let result =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "personal-chat-1"
+                                    Slug = "personal-chat-1-shareable"
+                                    Title = "Personal Chat 1 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = None
+                                    RetentionClassId = None
+                                    Summary = None
+                                    Tags = [] }
+
+                          match result with
+                          | Ok _ ->
+                              failtest "Expected approved-for-sharing without an explicit sharing scope to be rejected."
+                          | Error error ->
+                              Expect.stringContains error "approved-for-sharing requires an explicit --sharing-scope." "Expected the explicit sharing-scope requirement."))
+
+              testCase "CLI create-logos-sanitized-note creates a derived note" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-sanitized-note-cli" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let sourcePolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.customerConfidential
+                              KnownSharingScopes.caseTeam
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "support-thread-123"
+                                Title = "Support Thread 123"
+                                SourceSystemId = KnownSourceSystems.forum
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                Policy = sourcePolicy
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
+                                CapturedAt = None
+                                Summary = Some "Customer cannot complete setup after the latest update."
+                                Tags = [ "support" ] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let cliResult =
+                              TestHelpers.runCli
+                                  [ "create-logos-sanitized-note"
+                                    "--docs-root"
+                                    docsRoot
+                                    "--source-slug"
+                                    "support-thread-123"
+                                    "--slug"
+                                    "support-thread-123-redacted"
+                                    "--title"
+                                    "Support Thread 123 (Redacted)"
+                                    "--sanitization-status"
+                                    "redacted"
+                                    "--sharing-scope"
+                                    "project-team"
+                                    "--summary"
+                                    "Redacted support summary for wider internal sharing."
+                                    "--tag"
+                                    "redacted" ]
+
+                          let outputPath = Path.Combine(docsRoot, "logos-intake-derived", "support-thread-123-redacted.md")
+                          let text = File.ReadAllText(outputPath)
+
+                          Expect.equal cliResult.ExitCode 0 "Expected CLI sanitized LOGOS note creation to succeed."
+                          Expect.equal cliResult.StandardError "" "Did not expect stderr from the CLI sanitized LOGOS note creation."
+                          Expect.isTrue (File.Exists(outputPath)) "Expected the CLI-created sanitized LOGOS note file to exist."
+                          Expect.stringContains cliResult.StandardOutput "Sanitized LOGOS note created." "Expected the CLI result header."
+                          Expect.stringContains cliResult.StandardOutput "Source note path:" "Expected the CLI summary to print the source note path."
+                          Expect.stringContains cliResult.StandardOutput "Sanitization status: redacted" "Expected the CLI summary to print the sanitization status."
+                          Expect.stringContains text "note_kind = \"logos_intake_sanitized\"" "Expected the derived note kind."
+                          Expect.stringContains text "sharing_scope = \"project-team\"" "Expected the derived sharing scope."
+                          Expect.isFalse (text.Contains("https://community.example.com/t/123")) "Expected raw locators to stay out of the CLI-created derived note.")) ]

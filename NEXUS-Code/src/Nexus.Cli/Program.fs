@@ -62,6 +62,7 @@ module Program =
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
         | CreateLogosIntakeNote of request: CreateLogosIntakeNoteRequest
+        | CreateLogosSanitizedNote of request: CreateLogosSanitizedNoteRequest
         | CreateConceptNote of request: CreateConceptNoteRequest
 
     let private repoRoot =
@@ -683,6 +684,33 @@ module Program =
                       "New notes default to a restricted handling policy unless you explicitly choose other allowlisted values."
                       "At least one explicit locator is required."
                       "Detailed guide: docs/how-to/create-logos-intake-note.md" ] }
+        | "create-logos-sanitized-note" ->
+            Some
+                { Name = name
+                  Summary = "Create a derived sanitized LOGOS note from an existing restricted intake note."
+                  Usage =
+                    [ sprintf "%s create-logos-sanitized-note --source-slug <slug> --slug <slug> --title <title> --sanitization-status <slug>" cliInvocation
+                      sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation ]
+                  Options =
+                    [ "--source-slug <slug>", "Required. Select the source LOGOS intake note under docs/logos-intake/."
+                      "--slug <slug>", "Required. Explicit file-safe slug for the derived note."
+                      "--title <title>", "Required. Explicit sanitized title. This is not copied from the source note."
+                      "--sanitization-status <redacted|anonymized|approved-for-sharing>", "Required. Explicit derived sanitization status."
+                      "--sensitivity <slug>", "Optional explicit allowlisted sensitivity. Defaults to the source note value."
+                      "--sharing-scope <slug>", "Optional explicit allowlisted sharing scope. Defaults to the source note value."
+                      "--retention-class <slug>", "Optional explicit allowlisted retention class. Defaults to the source note value."
+                      "--summary <text>", "Optional sanitized summary. Defaults to a placeholder."
+                      "--tag <slug>", "Optional explicit tag slug. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
+                  Examples =
+                    [ sprintf "%s create-logos-sanitized-note --source-slug support-thread-123 --slug support-thread-123-redacted --title \"Support Thread 123 (Redacted)\" --sanitization-status redacted" cliInvocation
+                      sprintf "%s create-logos-sanitized-note --source-slug cheddarbooks-debug-case-42 --slug cheddarbooks-case-42-anonymized --title \"CheddarBooks Case 42 (Anonymized)\" --sanitization-status anonymized --sharing-scope project-team" cliInvocation ]
+                  Notes =
+                    [ "This writes a derived note under docs/logos-intake-derived/."
+                      "Raw locators and raw source text remain in the restricted source intake note."
+                      "Use this as an explicit derived sanitization step rather than widening access to the raw note."
+                      "approved-for-sharing requires an explicit --sharing-scope."
+                      "Detailed guide: docs/how-to/create-logos-sanitized-note.md" ] }
         | _ -> None
 
     let private availableCommands () =
@@ -712,6 +740,7 @@ module Program =
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
           "create-logos-intake-note"
+          "create-logos-sanitized-note"
           "create-concept-note" ]
         |> List.choose (fun name ->
             commandHelp name
@@ -2331,6 +2360,134 @@ module Program =
 
             loop defaultDocsRoot None None None None None None None None None [] None None [] args
 
+    let private parseCreateLogosSanitizedNote (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "create-logos-sanitized-note"))
+        else
+            let rec loop
+                docsRoot
+                sourceSlug
+                slug
+                title
+                sanitizationStatus
+                sensitivity
+                sharingScope
+                retentionClass
+                summary
+                tags
+                remaining
+                =
+                match remaining with
+                | [] ->
+                    match sourceSlug, slug, title, sanitizationStatus with
+                    | None, _, _, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --source-slug"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, None, _, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --slug"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, _, None, _ ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --title"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | _, _, _, None ->
+                        eprintfn "Missing required option for create-logos-sanitized-note: --sanitization-status"
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    | Some sourceSlugValue, Some slugValue, Some titleValue, Some sanitizationStatusValue ->
+                        Ok
+                            (CreateLogosSanitizedNote
+                                { DocsRoot = docsRoot
+                                  SourceSlug = sourceSlugValue
+                                  Slug = slugValue
+                                  Title = titleValue
+                                  SanitizationStatusId = sanitizationStatusValue
+                                  SensitivityId = sensitivity
+                                  SharingScopeId = sharingScope
+                                  RetentionClassId = retentionClass
+                                  Summary = summary
+                                  Tags = List.rev tags })
+                | "--docs-root" :: value :: rest ->
+                    loop value sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--source-slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid source slug: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot (Some normalized) slug title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--slug" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid slug: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug (Some normalized) title sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--title" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid title: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug slug (Some normalized) sanitizationStatus sensitivity sharingScope retentionClass summary tags rest
+                | "--sanitization-status" :: value :: rest ->
+                    match KnownSanitizationStatuses.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title (Some identifier) sensitivity sharingScope retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sanitization status: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--sensitivity" :: value :: rest ->
+                    match KnownSensitivities.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus (Some identifier) sharingScope retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sensitivity: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--sharing-scope" :: value :: rest ->
+                    match KnownSharingScopes.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity (Some identifier) retentionClass summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS sharing scope: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--retention-class" :: value :: rest ->
+                    match KnownRetentionClasses.tryFind value with
+                    | Some identifier ->
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope (Some identifier) summary tags rest
+                    | None ->
+                        eprintfn "Unsupported LOGOS retention class: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                | "--summary" :: value :: rest ->
+                    loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass (Some value) tags rest
+                | "--tag" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid tag: %s" value
+                        printCommandHelp "create-logos-sanitized-note"
+                        Error 1
+                    else
+                        loop docsRoot sourceSlug slug title sanitizationStatus sensitivity sharingScope retentionClass summary (normalized :: tags) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for create-logos-sanitized-note: %s" option
+                    printCommandHelp "create-logos-sanitized-note"
+                    Error 1
+
+            loop defaultDocsRoot None None None None None None None None [] args
+
     let private parseCommand args =
         match args with
         | [] ->
@@ -2402,6 +2559,8 @@ module Program =
             parseRebuildConversationProjections rest
         | "create-logos-intake-note" :: rest ->
             parseCreateLogosIntakeNote rest
+        | "create-logos-sanitized-note" :: rest ->
+            parseCreateLogosSanitizedNote rest
         | "create-concept-note" :: rest ->
             parseCreateConceptNote rest
         | command :: _ ->
@@ -3844,6 +4003,24 @@ module Program =
             eprintfn "%s" error
             1
 
+    let private createLogosSanitizedNote request =
+        match LogosSanitizedNotes.create request with
+        | Ok result ->
+            let policy = result.Policy
+
+            printfn "Sanitized LOGOS note created."
+            printfn "  Output path: %s" result.OutputPath
+            printfn "  Source note path: %s" result.SourceNotePath
+            printfn "  Slug: %s" result.NormalizedSlug
+            printfn "  Sensitivity: %s" (SensitivityId.value policy.SensitivityId)
+            printfn "  Sharing scope: %s" (SharingScopeId.value policy.SharingScopeId)
+            printfn "  Sanitization status: %s" (SanitizationStatusId.value policy.SanitizationStatusId)
+            printfn "  Retention class: %s" (RetentionClassId.value policy.RetentionClassId)
+            0
+        | Error error ->
+            eprintfn "%s" error
+            1
+
     let private createConceptNote request =
         match ConceptNotes.create request with
         | Error error ->
@@ -3922,6 +4099,8 @@ module Program =
             rebuildConversationProjections eventStoreRoot
         | Ok (CreateLogosIntakeNote request) ->
             createLogosIntakeNote request
+        | Ok (CreateLogosSanitizedNote request) ->
+            createLogosSanitizedNote request
         | Ok (CreateConceptNote request) ->
             createConceptNote request
         | Error exitCode ->
