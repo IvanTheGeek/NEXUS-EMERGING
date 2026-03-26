@@ -101,6 +101,18 @@ An explicit handling classification for a LOGOS intake signal covering sensitivi
 
 A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for sensitivity, sharing scope, sanitization status, and retention.
 
+## Private Pool
+
+A handling pool for owner or restricted internal use where sensitive detail may still be retained for legitimate work.
+
+## Public-Safe Pool
+
+A handling pool for explicitly approved material that is safe for public-facing or broadly shared downstream use.
+
+## Raw Pool
+
+A handling pool for preserved intake with maximal fidelity and provenance, regardless of whether the material is safe for broader sharing.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.

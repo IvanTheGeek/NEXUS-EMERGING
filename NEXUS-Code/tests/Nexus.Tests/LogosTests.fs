@@ -474,4 +474,81 @@ module LogosTests =
                               Expect.stringContains result.StandardOutput "Customer-confidential:" "Expected the confidential-note section."
                               Expect.stringContains result.StandardOutput "Approved for sharing:" "Expected the shareable-note section."
                               Expect.stringContains result.StandardOutput "support-thread-123.md" "Expected the source note path in the report."
-                              Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report.")) ]
+                              Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report."))
+
+              testCase "LOGOS pool boundaries keep intake raw/private and gate public-safe promotion" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-pools" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let intakeResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "support-thread-123"
+                                Title = "Support Thread 123"
+                                SourceSystemId = KnownSourceSystems.forum
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                Policy =
+                                    LogosHandlingPolicy.create
+                                        KnownSensitivities.customerConfidential
+                                        KnownSharingScopes.caseTeam
+                                        KnownSanitizationStatuses.raw
+                                        KnownRetentionClasses.caseBound
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match intakeResult with
+                      | Error error ->
+                          failtestf "Expected LOGOS intake note creation to succeed. %s" error
+                      | Ok intake ->
+                          let rawItem = LogosPoolResults.intakeAsRaw intake
+                          let privateItem = LogosPoolResults.intakeAsPrivate intake
+
+                          Expect.equal (RawPoolItem.policy rawItem).SanitizationStatusId KnownSanitizationStatuses.raw "Expected the raw-pool item to preserve the raw policy."
+                          Expect.equal (PrivatePoolItem.policy privateItem).SensitivityId KnownSensitivities.customerConfidential "Expected the private-pool item to preserve the confidential policy."
+
+                          let shareableResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-shareable"
+                                    Title = "Support Thread 123 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.publicAudience
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          let teamOnlyResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-team"
+                                    Title = "Support Thread 123 (Team)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.redacted
+                                    SensitivityId = Some KnownSensitivities.internalRestricted
+                                    SharingScopeId = Some KnownSharingScopes.projectTeam
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          match shareableResult, teamOnlyResult with
+                          | Ok shareable, Ok teamOnly ->
+                              match LogosPoolResults.trySanitizedAsPublicSafe shareable with
+                              | Error error ->
+                                  failtestf "Expected approved public sanitized note to promote into the public-safe pool. %s" error
+                              | Ok publicSafe ->
+                                  Expect.equal (PublicSafePoolItem.policy publicSafe).SharingScopeId KnownSharingScopes.publicAudience "Expected the public-safe item to require public sharing scope."
+                                  Expect.equal (PublicSafePoolItem.value publicSafe).NormalizedSlug "support-thread-123-shareable" "Expected the promoted result to preserve the original payload."
+
+                              match LogosPoolResults.trySanitizedAsPublicSafe teamOnly with
+                              | Ok _ ->
+                                  failtest "Expected a non-public sanitized note to be rejected from the public-safe pool."
+                              | Error error ->
+                                  Expect.stringContains error "approved-for-sharing" "Expected the public-safe boundary to explain the missing approval policy."
+                          | Error error, _
+                          | _, Error error ->
+                              failtestf "Expected sanitized LOGOS note creation to succeed. %s" error)) ]

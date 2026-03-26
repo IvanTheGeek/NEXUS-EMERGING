@@ -37,6 +37,8 @@ The `v0` LOGOS source model introduces:
   a small semantic envelope for a captured signal
 - `LogosHandlingPolicy`
   a small explicit handling envelope covering sensitivity, sharing scope, sanitization status, and retention class
+- pool boundary types
+  explicit `raw`, `private`, and `public-safe` handling boundaries for downstream use
 
 ## Relation To Existing NEXUS Layers
 
@@ -46,6 +48,8 @@ Instead:
 
 - canonical history still records what was observed or imported
 - LOGOS source types classify the source and meaning of knowledge-bearing intake
+- handling policy describes the material
+- pool boundary types constrain what downstream workflows may do with it
 - later curation, refinement, retrieval, and doctrine can build on both
 
 In other words:
@@ -81,6 +85,7 @@ The `v0` scope is intentionally narrow:
 - a small durable note workflow for seeding non-chat intake before full ingestion exists
 - a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
 - a first handling-policy audit report over LOGOS note material
+- first explicit pool boundary types for `raw`, `private`, and `public-safe` use
 
 Deferred:
 
