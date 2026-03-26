@@ -1,6 +1,6 @@
 # NEXUS-Code
 
-This folder will hold the F# solution, importer core, provider adapters, CLI entry points, tests, and later supporting tools plus FnUI host/runtime work.
+This folder will hold the F# solution, importer core, provider adapters, CLI entry points, tests, and later supporting tools plus FnHCI/FnUI host/runtime work.
 
 Near-term focus:
 
@@ -69,6 +69,7 @@ See:
 - [`docs/how-to/run-tests.md`](../docs/how-to/run-tests.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](../docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](../docs/logos-source-model-v0.md)
+- [`docs/fnhci-namespace-map.md`](../docs/fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](../docs/fnui-foundation.md)
 - [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](../docs/fsharp-documentation-convention.md)

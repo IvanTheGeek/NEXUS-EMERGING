@@ -1,14 +1,15 @@
 # FnUI Foundation
 
-`FnUI` is the visual application lens within the broader [`FnHCI`](concepts/fnhci.md) concern line.
+`FnUI` is the concrete visual/UI system line within the broader [`FnHCI`](concepts/fnhci.md) concern line.
 
 The governing decision is:
 
-- [`docs/decisions/0015-fnui-is-the-visual-application-lens.md`](decisions/0015-fnui-is-the-visual-application-lens.md)
+- [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
+- [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 
 ## Purpose
 
-FnUI is the path to a real NEXUS GUI.
+FnUI is the path to a real NEXUS GUI, and also the likely public/package line for the visual system that replaces Bolero while sitting on top of Blazor.
 
 Its job is to provide an operator-facing application layer that can make NEXUS usable without reducing NEXUS to a GUI-first system.
 
@@ -25,16 +26,31 @@ That means FnUI should sit over:
 FnUI is not:
 
 - the whole of `FnHCI`
+- the top-most interaction namespace
 - a replacement for CLI workflows
 - the source of canonical truth
 - equivalent to one concrete rendering stack
 
 FnUI is:
 
-- the visual shell
-- the navigable operator surface
+- the concrete visual system line inside `FnHCI`
+- the likely public/package identity for the Blazor-based replacement layer
+- the visual shell and navigable operator surface for NEXUS
 - the place where important operational and conceptual views can coexist
 - the place where public-use obligations such as attribution can be made prominent
+
+## Namespace Direction
+
+Internal code should likely nest under the broader `FnHCI` namespace line:
+
+- `Nexus.FnHCI`
+- `Nexus.FnHCI.UI`
+- `Nexus.FnHCI.UI.Blazor`
+
+while public package naming may still use the narrower `FnUI` line:
+
+- `FnUI`
+- `FnUI.Blazor`
 
 ## First Foundation Targets
 

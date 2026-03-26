@@ -59,13 +59,13 @@ A graph-level assertion derived from canonical history and tied back to provenan
 
 ## FnHCI
 
-The broader NEXUS interaction concern covering visual UI, CLI, API, accessibility, and other human-computer interaction surfaces without collapsing them into one renderer or one interface type.
+The broader NEXUS interaction concern and top interaction namespace line, covering visual UI, CLI, API, accessibility, and other human-computer interaction surfaces without collapsing them into one renderer or one interface type.
 
 ## FnUI
 
-The visual application lens within FnHCI.
+The narrower visual/UI-specific system and likely public/package line within FnHCI.
 
-FnUI is the GUI-facing concern that should provide the NEXUS application shell, navigation, views, and operator workflows without becoming the source of truth for NEXUS state.
+FnUI is the line most likely to represent the Bolero-replacement system on top of Blazor while also providing the NEXUS GUI-facing application shell, navigation, views, and operator workflows without becoming the source of truth for NEXUS state.
 
 ## Graph Substrate
 

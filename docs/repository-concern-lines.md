@@ -134,7 +134,8 @@ Primary docs:
 
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
-- [`docs/decisions/0015-fnui-is-the-visual-application-lens.md`](decisions/0015-fnui-is-the-visual-application-lens.md)
+- [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
+- [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 
 Typical branch names:
 

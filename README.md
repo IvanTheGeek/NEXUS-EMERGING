@@ -38,6 +38,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
+- [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
 - [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](docs/fsharp-documentation-convention.md)
@@ -83,7 +84,7 @@ Already established:
 - A first LOGOS pool-boundary model exists so future public-facing flows can depend on explicit `public-safe` types instead of loose policy checks.
 - A first LOGOS public-safe export workflow now exists and only emits notes that successfully cross that explicit `public-safe` boundary plus rights that allow public distribution.
 - Public-safe export manifests now surface attribution obligations explicitly for later prominent UI/help/about exposure.
-- FnUI now has an explicit foundation boundary as the visual application lens inside FnHCI and the path toward a real NEXUS GUI.
+- FnHCI now explicitly owns the top interaction namespace, while FnUI is tracked as the narrower visual/UI system and likely package line for the Bolero-replacement path and the real NEXUS GUI.
 - Non-chat LOGOS notes now enter explicit `raw`, `private`, or `public-safe` pool paths at creation time instead of relying on a later inferred layout.
 - Restricted-by-default intake and explicit publication are now named architectural rules.
 - A first explicit overlap-candidate report exists without collapsing acquisition history automatically.
