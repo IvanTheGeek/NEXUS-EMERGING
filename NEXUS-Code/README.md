@@ -15,6 +15,12 @@ Near-term focus:
 
 The first code scaffold is intentionally small and centered on the canonical ingestion layer.
 
+- `src/Nexus.FnHCI/`
+  top interaction namespace and shared interaction-line primitives
+- `src/Nexus.FnHCI.UI/`
+  renderer-neutral visual shell and navigation boundary for FnUI
+- `src/Nexus.FnHCI.UI.Blazor/`
+  first Blazor-specific host seam for the eventual Bolero-replacement path
 - `src/Nexus.Kernel/`
   small semantic kernel for ontology-level role and relation primitives
 - `src/Nexus.Logos/`
@@ -69,6 +75,7 @@ See:
 - [`docs/how-to/run-tests.md`](../docs/how-to/run-tests.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](../docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](../docs/logos-source-model-v0.md)
+- [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](../docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](../docs/fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](../docs/fnui-foundation.md)
 - [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
