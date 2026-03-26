@@ -65,7 +65,7 @@ The CLI supports both:
 - Reports the latest known import state across providers.
 - Use it when you want one operational view of what is currently ingested without checking each provider separately.
 - It reads the newest import manifest per provider, adds normalized snapshot totals when available, and reports raw root-artifact SHA-256 when the preserved file still exists.
-- It also shows the current LOGOS source/channel/signal classification for known providers.
+- It also shows the current LOGOS source/channel/signal classification plus handling-policy and entry-pool metadata for known providers.
 - Details: `docs/how-to/report-current-ingestion.md`
 
 `report-logos-catalog`
@@ -107,6 +107,7 @@ The CLI supports both:
 
 - Archives a ChatGPT, Claude, or Grok export zip.
 - Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
+- Also records restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata for the import.
 - Also writes a normalized import snapshot under `snapshots/imports/<import-id>/`.
 - Also materializes a batch-local graph working batch under `graph/working/imports/<import-id>/`.
 - Details: `docs/how-to/import-provider-export.md`

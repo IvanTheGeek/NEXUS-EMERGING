@@ -28,6 +28,7 @@ type NormalizedImportSnapshot =
       ImportedAt: DateTimeOffset
       NormalizationVersion: string option
       SourceArtifactRelativePath: string option
+      LogosMetadata: ImportLogosMetadata option
       Conversations: NormalizedImportSnapshotConversation list }
 
 /// <summary>
@@ -52,6 +53,7 @@ type NormalizedImportSnapshotReport =
       ImportedAt: DateTimeOffset
       NormalizationVersion: string option
       SourceArtifactRelativePath: string option
+      LogosMetadata: ImportLogosMetadata option
       ConversationCount: int
       MessageCount: int
       ArtifactReferenceCount: int
@@ -270,6 +272,18 @@ module ImportSnapshots =
         appendTimestamp builder "imported_at" snapshot.ImportedAt
         appendStringOption builder "normalization_version" snapshot.NormalizationVersion
         appendStringOption builder "source_artifact_relative_path" snapshot.SourceArtifactRelativePath
+        match snapshot.LogosMetadata with
+        | Some value ->
+            appendString builder "logos_source_system" value.SourceSystem
+            appendString builder "logos_intake_channel" value.IntakeChannel
+            appendString builder "logos_primary_signal_kind" value.PrimarySignalKind
+            appendStringList builder "logos_related_signal_kinds" value.RelatedSignalKinds
+            appendString builder "logos_entry_pool" value.EntryPool
+            appendString builder "logos_sensitivity" value.HandlingPolicy.Sensitivity
+            appendString builder "logos_sharing_scope" value.HandlingPolicy.SharingScope
+            appendString builder "logos_sanitization_status" value.HandlingPolicy.SanitizationStatus
+            appendString builder "logos_retention_class" value.HandlingPolicy.RetentionClass
+        | None -> ()
         appendInt builder "conversation_count" snapshot.Conversations.Length
         appendInt builder "message_count" (snapshot.Conversations |> List.sumBy (fun value -> value.MessageCount))
         appendInt builder "artifact_reference_count" (snapshot.Conversations |> List.sumBy (fun value -> value.ArtifactReferenceCount))
@@ -300,6 +314,22 @@ module ImportSnapshots =
         appendStringOption builder "normalization_version" snapshot.NormalizationVersion
         appendStringOption builder "source_artifact_relative_path" snapshot.SourceArtifactRelativePath
         appendString builder "conversations_relative_path" (conversationsRelativePath snapshot.ImportId)
+        match snapshot.LogosMetadata with
+        | Some value ->
+            appendBlank builder
+            appendTableHeader builder "logos"
+            appendString builder "source_system" value.SourceSystem
+            appendString builder "intake_channel" value.IntakeChannel
+            appendString builder "primary_signal_kind" value.PrimarySignalKind
+            appendStringList builder "related_signal_kinds" value.RelatedSignalKinds
+            appendString builder "entry_pool" value.EntryPool
+            appendBlank builder
+            appendTableHeader builder "logos.handling_policy"
+            appendString builder "sensitivity" value.HandlingPolicy.Sensitivity
+            appendString builder "sharing_scope" value.HandlingPolicy.SharingScope
+            appendString builder "sanitization_status" value.HandlingPolicy.SanitizationStatus
+            appendString builder "retention_class" value.HandlingPolicy.RetentionClass
+        | None -> ()
         appendBlank builder
         appendTableHeader builder "counts"
         appendInt builder "conversations_seen" snapshot.Conversations.Length
@@ -386,6 +416,36 @@ module ImportSnapshots =
         else
             None
 
+    let private tryLoadLogosMetadata document =
+        match TomlDocument.tryTableValue "logos" "source_system" document,
+              TomlDocument.tryTableValue "logos" "intake_channel" document,
+              TomlDocument.tryTableValue "logos" "primary_signal_kind" document,
+              TomlDocument.tryTableValue "logos" "entry_pool" document,
+              TomlDocument.tryTableValue "logos.handling_policy" "sensitivity" document,
+              TomlDocument.tryTableValue "logos.handling_policy" "sharing_scope" document,
+              TomlDocument.tryTableValue "logos.handling_policy" "sanitization_status" document,
+              TomlDocument.tryTableValue "logos.handling_policy" "retention_class" document with
+        | Some sourceSystem,
+          Some intakeChannel,
+          Some primarySignalKind,
+          Some entryPool,
+          Some sensitivity,
+          Some sharingScope,
+          Some sanitizationStatus,
+          Some retentionClass ->
+            Some
+                { SourceSystem = sourceSystem
+                  IntakeChannel = intakeChannel
+                  PrimarySignalKind = primarySignalKind
+                  RelatedSignalKinds = TomlDocument.tryTableStringList "logos" "related_signal_kinds" document |> Option.defaultValue []
+                  HandlingPolicy =
+                    { Sensitivity = sensitivity
+                      SharingScope = sharingScope
+                      SanitizationStatus = sanitizationStatus
+                      RetentionClass = retentionClass }
+                  EntryPool = entryPool }
+        | _ -> None
+
     /// <summary>
     /// Loads one normalized import snapshot report when the persisted snapshot files exist.
     /// </summary>
@@ -425,6 +485,7 @@ module ImportSnapshots =
                       ImportedAt = importedAt
                       NormalizationVersion = TomlDocument.tryScalar "normalization_version" manifestDocument
                       SourceArtifactRelativePath = TomlDocument.tryScalar "source_artifact_relative_path" manifestDocument
+                      LogosMetadata = tryLoadLogosMetadata manifestDocument
                       ConversationCount =
                         TomlDocument.tryTableValue "counts" "conversations_seen" manifestDocument
                         |> Option.map (fun value -> Int32.Parse(value, CultureInfo.InvariantCulture))

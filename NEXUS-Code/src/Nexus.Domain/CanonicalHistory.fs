@@ -156,6 +156,26 @@ type ImportCompleted =
       Notes: string option }
 
 /// <summary>
+/// The persisted handling-policy portion of LOGOS intake metadata for one import.
+/// </summary>
+type ImportLogosHandlingMetadata =
+    { Sensitivity: string
+      SharingScope: string
+      SanitizationStatus: string
+      RetentionClass: string }
+
+/// <summary>
+/// The persisted LOGOS intake metadata attached to one import.
+/// </summary>
+type ImportLogosMetadata =
+    { SourceSystem: string
+      IntakeChannel: string
+      PrimarySignalKind: string
+      RelatedSignalKinds: string list
+      HandlingPolicy: ImportLogosHandlingMetadata
+      EntryPool: string }
+
+/// <summary>
 /// The persisted summary record written once for each import run.
 /// </summary>
 type ImportManifest =
@@ -166,6 +186,7 @@ type ImportManifest =
       Window: ImportWindowKind option
       ImportedAt: ImportedAt
       RootArtifact: RawObjectRef
+      LogosMetadata: ImportLogosMetadata option
       Counts: ImportCounts
       NewCanonicalEventIds: CanonicalEventId list
       Notes: string list }

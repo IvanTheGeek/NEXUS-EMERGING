@@ -51,7 +51,12 @@ module LogosTests =
                   Expect.equal (SourceSystemId.value value.SourceSystemId) "chatgpt" "Expected the LOGOS source system to stay stable."
                   Expect.equal (IntakeChannelId.value value.IntakeChannelId) "ai-conversation" "Expected AI conversation to be the intake channel."
                   Expect.equal (SignalKindId.value value.PrimarySignalKind) "conversation" "Expected conversation to be the primary signal kind."
-                  Expect.equal (value.RelatedSignalKinds |> List.map SignalKindId.value) [ "message" ] "Expected message to stay as the related signal kind.")
+                  Expect.equal (value.RelatedSignalKinds |> List.map SignalKindId.value) [ "message" ] "Expected message to stay as the related signal kind."
+                  Expect.equal (SensitivityId.value value.DefaultHandlingPolicy.SensitivityId) "internal-restricted" "Expected provider imports to default to restricted sensitivity."
+                  Expect.equal (SharingScopeId.value value.DefaultHandlingPolicy.SharingScopeId) "owner-only" "Expected provider imports to default to owner-only sharing."
+                  Expect.equal (SanitizationStatusId.value value.DefaultHandlingPolicy.SanitizationStatusId) "raw" "Expected provider imports to enter NEXUS as raw."
+                  Expect.equal (RetentionClassId.value value.DefaultHandlingPolicy.RetentionClassId) "durable" "Expected provider imports to default to durable retention."
+                  Expect.equal value.EntryPool "raw" "Expected provider imports to enter through the raw pool.")
 
               testCase "LOGOS catalog includes concrete non-chat source systems" (fun () ->
                   let report = LogosCatalog.build ()

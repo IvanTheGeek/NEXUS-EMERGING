@@ -50,6 +50,7 @@ Instead:
 - LOGOS source types classify the source and meaning of knowledge-bearing intake
 - handling policy describes the material
 - pool boundary types constrain what downstream workflows may do with it
+- provider and Codex imports can now carry LOGOS metadata from the moment they enter NEXUS
 - later curation, refinement, retrieval, and doctrine can build on both
 
 In other words:
@@ -86,6 +87,7 @@ The `v0` scope is intentionally narrow:
 - a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
 - a first handling-policy audit report over LOGOS note material
 - first explicit pool boundary types for `raw`, `private`, and `public-safe` use
+- provider and Codex imports entering the system with restricted-by-default LOGOS handling metadata
 
 Deferred:
 
@@ -151,3 +153,13 @@ Current handling-policy allowlists:
   - `ephemeral`
   - `case-bound`
   - `durable`
+
+Current provider-import baseline:
+
+- provider and Codex imports enter with restricted-by-default handling metadata
+- current default handling is:
+  - `sensitivity = internal-restricted`
+  - `sharing_scope = owner-only`
+  - `sanitization_status = raw`
+  - `retention_class = durable`
+  - `entry_pool = raw`

@@ -33,6 +33,11 @@ type CurrentIngestionProviderEntry =
       LogosIntakeChannel: string option
       LogosPrimarySignalKind: string option
       LogosRelatedSignalKinds: string list
+      LogosSensitivity: string option
+      LogosSharingScope: string option
+      LogosSanitizationStatus: string option
+      LogosRetentionClass: string option
+      LogosEntryPool: string option
       RootArtifactRelativePath: string option
       RootArtifactExists: bool option
       RootArtifactSha256: string option
@@ -68,6 +73,7 @@ module CurrentIngestion =
           Window: string option
           NormalizationVersion: string option
           RootArtifactRelativePath: string option
+          LogosMetadata: ImportLogosMetadata option
           Counts: CurrentIngestionImportCounts }
 
     let private knownProviders =
@@ -102,6 +108,36 @@ module CurrentIngestion =
     let private tryLoadImportManifestInfo path =
         let document = File.ReadAllText(path) |> TomlDocument.parse
 
+        let logosMetadata =
+            match TomlDocument.tryTableValue "logos" "source_system" document,
+                  TomlDocument.tryTableValue "logos" "intake_channel" document,
+                  TomlDocument.tryTableValue "logos" "primary_signal_kind" document,
+                  TomlDocument.tryTableValue "logos" "entry_pool" document,
+                  TomlDocument.tryTableValue "logos.handling_policy" "sensitivity" document,
+                  TomlDocument.tryTableValue "logos.handling_policy" "sharing_scope" document,
+                  TomlDocument.tryTableValue "logos.handling_policy" "sanitization_status" document,
+                  TomlDocument.tryTableValue "logos.handling_policy" "retention_class" document with
+            | Some sourceSystem,
+              Some intakeChannel,
+              Some primarySignalKind,
+              Some entryPool,
+              Some sensitivity,
+              Some sharingScope,
+              Some sanitizationStatus,
+              Some retentionClass ->
+                Some
+                    { SourceSystem = sourceSystem
+                      IntakeChannel = intakeChannel
+                      PrimarySignalKind = primarySignalKind
+                      RelatedSignalKinds = TomlDocument.tryTableStringList "logos" "related_signal_kinds" document |> Option.defaultValue []
+                      HandlingPolicy =
+                        { Sensitivity = sensitivity
+                          SharingScope = sharingScope
+                          SanitizationStatus = sanitizationStatus
+                          RetentionClass = retentionClass }
+                      EntryPool = entryPool }
+            | _ -> None
+
         match TomlDocument.tryScalar "provider" document, TomlDocument.tryScalar "imported_at" document |> tryParseTimestamp with
         | Some provider, Some importedAt ->
             let importId = ImportId.parse (Path.GetFileNameWithoutExtension(path))
@@ -114,6 +150,7 @@ module CurrentIngestion =
                   Window = TomlDocument.tryScalar "window_kind" document
                   NormalizationVersion = TomlDocument.tryScalar "normalization_version" document
                   RootArtifactRelativePath = TomlDocument.tryTableValue "root_artifact" "relative_path" document
+                  LogosMetadata = logosMetadata
                   Counts =
                     { ConversationsSeen = TomlDocument.tryTableValue "counts" "conversations_seen" document |> tryParseInt |> Option.defaultValue 0
                       MessagesSeen = TomlDocument.tryTableValue "counts" "messages_seen" document |> tryParseInt |> Option.defaultValue 0
@@ -158,7 +195,24 @@ module CurrentIngestion =
             |> List.sortBy (fun (provider, _) -> providerOrderKey provider)
             |> List.map (fun (_, value) ->
                 let snapshot = ImportSnapshots.tryLoadReport eventStoreRoot value.ImportId
-                let logosClassification = ProviderLogosClassification.tryFind value.Provider
+                let fallbackLogosMetadata =
+                    ProviderLogosClassification.tryFind value.Provider
+                    |> Option.map (fun classification ->
+                        { SourceSystem = SourceSystemId.value classification.SourceSystemId
+                          IntakeChannel = IntakeChannelId.value classification.IntakeChannelId
+                          PrimarySignalKind = SignalKindId.value classification.PrimarySignalKind
+                          RelatedSignalKinds = classification.RelatedSignalKinds |> List.map SignalKindId.value
+                          HandlingPolicy =
+                            { Sensitivity = SensitivityId.value classification.DefaultHandlingPolicy.SensitivityId
+                              SharingScope = SharingScopeId.value classification.DefaultHandlingPolicy.SharingScopeId
+                              SanitizationStatus = SanitizationStatusId.value classification.DefaultHandlingPolicy.SanitizationStatusId
+                              RetentionClass = RetentionClassId.value classification.DefaultHandlingPolicy.RetentionClassId }
+                          EntryPool = classification.EntryPool })
+
+                let logosMetadata =
+                    value.LogosMetadata
+                    |> Option.orElse (snapshot |> Option.bind (fun report -> report.LogosMetadata))
+                    |> Option.orElse fallbackLogosMetadata
 
                 let rootArtifactExists, rootArtifactSha256 =
                     match value.RootArtifactRelativePath with
@@ -179,18 +233,20 @@ module CurrentIngestion =
                   Window = value.Window
                   NormalizationVersion = value.NormalizationVersion
                   LogosSourceSystem =
-                    logosClassification
-                    |> Option.map (fun classification -> SourceSystemId.value classification.SourceSystemId)
+                    logosMetadata |> Option.map (fun metadata -> metadata.SourceSystem)
                   LogosIntakeChannel =
-                    logosClassification
-                    |> Option.map (fun classification -> IntakeChannelId.value classification.IntakeChannelId)
+                    logosMetadata |> Option.map (fun metadata -> metadata.IntakeChannel)
                   LogosPrimarySignalKind =
-                    logosClassification
-                    |> Option.map (fun classification -> SignalKindId.value classification.PrimarySignalKind)
+                    logosMetadata |> Option.map (fun metadata -> metadata.PrimarySignalKind)
                   LogosRelatedSignalKinds =
-                    logosClassification
-                    |> Option.map (fun classification -> classification.RelatedSignalKinds |> List.map SignalKindId.value)
+                    logosMetadata
+                    |> Option.map (fun metadata -> metadata.RelatedSignalKinds)
                     |> Option.defaultValue []
+                  LogosSensitivity = logosMetadata |> Option.map (fun metadata -> metadata.HandlingPolicy.Sensitivity)
+                  LogosSharingScope = logosMetadata |> Option.map (fun metadata -> metadata.HandlingPolicy.SharingScope)
+                  LogosSanitizationStatus = logosMetadata |> Option.map (fun metadata -> metadata.HandlingPolicy.SanitizationStatus)
+                  LogosRetentionClass = logosMetadata |> Option.map (fun metadata -> metadata.HandlingPolicy.RetentionClass)
+                  LogosEntryPool = logosMetadata |> Option.map (fun metadata -> metadata.EntryPool)
                   RootArtifactRelativePath = value.RootArtifactRelativePath
                   RootArtifactExists = rootArtifactExists
                   RootArtifactSha256 = rootArtifactSha256

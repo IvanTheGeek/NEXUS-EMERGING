@@ -7,6 +7,7 @@ It reads the newest import manifest for each provider and augments it with:
 - normalized snapshot totals when they exist
 - preserved raw root-artifact SHA-256 when the file is still present
 - current LOGOS source/channel/signal classification when the provider is known
+- current LOGOS handling policy and entry-pool metadata when that classification is available
 
 It is useful after imports when you want to answer questions like:
 
@@ -43,6 +44,7 @@ For each provider with at least one import manifest, it prints:
 - root artifact relative path
 - root artifact SHA-256 when the preserved file exists
 - LOGOS source system, intake channel, and signal classification when known
+- LOGOS sensitivity, sharing scope, sanitization status, retention class, and entry pool when known
 - canonical import counts from the import manifest
 - whether a normalized import snapshot is available
 - snapshot totals when available
@@ -64,3 +66,11 @@ Codex currently appears from import manifests without normalized import snapshot
 - `normalized_snapshot_available=false`
 
 That is expected with the current ingestion model.
+
+Provider and Codex imports now enter NEXUS with restricted-by-default LOGOS metadata. So a current row may also show handling values like:
+
+- `sensitivity=internal-restricted`
+- `sharing_scope=owner-only`
+- `sanitization_status=raw`
+- `retention_class=durable`
+- `entry_pool=raw`

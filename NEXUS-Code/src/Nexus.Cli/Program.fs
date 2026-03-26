@@ -2892,6 +2892,7 @@ module Program =
               Window = Some Full
               ImportedAt = importedAtValue
               RootArtifact = rootArtifact
+              LogosMetadata = ProviderLogosImportMetadata.tryBuild Claude
               Counts = counts
               NewCanonicalEventIds = events |> List.map (fun event -> event.Envelope.EventId)
               Notes = [ "Sample event-store smoke test" ] }
@@ -3183,6 +3184,17 @@ module Program =
                     match entry.LogosRelatedSignalKinds with
                     | [] -> ()
                     | values -> printfn "      logos related_signals=%s" (String.concat ", " values)
+                | _ -> ()
+
+                match entry.LogosSensitivity, entry.LogosSharingScope, entry.LogosSanitizationStatus, entry.LogosRetentionClass, entry.LogosEntryPool with
+                | Some sensitivity, Some sharingScope, Some sanitizationStatus, Some retentionClass, Some entryPool ->
+                    printfn
+                        "      logos handling sensitivity=%s sharing_scope=%s sanitization_status=%s retention_class=%s entry_pool=%s"
+                        sensitivity
+                        sharingScope
+                        sanitizationStatus
+                        retentionClass
+                        entryPool
                 | _ -> ()
 
                 match entry.RootArtifactRelativePath with

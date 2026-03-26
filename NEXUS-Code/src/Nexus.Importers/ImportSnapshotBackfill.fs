@@ -304,12 +304,15 @@ module ImportSnapshotBackfill =
                                         (ImportId.format metadata.ImportId)))
 
                     let snapshot =
+                        let logosMetadata = ProviderLogosImportMetadata.tryBuild provider
+
                         { ImportId = metadata.ImportId
                           Provider = ProviderNaming.slug provider
                           Window = window |> Option.map ImportWindowNaming.value
                           ImportedAt = importedAt
                           NormalizationVersion = Some (NormalizationNaming.value currentNormalizationVersion)
                           SourceArtifactRelativePath = Some rootArtifactRelativePath
+                          LogosMetadata = logosMetadata
                           Conversations = snapshotConversations }
 
                     let writeResult = ImportSnapshots.write eventStoreRoot snapshot

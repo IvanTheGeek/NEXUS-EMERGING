@@ -66,6 +66,15 @@ module WorkflowTests =
                       let importSnapshotManifest = TestHelpers.readToml importSnapshotManifestPath
                       Expect.equal (TomlDocument.tryScalar "snapshot_kind" importSnapshotManifest) (Some "normalized_import_snapshot") "Expected the normalized import snapshot manifest kind."
                       Expect.equal (TomlDocument.tryTableValue "counts" "conversations_seen" importSnapshotManifest) (Some "1") "Expected one conversation in the normalized import snapshot."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "source_system" importSnapshotManifest) (Some "claude") "Expected the snapshot manifest to persist the LOGOS source system."
+                      Expect.equal (TomlDocument.tryTableValue "logos.handling_policy" "sanitization_status" importSnapshotManifest) (Some "raw") "Expected the snapshot manifest to persist the LOGOS handling policy."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "entry_pool" importSnapshotManifest) (Some "raw") "Expected the snapshot manifest to persist the LOGOS entry pool."
+
+                      let importManifestPath = Path.Combine(eventStoreRoot, firstImport.ManifestRelativePath)
+                      let importManifest = TestHelpers.readToml importManifestPath
+                      Expect.equal (TomlDocument.tryTableValue "logos" "source_system" importManifest) (Some "claude") "Expected the import manifest to persist the LOGOS source system."
+                      Expect.equal (TomlDocument.tryTableValue "logos" "intake_channel" importManifest) (Some "ai-conversation") "Expected the import manifest to persist the LOGOS intake channel."
+                      Expect.equal (TomlDocument.tryTableValue "logos.handling_policy" "sharing_scope" importManifest) (Some "owner-only") "Expected the import manifest to persist the LOGOS sharing scope."
 
                       let workingManifestPath =
                           firstImport.WorkingGraphManifestRelativePath

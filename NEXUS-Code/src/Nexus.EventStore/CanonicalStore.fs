@@ -369,6 +369,23 @@ module CanonicalStore =
             |> appendStringList builder "new_canonical_event_ids"
 
         appendBlank builder
+        match manifest.LogosMetadata with
+        | Some value ->
+            appendTableHeader builder "logos"
+            appendString builder "source_system" value.SourceSystem
+            appendString builder "intake_channel" value.IntakeChannel
+            appendString builder "primary_signal_kind" value.PrimarySignalKind
+            appendStringList builder "related_signal_kinds" value.RelatedSignalKinds
+            appendString builder "entry_pool" value.EntryPool
+            appendBlank builder
+            appendTableHeader builder "logos.handling_policy"
+            appendString builder "sensitivity" value.HandlingPolicy.Sensitivity
+            appendString builder "sharing_scope" value.HandlingPolicy.SharingScope
+            appendString builder "sanitization_status" value.HandlingPolicy.SanitizationStatus
+            appendString builder "retention_class" value.HandlingPolicy.RetentionClass
+            appendBlank builder
+        | None -> ()
+
         appendRawObjectRef builder "root_artifact" manifest.RootArtifact
         appendImportCounts builder "counts" manifest.Counts
         render builder

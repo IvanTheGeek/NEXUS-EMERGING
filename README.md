@@ -68,6 +68,7 @@ Already established:
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 - Normalized import snapshots exist for provider-export imports and can be rebuilt for older imports.
 - A current-ingestion report exists for cross-provider operational status.
+- Provider and Codex imports now enter the system with restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata.
 - A first external graph export exists through Graphviz DOT output over derived graph assertions.
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 - A first LOGOS source-model scaffold exists for source systems, intake channels, and signal kinds.
