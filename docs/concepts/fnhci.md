@@ -4,10 +4,10 @@ title = "FnHCI"
 slug = "fnhci"
 status = "seed"
 created_at = "2026-03-24T10:27:48.3662457+00:00"
-updated_at = "2026-03-24T10:27:48.3662457+00:00"
+updated_at = "2026-03-26T10:26:00Z"
 domains = ["interaction-design", "software-development"]
 tags = ["seed", "projection-system", "bolero-origin"]
-canonical_conversation_ids = ["019d174f-2cc4-781d-8a81-8936b3b29c99", "019d174f-2cd6-772c-97db-8fdcb16a0050", "019d174f-2ce1-7496-a7f3-2e5cae80727e"]
+canonical_conversation_ids = ["019d174f-2cc4-781d-8a81-8936b3b29c99", "019d174f-2cd6-772c-97db-8fdcb16a0050", "019d174f-2ce1-7496-a7f3-2e5cae80727e", "019d299b-6609-72fc-92f6-81f3ff776193"]
 +++
 
 # FnHCI
@@ -31,6 +31,8 @@ The reason this matters is scope. `FnHCI` is meant to cover:
 - cross-surface behavior and accessibility concerns
 
 At the current understanding, `FnUI` becomes one lens or sub-area inside `FnHCI`, not the whole thing. The Bolero investigation contributed the substrate insight: build on the rendering/runtime seam without inheriting the framework's ideology as the final model. From there, the concept widened into a platform-neutral projection model over multiple human-facing surfaces.
+
+The newer `FnHCI Concept Overview` conversation reinforces that this is not just a naming tweak. It frames `FnHCI` as a unifying concept for the work already happening in NEXUS: a way to think about human-computer interaction as a projection concern that spans visual interfaces, terminal interaction, APIs, and other operational surfaces without collapsing them into a single UI-only idea.
 
 ## Working Notes
 
@@ -81,6 +83,20 @@ At the current understanding, `FnUI` becomes one lens or sub-area inside `FnHCI`
 #### Excerpts
 - `human`: HTML with relation to the artifact of text of an HTML file and graph theory is described how.
 - `assistant`: HTML, viewed as the text artifact in an `.html` file, can be described in graph terms like this:  An HTML file is **text that encodes a graph-shaped structure*…
+
+### FnHCI Concept Overview
+- canonical conversation id: `019d299b-6609-72fc-92f6-81f3ff776193`
+- message count: `8`
+- providers: `chatgpt`
+- provider conversation ids: `69c266ec-63d8-8332-8ce9-969bcfa4b40b`
+- first occurred at: `2026-03-24T10:26:54.2279999Z`
+- last occurred at: `2026-03-24T10:26:54.7148079Z`
+- projection file: `/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d299b-6609-72fc-92f6-81f3ff776193.toml`
+- graph slice command: `dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --conversation-id 019d299b-6609-72fc-92f6-81f3ff776193`
+
+#### Excerpts
+- `human`: fnhci
+- `assistant`: You’re circling something very powerful with FnHCI. This could unify a large part of what NEXUS is already building.
 
 ## Next Questions
 
