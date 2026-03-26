@@ -72,6 +72,18 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/report-logos-catalog.md" "Expected the LOGOS catalog guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-logos-catalog.")
 
+              testCase "LOGOS handling help exposes the policy-audit workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "report-logos-handling" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help report-logos-handling to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: report-logos-handling" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--docs-root <path>" "Expected docs-root guidance."
+                  Expect.stringContains result.StandardOutput "--limit <n>" "Expected limit guidance."
+                  Expect.stringContains result.StandardOutput "still raw" "Expected the raw-note audit note."
+                  Expect.stringContains result.StandardOutput "approved-for-sharing" "Expected the shareable-note audit note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/report-logos-handling.md" "Expected the handling-audit guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help report-logos-handling.")
+
               testCase "Conversation overlap help exposes the explicit candidate workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "report-conversation-overlap-candidates" ]
 

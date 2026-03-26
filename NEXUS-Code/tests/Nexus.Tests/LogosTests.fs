@@ -330,4 +330,148 @@ module LogosTests =
                           Expect.stringContains cliResult.StandardOutput "Sanitization status: redacted" "Expected the CLI summary to print the sanitization status."
                           Expect.stringContains text "note_kind = \"logos_intake_sanitized\"" "Expected the derived note kind."
                           Expect.stringContains text "sharing_scope = \"project-team\"" "Expected the derived sharing scope."
-                          Expect.isFalse (text.Contains("https://community.example.com/t/123")) "Expected raw locators to stay out of the CLI-created derived note.")) ]
+                          Expect.isFalse (text.Contains("https://community.example.com/t/123")) "Expected raw locators to stay out of the CLI-created derived note."))
+
+              testCase "LOGOS handling report surfaces raw, confidential, and approved notes" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-handling-report" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let customerRawPolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.customerConfidential
+                              KnownSharingScopes.caseTeam
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let personalRawPolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.personalPrivate
+                              KnownSharingScopes.ownerOnly
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let customerResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "cheddarbooks-debug-case-42"
+                                Title = "CheddarBooks Debug Case 42"
+                                SourceSystemId = KnownSourceSystems.issueTracker
+                                IntakeChannelId = CoreIntakeChannels.bugReport
+                                SignalKindId = CoreSignalKinds.bugReport
+                                Policy = customerRawPolicy
+                                Locators = [ LogosLocator.sourceUri "https://support.example.com/cases/42" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      let personalResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "personal-chat-1"
+                                Title = "Personal Chat 1"
+                                SourceSystemId = KnownSourceSystems.chatgpt
+                                IntakeChannelId = CoreIntakeChannels.aiConversation
+                                SignalKindId = CoreSignalKinds.conversation
+                                Policy = personalRawPolicy
+                                Locators = [ LogosLocator.nativeThreadId "thread-1" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match customerResult, personalResult with
+                      | Ok _, Ok _ ->
+                          let approvedResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "cheddarbooks-debug-case-42"
+                                    Slug = "cheddarbooks-case-42-shareable"
+                                    Title = "CheddarBooks Case 42 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.publicAudience
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = Some "Anonymized debugging pattern approved for public sharing."
+                                    Tags = [ "shareable" ] }
+
+                          match approvedResult with
+                          | Error error ->
+                              failtestf "Expected approved-for-sharing derived note creation to succeed. %s" error
+                          | Ok _ ->
+                              match LogosHandlingReports.build docsRoot with
+                              | Error error ->
+                                  failtestf "Expected LOGOS handling report to succeed. %s" error
+                              | Ok report ->
+                                  Expect.equal report.Notes.Length 3 "Expected two source notes plus one derived note."
+                                  Expect.equal report.RawNotes.Length 2 "Expected both source notes to remain raw."
+                                  Expect.equal report.PersonalPrivateNotes.Length 1 "Expected one personal-private note."
+                                  Expect.equal report.CustomerConfidentialNotes.Length 1 "Expected one customer-confidential note."
+                                  Expect.equal report.ApprovedForSharingNotes.Length 1 "Expected one approved-for-sharing derivative."
+                                  Expect.equal (report.ApprovedForSharingNotes |> List.head |> fun note -> note.Slug) "cheddarbooks-case-42-shareable" "Expected the approved derived note slug."
+                                  Expect.isTrue (report.Sensitivities |> List.exists (fun item -> item.Slug = "public" && item.Count = 1)) "Expected the public derived note to be counted."
+                                  Expect.isTrue (report.SanitizationStatuses |> List.exists (fun item -> item.Slug = "approved-for-sharing" && item.Count = 1)) "Expected the approved-for-sharing status to be counted."
+                      | Error error, _
+                      | _, Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error))
+
+              testCase "CLI report-logos-handling prints flagged handling sections" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-logos-handling-cli" (fun tempRoot ->
+                      let docsRoot = Path.Combine(tempRoot, "docs")
+
+                      let sourcePolicy =
+                          LogosHandlingPolicy.create
+                              KnownSensitivities.customerConfidential
+                              KnownSharingScopes.caseTeam
+                              KnownSanitizationStatuses.raw
+                              KnownRetentionClasses.caseBound
+
+                      let sourceResult =
+                          LogosIntakeNotes.create
+                              { DocsRoot = docsRoot
+                                Slug = "support-thread-123"
+                                Title = "Support Thread 123"
+                                SourceSystemId = KnownSourceSystems.forum
+                                IntakeChannelId = CoreIntakeChannels.forumThread
+                                SignalKindId = CoreSignalKinds.supportQuestion
+                                Policy = sourcePolicy
+                                Locators = [ LogosLocator.sourceUri "https://community.example.com/t/123" ]
+                                CapturedAt = None
+                                Summary = None
+                                Tags = [] }
+
+                      match sourceResult with
+                      | Error error ->
+                          failtestf "Expected source LOGOS intake note creation to succeed. %s" error
+                      | Ok _ ->
+                          let derivedResult =
+                              LogosSanitizedNotes.create
+                                  { DocsRoot = docsRoot
+                                    SourceSlug = "support-thread-123"
+                                    Slug = "support-thread-123-shareable"
+                                    Title = "Support Thread 123 (Shareable)"
+                                    SanitizationStatusId = KnownSanitizationStatuses.approvedForSharing
+                                    SensitivityId = Some KnownSensitivities.publicData
+                                    SharingScopeId = Some KnownSharingScopes.projectTeam
+                                    RetentionClassId = Some KnownRetentionClasses.durable
+                                    Summary = None
+                                    Tags = [] }
+
+                          match derivedResult with
+                          | Error error ->
+                              failtestf "Expected derived LOGOS sanitized note creation to succeed. %s" error
+                          | Ok _ ->
+                              let result =
+                                  TestHelpers.runCli
+                                      [ "report-logos-handling"
+                                        "--docs-root"
+                                        docsRoot
+                                        "--limit"
+                                        "5" ]
+
+                              Expect.equal result.ExitCode 0 "Expected report-logos-handling to succeed."
+                              Expect.equal result.StandardError "" "Did not expect stderr from report-logos-handling."
+                              Expect.stringContains result.StandardOutput "LOGOS handling report." "Expected the report header."
+                              Expect.stringContains result.StandardOutput "Still raw:" "Expected the raw-note section."
+                              Expect.stringContains result.StandardOutput "Customer-confidential:" "Expected the confidential-note section."
+                              Expect.stringContains result.StandardOutput "Approved for sharing:" "Expected the shareable-note section."
+                              Expect.stringContains result.StandardOutput "support-thread-123.md" "Expected the source note path in the report."
+                              Expect.stringContains result.StandardOutput "support-thread-123-shareable" "Expected the derived shareable note slug in the report.")) ]

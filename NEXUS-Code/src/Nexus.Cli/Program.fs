@@ -31,6 +31,7 @@ module Program =
         | ReportProviderImportHistory of eventStoreRoot: string * objectsRoot: string * provider: string * limit: int
         | ReportCurrentIngestion of eventStoreRoot: string * objectsRoot: string
         | ReportLogosCatalog
+        | ReportLogosHandling of docsRoot: string * limit: int
         | ReportConversationOverlapCandidates of eventStoreRoot: string * leftProvider: string * rightProvider: string * limit: int
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
@@ -236,6 +237,24 @@ module Program =
                     [ "This is the concrete LOGOS intake vocabulary currently recognized by the codebase."
                       "Use it before seeding intake notes so source-system, intake-channel, and signal-kind choices stay explicit."
                       "Detailed guide: docs/how-to/report-logos-catalog.md" ] }
+        | "report-logos-handling" ->
+            Some
+                { Name = name
+                  Summary = "Audit LOGOS intake and derived notes by handling policy so restricted, raw, and shareable notes are visible."
+                  Usage =
+                    [ sprintf "%s report-logos-handling" cliInvocation
+                      sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
+                  Options =
+                    [ "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot
+                      "--limit <n>", "Limit note rows shown in each flagged section. Defaults to 10." ]
+                  Examples =
+                    [ sprintf "%s report-logos-handling" cliInvocation
+                      sprintf "%s report-logos-handling --docs-root /tmp/nexus-docs --limit 10" cliInvocation ]
+                  Notes =
+                    [ "This scans docs/logos-intake/ and docs/logos-intake-derived/ for LOGOS notes with handling metadata."
+                      "Use it to see which notes are still raw, which remain personal-private or customer-confidential, and which derivatives are marked approved-for-sharing."
+                      "This is an audit report, not a publication gate by itself."
+                      "Detailed guide: docs/how-to/report-logos-handling.md" ] }
         | "report-conversation-overlap-candidates" ->
             Some
                 { Name = name
@@ -720,6 +739,7 @@ module Program =
           "report-provider-import-history"
           "report-current-ingestion"
           "report-logos-catalog"
+          "report-logos-handling"
           "report-conversation-overlap-candidates"
           "rebuild-import-snapshots"
           "import-provider-export"
@@ -1660,6 +1680,30 @@ module Program =
                 printCommandHelp "report-logos-catalog"
                 Error 1
 
+    let private parseReportLogosHandling (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-logos-handling"))
+        else
+            let rec loop docsRoot limit remaining =
+                match remaining with
+                | [] -> Ok (ReportLogosHandling(docsRoot, limit))
+                | "--docs-root" :: value :: rest ->
+                    loop value limit rest
+                | "--limit" :: value :: rest ->
+                    match Int32.TryParse(value) with
+                    | true, parsedValue when parsedValue > 0 ->
+                        loop docsRoot parsedValue rest
+                    | _ ->
+                        eprintfn "Invalid limit: %s" value
+                        printCommandHelp "report-logos-handling"
+                        Error 1
+                | option :: _ ->
+                    eprintfn "Unknown option for report-logos-handling: %s" option
+                    printCommandHelp "report-logos-handling"
+                    Error 1
+
+            loop defaultDocsRoot 10 args
+
     let private parseRebuildImportSnapshots (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "rebuild-import-snapshots"))
@@ -2517,6 +2561,8 @@ module Program =
             parseReportCurrentIngestion rest
         | "report-logos-catalog" :: rest ->
             parseReportLogosCatalog rest
+        | "report-logos-handling" :: rest ->
+            parseReportLogosHandling rest
         | "report-conversation-overlap-candidates" :: rest ->
             parseReportConversationOverlapCandidates rest
         | "rebuild-import-snapshots" :: rest ->
@@ -3150,6 +3196,55 @@ module Program =
         printItems "Sanitization statuses" report.SanitizationStatuses
         printItems "Retention classes" report.RetentionClasses
         0
+
+    let private reportLogosHandling docsRoot limit =
+        let printCounts heading (items: LogosHandlingCount list) =
+            printfn "  %s:" heading
+
+            match items with
+            | [] ->
+                printfn "    none"
+            | values ->
+                values
+                |> List.iter (fun item ->
+                    printfn "    %s (%d)" item.Slug item.Count)
+
+        let printNotes heading (notes: LogosHandlingNote list) =
+            printfn "  %s:" heading
+
+            match notes |> List.truncate limit with
+            | [] ->
+                printfn "    none"
+            | values ->
+                values
+                |> List.iter (fun note ->
+                    printfn
+                        "    %s | %s | %s | %s | %s"
+                        note.RelativePath
+                        note.NoteKind
+                        (SourceSystemId.value note.SourceSystemId)
+                        (SensitivityId.value note.Policy.SensitivityId)
+                        (SanitizationStatusId.value note.Policy.SanitizationStatusId))
+
+        match LogosHandlingReports.build docsRoot with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok report ->
+            printfn "LOGOS handling report."
+            printfn "  Docs root: %s" docsRoot
+            printfn "  Notes scanned: %d" report.Notes.Length
+            printfn "  Limit per flagged section: %d" limit
+            printCounts "Note kinds" report.NoteKinds
+            printCounts "Sensitivities" report.Sensitivities
+            printCounts "Sharing scopes" report.SharingScopes
+            printCounts "Sanitization statuses" report.SanitizationStatuses
+            printCounts "Retention classes" report.RetentionClasses
+            printNotes "Still raw" report.RawNotes
+            printNotes "Personal-private" report.PersonalPrivateNotes
+            printNotes "Customer-confidential" report.CustomerConfidentialNotes
+            printNotes "Approved for sharing" report.ApprovedForSharingNotes
+            0
 
     let private timestampLabel (value: DateTimeOffset option) =
         value
@@ -4059,6 +4154,8 @@ module Program =
             reportCurrentIngestion eventStoreRoot objectsRoot
         | Ok ReportLogosCatalog ->
             reportLogosCatalog ()
+        | Ok (ReportLogosHandling(docsRoot, limit)) ->
+            reportLogosHandling docsRoot limit
         | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
             reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
         | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->

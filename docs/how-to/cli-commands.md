@@ -74,6 +74,13 @@ The CLI supports both:
 - Use it when you want to see the current concrete LOGOS intake vocabulary before classifying or seeding a source.
 - Details: `docs/how-to/report-logos-catalog.md`
 
+`report-logos-handling`
+
+- Audits LOGOS intake and derived notes by handling policy.
+- Use it when you want to quickly see which notes are still raw, which are personal-private or customer-confidential, and which derivatives are marked approved-for-sharing.
+- This is an audit report, not a publication gate by itself.
+- Details: `docs/how-to/report-logos-handling.md`
+
 `report-conversation-overlap-candidates`
 
 - Reports conservative conversation-level overlap candidates between two providers' projection sets.
@@ -267,8 +274,9 @@ LOGOS intake seeding:
 1. Run `report-logos-catalog`.
 2. Run `create-logos-intake-note`.
 3. Run `create-logos-sanitized-note` if the source note needs a safer derivative for broader sharing.
-4. Keep the restricted source note under `docs/logos-intake/`.
-5. Refine the derived note under `docs/logos-intake-derived/` for the intended sharing scope.
+4. Run `report-logos-handling` if you want to audit raw, restricted, and approved notes across the LOGOS note folders.
+5. Keep the restricted source note under `docs/logos-intake/`.
+6. Refine the derived note under `docs/logos-intake-derived/` for the intended sharing scope.
 
 Manual artifact hydration:
 
@@ -297,6 +305,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - `docs/how-to/create-concept-note.md`
 - `docs/how-to/create-logos-intake-note.md`
 - `docs/how-to/create-logos-sanitized-note.md`
+- `docs/how-to/report-logos-handling.md`
 - `docs/how-to/rebuild-artifact-projections.md`
 - `docs/how-to/rebuild-graph-assertions.md`
 - `docs/how-to/rebuild-working-graph-index.md`

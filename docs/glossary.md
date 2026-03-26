@@ -97,6 +97,10 @@ A derived Markdown note under `docs/logos-intake-derived/` that preserves source
 
 An explicit handling classification for a LOGOS intake signal covering sensitivity, sharing scope, sanitization status, and retention class.
 
+## LOGOS Handling Report
+
+A derived audit view over `docs/logos-intake/` and `docs/logos-intake-derived/` that surfaces how LOGOS notes are currently classified for sensitivity, sharing scope, sanitization status, and retention.
+
 ## Semantic Role
 
 A meaning classification applied to a node without changing the node's structural identity.

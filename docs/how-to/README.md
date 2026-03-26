@@ -32,6 +32,7 @@ Current guides:
 - `rebuild-working-graph-index.md`
 - `report-current-ingestion.md`
 - `report-logos-catalog.md`
+- `report-logos-handling.md`
 - `report-conversation-overlap-candidates.md`
 - `report-unresolved-artifacts.md`
 - `report-provider-import-history.md`

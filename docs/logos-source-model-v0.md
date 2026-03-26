@@ -80,6 +80,7 @@ The `v0` scope is intentionally narrow:
 - minimal source references and signal envelopes
 - a small durable note workflow for seeding non-chat intake before full ingestion exists
 - a first explicit derived-note workflow for redacted, anonymized, or shareable LOGOS derivatives
+- a first handling-policy audit report over LOGOS note material
 
 Deferred:
 
