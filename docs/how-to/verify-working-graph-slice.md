@@ -4,4 +4,4 @@
 
 Use the preferred guide here:
 
-- `docs/how-to/verify-working-graph-batch.md`
+- [`docs/how-to/verify-working-graph-batch.md`](verify-working-graph-batch.md)

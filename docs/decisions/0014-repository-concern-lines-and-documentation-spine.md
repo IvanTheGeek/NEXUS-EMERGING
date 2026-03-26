@@ -63,15 +63,15 @@ The documentation spine should make those concern lines easy to find.
 
 Expected entry points:
 
-- root `README.md`
+- root [`README.md`](../../README.md)
   top-level orientation, active concern lines, and links into the deeper docs
-- `docs/repository-concern-lines.md`
+- [`docs/repository-concern-lines.md`](../repository-concern-lines.md)
   the operator-facing map of the concern lines, their branch shape, and their canonical homes
-- `docs/glossary.md`
+- [`docs/glossary.md`](../glossary.md)
   stable shared vocabulary
-- `docs/decisions/`
+- [`docs/decisions/`](./)
   durable architectural and governance decisions
-- `NEXUS-Code/README.md`
+- [`NEXUS-Code/README.md`](../../NEXUS-Code/README.md)
   code-focused orientation and current module map
 
 Expected placement rules:

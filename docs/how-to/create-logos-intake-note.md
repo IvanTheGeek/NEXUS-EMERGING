@@ -186,5 +186,5 @@ It also lets intake enter NEXUS through an explicit pool boundary from the start
 
 ## Related
 
-- `docs/how-to/report-logos-catalog.md`
-- `docs/logos-source-model-v0.md`
+- [`docs/how-to/report-logos-catalog.md`](report-logos-catalog.md)
+- [`docs/logos-source-model-v0.md`](../logos-source-model-v0.md)

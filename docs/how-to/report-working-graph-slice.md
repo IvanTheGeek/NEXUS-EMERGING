@@ -4,4 +4,4 @@
 
 Use the preferred guide here:
 
-- `docs/how-to/report-working-graph-batch.md`
+- [`docs/how-to/report-working-graph-batch.md`](report-working-graph-batch.md)

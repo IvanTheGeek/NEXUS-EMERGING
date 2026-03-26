@@ -87,7 +87,7 @@ That overlap should be preserved separately first and reconciled explicitly late
 
 See:
 
-- `docs/decisions/0009-overlap-reconciliation-is-explicit.md`
+- [`docs/decisions/0009-overlap-reconciliation-is-explicit.md`](decisions/0009-overlap-reconciliation-is-explicit.md)
 
 ## v0 Scope
 

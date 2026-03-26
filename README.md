@@ -33,18 +33,18 @@ These boundaries are real design seams now and can become separate systems later
 
 Core project memory lives in the repo so humans and AI agents can recover intent quickly:
 
-- `docs/nexus-core-conceptual-layers.md`
-- `docs/nexus-ingestion-architecture.md`
-- `docs/nexus-graph-materialization-plan.md`
-- `docs/nexus-ontology-imprint-alignment.md`
-- `docs/logos-source-model-v0.md`
-- `docs/repository-concern-lines.md`
-- `docs/fsharp-documentation-convention.md`
-- `docs/glossary.md`
-- `docs/concepts/`
-- `docs/how-to/`
-- `docs/how-to/cli-commands.md`
-- `docs/decisions/`
+- [`docs/nexus-core-conceptual-layers.md`](docs/nexus-core-conceptual-layers.md)
+- [`docs/nexus-ingestion-architecture.md`](docs/nexus-ingestion-architecture.md)
+- [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
+- [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
+- [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
+- [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
+- [`docs/fsharp-documentation-convention.md`](docs/fsharp-documentation-convention.md)
+- [`docs/glossary.md`](docs/glossary.md)
+- [`docs/concepts/`](docs/concepts/README.md)
+- [`docs/how-to/`](docs/how-to/README.md)
+- [`docs/how-to/cli-commands.md`](docs/how-to/cli-commands.md)
+- [`docs/decisions/`](docs/decisions/)
 
 Repository docs are the primary onboarding surface. Prefer:
 
@@ -106,7 +106,7 @@ The goal is to keep implementation branches inspectable later as durable lines o
 
 Concern-line map:
 
-- `docs/repository-concern-lines.md`
+- [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
   use this when deciding whether work belongs to NEXUS core, engineering conventions, repository governance, ingestion, LOGOS, interaction/UI, integrations, or an application-specific domain
 
 Preferred branch shape:

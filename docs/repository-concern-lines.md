@@ -22,10 +22,10 @@ Scope:
 
 Primary docs:
 
-- `README.md`
-- `docs/glossary.md`
-- `docs/nexus-core-conceptual-layers.md`
-- `docs/nexus-ontology-imprint-alignment.md`
+- [`README.md`](../README.md)
+- [`docs/glossary.md`](glossary.md)
+- [`docs/nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
+- [`docs/nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
 
 Typical branch names:
 
@@ -43,9 +43,9 @@ Scope:
 
 Primary docs:
 
-- `docs/fsharp-documentation-convention.md`
-- `docs/decisions/0003-testing-stack-and-library-onboarding.md`
-- `docs/decisions/0005-explicit-allowlists-over-catchalls.md`
+- [`docs/fsharp-documentation-convention.md`](fsharp-documentation-convention.md)
+- [`docs/decisions/0003-testing-stack-and-library-onboarding.md`](decisions/0003-testing-stack-and-library-onboarding.md)
+- [`docs/decisions/0005-explicit-allowlists-over-catchalls.md`](decisions/0005-explicit-allowlists-over-catchalls.md)
 
 Typical branch names:
 
@@ -63,10 +63,10 @@ Scope:
 
 Primary docs:
 
-- `docs/decisions/0002-no-fast-forward-merges.md`
-- `docs/decisions/0008-branch-topology-by-workstream.md`
-- `docs/decisions/0010-terminology-flow-slice-batch-scope.md`
-- `docs/decisions/0014-repository-concern-lines-and-documentation-spine.md`
+- [`docs/decisions/0002-no-fast-forward-merges.md`](decisions/0002-no-fast-forward-merges.md)
+- [`docs/decisions/0008-branch-topology-by-workstream.md`](decisions/0008-branch-topology-by-workstream.md)
+- [`docs/decisions/0010-terminology-flow-slice-batch-scope.md`](decisions/0010-terminology-flow-slice-batch-scope.md)
+- [`docs/decisions/0014-repository-concern-lines-and-documentation-spine.md`](decisions/0014-repository-concern-lines-and-documentation-spine.md)
 
 Typical branch names:
 
@@ -85,11 +85,11 @@ Scope:
 
 Primary docs:
 
-- `docs/nexus-ingestion-architecture.md`
-- `docs/nexus-graph-materialization-plan.md`
-- `docs/how-to/import-provider-export.md`
-- `docs/how-to/rebuild-graph-assertions.md`
-- `NEXUS-Code/README.md`
+- [`docs/nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
+- [`docs/nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
+- [`docs/how-to/import-provider-export.md`](how-to/import-provider-export.md)
+- [`docs/how-to/rebuild-graph-assertions.md`](how-to/rebuild-graph-assertions.md)
+- [`NEXUS-Code/README.md`](../NEXUS-Code/README.md)
 
 Typical branch names:
 
@@ -110,10 +110,10 @@ Scope:
 
 Primary docs:
 
-- `docs/logos-source-model-v0.md`
-- `docs/decisions/0011-restricted-by-default-intake-and-explicit-publication.md`
-- `docs/decisions/0012-pool-based-handling-boundaries.md`
-- `docs/decisions/0013-access-context-and-rights-aware-intake.md`
+- [`docs/logos-source-model-v0.md`](logos-source-model-v0.md)
+- [`docs/decisions/0011-restricted-by-default-intake-and-explicit-publication.md`](decisions/0011-restricted-by-default-intake-and-explicit-publication.md)
+- [`docs/decisions/0012-pool-based-handling-boundaries.md`](decisions/0012-pool-based-handling-boundaries.md)
+- [`docs/decisions/0013-access-context-and-rights-aware-intake.md`](decisions/0013-access-context-and-rights-aware-intake.md)
 
 Typical branch names:
 
@@ -132,7 +132,7 @@ Scope:
 
 Primary docs:
 
-- `docs/concepts/fnhci.md`
+- [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - later FnUI/FnHCI architecture docs
 
 Typical branch names:
@@ -153,7 +153,7 @@ Scope:
 
 Primary docs:
 
-- `docs/logos-source-model-v0.md`
+- [`docs/logos-source-model-v0.md`](logos-source-model-v0.md)
 - future platform-specific integration notes
 
 Typical branch names:
@@ -195,15 +195,15 @@ For branching:
 
 For AI and human onboarding:
 
-1. read `README.md`
+1. read [`README.md`](../README.md)
 2. read this concern-line map
-3. read `docs/glossary.md`
+3. read [`docs/glossary.md`](glossary.md)
 4. read the decision records and how-to docs for the relevant concern line
 5. then inspect source and tests
 
 ## Near-Term Implementation Plan
 
-1. Keep `README.md` and `NEXUS-Code/README.md` linked to this map.
+1. Keep [`README.md`](../README.md) and [`NEXUS-Code/README.md`](../NEXUS-Code/README.md) linked to this map.
 2. Continue naming branches by workstream or concern line, not by agent/tool.
 3. When new decisions are added, sanity-check which concern line they belong to before writing them.
 4. When FnHCI/FnUI and external integrations grow, give them their own explicit architecture docs rather than burying them under ingestion notes.

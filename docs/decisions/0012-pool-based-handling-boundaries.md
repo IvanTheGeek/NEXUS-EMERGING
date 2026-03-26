@@ -76,4 +76,4 @@ This keeps the model explicit in two ways:
 
 See also:
 
-- `docs/decisions/0013-access-context-and-rights-aware-intake.md`
+- [`docs/decisions/0013-access-context-and-rights-aware-intake.md`](0013-access-context-and-rights-aware-intake.md)

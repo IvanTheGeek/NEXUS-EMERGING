@@ -197,7 +197,7 @@ Current recommendation:
 
 See also:
 
-- `docs/decisions/0006-storage-roles-by-bounded-context.md`
+- [`docs/decisions/0006-storage-roles-by-bounded-context.md`](decisions/0006-storage-roles-by-bounded-context.md)
 
 ## Recommended Next Implementation Steps
 

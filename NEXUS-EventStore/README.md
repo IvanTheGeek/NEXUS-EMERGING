@@ -22,4 +22,4 @@ The first storage shape is stream-oriented:
 - `projections/`
 - later `graph/`
 
-See `docs/v0-layout-and-toml.md` for the current layout and TOML schema draft.
+See [`docs/v0-layout-and-toml.md`](../docs/v0-layout-and-toml.md) for the current layout and TOML schema draft.
