@@ -42,6 +42,7 @@ Scope:
 - testing strategy
 - documentation conventions
 - explicit allowlists and deterministic coding rules
+- default durable UTC time handling with localization in views
 
 Primary docs:
 
@@ -49,6 +50,7 @@ Primary docs:
 - [`docs/decisions/0003-testing-stack-and-library-onboarding.md`](decisions/0003-testing-stack-and-library-onboarding.md)
 - [`docs/decisions/0005-explicit-allowlists-over-catchalls.md`](decisions/0005-explicit-allowlists-over-catchalls.md)
 - [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](decisions/0017-docs-and-tests-ship-with-work.md)
+- [`docs/decisions/0023-utc-for-durable-time-and-localize-in-views.md`](decisions/0023-utc-for-durable-time-and-localize-in-views.md)
 
 Typical branch names:
 
