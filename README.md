@@ -127,6 +127,10 @@ See:
 - [`docs/collaboration-protocol.md`](docs/collaboration-protocol.md)
 - [`docs/how-to/run-tests.md`](docs/how-to/run-tests.md)
 
+Tooling expectation:
+
+- if an expected local tool is missing, say so explicitly so it can be installed rather than silently worked around
+
 Repository docs are the primary onboarding surface. Prefer:
 
 1. docs/TOC first
