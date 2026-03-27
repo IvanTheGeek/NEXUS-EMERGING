@@ -25,4 +25,4 @@ LaundryLog should:
 - make missing receipts less of a problem
 - capture enough detail to support later tax or recordkeeping use
 - stay simple and understandable
-- preserve user privacy and ownership
+- preserve user data ownership, privacy, and explicit control over sharing

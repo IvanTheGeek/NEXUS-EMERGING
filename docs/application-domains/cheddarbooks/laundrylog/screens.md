@@ -23,7 +23,7 @@ That means screen work should stay aligned with:
 
 Purpose:
 
-- begin a laundry outing by establishing location context
+- begin a laundry session by establishing location context
 
 Current expected elements:
 
@@ -114,7 +114,7 @@ Current screen-state thinking includes at least:
 1. New session, no location yet
 2. Location entered, ready to set
 3. Entry form active under chosen location
-4. Repeated entry within the same ongoing outing
+4. Repeated entry within the same ongoing session
 
 ## Future Likely Screens
 

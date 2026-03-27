@@ -53,7 +53,7 @@ Purpose:
 Purpose:
 
 - log one expense entry in the current session
-- support repeat entry within the same outing
+- support repeat entry within the same session
 - keep running session total visible
 
 ## Code Boundary

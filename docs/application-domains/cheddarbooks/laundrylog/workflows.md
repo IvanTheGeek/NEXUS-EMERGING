@@ -49,9 +49,9 @@ Current line-entry workflow:
 
 This should work for the most common case with as little friction as possible.
 
-## Workflow 3: Repeat Entry During One Laundry Outing
+## Workflow 3: Repeat Entry During One Laundry Session
 
-Current understanding is that a laundry outing often lasts for multiple hours and includes multiple entries at the same location.
+Current understanding is that a laundry session often lasts for multiple hours and includes multiple entries at the same location.
 
 That means the workflow is:
 
