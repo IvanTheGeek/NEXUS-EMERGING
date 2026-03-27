@@ -183,8 +183,11 @@ module CommitCheckpointTests =
                       let hookText = File.ReadAllText(result.HookPath)
                       Expect.stringContains hookText "existing-hook" "Expected existing hook content to remain."
                       Expect.stringContains hookText "NEXUS CODEX COMMIT CHECKPOINT" "Expected the managed block markers."
+                      Expect.stringContains hookText "NEXUS_CLI_DLL" "Expected the managed hook to prefer a built CLI DLL when available."
+                      Expect.stringContains hookText "dotnet run --project \"$NEXUS_CLI_PROJECT\"" "Expected the managed hook to retain the dotnet run fallback."
                       Expect.isFalse result.CreatedHookFile "Expected an existing hook file to be updated in place."
                       Expect.isTrue result.InsertedManagedBlock "Expected the managed block to be inserted."
+                      Expect.stringContains result.CommandPreview "Nexus.Cli.dll" "Expected the hook command preview to mention the built CLI DLL path."
                       Expect.stringContains result.CommandPreview "capture-codex-commit-checkpoint" "Expected the hook command preview to mention the checkpoint command." ))
 
               testCase "Installed post-commit hook captures checkpoint on new commit" (fun () ->

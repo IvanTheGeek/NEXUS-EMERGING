@@ -73,13 +73,21 @@ module CodexCommitCheckpointHooks =
         "'" + value.Replace("'", "'\"'\"'") + "'"
 
     let private renderManagedBlock request =
+        let nexusRepoRoot = Path.GetFullPath(request.NexusRepoRoot)
+
         let cliProjectPath =
+            Path.Combine(nexusRepoRoot, "NEXUS-Code", "src", "Nexus.Cli", "Nexus.Cli.fsproj")
+
+        let cliDllPath =
             Path.Combine(
-                Path.GetFullPath(request.NexusRepoRoot),
+                nexusRepoRoot,
                 "NEXUS-Code",
                 "src",
                 "Nexus.Cli",
-                "Nexus.Cli.fsproj")
+                "bin",
+                "Debug",
+                "net10.0",
+                "Nexus.Cli.dll")
 
         let lines =
             [ markerStart
@@ -89,7 +97,14 @@ module CodexCommitCheckpointHooks =
               "  NEXUS_HOOK_LOG_DIR=\"$NEXUS_GIT_DIR/nexus-hooks\""
               "  mkdir -p \"$NEXUS_HOOK_LOG_DIR\""
               "  NEXUS_HOOK_LOG_PATH=\"$NEXUS_HOOK_LOG_DIR/codex-commit-checkpoint.log\""
-              $"  if ! dotnet run --project {shellEscape cliProjectPath} -- capture-codex-commit-checkpoint --repo-root \"$NEXUS_REPO_ROOT\" --source-root {shellEscape (Path.GetFullPath(request.CodexSourceRoot))} --objects-root {shellEscape (Path.GetFullPath(request.ObjectsRoot))} --event-store-root {shellEscape (Path.GetFullPath(request.EventStoreRoot))} >>\"$NEXUS_HOOK_LOG_PATH\" 2>&1; then"
+              $"  NEXUS_CLI_DLL={shellEscape cliDllPath}"
+              $"  NEXUS_CLI_PROJECT={shellEscape cliProjectPath}"
+              "  if [ -f \"$NEXUS_CLI_DLL\" ]; then"
+              $"    NEXUS_CAPTURE_COMMAND=(dotnet \"$NEXUS_CLI_DLL\" capture-codex-commit-checkpoint --repo-root \"$NEXUS_REPO_ROOT\" --source-root {shellEscape (Path.GetFullPath(request.CodexSourceRoot))} --objects-root {shellEscape (Path.GetFullPath(request.ObjectsRoot))} --event-store-root {shellEscape (Path.GetFullPath(request.EventStoreRoot))})"
+              "  else"
+              $"    NEXUS_CAPTURE_COMMAND=(dotnet run --project \"$NEXUS_CLI_PROJECT\" -- capture-codex-commit-checkpoint --repo-root \"$NEXUS_REPO_ROOT\" --source-root {shellEscape (Path.GetFullPath(request.CodexSourceRoot))} --objects-root {shellEscape (Path.GetFullPath(request.ObjectsRoot))} --event-store-root {shellEscape (Path.GetFullPath(request.EventStoreRoot))})"
+              "  fi"
+              "  if ! \"${NEXUS_CAPTURE_COMMAND[@]}\" >>\"$NEXUS_HOOK_LOG_PATH\" 2>&1; then"
               "    printf '%s\\n' \"Codex commit checkpoint capture failed. See $NEXUS_HOOK_LOG_PATH\" >&2"
               "  fi"
               "else"
@@ -187,8 +202,19 @@ module CodexCommitCheckpointHooks =
                     "Nexus.Cli",
                     "Nexus.Cli.fsproj")
 
+            let cliDllPath =
+                Path.Combine(
+                    Path.GetFullPath(request.NexusRepoRoot),
+                    "NEXUS-Code",
+                    "src",
+                    "Nexus.Cli",
+                    "bin",
+                    "Debug",
+                    "net10.0",
+                    "Nexus.Cli.dll")
+
             let commandPreview =
-                $"dotnet run --project {cliProjectPath} -- capture-codex-commit-checkpoint --repo-root <git-head-repo> --source-root {Path.GetFullPath(request.CodexSourceRoot)} --objects-root {Path.GetFullPath(request.ObjectsRoot)} --event-store-root {Path.GetFullPath(request.EventStoreRoot)}"
+                $"dotnet {cliDllPath} capture-codex-commit-checkpoint --repo-root <git-head-repo> --source-root {Path.GetFullPath(request.CodexSourceRoot)} --objects-root {Path.GetFullPath(request.ObjectsRoot)} --event-store-root {Path.GetFullPath(request.EventStoreRoot)} (falls back to: dotnet run --project {cliProjectPath} -- capture-codex-commit-checkpoint ...)"
 
             Ok
                 { RepoRoot = repoRoot
