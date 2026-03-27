@@ -197,6 +197,7 @@ Primary docs:
 - [`docs/application-domains/cheddarbooks-foundation.md`](application-domains/cheddarbooks-foundation.md)
 - [`docs/fntools-foundation.md`](fntools-foundation.md)
 - [`docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`](decisions/0018-namespace-and-repo-boundaries-by-line.md)
+- [`docs/repo-extraction-plan.md`](repo-extraction-plan.md)
 
 Typical branch names:
 

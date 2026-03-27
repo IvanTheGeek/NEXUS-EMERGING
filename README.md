@@ -103,8 +103,10 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/concepts/`](docs/concepts/README.md)
 - [`docs/how-to/`](docs/how-to/README.md)
 - [`docs/how-to/cli-commands.md`](docs/how-to/cli-commands.md)
+- [`docs/repo-extraction-plan.md`](docs/repo-extraction-plan.md)
 - [`docs/decisions/`](docs/decisions/)
 - [`docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`](docs/decisions/0018-namespace-and-repo-boundaries-by-line.md)
+- [`docs/decisions/0019-phased-repo-extraction-for-fntools-and-cheddarbooks.md`](docs/decisions/0019-phased-repo-extraction-for-fntools-and-cheddarbooks.md)
 
 ## Working Expectations
 
