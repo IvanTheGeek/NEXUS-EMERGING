@@ -70,7 +70,7 @@ FnTools/
 ## Extraction Steps
 
 1. Create the new `FnTools` repo from the `NEXUS` baseline `bb87d037`.
-2. Copy the owned projects, tests, and docs into the new repo root.
+2. Use the bootstrap runbook and script to stage the owned projects, tests, and docs into the new repo root.
 3. Rename project folders and project files:
    - `Nexus.FnHCI` -> `FnTools.FnHCI`
    - `Nexus.FnHCI.UI` -> `FnTools.FnHCI.UI`
@@ -107,3 +107,7 @@ After the repo exists and builds cleanly:
 - it has no current dependency on `Nexus.*` runtime projects
 - its tests are already isolated
 - it is the upstream dependency for `CheddarBooks`
+
+## Runbook
+
+- [`../how-to/bootstrap-fntools-repo.md`](../how-to/bootstrap-fntools-repo.md)
