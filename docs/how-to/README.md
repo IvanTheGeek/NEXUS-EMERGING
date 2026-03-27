@@ -12,6 +12,7 @@ Current guides:
 
 - [`bootstrap-cheddarbooks-repo.md`](bootstrap-cheddarbooks-repo.md)
 - [`capture-artifact-payload.md`](capture-artifact-payload.md)
+- [`capture-codex-commit-checkpoint.md`](capture-codex-commit-checkpoint.md)
 - [`bootstrap-fntools-repo.md`](bootstrap-fntools-repo.md)
 - [`cli-commands.md`](cli-commands.md)
 - [`compare-import-snapshots.md`](compare-import-snapshots.md)
@@ -28,6 +29,7 @@ Current guides:
 - [`import-codex-sessions.md`](import-codex-sessions.md)
 - [`import-logos-blog-repo.md`](import-logos-blog-repo.md)
 - [`import-provider-export.md`](import-provider-export.md)
+- [`install-codex-commit-checkpoint-hook.md`](install-codex-commit-checkpoint-hook.md)
 - [`render-graphviz-dot.md`](render-graphviz-dot.md)
 - [`rebuild-artifact-projections.md`](rebuild-artifact-projections.md)
 - [`rebuild-conversation-projections.md`](rebuild-conversation-projections.md)

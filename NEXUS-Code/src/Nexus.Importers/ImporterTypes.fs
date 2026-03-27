@@ -178,6 +178,14 @@ type ParsedConversation =
       RawObjects: RawObjectRef list }
 
 /// <summary>
+/// A lightweight imported conversation summary suitable for commit checkpoints and import reporting.
+/// </summary>
+type ImportedConversationSummary =
+    { ProviderConversationId: string
+      Title: string option
+      MessageCountHint: int option }
+
+/// <summary>
 /// The provider-specific parse result handed to the shared canonical import workflow.
 /// </summary>
 type ParsedImport =
@@ -245,7 +253,66 @@ type CodexSessionImportResult =
       WorkingGraphCatalogRelativePath: string option
       WorkingGraphIndexRelativePath: string option
       WorkingGraphAssertionCount: int option
+      ConversationSummaries: ImportedConversationSummary list
       Counts: ImportCounts }
+
+/// <summary>
+/// Requests capture of the current Codex local-session state and links it to the current Git HEAD commit.
+/// </summary>
+/// <remarks>
+/// Full workflow notes: docs/how-to/capture-codex-commit-checkpoint.md
+/// </remarks>
+type CodexCommitCheckpointRequest =
+    { RepoRoot: string
+      CodexSourceRoot: string
+      ObjectsRoot: string
+      EventStoreRoot: string
+      Force: bool }
+
+/// <summary>
+/// Describes the durable result of a commit-linked Codex session checkpoint capture.
+/// </summary>
+type CodexCommitCheckpointResult =
+    { RepoRoot: string
+      RepoSlug: string
+      BranchName: string option
+      RemoteOrigin: string option
+      CommitSha: string
+      CommitShortSha: string
+      CommitSummary: string
+      CommitMessage: string
+      CapturedAt: DateTimeOffset
+      SnapshotName: string
+      SnapshotRoot: string
+      SnapshotManifestRelativePath: string
+      CheckpointManifestRelativePath: string
+      ImportResult: CodexSessionImportResult }
+
+/// <summary>
+/// Requests installation or refresh of a Git post-commit hook that captures Codex commit checkpoints.
+/// </summary>
+/// <remarks>
+/// Full workflow notes: docs/how-to/install-codex-commit-checkpoint-hook.md
+/// </remarks>
+type CodexCommitCheckpointHookInstallRequest =
+    { RepoRoot: string
+      NexusRepoRoot: string
+      CodexSourceRoot: string
+      ObjectsRoot: string
+      EventStoreRoot: string }
+
+/// <summary>
+/// Describes the result of installing or refreshing the managed Codex commit-checkpoint hook block.
+/// </summary>
+type CodexCommitCheckpointHookInstallResult =
+    { RepoRoot: string
+      GitDirectory: string
+      HookPath: string
+      CreatedHookFile: bool
+      UpdatedManagedBlock: bool
+      InsertedManagedBlock: bool
+      HookLogRelativePath: string
+      CommandPreview: string }
 
 /// <summary>
 /// Identifies which existing artifact reference a manual payload capture should hydrate.

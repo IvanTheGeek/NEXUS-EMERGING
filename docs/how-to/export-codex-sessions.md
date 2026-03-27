@@ -63,6 +63,7 @@ Manifest example:
 
 - This is raw preservation, not canonical import.
 - After exporting, use `import-codex-sessions` to append Codex conversations into the canonical event store.
+- If you want the Codex snapshot explicitly linked to a Git commit, use `capture-codex-commit-checkpoint` instead of running export and import as separate manual steps.
 - The local session JSONL files contain the actual turn history, including your prompts and Codex responses.
 - Runtime app logs are not the same thing and are not what this exporter is preserving.
 

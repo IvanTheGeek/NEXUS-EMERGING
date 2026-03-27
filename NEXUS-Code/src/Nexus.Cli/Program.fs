@@ -37,6 +37,9 @@ module Program =
         | RebuildImportSnapshots of eventStoreRoot: string * objectsRoot: string * scope: ImportSnapshotBackfillScope * force: bool
         | ImportProviderExport of request: ImportRequest
         | ImportCodexSessions of request: CodexSessionImportRequest
+        | CaptureCodexCommitCheckpoint of request: CodexCommitCheckpointRequest
+        | ReportCodexCommitCheckpoint of eventStoreRoot: string * repoRoot: string * commitSha: string option
+        | InstallCodexCommitCheckpointHook of request: CodexCommitCheckpointHookInstallRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string * approved: bool
         | ExportGraphvizDot of
@@ -85,6 +88,9 @@ module Program =
 
     let private defaultCodexSnapshotRoot =
         Path.Combine(defaultObjectsRoot, "providers", "codex", "latest")
+
+    let private defaultCodexSourceRoot =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".codex")
 
     let private cliInvocation =
         "dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj --"
@@ -359,6 +365,65 @@ module Program =
                   Notes =
                     [ "Run the raw export script first if the latest Codex snapshot has not been staged yet."
                       "Detailed guide: docs/how-to/import-codex-sessions.md" ] }
+        | "capture-codex-commit-checkpoint" ->
+            Some
+                { Name = name
+                  Summary = "Export the current Codex session snapshot, import it, and link it to the current Git HEAD commit."
+                  Usage =
+                    [ sprintf "%s capture-codex-commit-checkpoint" cliInvocation
+                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/FnTools --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                  Options =
+                    [ "--repo-root <path>", "Override the Git repo whose HEAD commit should be linked. Defaults to the current working directory."
+                      "--source-root <path>", sprintf "Override the Codex source root. Defaults to %s." defaultCodexSourceRoot
+                      "--objects-root <path>", sprintf "Override the objects root. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--force", "Overwrite an existing checkpoint for the same repo and commit." ]
+                  Examples =
+                    [ sprintf "%s capture-codex-commit-checkpoint" cliInvocation
+                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/CheddarBooks --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                  Notes =
+                    [ "This is the first commit-linked Codex checkpoint flow for tracing a Git commit back to the chat that led to it."
+                      "The checkpoint writes a durable manifest under NEXUS-EventStore/work-batches/commit-checkpoints/<repo>/<commit>.toml."
+                      "Use --force only when you intentionally want to replace a checkpoint for the same commit."
+                      "Detailed guide: docs/how-to/capture-codex-commit-checkpoint.md" ] }
+        | "report-codex-commit-checkpoint" ->
+            Some
+                { Name = name
+                  Summary = "Look up the Codex checkpoint linked to a repo commit and report the imported conversation hints."
+                  Usage =
+                    [ sprintf "%s report-codex-commit-checkpoint" cliInvocation
+                      sprintf "%s report-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/FnTools --commit <sha>" cliInvocation ]
+                  Options =
+                    [ "--repo-root <path>", "Override the Git repo whose checkpoint should be inspected. Defaults to the current working directory."
+                      "--event-store-root <path>", sprintf "Override the event-store root. Defaults to %s." defaultEventStoreRoot
+                      "--commit <sha>", "Optional commit SHA. Defaults to the current Git HEAD commit for the repo." ]
+                  Examples =
+                    [ sprintf "%s report-codex-commit-checkpoint" cliInvocation
+                      sprintf "%s report-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/FnTools --commit 577cf55" cliInvocation ]
+                  Notes =
+                    [ "Use this after copying a commit SHA from GitHub when you want the linked Codex import and conversation hints."
+                      "It reads the durable checkpoint manifest written by capture-codex-commit-checkpoint."
+                      "Detailed guide: docs/how-to/capture-codex-commit-checkpoint.md" ] }
+        | "install-codex-commit-checkpoint-hook" ->
+            Some
+                { Name = name
+                  Summary = "Install or refresh a managed Git post-commit hook that captures Codex commit checkpoints automatically."
+                  Usage =
+                    [ sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/FnTools" cliInvocation
+                      sprintf "%s install-codex-commit-checkpoint-hook" cliInvocation ]
+                  Options =
+                    [ "--repo-root <path>", "Override the Git repo that should receive the post-commit hook. Defaults to the current working directory."
+                      "--source-root <path>", sprintf "Override the live Codex source root. Defaults to %s." defaultCodexSourceRoot
+                      "--objects-root <path>", sprintf "Override the objects root used by checkpoint capture. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root used by checkpoint capture. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/FnTools" cliInvocation
+                      sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/CheddarBooks --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                  Notes =
+                    [ "This writes or updates only the managed NEXUS block inside .git/hooks/post-commit."
+                      "Existing hook content is preserved when possible."
+                      "The managed block does not block commits when checkpoint capture fails; it logs the failure under .git/nexus-hooks/."
+                      "Detailed guide: docs/how-to/install-codex-commit-checkpoint-hook.md" ] }
         | "capture-artifact-payload" ->
             Some
                 { Name = name
@@ -797,6 +862,9 @@ module Program =
           "rebuild-import-snapshots"
           "import-provider-export"
           "import-codex-sessions"
+          "capture-codex-commit-checkpoint"
+          "report-codex-commit-checkpoint"
+          "install-codex-commit-checkpoint-hook"
           "capture-artifact-payload"
           "rebuild-graph-assertions"
           "export-graphviz-dot"
@@ -1180,6 +1248,86 @@ module Program =
                     Error 1
 
             loop defaultCodexSnapshotRoot defaultObjectsRoot defaultEventStoreRoot args
+
+    let private parseCaptureCodexCommitCheckpoint (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "capture-codex-commit-checkpoint"))
+        else
+            let rec loop repoRoot sourceRoot objectsRoot eventStoreRoot force remaining =
+                match remaining with
+                | [] ->
+                    Ok
+                        (CaptureCodexCommitCheckpoint
+                            { RepoRoot = repoRoot
+                              CodexSourceRoot = sourceRoot
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot
+                              Force = force })
+                | "--repo-root" :: value :: rest ->
+                    loop value sourceRoot objectsRoot eventStoreRoot force rest
+                | "--source-root" :: value :: rest ->
+                    loop repoRoot value objectsRoot eventStoreRoot force rest
+                | "--objects-root" :: value :: rest ->
+                    loop repoRoot sourceRoot value eventStoreRoot force rest
+                | "--event-store-root" :: value :: rest ->
+                    loop repoRoot sourceRoot objectsRoot value force rest
+                | "--force" :: rest ->
+                    loop repoRoot sourceRoot objectsRoot eventStoreRoot true rest
+                | option :: _ ->
+                    eprintfn "Unknown option for capture-codex-commit-checkpoint: %s" option
+                    printCommandHelp "capture-codex-commit-checkpoint"
+                    Error 1
+
+            loop Environment.CurrentDirectory defaultCodexSourceRoot defaultObjectsRoot defaultEventStoreRoot false args
+
+    let private parseReportCodexCommitCheckpoint (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "report-codex-commit-checkpoint"))
+        else
+            let rec loop repoRoot eventStoreRoot commitSha remaining =
+                match remaining with
+                | [] -> Ok (ReportCodexCommitCheckpoint(eventStoreRoot, repoRoot, commitSha))
+                | "--repo-root" :: value :: rest ->
+                    loop value eventStoreRoot commitSha rest
+                | "--event-store-root" :: value :: rest ->
+                    loop repoRoot value commitSha rest
+                | "--commit" :: value :: rest ->
+                    loop repoRoot eventStoreRoot (Some value) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for report-codex-commit-checkpoint: %s" option
+                    printCommandHelp "report-codex-commit-checkpoint"
+                    Error 1
+
+            loop Environment.CurrentDirectory defaultEventStoreRoot None args
+
+    let private parseInstallCodexCommitCheckpointHook (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "install-codex-commit-checkpoint-hook"))
+        else
+            let rec loop targetRepoRoot sourceRoot objectsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    Ok
+                        (InstallCodexCommitCheckpointHook
+                            { RepoRoot = targetRepoRoot
+                              NexusRepoRoot = repoRoot
+                              CodexSourceRoot = sourceRoot
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot })
+                | "--repo-root" :: value :: rest ->
+                    loop value sourceRoot objectsRoot eventStoreRoot rest
+                | "--source-root" :: value :: rest ->
+                    loop targetRepoRoot value objectsRoot eventStoreRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop targetRepoRoot sourceRoot value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop targetRepoRoot sourceRoot objectsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for install-codex-commit-checkpoint-hook: %s" option
+                    printCommandHelp "install-codex-commit-checkpoint-hook"
+                    Error 1
+
+            loop Environment.CurrentDirectory defaultCodexSourceRoot defaultObjectsRoot defaultEventStoreRoot args
 
     let private parseRebuildConversationProjections (args: string list) =
         if containsHelpSwitch args then
@@ -3009,6 +3157,12 @@ module Program =
             parseImportProviderExport rest
         | "import-codex-sessions" :: rest ->
             parseImportCodexSessions rest
+        | "capture-codex-commit-checkpoint" :: rest ->
+            parseCaptureCodexCommitCheckpoint rest
+        | "report-codex-commit-checkpoint" :: rest ->
+            parseReportCodexCommitCheckpoint rest
+        | "install-codex-commit-checkpoint-hook" :: rest ->
+            parseInstallCodexCommitCheckpointHook rest
         | "capture-artifact-payload" :: rest ->
             parseCaptureArtifactPayload rest
         | "rebuild-graph-assertions" :: rest ->
@@ -3935,6 +4089,111 @@ module Program =
 
         0
 
+    let private captureCodexCommitCheckpoint request =
+        match CodexCommitCheckpointWorkflow.run request with
+        | Error message ->
+            eprintfn "%s" message
+            2
+        | Ok result ->
+            printfn "Codex commit checkpoint captured."
+            printfn "  Repo root: %s" result.RepoRoot
+            printfn "  Repo slug: %s" result.RepoSlug
+
+            match result.BranchName with
+            | Some value -> printfn "  Branch: %s" value
+            | None -> ()
+
+            match result.RemoteOrigin with
+            | Some value -> printfn "  Remote origin: %s" value
+            | None -> ()
+
+            printfn "  Commit: %s" result.CommitSha
+            printfn "  Commit summary: %s" result.CommitSummary
+            printfn "  Snapshot: %s" result.SnapshotName
+            printfn "  Snapshot root: %s" result.SnapshotRoot
+            printfn "  Snapshot manifest: %s" result.SnapshotManifestRelativePath
+            printfn "  Checkpoint manifest: %s" result.CheckpointManifestRelativePath
+            printfn "  Import ID: %s" (ImportId.format result.ImportResult.ImportId)
+            printfn "  Import manifest: %s" result.ImportResult.ManifestRelativePath
+            printfn "  Conversations seen: %d" result.ImportResult.Counts.ConversationsSeen
+            printfn "  Messages seen: %d" result.ImportResult.Counts.MessagesSeen
+            printfn "  New events appended: %d" result.ImportResult.Counts.NewEventsAppended
+            printfn "  Duplicates skipped: %d" result.ImportResult.Counts.DuplicatesSkipped
+
+            if not result.ImportResult.ConversationSummaries.IsEmpty then
+                printfn "  Conversation hints:"
+
+                result.ImportResult.ConversationSummaries
+                |> List.truncate 10
+                |> List.iter (fun conversation ->
+                    match conversation.Title with
+                    | Some title ->
+                        printfn "    %s | %s" conversation.ProviderConversationId title
+                    | None ->
+                        printfn "    %s" conversation.ProviderConversationId)
+
+            0
+
+    let private reportCodexCommitCheckpoint eventStoreRoot repoRoot commitSha =
+        match CodexCommitCheckpointWorkflow.report eventStoreRoot repoRoot commitSha with
+        | Error message ->
+            eprintfn "%s" message
+            2
+        | Ok result ->
+            let checkpoint = result.Checkpoint
+
+            printfn "Codex commit checkpoint found."
+            printfn "  Repo root: %s" result.RepoRoot
+            printfn "  Repo slug: %s" result.RepoSlug
+            printfn "  Commit: %s" checkpoint.CommitSha
+            printfn "  Commit summary: %s" checkpoint.CommitSummary
+
+            match checkpoint.BranchName with
+            | Some value -> printfn "  Branch: %s" value
+            | None -> ()
+
+            match checkpoint.RemoteOrigin with
+            | Some value -> printfn "  Remote origin: %s" value
+            | None -> ()
+
+            printfn "  Captured at: %O" checkpoint.CapturedAt
+            printfn "  Checkpoint manifest: %s" result.ManifestRelativePath
+            printfn "  Snapshot root: %s" checkpoint.SnapshotRoot
+            printfn "  Import ID: %s" (ImportId.format checkpoint.ImportId)
+            printfn "  Import manifest: %s" checkpoint.ImportManifestRelativePath
+            printfn "  Conversations seen: %d" checkpoint.Counts.ConversationsSeen
+            printfn "  Messages seen: %d" checkpoint.Counts.MessagesSeen
+
+            if not checkpoint.Conversations.IsEmpty then
+                printfn "  Conversation hints:"
+
+                checkpoint.Conversations
+                |> List.iter (fun conversation ->
+                    match conversation.Title with
+                    | Some title ->
+                        printfn "    %s | %s" conversation.ProviderConversationId title
+                    | None ->
+                        printfn "    %s" conversation.ProviderConversationId)
+
+            0
+
+    let private installCodexCommitCheckpointHook request =
+        match CodexCommitCheckpointHooks.install request with
+        | Error message ->
+            eprintfn "%s" message
+            2
+        | Ok result ->
+            printfn "Codex commit checkpoint hook installed."
+            printfn "  Repo root: %s" result.RepoRoot
+            printfn "  Git directory: %s" result.GitDirectory
+            printfn "  Hook path: %s" result.HookPath
+            printfn "  Created hook file: %b" result.CreatedHookFile
+            printfn "  Inserted managed block: %b" result.InsertedManagedBlock
+            printfn "  Updated managed block: %b" result.UpdatedManagedBlock
+            printfn "  Hook log path: %s" result.HookLogRelativePath
+            printfn "  Command preview: %s" result.CommandPreview
+            0
+
     let private captureArtifactPayload request =
         let result = ManualArtifactWorkflow.run request
 
@@ -4729,6 +4988,12 @@ module Program =
             importProviderExport request
         | Ok (ImportCodexSessions request) ->
             importCodexSessions request
+        | Ok (CaptureCodexCommitCheckpoint request) ->
+            captureCodexCommitCheckpoint request
+        | Ok (ReportCodexCommitCheckpoint(eventStoreRoot, repoRoot, commitSha)) ->
+            reportCodexCommitCheckpoint eventStoreRoot repoRoot commitSha
+        | Ok (InstallCodexCommitCheckpointHook request) ->
+            installCodexCommitCheckpointHook request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->
