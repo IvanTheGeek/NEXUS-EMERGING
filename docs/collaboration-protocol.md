@@ -75,6 +75,14 @@ This avoids avoidable MSBuild file-copy contention and misleading build noise.
 - short-lived branches are preferred for tightly scoped work
 - accepted work merges into `main` with `--no-ff`
 - active long-lived branches should periodically take merges from `main`
+- active long-lived branches may merge into `main` multiple times and continue afterward
+- direct commits to `main` should be rare and limited to truly tiny administrative fixes; normal follow-up work should happen on a branch
+
+Branch deletion guidance:
+
+- delete a short-lived branch after merge when the workstream is complete enough that the next step should start from `main`
+- keep a long-lived branch when its concern line still needs an independent cadence or expects more checkpoint merges
+- delete a long-lived branch once it no longer needs to evolve separately from `main`
 
 Examples of long-lived concern-line branches:
 

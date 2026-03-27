@@ -30,10 +30,45 @@ Working rules:
 
 - `main` is the current accepted and converged baseline for new work unless there is a clear reason to branch from an active concern-line branch instead
 - active long-lived branches are allowed when they represent real ongoing lines such as `fntools-foundation` or `cheddarbooks-foundation`
+- active long-lived branches may merge into `main` multiple times across their lifespan
 - merge accepted checkpoints from those branches into `main` with `--no-ff`
 - periodically merge `main` back into active long-lived branches when shared foundations, decisions, or reusable code have moved
 - use milestone or release tags on meaningful `main` commits when a converged checkpoint should stay easy to recover
 - prefer explicit convergence over letting branches drift for too long
+- avoid direct commits on `main` for normal implementation follow-up work; use a branch unless the change is truly tiny and administrative
+
+## Branch Lifecycle Rule
+
+Not every merged branch is finished forever.
+
+There are two normal branch lifecycles here:
+
+1. short-lived focused branch
+   - created for one coherent piece of work
+   - merged into `main`
+   - deleted after merge when the workstream is complete enough that the next step should start fresh from `main`
+
+2. long-lived concern-line branch
+   - created for an ongoing line such as `fntools-foundation`
+   - may merge checkpoints into `main` multiple times
+   - may also take periodic merges from `main`
+   - remains alive until that concern line no longer needs an independent cadence
+
+## When To Delete A Branch
+
+Delete a branch when all of the following are true:
+
+- its useful history is already preserved by merge commits on `main`
+- the branch no longer needs to evolve separately from `main`
+- the next expected work in that area can sensibly branch from `main`
+- there is no active reason to keep its own roadmap, review thread, or convergence cadence
+
+Keep a branch alive when any of the following are true:
+
+- the concern line is still evolving independently
+- more checkpoints are expected to merge into `main`
+- the branch is serving as the active integration line for related sub-branches
+- deleting it would just lead to immediately recreating the same branch again
 
 ## Collaboration Rule
 
@@ -58,6 +93,7 @@ Positive:
 - long-lived foundation lines can continue without forcing premature closure
 - merge history shows real convergence instead of hidden rebases or overwritten branch shape
 - future humans, Claude, Codex, and later CORTEX can recover expectations from the repo itself
+- branch deletion becomes an explicit lifecycle choice instead of guesswork
 
 Tradeoffs:
 
