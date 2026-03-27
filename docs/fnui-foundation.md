@@ -44,16 +44,18 @@ FnUI is:
 
 ## Namespace Direction
 
-Internal code should likely nest under the broader `FnHCI` namespace line:
+The target reusable-library namespace direction should nest under the broader `FnHCI` namespace line:
 
-- `Nexus.FnHCI`
-- `Nexus.FnHCI.UI`
-- `Nexus.FnHCI.UI.Blazor`
+- `FnTools.FnHCI`
+- `FnTools.FnHCI.UI`
+- `FnTools.FnHCI.UI.Blazor`
 
 while public package naming may still use the narrower `FnUI` line:
 
 - `FnUI`
 - `FnUI.Blazor`
+
+The current in-repo scaffold still uses `Nexus.FnHCI.*` temporarily until the `FnTools` extraction work is ready.
 
 ## First Foundation Targets
 

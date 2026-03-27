@@ -60,7 +60,7 @@ Purpose:
 
 The first code boundary for this should live in:
 
-- `Nexus.CheddarBooks.LaundryLog`
-- `Nexus.CheddarBooks.LaundryLog.UI`
+- `CheddarBooks.LaundryLog`
+- `CheddarBooks.LaundryLog.UI`
 
 Those domain-specific contracts should depend on the renderer-neutral FnUI shell, not on Blazor implementation details directly.

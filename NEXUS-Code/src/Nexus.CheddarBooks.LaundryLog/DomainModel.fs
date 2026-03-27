@@ -1,4 +1,4 @@
-namespace Nexus.CheddarBooks.LaundryLog
+namespace CheddarBooks.LaundryLog
 
 open System
 

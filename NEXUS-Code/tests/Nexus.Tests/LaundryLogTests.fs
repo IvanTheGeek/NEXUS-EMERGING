@@ -2,8 +2,8 @@ namespace Nexus.Tests
 
 open Expecto
 open Nexus.FnHCI.UI
-open Nexus.CheddarBooks.LaundryLog
-open Nexus.CheddarBooks.LaundryLog.UI
+open CheddarBooks.LaundryLog
+open CheddarBooks.LaundryLog.UI
 
 [<RequireQualifiedAccess>]
 module LaundryLogTests =

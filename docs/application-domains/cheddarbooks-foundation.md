@@ -104,5 +104,5 @@ The current CheddarBooks docs now live in:
 
 Current next code step after that:
 
-- `Nexus.CheddarBooks.LaundryLog`
-- `Nexus.CheddarBooks.LaundryLog.UI`
+- `CheddarBooks.LaundryLog`
+- `CheddarBooks.LaundryLog.UI`

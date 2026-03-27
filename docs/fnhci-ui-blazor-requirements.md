@@ -151,7 +151,7 @@ CheddarBooks LaundryLog is the first named proving ground for this line:
 
 - [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 
-The Blazor line must not bypass the renderer-neutral shell boundary already forming in `Nexus.FnHCI.UI`.
+The Blazor line must not bypass the renderer-neutral shell boundary already forming in the reusable `FnHCI.UI` layer.
 
 That means:
 
@@ -180,11 +180,13 @@ It does mean the abstraction should avoid premature coupling to:
 
 ## Package And Naming Requirements
 
-Internal code should continue to prefer the broader namespace truth:
+The target reusable-library namespace direction should continue to prefer the broader namespace truth:
 
-- `Nexus.FnHCI`
-- `Nexus.FnHCI.UI`
-- `Nexus.FnHCI.UI.Blazor`
+- `FnTools.FnHCI`
+- `FnTools.FnHCI.UI`
+- `FnTools.FnHCI.UI.Blazor`
+
+The current in-repo scaffold still uses `Nexus.FnHCI.*` temporarily until that extraction work happens.
 
 Public package names may still use the narrower `FnUI` line when that is the clearest outward-facing name.
 

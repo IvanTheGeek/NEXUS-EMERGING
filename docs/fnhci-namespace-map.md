@@ -19,11 +19,11 @@ The governing decision is:
 1. concern line
    `FnHCI`
 2. top internal namespace
-   `Nexus.FnHCI`
+   target: `FnTools.FnHCI`
 3. visual subsystem namespace
-   `Nexus.FnHCI.UI`
+   target: `FnTools.FnHCI.UI`
 4. Blazor-specific host/runtime seam
-   `Nexus.FnHCI.UI.Blazor`
+   target: `FnTools.FnHCI.UI.Blazor`
 5. outward-facing package or product line
    `FnUI`, `FnUI.Blazor`, or similar
 
@@ -65,11 +65,11 @@ That is the clearest current signal that:
 
 If this direction holds, early code and project shapes may look more like:
 
-- `Nexus.FnHCI`
+- `FnTools.FnHCI`
   interaction primitives and shared abstractions
-- `Nexus.FnHCI.UI`
+- `FnTools.FnHCI.UI`
   visual view/state/composition model
-- `Nexus.FnHCI.UI.Blazor`
+- `FnTools.FnHCI.UI.Blazor`
   Blazor host/runtime adapter
 
 with package and outward naming such as:
@@ -80,5 +80,11 @@ with package and outward naming such as:
 ## Open Questions
 
 - Should the public package line use `FnUI` alone, or should `FnHCI` appear in some package names too?
-- Which primitives belong in `Nexus.FnHCI` versus `Nexus.FnHCI.UI`?
+- Which primitives belong in `FnTools.FnHCI` versus `FnTools.FnHCI.UI`?
 - How much of the eventual NEXUS GUI belongs to the reusable `FnUI` system versus app-specific composition?
+
+## Current Scaffold Note
+
+The current code scaffold inside this repo still uses `Nexus.FnHCI.*`.
+
+That is a temporary in-repo scaffold, not the intended long-term reusable namespace boundary.
