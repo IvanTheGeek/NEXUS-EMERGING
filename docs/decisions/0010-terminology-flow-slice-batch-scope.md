@@ -12,7 +12,7 @@ The word `slice` had started drifting across those contexts, which creates confu
 
 ## Decision
 
-NEXUS adopts the following terminology:
+NEXUS adopts the following terminology, with the Event Modeling-specific terms scoped to Event Modeling contexts and lenses:
 
 - `Slice`
   an Event Modeling unit of change or read
@@ -41,6 +41,8 @@ Within that Event Modeling language:
 - prefer `ViewSlice` for the business/read-side slice
 - prefer `View` for the dataset/structure behind a `ViewSlice`
 - treat `read model` and `ReadSlice` only as reference/search terms when useful, not as the preferred NEXUS wording
+
+These terms do not redefine every NEXUS context or lens. They are the preferred vocabulary when NEXUS is working explicitly in an Event Modeling frame.
 
 ### Import and Working Graph Materialization
 
