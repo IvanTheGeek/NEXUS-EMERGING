@@ -60,6 +60,14 @@ Examples:
 - managed Git automation such as the Codex commit-checkpoint post-commit hook when commit-to-chat traceability is part of the workflow
 - other build, packaging, or repo-management tools that materially change the normal workflow
 
+When using `dotnet` tooling:
+
+- do not run parallel `dotnet build`, `dotnet run`, or `dotnet test` commands against the same project path when they will write to the same build output
+- prefer one build followed by `--no-build` runs when parallel follow-up work is needed
+- if true parallelism is needed, isolate outputs or use separate worktrees/projects so the commands are not fighting over the same files
+
+This avoids avoidable MSBuild file-copy contention and misleading build noise.
+
 ## Branching Expectations
 
 - `main` is the current converged shared baseline

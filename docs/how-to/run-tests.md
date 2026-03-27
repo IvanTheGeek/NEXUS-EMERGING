@@ -69,3 +69,6 @@ When a serializer change is intentional, rerun the tests and inspect the generat
 - use `--sequenced` when debugging order-sensitive or potentially interfering tests
 - use `--parallel-workers <n>` if you want to tune worker count for the current machine
 - the biggest time difference in day-to-day runs is often `--no-build`, not test parallelism alone
+- avoid parallel `dotnet run` or `dotnet build` invocations against the same project path unless at most one of them is building
+- when you want parallel follow-up runs, do one successful build first and then prefer `dotnet run --no-build ...`
+- if you truly need concurrent builds, isolate them by project or worktree so they are not competing for the same `bin/` and `obj/` files
