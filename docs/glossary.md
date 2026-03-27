@@ -41,6 +41,12 @@ The append-only normalized event history maintained by NEXUS.
 
 In the current bounded context, it is the canonical store for observed acquisition history. It is derived from acquisition inputs and intended to be durable, provenance-preserving, and reparsable.
 
+## CommandSlice
+
+In the Event Modeling lens, a `CommandSlice` is a slice centered on user or system intent that asks for a change.
+
+In NEXUS terminology, `CommandSlice` is the preferred term when modeling the intent-side slice that should lead to one or more durable events.
+
 ## Domain
 
 A broad area of reality or work that a part of the graph concerns, such as `Ingestion` or `SoftwareDevelopment`.
@@ -197,6 +203,18 @@ A stable classification for who may access or use an intake signal or derivative
 ## Slice
 
 In NEXUS terminology, `Slice` is reserved for the Event Modeling sense: a unit of change or read.
+
+## View
+
+In the Event Modeling lens, a `View` is the dataset or structure shown to an actor in the business/UI lens.
+
+In NEXUS terminology, `View` is the preferred term over `read model` when discussing the derived structure behind what a `ViewSlice` shows.
+
+## ViewSlice
+
+In the Event Modeling lens, a `ViewSlice` is a slice centered on what an actor can see and decide from the current business state.
+
+In NEXUS terminology, `ViewSlice` is the preferred term over `ReadSlice` for the read-side slice in Event Modeling work.
 
 ## Overlap Reconciliation
 

@@ -16,8 +16,14 @@ NEXUS adopts the following terminology:
 
 - `Slice`
   an Event Modeling unit of change or read
+- `CommandSlice`
+  an Event Modeling slice centered on intent that should lead to one or more durable events
+- `ViewSlice`
+  an Event Modeling slice centered on what an actor can see and decide from the current business state
 - `Flow`
   an ordered sequence of slices that accomplishes something useful
+- `View`
+  the dataset or structure shown in the Event Modeling business/UI lens behind a `ViewSlice`
 - `Batch`
   an import-bounded or materialization-bounded contribution unit
 - `Scope`
@@ -28,6 +34,13 @@ NEXUS adopts the following terminology:
 ### Event Modeling
 
 Use `Slice` only in the strict Event Modeling sense.
+
+Within that Event Modeling language:
+
+- prefer `CommandSlice` for the intent-side slice
+- prefer `ViewSlice` for the business/read-side slice
+- prefer `View` for the dataset/structure behind a `ViewSlice`
+- treat `read model` and `ReadSlice` only as reference/search terms when useful, not as the preferred NEXUS wording
 
 ### Import and Working Graph Materialization
 
