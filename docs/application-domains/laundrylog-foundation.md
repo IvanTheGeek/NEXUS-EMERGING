@@ -81,6 +81,7 @@ LaundryLog currently pressures the platform in these ways:
 
 The first concrete LaundryLog docs now live in:
 
+- [`laundrylog/introduction.md`](laundrylog/introduction.md)
 - [`laundrylog/requirements.md`](laundrylog/requirements.md)
 - [`laundrylog/product.md`](laundrylog/product.md)
 - [`laundrylog/domain-model.md`](laundrylog/domain-model.md)

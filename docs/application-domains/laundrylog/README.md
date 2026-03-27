@@ -5,6 +5,7 @@ LaundryLog is the first concrete application domain being shaped on top of the c
 Start here:
 
 - [`../laundrylog-foundation.md`](../laundrylog-foundation.md)
+- [`introduction.md`](introduction.md)
 - [`requirements.md`](requirements.md)
 - [`product.md`](product.md)
 - [`domain-model.md`](domain-model.md)
@@ -23,3 +24,5 @@ Current focus:
 - browser-first and likely PWA delivery
 - offline use and later convergence pressure
 - fast entry rather than broad feature surface
+
+If you want the user-facing explanation first, start with [`introduction.md`](introduction.md).
