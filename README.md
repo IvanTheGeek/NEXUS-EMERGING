@@ -204,11 +204,16 @@ Preferred branch shape:
 
 - start focused work from `main` on a topic branch
 - merge accepted work back with `--no-ff`
+- allow long-lived concern-line branches to merge into `main` multiple times while they are still active
+- merge `main` back into those long-lived branches when shared foundations move
+- avoid direct commits on `main` except for truly tiny administrative fixes
 - delete completed topic branches after merge
 - keep longer-lived branches only when a stream truly continues across multiple merges
 - multiple long-running branches can coexist when they reflect genuinely different concerns
 - periodically merge active long-running branches when convergence matters
 - tag milestone merges when the checkpoint itself should stay easy to find in history
+
+Delete a branch when its history is already preserved by merges into `main` and the line no longer needs to evolve separately.
 
 Historical milestone:
 
