@@ -27,6 +27,8 @@ That means collaborators should recover expectations from:
 
 not from memory of prior conversations alone.
 
+Important discoveries should become durable repo memory before collaborators rely on them repeatedly.
+
 ## Start-Of-Work Checklist
 
 Before significant work:
@@ -87,6 +89,22 @@ See:
 - [`decisions/0017-docs-and-tests-ship-with-work.md`](decisions/0017-docs-and-tests-ship-with-work.md)
 - [`how-to/run-tests.md`](how-to/run-tests.md)
 
+## Durable Learning Expectations
+
+When an important rule, discovery, correction, or architectural learning emerges:
+
+- record it in the repo at the right level instead of leaving it only in chat
+- update an existing durable doc when that is the clearest home
+- create a new decision record, concept note, glossary entry, or requirements doc when needed
+- add or update tests when the learning should be enforced behaviorally
+- reference the durable record from the places where that learning matters
+
+Do not assume future collaborators will recover the learning from chat history alone.
+
+See:
+
+- [`decisions/0021-important-discoveries-become-durable-repo-memory.md`](decisions/0021-important-discoveries-become-durable-repo-memory.md)
+
 ## Decision Expectations
 
 Formalize durable rules when they are:
@@ -101,6 +119,7 @@ That usually means writing or updating:
 - a glossary entry
 - a concern-line doc
 - a runbook
+- durable repo memory for important discoveries and corrections
 
 ## Repo Split Expectations
 
