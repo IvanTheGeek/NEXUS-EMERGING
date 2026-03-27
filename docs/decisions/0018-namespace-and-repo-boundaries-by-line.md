@@ -124,6 +124,8 @@ Project and filesystem paths may still temporarily carry the older `Nexus.FnHCI`
 
 - [`0014-repository-concern-lines-and-documentation-spine.md`](0014-repository-concern-lines-and-documentation-spine.md)
 - [`0015-fnhci-owns-the-top-interaction-namespace.md`](0015-fnhci-owns-the-top-interaction-namespace.md)
+- [`0019-phased-repo-extraction-for-fntools-and-cheddarbooks.md`](0019-phased-repo-extraction-for-fntools-and-cheddarbooks.md)
 - [`../repository-concern-lines.md`](../repository-concern-lines.md)
+- [`../repo-extraction-plan.md`](../repo-extraction-plan.md)
 - [`../application-domains/cheddarbooks-foundation.md`](../application-domains/cheddarbooks-foundation.md)
 - [`../fntools-foundation.md`](../fntools-foundation.md)
