@@ -1,9 +1,9 @@
-namespace Nexus.Tests
+namespace FnTools.Tests
 
 open Expecto
-open Nexus.FnHCI
-open Nexus.FnHCI.UI
-open Nexus.FnHCI.UI.Blazor
+open FnTools.FnHCI
+open FnTools.FnHCI.UI
+open FnTools.FnHCI.UI.Blazor
 
 [<RequireQualifiedAccess>]
 module FnHCITests =
@@ -62,7 +62,7 @@ module FnHCITests =
 
               testCase "Blazor host keeps the renderer-neutral shell boundary" (fun () ->
                   let rootComponent =
-                      match ComponentTypeName.tryCreate "Nexus.FnHCI.UI.Blazor.App" with
+                      match ComponentTypeName.tryCreate "FnTools.FnHCI.UI.Blazor.App" with
                       | Ok value -> value
                       | Error message -> failtest $"Expected a valid component type name. {message}"
 

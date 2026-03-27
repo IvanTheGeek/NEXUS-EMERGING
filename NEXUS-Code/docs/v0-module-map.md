@@ -16,8 +16,12 @@ The goal is to stabilize naming and module responsibilities while the first real
   raw-intake, provider parsing, dedupe index loading, and import orchestration
 - `src/Nexus.Cli/Nexus.Cli.fsproj`
   manual CLI entry points that exercise the domain and event-store layers
-- `tests/Nexus.Tests/Nexus.Tests.fsproj`
-  first automated regression suite for provider parsing and importer workflows
+- `tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj`
+  foundation regression suite for ingestion, LOGOS, CLI, graph, and snapshots
+- `tests/FnTools.Tests/FnTools.Tests.fsproj`
+  reusable FnTools/FnHCI/FnUI regression suite
+- `tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`
+  CheddarBooks application-domain regression suite
 
 ## Modules
 

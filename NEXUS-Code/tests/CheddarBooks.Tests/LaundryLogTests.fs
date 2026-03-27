@@ -1,7 +1,7 @@
-namespace Nexus.Tests
+namespace CheddarBooks.Tests
 
 open Expecto
-open Nexus.FnHCI.UI
+open FnTools.FnHCI.UI
 open CheddarBooks.LaundryLog
 open CheddarBooks.LaundryLog.UI
 

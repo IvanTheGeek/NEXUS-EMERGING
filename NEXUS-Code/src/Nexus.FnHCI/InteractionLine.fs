@@ -1,4 +1,4 @@
-namespace Nexus.FnHCI
+namespace FnTools.FnHCI
 
 /// Distinguishes the major interaction lines that sit under the broader FnHCI concern.
 type InteractionLine =
@@ -17,7 +17,7 @@ module InteractionLine =
         | InteractionLine.API -> "api"
         | InteractionLine.A11y -> "a11y"
 
-    /// Returns the namespace segment that should sit under `Nexus.FnHCI`.
+    /// Returns the namespace segment that should sit under `FnTools.FnHCI`.
     let namespaceSegment =
         function
         | InteractionLine.UI -> "UI"

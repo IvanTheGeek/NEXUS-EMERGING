@@ -1,7 +1,7 @@
 namespace CheddarBooks.LaundryLog.UI
 
-open Nexus.FnHCI
-open Nexus.FnHCI.UI
+open FnTools.FnHCI
+open FnTools.FnHCI.UI
 open CheddarBooks.LaundryLog
 
 /// Enumerates the first concrete CheddarBooks LaundryLog views hosted inside the FnUI shell.

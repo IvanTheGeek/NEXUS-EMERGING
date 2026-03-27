@@ -116,7 +116,9 @@ Tradeoffs:
 
 The first concrete namespace correction pass should move CheddarBooks app code away from `Nexus.CheddarBooks.*` toward `CheddarBooks.*`.
 
-The reusable FnHCI/FnUI scaffold may remain temporarily under `Nexus.FnHCI.*` inside this repo until the `FnTools` extraction work is ready, but the intended future boundary is `FnTools.FnHCI.*`.
+The reusable FnHCI/FnUI scaffold now uses `FnTools.FnHCI.*` as its code namespace inside this repo.
+
+Project and filesystem paths may still temporarily carry the older `Nexus.FnHCI` project-path names until the dedicated `FnTools` repo extraction work is ready.
 
 ## Related
 

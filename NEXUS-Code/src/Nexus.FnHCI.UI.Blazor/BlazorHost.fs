@@ -1,7 +1,7 @@
-namespace Nexus.FnHCI.UI.Blazor
+namespace FnTools.FnHCI.UI.Blazor
 
 open System
-open Nexus.FnHCI.UI
+open FnTools.FnHCI.UI
 
 /// Enumerates the Blazor render modes relevant to the first FnUI host seam.
 type BlazorRenderMode =

@@ -1,7 +1,7 @@
-namespace Nexus.FnHCI.UI
+namespace FnTools.FnHCI.UI
 
 open System
-open Nexus.FnHCI
+open FnTools.FnHCI
 
 /// Identifies one navigable visual view within the FnUI application shell.
 type ViewId = private ViewId of string

@@ -6,10 +6,8 @@ module Program =
     [<EntryPoint>]
     let main argv =
         testList
-            "nexus"
-            [ FnHCITests.tests
-              LaundryLogTests.tests
-              KernelTests.tests
+            "nexus-foundation"
+            [ KernelTests.tests
               LogosTests.tests
               BlogImportTests.tests
               ProviderAdapterTests.tests

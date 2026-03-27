@@ -50,19 +50,21 @@ It represents the visual/UI-specific subsystem and likely the public-facing pack
 
 `FnHCI` still owns the top interaction namespace line.
 
-The current in-repo scaffold uses `Nexus.FnHCI.*`, but the intended reusable library boundary is now tracked as `FnTools.FnHCI.*`.
+The current reusable-library namespace line is now tracked as `FnTools.FnHCI.*`.
 
 See:
 
 - [`0018-namespace-and-repo-boundaries-by-line.md`](0018-namespace-and-repo-boundaries-by-line.md)
 
-So the target reusable line should favor `FnTools.FnHCI.*` as the top namespace line.
+So the reusable line should favor `FnTools.FnHCI.*` as the top namespace line.
 
 That means the visual system belongs conceptually under shapes such as:
 
 - `FnTools.FnHCI.UI`
 - `FnTools.FnHCI.UI.Blazor`
 - later sibling lines such as `FnTools.FnHCI.Cli` or `FnTools.FnHCI.Api`
+
+Project and filesystem paths may temporarily lag behind that namespace while the repo split is being prepared.
 
 Public package naming may still use `FnUI` where that is the clearest outward-facing name.
 

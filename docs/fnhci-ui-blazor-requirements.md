@@ -186,7 +186,9 @@ The target reusable-library namespace direction should continue to prefer the br
 - `FnTools.FnHCI.UI`
 - `FnTools.FnHCI.UI.Blazor`
 
-The current in-repo scaffold still uses `Nexus.FnHCI.*` temporarily until that extraction work happens.
+The current code namespace now uses `FnTools.FnHCI.*`.
+
+Project and filesystem paths may still temporarily use the older `Nexus.FnHCI` project-path names until that extraction work happens.
 
 Public package names may still use the narrower `FnUI` line when that is the clearest outward-facing name.
 

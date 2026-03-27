@@ -55,7 +55,9 @@ while public package naming may still use the narrower `FnUI` line:
 - `FnUI`
 - `FnUI.Blazor`
 
-The current in-repo scaffold still uses `Nexus.FnHCI.*` temporarily until the `FnTools` extraction work is ready.
+The current code namespace now uses `FnTools.FnHCI.*`.
+
+Project and filesystem paths may still temporarily use the older `Nexus.FnHCI` project-path names until the `FnTools` extraction work is ready.
 
 ## First Foundation Targets
 

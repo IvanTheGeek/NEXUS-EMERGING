@@ -19,11 +19,11 @@ The governing decision is:
 1. concern line
    `FnHCI`
 2. top internal namespace
-   target: `FnTools.FnHCI`
+   `FnTools.FnHCI`
 3. visual subsystem namespace
-   target: `FnTools.FnHCI.UI`
+   `FnTools.FnHCI.UI`
 4. Blazor-specific host/runtime seam
-   target: `FnTools.FnHCI.UI.Blazor`
+   `FnTools.FnHCI.UI.Blazor`
 5. outward-facing package or product line
    `FnUI`, `FnUI.Blazor`, or similar
 
@@ -85,6 +85,6 @@ with package and outward naming such as:
 
 ## Current Scaffold Note
 
-The current code scaffold inside this repo still uses `Nexus.FnHCI.*`.
+The current code namespace inside this repo now uses `FnTools.FnHCI.*`.
 
-That is a temporary in-repo scaffold, not the intended long-term reusable namespace boundary.
+Project and filesystem paths may still temporarily use the older `Nexus.FnHCI` project-path names while the extraction into a dedicated `FnTools` repo is being prepared.

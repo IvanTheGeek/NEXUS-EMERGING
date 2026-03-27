@@ -16,11 +16,11 @@ Near-term focus:
 The first code scaffold is intentionally small and centered on the canonical ingestion layer.
 
 - `src/Nexus.FnHCI/`
-  top interaction namespace and shared interaction-line primitives
+  current project path for the `FnTools.FnHCI` interaction namespace and shared interaction-line primitives
 - `src/Nexus.FnHCI.UI/`
-  renderer-neutral visual shell and navigation boundary for FnUI
+  current project path for the `FnTools.FnHCI.UI` renderer-neutral visual shell and navigation boundary
 - `src/Nexus.FnHCI.UI.Blazor/`
-  first Blazor-specific host seam for the eventual Bolero-replacement path
+  current project path for the `FnTools.FnHCI.UI.Blazor` host seam
 - `src/Nexus.Kernel/`
   small semantic kernel for ontology-level role and relation primitives
 - `src/Nexus.Logos/`
@@ -53,7 +53,7 @@ Working commands now include:
 - `rebuild-artifact-projections`
 - `report-unresolved-artifacts`
 - `rebuild-conversation-projections`
-- `dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`
+- `./NEXUS-Code/tests/run-all-tests.sh`
 
 Use built-in CLI help for quick guidance:
 
@@ -101,5 +101,11 @@ The current testing stack is:
 - `Expecto` for standard tests
 - `Expecto.FsCheck` for invariants and property-style tests
 - `Verify.Expecto` for snapshot verification of generated TOML artifacts
+
+The suite is now split by concern line:
+
+- `Nexus.Foundation.Tests`
+- `FnTools.Tests`
+- `CheddarBooks.Tests`
 
 When learning a library used here, prefer its repo docs and examples first, then source, with XML/API inspection used only when exact behavior needs confirmation.
