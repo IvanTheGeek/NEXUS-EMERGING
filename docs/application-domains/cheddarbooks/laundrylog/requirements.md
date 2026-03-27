@@ -37,8 +37,8 @@ LaundryLog is currently understood as:
 
 - quick expense capture on a phone
 - enough context for later recordkeeping or tax use
-- user ownership and privacy by default
-- simple repetitive-entry workflow during one laundry outing
+- user data ownership and privacy by default, without routine sharing to large companies or government
+- simple repetitive-entry workflow during one laundry session
 - room for optional hosted services without making them mandatory
 
 ## Still Open

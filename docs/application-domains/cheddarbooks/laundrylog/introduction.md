@@ -61,7 +61,7 @@ LaundryLog is for the moment when you are actually doing laundry and want to cap
 A typical scenario looks like this:
 
 1. you arrive at a location
-2. you start a laundry outing or session
+2. you start a laundry session
 3. you log one or more expenses as they happen
 4. you keep a running sense of what the total has become
 5. later, you still have a usable record even if the receipt is gone
@@ -114,7 +114,7 @@ LaundryLog helps a user:
 - remember where the expense happened
 - record what kind of laundry expense it was
 - capture quantity and price
-- see the running total for one outing
+- see the running total for one session
 - keep enough detail for later recordkeeping, reimbursement, or tax-related use
 
 ## What It Is Not Trying To Be
