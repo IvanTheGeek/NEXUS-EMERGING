@@ -1,4 +1,4 @@
-# LaundryLog Convergence
+# CheddarBooks LaundryLog Convergence
 
 This note captures the current convergence and sync pressure for LaundryLog.
 

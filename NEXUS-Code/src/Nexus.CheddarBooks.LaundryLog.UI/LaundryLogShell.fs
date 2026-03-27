@@ -1,10 +1,10 @@
-namespace Nexus.LaundryLog.UI
+namespace Nexus.CheddarBooks.LaundryLog.UI
 
 open Nexus.FnHCI
 open Nexus.FnHCI.UI
-open Nexus.LaundryLog
+open Nexus.CheddarBooks.LaundryLog
 
-/// Enumerates the first concrete LaundryLog views hosted inside the FnUI shell.
+/// Enumerates the first concrete CheddarBooks LaundryLog views hosted inside the FnUI shell.
 type LaundryLogView =
     | NewSession
     | EntryForm
@@ -38,16 +38,16 @@ module LaundryLogView =
     let private toViewId view =
         match ViewId.tryCreate (slug view) with
         | Ok viewId -> viewId
-        | Error message -> failwith $"Expected a stable LaundryLog view slug. {message}"
+        | Error message -> failwith $"Expected a stable CheddarBooks LaundryLog view slug. {message}"
 
-    /// Builds the renderer-neutral FnUI view definition for the LaundryLog view.
+    /// Builds the renderer-neutral FnUI view definition for the CheddarBooks LaundryLog view.
     let definition view =
         { ViewId = toViewId view
           Title = title view
           Summary = summary view
           InteractionLine = InteractionLine.UI }
 
-/// Represents the first validated LaundryLog application shell.
+/// Represents the first validated CheddarBooks LaundryLog application shell.
 type LaundryLogShell = private LaundryLogShell of ApplicationShell
 
 [<RequireQualifiedAccess>]
@@ -62,12 +62,12 @@ module LaundryLogShell =
             { ViewId = view.ViewId
               Label = view.Title })
 
-    /// Creates the first LaundryLog shell on top of the renderer-neutral FnUI shell model.
+    /// Creates the first CheddarBooks LaundryLog shell on top of the renderer-neutral FnUI shell model.
     let tryCreate () =
         let defaultView = viewDefinitions.Head.ViewId
 
         ApplicationShell.tryCreate
-            "LaundryLog"
+            "CheddarBooks LaundryLog"
             [ ShellRegion.Navigation; ShellRegion.Workspace; ShellRegion.StatusBar ]
             viewDefinitions
             navigationItems

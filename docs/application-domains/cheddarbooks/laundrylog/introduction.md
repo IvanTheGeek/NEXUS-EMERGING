@@ -1,4 +1,6 @@
-# LaundryLog Introduction
+# CheddarBooks LaundryLog Introduction
+
+LaundryLog is a small tool app under the CheddarBooks domain and branding area.
 
 LaundryLog is meant for a very ordinary real-life problem:
 
@@ -53,7 +55,7 @@ LaundryLog should feel:
 - understandable without training
 - useful even when offline
 
-It is not meant to feel like full accounting software.
+It is not meant to feel like full accounting software, even though it now sits under the broader CheddarBooks brand area.
 
 ## What The App Helps A User Do
 

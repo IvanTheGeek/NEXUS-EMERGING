@@ -1,4 +1,4 @@
-# LaundryLog Delivery
+# CheddarBooks LaundryLog Delivery
 
 This note captures the current delivery and runtime direction for LaundryLog.
 

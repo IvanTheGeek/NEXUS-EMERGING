@@ -1,12 +1,12 @@
-# LaundryLog FnUI Proving Ground
+# CheddarBooks LaundryLog FnUI Proving Ground
 
-LaundryLog is the first strong concrete proving ground for the `FnUI` line.
+CheddarBooks LaundryLog is the first strong concrete proving ground for the `FnUI` line.
 
 It is not the whole reason FnUI exists, but it is an excellent first application for shaping the requirements.
 
-## Why LaundryLog Fits
+## Why CheddarBooks LaundryLog Fits
 
-The recorded discussions already point to LaundryLog as a very good first proving ground:
+The recorded discussions already point to LaundryLog as a very good first proving ground inside the CheddarBooks domain:
 
 - [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
 - [`019d174f-2c81-71f4-9610-205e18960e01.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2c81-71f4-9610-205e18960e01.toml)
@@ -32,7 +32,7 @@ From the current recorded discussions, LaundryLog appears to be:
 
 ## Why It Helps FnUI
 
-LaundryLog is a good proving ground because it pressures the right parts of the UI line:
+CheddarBooks LaundryLog is a good proving ground because it pressures the right parts of the UI line:
 
 - mobile-first where that truly makes sense
 - fast entry
@@ -46,7 +46,7 @@ It is small enough to stay understandable while still being real enough to expos
 
 ## Required LaundryLog Pressure On FnUI
 
-LaundryLog should pressure the FnUI stack in at least these ways:
+LaundryLog, as a CheddarBooks tool app, should pressure the FnUI stack in at least these ways:
 
 1. browser-first phone experience
 2. PWA-capable packaging
@@ -70,11 +70,11 @@ The exact convergence mechanism is still open, but the requirement pressure is a
 - a desktop may also be offline
 - the same logical activity may later need convergence
 
-That means LaundryLog is a good forcing function for FnUI, not just a demo.
+That means CheddarBooks LaundryLog is a good forcing function for FnUI, not just a demo.
 
 ## Relationship To FnHCI.UI.Blazor
 
-LaundryLog should influence the requirements by pressure-testing:
+CheddarBooks LaundryLog should influence the requirements by pressure-testing:
 
 - the web/PWA path
 - the host boundary

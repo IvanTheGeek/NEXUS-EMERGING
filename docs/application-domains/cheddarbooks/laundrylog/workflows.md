@@ -1,13 +1,13 @@
-# LaundryLog Workflows
+# CheddarBooks LaundryLog Workflows
 
 These notes describe the first concrete LaundryLog workflows emerging from the imported discussion history.
 
 Primary source threads include:
 
-- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
-- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
-- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
-- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](../../../NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
+- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
+- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
+- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
+- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
 
 ## Workflow Framing
 

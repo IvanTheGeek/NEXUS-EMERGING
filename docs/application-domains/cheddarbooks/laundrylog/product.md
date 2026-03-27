@@ -1,6 +1,6 @@
-# LaundryLog Product
+# CheddarBooks LaundryLog Product
 
-This note captures the product-level framing for LaundryLog.
+This note captures the product-level framing for LaundryLog as a tool app under the CheddarBooks brand area.
 
 ## Product Framing
 

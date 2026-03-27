@@ -1,11 +1,11 @@
-# LaundryLog Screens
+# CheddarBooks LaundryLog Screens
 
 These notes describe the first concrete LaundryLog screen surfaces and screen states currently visible in the imported design and workflow discussions.
 
 Primary source threads include:
 
-- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
-- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
+- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
+- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
 
 ## Screen Model
 

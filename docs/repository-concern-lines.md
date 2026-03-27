@@ -179,18 +179,20 @@ Scope:
 
 Examples:
 
-- LaundryLog
+- CheddarBooks
+- LaundryLog within CheddarBooks
 - future CheddarBooks support/debugging flows
 - other downstream applications
 
 Primary docs:
 
 - [`docs/application-domains/README.md`](application-domains/README.md)
-- [`docs/application-domains/laundrylog-foundation.md`](application-domains/laundrylog-foundation.md)
+- [`docs/application-domains/cheddarbooks-foundation.md`](application-domains/cheddarbooks-foundation.md)
 
 Typical branch names:
 
-- `laundrylog-foundation`
+- `cheddarbooks-foundation`
+- `cheddarbooks-laundrylog-tool`
 - `cheddarbooks-support-model`
 
 ## How To Use This Map

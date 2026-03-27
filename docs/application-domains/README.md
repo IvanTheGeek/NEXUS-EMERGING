@@ -13,6 +13,6 @@ Application-domain docs should describe the concrete system itself while still l
 
 Current application domains:
 
-- [`LaundryLog`](laundrylog/README.md)
+- [`CheddarBooks`](cheddarbooks/README.md)
 
-For the user-facing explanation of LaundryLog, start with [`LaundryLog Introduction`](laundrylog/introduction.md).
+For the current user-facing tool-app explanation, start with [`CheddarBooks LaundryLog Introduction`](cheddarbooks/laundrylog/introduction.md).

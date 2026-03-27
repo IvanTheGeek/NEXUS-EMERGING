@@ -1,4 +1,4 @@
-# LaundryLog Domain Model
+# CheddarBooks LaundryLog Domain Model
 
 This note captures the current domain language and the core functional requirements.
 

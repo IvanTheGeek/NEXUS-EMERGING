@@ -1,10 +1,11 @@
-# LaundryLog
+# CheddarBooks LaundryLog
 
-LaundryLog is the first concrete application domain being shaped on top of the current NEXUS and FnUI foundations.
+LaundryLog is the first concrete tool app inside the CheddarBooks domain and branding area.
 
 Start here:
 
-- [`../laundrylog-foundation.md`](../laundrylog-foundation.md)
+- [`../README.md`](../README.md)
+- [`../../cheddarbooks-foundation.md`](../../cheddarbooks-foundation.md)
 - [`introduction.md`](introduction.md)
 - [`requirements.md`](requirements.md)
 - [`product.md`](product.md)
@@ -20,6 +21,7 @@ Start here:
 Current focus:
 
 - small, real app
+- clearly under CheddarBooks branding
 - mobile-friendly use
 - browser-first and likely PWA delivery
 - offline use and later convergence pressure

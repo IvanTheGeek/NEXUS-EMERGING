@@ -22,7 +22,7 @@ Progressive Web App support is now an explicit requirement for the web-facing Fn
 
 This matters because:
 
-- LaundryLog is a strong candidate for phone-first use
+- CheddarBooks LaundryLog is a strong candidate for phone-first use
 - a PWA shape can reduce friction for individual and household adoption
 - a PWA shape keeps the same core visual line usable across browser and installable experiences
 
@@ -52,7 +52,7 @@ This is intentionally not the same thing as official `Blazor Hybrid`.
 
 The web line should not assume constant connectivity.
 
-This matters especially for LaundryLog-style usage:
+This matters especially for CheddarBooks LaundryLog-style usage:
 
 - phone use
 - travel use

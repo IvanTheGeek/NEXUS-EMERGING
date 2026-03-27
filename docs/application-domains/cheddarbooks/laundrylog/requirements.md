@@ -1,4 +1,4 @@
-# LaundryLog Requirements
+# CheddarBooks LaundryLog Requirements
 
 This file is now the summary and entry point for LaundryLog requirements.
 
@@ -6,10 +6,10 @@ The detailed requirement notes are split into smaller focused docs so they can e
 
 Primary source threads still include:
 
-- [`019d174f-2ca0-75d3-9497-c66c25acbc78.toml`](../../../NEXUS-EventStore/projections/conversations/019d174f-2ca0-75d3-9497-c66c25acbc78.toml)
-- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
-- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../../../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
-- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](../../../NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
+- [`019d174f-2ca0-75d3-9497-c66c25acbc78.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174f-2ca0-75d3-9497-c66c25acbc78.toml)
+- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
+- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
+- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](../../../../NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
 
 ## Requirement Spine
 

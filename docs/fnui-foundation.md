@@ -81,7 +81,7 @@ The first practical views likely include:
 - graph scope and batch exploration
 - help/about with attribution obligations
 
-LaundryLog is currently the clearest first proving ground for this line because it is small, mobile-friendly, event-heavy, and pressures offline and convergence concerns early.
+CheddarBooks LaundryLog is currently the clearest first proving ground for this line because it is small, mobile-friendly, event-heavy, and pressures offline and convergence concerns early.
 
 ## Relationship To Other Concern Lines
 

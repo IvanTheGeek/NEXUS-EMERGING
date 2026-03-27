@@ -51,6 +51,6 @@ These are future host candidates, not current guaranteed equivalents to the offi
 This note does not yet decide:
 
 - which native host should become the primary NEXUS desktop shell
-- whether LaundryLog should prefer native host over PWA
+- whether CheddarBooks LaundryLog should prefer native host over PWA
 - exact mobile packaging choices
 - exact host-specific capability boundaries

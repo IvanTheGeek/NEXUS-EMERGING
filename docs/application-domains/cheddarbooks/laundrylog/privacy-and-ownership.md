@@ -1,4 +1,4 @@
-# LaundryLog Privacy And Ownership
+# CheddarBooks LaundryLog Privacy And Ownership
 
 This note captures the current privacy and ownership requirements for LaundryLog.
 

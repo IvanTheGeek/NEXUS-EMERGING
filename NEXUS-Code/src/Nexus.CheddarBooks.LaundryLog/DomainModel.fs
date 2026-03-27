@@ -1,8 +1,8 @@
-namespace Nexus.LaundryLog
+namespace Nexus.CheddarBooks.LaundryLog
 
 open System
 
-/// Enumerates the currently supported LaundryLog expense kinds.
+/// Enumerates the currently supported CheddarBooks LaundryLog expense kinds.
 type ExpenseKind =
     | Washer
     | Dryer
@@ -24,7 +24,7 @@ module ExpenseKind =
         | ExpenseKind.Dryer -> "Dryer"
         | ExpenseKind.Supplies -> "Supplies"
 
-/// Enumerates the first known LaundryLog workflow stages.
+/// Enumerates the first known CheddarBooks LaundryLog workflow stages.
 type SessionFlowStage =
     | NewSession
     | LocationEntered

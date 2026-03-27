@@ -147,7 +147,7 @@ More detailed host-specific notes now live in [`docs/fnhci-ui-native-host-requir
 - graph scope and batch exploration
 - help/about and attribution visibility
 
-LaundryLog is the first named proving ground for this line:
+CheddarBooks LaundryLog is the first named proving ground for this line:
 
 - [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
 

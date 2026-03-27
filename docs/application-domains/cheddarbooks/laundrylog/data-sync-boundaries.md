@@ -1,4 +1,4 @@
-# LaundryLog Data And Sync Boundaries
+# CheddarBooks LaundryLog Data And Sync Boundaries
 
 This note captures the first important data boundaries for LaundryLog.
 

@@ -1,6 +1,6 @@
-# LaundryLog View Contracts
+# CheddarBooks LaundryLog View Contracts
 
-This note captures the first code-facing view shape for LaundryLog.
+This note captures the first code-facing view shape for LaundryLog as a tool app under the CheddarBooks domain.
 
 ## Purpose
 
@@ -60,7 +60,7 @@ Purpose:
 
 The first code boundary for this should live in:
 
-- `Nexus.LaundryLog`
-- `Nexus.LaundryLog.UI`
+- `Nexus.CheddarBooks.LaundryLog`
+- `Nexus.CheddarBooks.LaundryLog.UI`
 
 Those domain-specific contracts should depend on the renderer-neutral FnUI shell, not on Blazor implementation details directly.
