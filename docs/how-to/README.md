@@ -11,6 +11,7 @@ Use it for:
 Current guides:
 
 - [`capture-artifact-payload.md`](capture-artifact-payload.md)
+- [`bootstrap-fntools-repo.md`](bootstrap-fntools-repo.md)
 - [`cli-commands.md`](cli-commands.md)
 - [`compare-import-snapshots.md`](compare-import-snapshots.md)
 - [`compare-provider-exports.md`](compare-provider-exports.md)
