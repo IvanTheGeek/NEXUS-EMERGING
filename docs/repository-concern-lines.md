@@ -161,6 +161,7 @@ Scope:
 Primary docs:
 
 - [`docs/logos-source-model-v0.md`](logos-source-model-v0.md)
+- [`docs/public-content-publishing-and-talkyard-comments.md`](public-content-publishing-and-talkyard-comments.md)
 - future platform-specific integration notes
 
 Typical branch names:

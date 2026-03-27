@@ -38,6 +38,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
+- [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](docs/fnhci-ui-blazor-requirements.md)
