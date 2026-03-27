@@ -89,3 +89,4 @@ The report prints the linked import and the conversation hints captured at check
 - One checkpoint manifest is stored per repo and commit SHA.
 - The command refuses to overwrite an existing checkpoint unless you pass `--force`.
 - This is the first layer of commit-to-chat traceability; richer exact-message linking can build on top of it later.
+- If you want this to happen automatically after every commit, install the managed hook with [`install-codex-commit-checkpoint-hook`](install-codex-commit-checkpoint-hook.md).

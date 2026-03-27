@@ -106,4 +106,76 @@ module CommitCheckpointTests =
                       match CodexCommitCheckpointWorkflow.run request with
                       | Ok _ -> failwith "Expected duplicate checkpoint capture to be refused without --force."
                       | Error message ->
-                          Expect.stringContains message "already exists" "Expected duplicate checkpoint refusal guidance." )) ]
+                          Expect.stringContains message "already exists" "Expected duplicate checkpoint refusal guidance." ))
+
+              testCase "InstallCodexCommitCheckpointHook preserves existing hook content" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-commit-hook-install" (fun tempRoot ->
+                      let repoRoot = Path.Combine(tempRoot, "repo")
+                      ignore (createCommittedRepo repoRoot)
+
+                      let sourceRoot = Path.Combine(tempRoot, "codex-source")
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      TestHelpers.copyFixtureDirectory "codex/latest" sourceRoot
+
+                      let gitDirectory = runGit repoRoot [ "rev-parse"; "--git-dir" ]
+                      let normalizedGitDirectory =
+                          if Path.IsPathRooted(gitDirectory) then gitDirectory else Path.Combine(repoRoot, gitDirectory)
+
+                      let hookPath = Path.Combine(normalizedGitDirectory, "hooks", "post-commit")
+                      Directory.CreateDirectory(Path.GetDirectoryName(hookPath)) |> ignore
+                      File.WriteAllText(hookPath, "#!/usr/bin/env bash\nprintf '%s\\n' existing-hook\n")
+
+                      let installRequest =
+                          { RepoRoot = repoRoot
+                            NexusRepoRoot = TestHelpers.repoRoot
+                            CodexSourceRoot = sourceRoot
+                            ObjectsRoot = objectsRoot
+                            EventStoreRoot = eventStoreRoot }
+
+                      let result =
+                          match CodexCommitCheckpointHooks.install installRequest with
+                          | Ok value -> value
+                          | Error message -> failwith message
+
+                      let hookText = File.ReadAllText(result.HookPath)
+                      Expect.stringContains hookText "existing-hook" "Expected existing hook content to remain."
+                      Expect.stringContains hookText "NEXUS CODEX COMMIT CHECKPOINT" "Expected the managed block markers."
+                      Expect.isFalse result.CreatedHookFile "Expected an existing hook file to be updated in place."
+                      Expect.isTrue result.InsertedManagedBlock "Expected the managed block to be inserted."
+                      Expect.stringContains result.CommandPreview "capture-codex-commit-checkpoint" "Expected the hook command preview to mention the checkpoint command." ))
+
+              testCase "Installed post-commit hook captures checkpoint on new commit" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-commit-hook-run" (fun tempRoot ->
+                      let repoRoot = Path.Combine(tempRoot, "repo")
+                      ignore (createCommittedRepo repoRoot)
+
+                      let sourceRoot = Path.Combine(tempRoot, "codex-source")
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      TestHelpers.copyFixtureDirectory "codex/latest" sourceRoot
+
+                      let installRequest =
+                          { RepoRoot = repoRoot
+                            NexusRepoRoot = TestHelpers.repoRoot
+                            CodexSourceRoot = sourceRoot
+                            ObjectsRoot = objectsRoot
+                            EventStoreRoot = eventStoreRoot }
+
+                      match CodexCommitCheckpointHooks.install installRequest with
+                      | Error message -> failwith message
+                      | Ok _ -> ()
+
+                      let entryPath = Path.Combine(repoRoot, "next.txt")
+                      File.WriteAllText(entryPath, "second commit")
+                      runGit repoRoot [ "add"; "next.txt" ] |> ignore
+                      runGit repoRoot [ "commit"; "-m"; "Second fixture checkpoint commit" ] |> ignore
+                      let secondCommitSha = runGit repoRoot [ "rev-parse"; "--verify"; "HEAD" ]
+
+                      let checkpoint =
+                          CommitCheckpoints.tryLoad eventStoreRoot "repo" secondCommitSha
+                          |> Option.defaultWith (fun () -> failwith "Expected the post-commit hook to write a checkpoint manifest.")
+
+                      Expect.equal checkpoint.CommitSha secondCommitSha "Expected the post-commit checkpoint SHA to match the new commit."
+                      Expect.equal checkpoint.CommitSummary "Second fixture checkpoint commit" "Expected the post-commit checkpoint summary."
+                      Expect.equal checkpoint.Counts.ConversationsSeen 1 "Expected the hook-driven capture to import the fixture Codex conversation." )) ]

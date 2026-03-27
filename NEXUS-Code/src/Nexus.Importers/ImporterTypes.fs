@@ -289,6 +289,32 @@ type CodexCommitCheckpointResult =
       ImportResult: CodexSessionImportResult }
 
 /// <summary>
+/// Requests installation or refresh of a Git post-commit hook that captures Codex commit checkpoints.
+/// </summary>
+/// <remarks>
+/// Full workflow notes: docs/how-to/install-codex-commit-checkpoint-hook.md
+/// </remarks>
+type CodexCommitCheckpointHookInstallRequest =
+    { RepoRoot: string
+      NexusRepoRoot: string
+      CodexSourceRoot: string
+      ObjectsRoot: string
+      EventStoreRoot: string }
+
+/// <summary>
+/// Describes the result of installing or refreshing the managed Codex commit-checkpoint hook block.
+/// </summary>
+type CodexCommitCheckpointHookInstallResult =
+    { RepoRoot: string
+      GitDirectory: string
+      HookPath: string
+      CreatedHookFile: bool
+      UpdatedManagedBlock: bool
+      InsertedManagedBlock: bool
+      HookLogRelativePath: string
+      CommandPreview: string }
+
+/// <summary>
 /// Identifies which existing artifact reference a manual payload capture should hydrate.
 /// </summary>
 type ManualArtifactCaptureTarget =

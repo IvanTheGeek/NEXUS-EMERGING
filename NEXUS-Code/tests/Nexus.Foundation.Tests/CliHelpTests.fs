@@ -156,6 +156,18 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/capture-codex-commit-checkpoint.md" "Expected the checkpoint guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help report-codex-commit-checkpoint.")
 
+              testCase "Install Codex commit checkpoint hook help exposes the automation workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "install-codex-commit-checkpoint-hook" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help install-codex-commit-checkpoint-hook to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: install-codex-commit-checkpoint-hook" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--repo-root <path>" "Expected repo-root guidance."
+                  Expect.stringContains result.StandardOutput "--source-root <path>" "Expected source-root guidance."
+                  Expect.stringContains result.StandardOutput "post-commit hook" "Expected the hook automation summary."
+                  Expect.stringContains result.StandardOutput ".git/nexus-hooks/" "Expected the hook log location note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/install-codex-commit-checkpoint-hook.md" "Expected the hook-install guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help install-codex-commit-checkpoint-hook.")
+
               testCase "LOGOS intake note help exposes the seeded intake workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-logos-intake-note" ]
 

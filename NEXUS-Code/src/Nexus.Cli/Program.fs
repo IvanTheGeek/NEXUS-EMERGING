@@ -39,6 +39,7 @@ module Program =
         | ImportCodexSessions of request: CodexSessionImportRequest
         | CaptureCodexCommitCheckpoint of request: CodexCommitCheckpointRequest
         | ReportCodexCommitCheckpoint of eventStoreRoot: string * repoRoot: string * commitSha: string option
+        | InstallCodexCommitCheckpointHook of request: CodexCommitCheckpointHookInstallRequest
         | CaptureArtifactPayload of request: ManualArtifactCaptureRequest
         | RebuildGraphAssertions of eventStoreRoot: string * approved: bool
         | ExportGraphvizDot of
@@ -403,6 +404,26 @@ module Program =
                     [ "Use this after copying a commit SHA from GitHub when you want the linked Codex import and conversation hints."
                       "It reads the durable checkpoint manifest written by capture-codex-commit-checkpoint."
                       "Detailed guide: docs/how-to/capture-codex-commit-checkpoint.md" ] }
+        | "install-codex-commit-checkpoint-hook" ->
+            Some
+                { Name = name
+                  Summary = "Install or refresh a managed Git post-commit hook that captures Codex commit checkpoints automatically."
+                  Usage =
+                    [ sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/FnTools" cliInvocation
+                      sprintf "%s install-codex-commit-checkpoint-hook" cliInvocation ]
+                  Options =
+                    [ "--repo-root <path>", "Override the Git repo that should receive the post-commit hook. Defaults to the current working directory."
+                      "--source-root <path>", sprintf "Override the live Codex source root. Defaults to %s." defaultCodexSourceRoot
+                      "--objects-root <path>", sprintf "Override the objects root used by checkpoint capture. Defaults to %s." defaultObjectsRoot
+                      "--event-store-root <path>", sprintf "Override the event-store root used by checkpoint capture. Defaults to %s." defaultEventStoreRoot ]
+                  Examples =
+                    [ sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/FnTools" cliInvocation
+                      sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/CheddarBooks --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                  Notes =
+                    [ "This writes or updates only the managed NEXUS block inside .git/hooks/post-commit."
+                      "Existing hook content is preserved when possible."
+                      "The managed block does not block commits when checkpoint capture fails; it logs the failure under .git/nexus-hooks/."
+                      "Detailed guide: docs/how-to/install-codex-commit-checkpoint-hook.md" ] }
         | "capture-artifact-payload" ->
             Some
                 { Name = name
@@ -843,6 +864,7 @@ module Program =
           "import-codex-sessions"
           "capture-codex-commit-checkpoint"
           "report-codex-commit-checkpoint"
+          "install-codex-commit-checkpoint-hook"
           "capture-artifact-payload"
           "rebuild-graph-assertions"
           "export-graphviz-dot"
@@ -1277,6 +1299,35 @@ module Program =
                     Error 1
 
             loop Environment.CurrentDirectory defaultEventStoreRoot None args
+
+    let private parseInstallCodexCommitCheckpointHook (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "install-codex-commit-checkpoint-hook"))
+        else
+            let rec loop targetRepoRoot sourceRoot objectsRoot eventStoreRoot remaining =
+                match remaining with
+                | [] ->
+                    Ok
+                        (InstallCodexCommitCheckpointHook
+                            { RepoRoot = targetRepoRoot
+                              NexusRepoRoot = repoRoot
+                              CodexSourceRoot = sourceRoot
+                              ObjectsRoot = objectsRoot
+                              EventStoreRoot = eventStoreRoot })
+                | "--repo-root" :: value :: rest ->
+                    loop value sourceRoot objectsRoot eventStoreRoot rest
+                | "--source-root" :: value :: rest ->
+                    loop targetRepoRoot value objectsRoot eventStoreRoot rest
+                | "--objects-root" :: value :: rest ->
+                    loop targetRepoRoot sourceRoot value eventStoreRoot rest
+                | "--event-store-root" :: value :: rest ->
+                    loop targetRepoRoot sourceRoot objectsRoot value rest
+                | option :: _ ->
+                    eprintfn "Unknown option for install-codex-commit-checkpoint-hook: %s" option
+                    printCommandHelp "install-codex-commit-checkpoint-hook"
+                    Error 1
+
+            loop Environment.CurrentDirectory defaultCodexSourceRoot defaultObjectsRoot defaultEventStoreRoot args
 
     let private parseRebuildConversationProjections (args: string list) =
         if containsHelpSwitch args then
@@ -3110,6 +3161,8 @@ module Program =
             parseCaptureCodexCommitCheckpoint rest
         | "report-codex-commit-checkpoint" :: rest ->
             parseReportCodexCommitCheckpoint rest
+        | "install-codex-commit-checkpoint-hook" :: rest ->
+            parseInstallCodexCommitCheckpointHook rest
         | "capture-artifact-payload" :: rest ->
             parseCaptureArtifactPayload rest
         | "rebuild-graph-assertions" :: rest ->
@@ -4124,6 +4177,23 @@ module Program =
 
             0
 
+    let private installCodexCommitCheckpointHook request =
+        match CodexCommitCheckpointHooks.install request with
+        | Error message ->
+            eprintfn "%s" message
+            2
+        | Ok result ->
+            printfn "Codex commit checkpoint hook installed."
+            printfn "  Repo root: %s" result.RepoRoot
+            printfn "  Git directory: %s" result.GitDirectory
+            printfn "  Hook path: %s" result.HookPath
+            printfn "  Created hook file: %b" result.CreatedHookFile
+            printfn "  Inserted managed block: %b" result.InsertedManagedBlock
+            printfn "  Updated managed block: %b" result.UpdatedManagedBlock
+            printfn "  Hook log path: %s" result.HookLogRelativePath
+            printfn "  Command preview: %s" result.CommandPreview
+            0
+
     let private captureArtifactPayload request =
         let result = ManualArtifactWorkflow.run request
 
@@ -4922,6 +4992,8 @@ module Program =
             captureCodexCommitCheckpoint request
         | Ok (ReportCodexCommitCheckpoint(eventStoreRoot, repoRoot, commitSha)) ->
             reportCodexCommitCheckpoint eventStoreRoot repoRoot commitSha
+        | Ok (InstallCodexCommitCheckpointHook request) ->
+            installCodexCommitCheckpointHook request
         | Ok (CaptureArtifactPayload request) ->
             captureArtifactPayload request
         | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->

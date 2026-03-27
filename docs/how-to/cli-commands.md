@@ -133,6 +133,13 @@ The CLI supports both:
 - Defaults to the current Git `HEAD` commit when `--commit <sha>` is omitted.
 - Details: [`docs/how-to/capture-codex-commit-checkpoint.md`](capture-codex-commit-checkpoint.md)
 
+`install-codex-commit-checkpoint-hook`
+
+- Installs or refreshes a managed Git `post-commit` hook that captures Codex commit checkpoints automatically.
+- Use it when you want each commit in a repo to write a durable commit-to-chat link by default.
+- Existing hook content is preserved when possible, and the managed block logs to `.git/nexus-hooks/codex-commit-checkpoint.log`.
+- Details: [`docs/how-to/install-codex-commit-checkpoint-hook.md`](install-codex-commit-checkpoint-hook.md)
+
 `capture-artifact-payload`
 
 - Manually hydrates an artifact payload that was referenced earlier.
@@ -278,6 +285,12 @@ Codex commit checkpoint:
 1. Make the Git commit in the target repo.
 2. Run `capture-codex-commit-checkpoint`.
 3. Later, run `report-codex-commit-checkpoint --repo-root <path> --commit <sha>` when you want the linked Codex import and conversation hints for that commit.
+
+Automatic Codex commit checkpoint:
+
+1. Run `install-codex-commit-checkpoint-hook --repo-root <path>` once per repo.
+2. Commit normally in that repo.
+3. Later, run `report-codex-commit-checkpoint --repo-root <path> --commit <sha>` when you want the linked Codex import and conversation hints for a specific commit.
 8. Run `rebuild-artifact-projections`.
 9. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
 10. Run `export-graphviz-dot` if you want an external graph view.

@@ -29,6 +29,7 @@ Current guides:
 - [`import-codex-sessions.md`](import-codex-sessions.md)
 - [`import-logos-blog-repo.md`](import-logos-blog-repo.md)
 - [`import-provider-export.md`](import-provider-export.md)
+- [`install-codex-commit-checkpoint-hook.md`](install-codex-commit-checkpoint-hook.md)
 - [`render-graphviz-dot.md`](render-graphviz-dot.md)
 - [`rebuild-artifact-projections.md`](rebuild-artifact-projections.md)
 - [`rebuild-conversation-projections.md`](rebuild-conversation-projections.md)

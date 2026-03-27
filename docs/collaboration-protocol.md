@@ -55,6 +55,7 @@ Examples:
 
 - `gh` for GitHub repo and PR workflows
 - visualization tools such as `dot` or `sfdp`
+- managed Git automation such as the Codex commit-checkpoint post-commit hook when commit-to-chat traceability is part of the workflow
 - other build, packaging, or repo-management tools that materially change the normal workflow
 
 ## Branching Expectations
