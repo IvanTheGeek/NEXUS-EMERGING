@@ -45,7 +45,7 @@ In the current bounded context, it is the canonical store for observed acquisiti
 
 In the Event Modeling lens, a `CommandSlice` is a slice centered on user or system intent that asks for a change.
 
-In NEXUS terminology, `CommandSlice` is the preferred term when modeling the intent-side slice that should lead to one or more durable events.
+When working in Event Modeling contexts in NEXUS, `CommandSlice` is the preferred term for the intent-side slice that should lead to one or more durable events.
 
 ## Domain
 
@@ -208,13 +208,13 @@ In NEXUS terminology, `Slice` is reserved for the Event Modeling sense: a unit o
 
 In the Event Modeling lens, a `View` is the dataset or structure shown to an actor in the business/UI lens.
 
-In NEXUS terminology, `View` is the preferred term over `read model` when discussing the derived structure behind what a `ViewSlice` shows.
+When working in Event Modeling contexts in NEXUS, `View` is the preferred term over `read model` when discussing the derived structure behind what a `ViewSlice` shows.
 
 ## ViewSlice
 
 In the Event Modeling lens, a `ViewSlice` is a slice centered on what an actor can see and decide from the current business state.
 
-In NEXUS terminology, `ViewSlice` is the preferred term over `ReadSlice` for the read-side slice in Event Modeling work.
+When working in Event Modeling contexts in NEXUS, `ViewSlice` is the preferred term over `ReadSlice` for the read-side slice in Event Modeling work.
 
 ## Overlap Reconciliation
 
