@@ -101,6 +101,7 @@ When behavior changes:
 - update public help and xmldoc when public surfaces change
 - keep navigation-oriented Markdown docs GitHub-clickable with valid relative links instead of dead or plain-text path references
 - when a repeated workflow becomes important enough, prefer encoding it into reviewed functions, scripts, commands, or schemas rather than relying on prompt memory alone
+- default durable/model time to UTC and localize it in views unless there is a clearly documented exception
 
 If a change is docs-only or tests are not applicable, say that explicitly.
 
@@ -109,6 +110,7 @@ See:
 - [`decisions/0017-docs-and-tests-ship-with-work.md`](decisions/0017-docs-and-tests-ship-with-work.md)
 - [`how-to/run-tests.md`](how-to/run-tests.md)
 - [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
+- [`decisions/0023-utc-for-durable-time-and-localize-in-views.md`](decisions/0023-utc-for-durable-time-and-localize-in-views.md)
 
 ## Durable Learning Expectations
 

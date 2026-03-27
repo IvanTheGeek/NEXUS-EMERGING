@@ -122,6 +122,7 @@ Work in NEXUS is expected to ship with the supporting docs and tests it needs.
 - update CLI help, runbooks, and xmldoc when public command or API surfaces change
 - record important discoveries, corrections, and durable learnings in repo docs instead of leaving them only in chat or memory
 - reference those durable records from the places where the learning matters
+- default durable/model time to UTC and localize it in views unless a specific domain rule says otherwise
 - if a change is docs-only or tests are not applicable, state that explicitly rather than leaving it ambiguous
 
 See:
@@ -129,6 +130,7 @@ See:
 - [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](docs/decisions/0017-docs-and-tests-ship-with-work.md)
 - [`docs/decisions/0021-important-discoveries-become-durable-repo-memory.md`](docs/decisions/0021-important-discoveries-become-durable-repo-memory.md)
 - [`docs/decisions/0020-converged-main-and-active-concern-line-branches.md`](docs/decisions/0020-converged-main-and-active-concern-line-branches.md)
+- [`docs/decisions/0023-utc-for-durable-time-and-localize-in-views.md`](docs/decisions/0023-utc-for-durable-time-and-localize-in-views.md)
 - [`docs/collaboration-protocol.md`](docs/collaboration-protocol.md)
 - [`docs/how-to/run-tests.md`](docs/how-to/run-tests.md)
 
