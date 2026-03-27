@@ -243,14 +243,18 @@ module CodexCommitCheckpointWorkflow =
                 | Some value when not (String.IsNullOrWhiteSpace(value)) -> value
                 | _ -> gitHead.CommitSha
 
-            let manifestRelativePath = CommitCheckpoints.manifestRelativePath gitHead.RepoSlug effectiveCommitSha
+            let resolvedCommitSha =
+                CommitCheckpoints.tryResolveCommitSha eventStoreRoot gitHead.RepoSlug effectiveCommitSha
+                |> Option.defaultValue effectiveCommitSha
 
-            match CommitCheckpoints.tryLoad eventStoreRoot gitHead.RepoSlug effectiveCommitSha with
+            let manifestRelativePath = CommitCheckpoints.manifestRelativePath gitHead.RepoSlug resolvedCommitSha
+
+            match CommitCheckpoints.tryLoad eventStoreRoot gitHead.RepoSlug resolvedCommitSha with
             | Some checkpoint ->
                 Ok
                     { RepoRoot = gitHead.RepoRoot
                       RepoSlug = gitHead.RepoSlug
-                      CommitSha = effectiveCommitSha
+                      CommitSha = resolvedCommitSha
                       ManifestRelativePath = manifestRelativePath
                       Checkpoint = checkpoint }
             | None ->

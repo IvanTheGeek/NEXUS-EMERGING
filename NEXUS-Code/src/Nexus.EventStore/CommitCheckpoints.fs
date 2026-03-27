@@ -67,6 +67,30 @@ module CommitCheckpoints =
         File.Exists(absolutePath)
 
     /// <summary>
+    /// Resolves an exact or unique prefixed commit SHA to the stored full manifest commit SHA.
+    /// </summary>
+    let tryResolveCommitSha eventStoreRoot repoSlug (commitReference: string) =
+        let normalizedReference = commitReference.Trim()
+
+        if String.IsNullOrWhiteSpace(normalizedReference) then
+            None
+        elif exists eventStoreRoot repoSlug normalizedReference then
+            Some normalizedReference
+        else
+            let manifestDirectory = Path.Combine(Path.GetFullPath(eventStoreRoot), manifestDirectoryRelativePath repoSlug)
+
+            if not (Directory.Exists(manifestDirectory)) then
+                None
+            else
+                Directory.GetFiles(manifestDirectory, "*.toml")
+                |> Array.map Path.GetFileNameWithoutExtension
+                |> Array.filter (fun candidate -> candidate.StartsWith(normalizedReference, StringComparison.OrdinalIgnoreCase))
+                |> Array.distinct
+                |> function
+                    | [| matchedCommitSha |] -> Some matchedCommitSha
+                    | _ -> None
+
+    /// <summary>
     /// Writes a durable checkpoint manifest under work-batches/commit-checkpoints/.
     /// </summary>
     let write eventStoreRoot (checkpoint: CodexCommitCheckpoint) =

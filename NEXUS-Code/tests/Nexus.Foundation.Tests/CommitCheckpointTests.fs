@@ -82,6 +82,36 @@ module CommitCheckpointTests =
                       Expect.equal report.CommitSha commitSha "Expected the report flow to resolve the same commit."
                       Expect.equal report.ManifestRelativePath result.CheckpointManifestRelativePath "Expected the report manifest path to match the captured checkpoint." ))
 
+              testCase "ReportCodexCommitCheckpoint resolves a unique short commit SHA" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-commit-checkpoint-short-sha" (fun tempRoot ->
+                      let repoRoot = Path.Combine(tempRoot, "repo")
+                      let commitSha = createCommittedRepo repoRoot
+                      let sourceRoot = Path.Combine(tempRoot, "codex-source")
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      let eventStoreRoot = Path.Combine(tempRoot, "event-store")
+                      TestHelpers.copyFixtureDirectory "codex/latest" sourceRoot
+
+                      let request =
+                          { RepoRoot = repoRoot
+                            CodexSourceRoot = sourceRoot
+                            ObjectsRoot = objectsRoot
+                            EventStoreRoot = eventStoreRoot
+                            Force = false }
+
+                      match CodexCommitCheckpointWorkflow.run request with
+                      | Error message -> failwith message
+                      | Ok _ -> ()
+
+                      let shortCommitSha = commitSha.Substring(0, 8)
+
+                      let report =
+                          match CodexCommitCheckpointWorkflow.report eventStoreRoot repoRoot (Some shortCommitSha) with
+                          | Ok value -> value
+                          | Error message -> failwith message
+
+                      Expect.equal report.CommitSha commitSha "Expected the short SHA lookup to resolve the stored full commit SHA."
+                      Expect.equal report.Checkpoint.CommitShortSha shortCommitSha "Expected the checkpoint to retain the short SHA hint." ))
+
               testCase "CaptureCodexCommitCheckpoint refuses duplicate commit capture without force" (fun () ->
                   TestHelpers.withTempDirectory "nexus-commit-checkpoint-duplicate" (fun tempRoot ->
                       let repoRoot = Path.Combine(tempRoot, "repo")
