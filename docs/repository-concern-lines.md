@@ -68,6 +68,8 @@ Primary docs:
 - [`docs/decisions/0008-branch-topology-by-workstream.md`](decisions/0008-branch-topology-by-workstream.md)
 - [`docs/decisions/0010-terminology-flow-slice-batch-scope.md`](decisions/0010-terminology-flow-slice-batch-scope.md)
 - [`docs/decisions/0014-repository-concern-lines-and-documentation-spine.md`](decisions/0014-repository-concern-lines-and-documentation-spine.md)
+- [`docs/decisions/0020-converged-main-and-active-concern-line-branches.md`](decisions/0020-converged-main-and-active-concern-line-branches.md)
+- [`docs/collaboration-protocol.md`](collaboration-protocol.md)
 
 Typical branch names:
 
