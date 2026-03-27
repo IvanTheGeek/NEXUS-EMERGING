@@ -18,6 +18,16 @@ Use this when you want a durable path from:
 5. writes a durable checkpoint manifest under:
    - `NEXUS-EventStore/work-batches/commit-checkpoints/<repo>/<commit>.toml`
 
+After the first baseline capture, the Codex checkpoint export now works incrementally:
+
+- `providers/codex/latest/` is maintained as the full current source snapshot
+- each commit-checkpoint archive still writes its own manifest under `providers/codex/archive/...`
+- those archive snapshots always include `session_index.jsonl`
+- unchanged transcript files are omitted from the archive snapshot
+- only changed transcript files are imported from the checkpoint archive
+
+That keeps commit checkpoints faster without changing canonical truth boundaries.
+
 That manifest records:
 
 - repo identity
@@ -88,5 +98,6 @@ The report prints the linked import and the conversation hints captured at check
 - This is intentionally commit-linked, not prompt-batch inferred.
 - One checkpoint manifest is stored per repo and commit SHA.
 - The command refuses to overwrite an existing checkpoint unless you pass `--force`.
+- The first capture is usually the heaviest one because it establishes the baseline Codex snapshot.
 - This is the first layer of commit-to-chat traceability; richer exact-message linking can build on top of it later.
 - If you want this to happen automatically after every commit, install the managed hook with [`install-codex-commit-checkpoint-hook`](install-codex-commit-checkpoint-hook.md).

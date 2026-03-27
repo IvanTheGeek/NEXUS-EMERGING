@@ -29,6 +29,18 @@ module CommitCheckpointTests =
         runGit repoRoot [ "commit"; "-m"; "Fixture checkpoint commit" ] |> ignore
         runGit repoRoot [ "rev-parse"; "--verify"; "HEAD" ]
 
+    let private manifestFileRows manifestPath =
+        let document = TestHelpers.readToml manifestPath
+
+        TomlDocument.tableArray "files" document
+        |> List.map (fun table ->
+            let required key =
+                match table.TryGetValue(key) with
+                | true, value -> value
+                | false, _ -> failwithf "Expected manifest file row key '%s' in %s" key manifestPath
+
+            required "relative_path", required "kind")
+
     let tests =
         testList
             "commit checkpoints"
@@ -208,4 +220,92 @@ module CommitCheckpointTests =
 
                       Expect.equal checkpoint.CommitSha secondCommitSha "Expected the post-commit checkpoint SHA to match the new commit."
                       Expect.equal checkpoint.CommitSummary "Second fixture checkpoint commit" "Expected the post-commit checkpoint summary."
-                      Expect.equal checkpoint.Counts.ConversationsSeen 1 "Expected the hook-driven capture to import the fixture Codex conversation." )) ]
+                      Expect.equal checkpoint.Counts.ConversationsSeen 1 "Expected the hook-driven capture to import the fixture Codex conversation." ))
+
+              testCase "CodexSessionExport keeps latest full while archiving only changed transcripts after a baseline export" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-codex-export-incremental" (fun tempRoot ->
+                      let sourceRoot = Path.Combine(tempRoot, "codex-source")
+                      let objectsRoot = Path.Combine(tempRoot, "objects")
+                      TestHelpers.copyFixtureDirectory "codex/latest" sourceRoot
+
+                      let sessionsRoot = Path.Combine(sourceRoot, "sessions", "2026", "03", "21")
+                      Directory.CreateDirectory(sessionsRoot) |> ignore
+
+                      let transcriptA = Path.Combine(sessionsRoot, "rollout-codex-session-1.jsonl")
+                      let transcriptB = Path.Combine(sessionsRoot, "rollout-codex-session-2.jsonl")
+                      let transcriptC = Path.Combine(sessionsRoot, "rollout-codex-session-3.jsonl")
+
+                      File.Copy(transcriptA, transcriptB)
+                      File.Copy(transcriptA, transcriptC)
+
+                      let firstExport =
+                          match
+                              CodexSessionExport.run
+                                  { SourceRoot = sourceRoot
+                                    ObjectsRoot = objectsRoot
+                                    SnapshotName = "snapshot-a" }
+                          with
+                          | Ok value -> value
+                          | Error message -> failwith message
+
+                      let firstArchiveManifestPath = Path.Combine(objectsRoot, firstExport.ArchiveManifestRelativePath)
+                      let firstLatestManifestPath = Path.Combine(objectsRoot, firstExport.LatestManifestRelativePath)
+
+                      Expect.equal
+                          (manifestFileRows firstArchiveManifestPath |> List.length)
+                          4
+                          "Expected the first archive manifest to include the full baseline export."
+
+                      Expect.equal
+                          (manifestFileRows firstLatestManifestPath |> List.length)
+                          4
+                          "Expected the latest manifest to include the full current source snapshot."
+
+                      File.AppendAllText(transcriptB, "\n{\"type\":\"event_msg\",\"payload\":{\"type\":\"user_message\",\"message\":\"Incremental update\"}}\n")
+                      File.Delete(transcriptC)
+
+                      let secondExport =
+                          match
+                              CodexSessionExport.run
+                                  { SourceRoot = sourceRoot
+                                    ObjectsRoot = objectsRoot
+                                    SnapshotName = "snapshot-b" }
+                          with
+                          | Ok value -> value
+                          | Error message -> failwith message
+
+                      let secondArchiveManifestPath = Path.Combine(objectsRoot, secondExport.ArchiveManifestRelativePath)
+                      let secondLatestManifestPath = Path.Combine(objectsRoot, secondExport.LatestManifestRelativePath)
+                      let secondArchiveRows = manifestFileRows secondArchiveManifestPath
+                      let secondLatestRows = manifestFileRows secondLatestManifestPath
+
+                      Expect.sequenceEqual
+                          secondArchiveRows
+                          [ "session_index.jsonl", "session_index"
+                            "sessions/2026/03/21/rollout-codex-session-2.jsonl", "session_transcript" ]
+                          "Expected the incremental archive to contain the session index plus only the changed transcript."
+
+                      Expect.equal
+                          (secondLatestRows |> List.length)
+                          3
+                          "Expected the latest manifest to keep the current full source view after removing the stale transcript."
+
+                      Expect.isTrue
+                          (File.Exists(Path.Combine(secondExport.LatestRoot, "sessions", "2026", "03", "21", "rollout-codex-session-1.jsonl")))
+                          "Expected the unchanged transcript to remain materialized in latest."
+
+                      Expect.isTrue
+                          (File.Exists(Path.Combine(secondExport.LatestRoot, "sessions", "2026", "03", "21", "rollout-codex-session-2.jsonl")))
+                          "Expected the changed transcript to remain materialized in latest."
+
+                      Expect.isFalse
+                          (File.Exists(Path.Combine(secondExport.LatestRoot, "sessions", "2026", "03", "21", "rollout-codex-session-3.jsonl")))
+                          "Expected the deleted transcript to be removed from latest."
+
+                      Expect.isFalse
+                          (File.Exists(Path.Combine(secondExport.ArchiveRoot, "sessions", "2026", "03", "21", "rollout-codex-session-1.jsonl")))
+                          "Expected unchanged transcripts to be omitted from the incremental archive snapshot."
+
+                      Expect.isTrue
+                          (File.Exists(Path.Combine(secondExport.ArchiveRoot, "sessions", "2026", "03", "21", "rollout-codex-session-2.jsonl")))
+                          "Expected the changed transcript to be present in the incremental archive snapshot." )) ]

@@ -22,6 +22,7 @@ Important behavior:
 - existing hook content is preserved when possible
 - only the NEXUS-managed block is replaced on re-install
 - checkpoint capture failures do not block the commit itself
+- after the first baseline capture, later hook-driven checkpoint archives only include `session_index.jsonl` plus changed transcripts
 
 ## Command
 

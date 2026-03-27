@@ -1,8 +1,10 @@
 namespace Nexus.Importers
 
 open System
+open System.Globalization
 open System.IO
 open System.Security.Cryptography
+open Nexus.EventStore
 
 [<RequireQualifiedAccess>]
 module CodexSessionExport =
@@ -36,9 +38,32 @@ module CodexSessionExport =
     let private timestampLiteral (value: DateTimeOffset) =
         value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
 
+    let private tryParseInt64 (value: string) =
+        match Int64.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+        | true, parsedValue -> Some parsedValue
+        | _ -> None
+
     let private sha256ForFile path =
         use stream = File.OpenRead(path)
         SHA256.HashData(stream) |> Convert.ToHexString |> fun value -> value.ToLowerInvariant()
+
+    let private tryLoadManifestFiles manifestPath =
+        if not (File.Exists(manifestPath)) then
+            []
+        else
+            let document = File.ReadAllText(manifestPath) |> TomlDocument.parse
+
+            TomlDocument.tableArray "files" document
+            |> List.choose (fun table ->
+                match table.TryGetValue("relative_path"), table.TryGetValue("kind"), table.TryGetValue("size_bytes"), table.TryGetValue("sha256") with
+                | (true, relativePath), (true, kind), (true, sizeBytesText), (true, sha256) ->
+                    tryParseInt64 sizeBytesText
+                    |> Option.map (fun sizeBytes ->
+                        { RelativePath = relativePath
+                          Kind = kind
+                          SizeBytes = sizeBytes
+                          Sha256 = sha256 })
+                | _ -> None)
 
     let private collectExportFiles sourceRoot =
         let sessionIndexPath = Path.Combine(sourceRoot, "session_index.jsonl")
@@ -73,18 +98,21 @@ module CodexSessionExport =
 
         indexFiles @ sessionFiles
 
-    let private copyExportFile sourceRoot latestRoot archiveRoot (file: ExportedFile) =
+    let private copyFileToRoot sourceRoot destinationRoot (file: ExportedFile) =
         let sourcePath = Path.Combine(sourceRoot, file.RelativePath)
-        let latestPath = Path.Combine(latestRoot, file.RelativePath)
-        let archivePath = Path.Combine(archiveRoot, file.RelativePath)
+        let destinationPath = Path.Combine(destinationRoot, file.RelativePath)
+        let directory = Path.GetDirectoryName(destinationPath)
 
-        for destinationPath in [ latestPath; archivePath ] do
-            let directory = Path.GetDirectoryName(destinationPath)
+        if not (String.IsNullOrWhiteSpace(directory)) then
+            Directory.CreateDirectory(directory) |> ignore
 
-            if not (String.IsNullOrWhiteSpace(directory)) then
-                Directory.CreateDirectory(directory) |> ignore
+        File.Copy(sourcePath, destinationPath, true)
 
-            File.Copy(sourcePath, destinationPath, true)
+    let private deleteLatestFile latestRoot relativePath =
+        let absolutePath = Path.Combine(latestRoot, relativePath)
+
+        if File.Exists(absolutePath) then
+            File.Delete(absolutePath)
 
     let private writeManifest destinationPath (request: ExportRequest) (files: ExportedFile list) =
         let exportedAt = DateTimeOffset.UtcNow
@@ -137,9 +165,65 @@ module CodexSessionExport =
                 let destinationRoot = Path.Combine(objectsRoot, "providers", "codex")
                 let latestRoot = Path.Combine(destinationRoot, "latest")
                 let archiveRoot = Path.Combine(destinationRoot, "archive", request.SnapshotName)
+                let latestManifestPath = Path.Combine(latestRoot, "export-manifest.toml")
+                let previousLatestFiles =
+                    tryLoadManifestFiles latestManifestPath
+                    |> List.map (fun file -> file.RelativePath, file)
+                    |> Map.ofList
 
-                for file in files do
-                    copyExportFile sourceRoot latestRoot archiveRoot file
+                let currentFilesByRelativePath =
+                    files
+                    |> List.map (fun file -> file.RelativePath, file)
+                    |> Map.ofList
+
+                let changedOrNewFiles =
+                    files
+                    |> List.filter (fun file ->
+                        match Map.tryFind file.RelativePath previousLatestFiles with
+                        | Some previousFile
+                            when previousFile.Kind = file.Kind
+                                 && previousFile.SizeBytes = file.SizeBytes
+                                 && String.Equals(previousFile.Sha256, file.Sha256, StringComparison.OrdinalIgnoreCase) ->
+                            false
+                        | _ -> true)
+
+                let changedOrNewRelativePaths =
+                    changedOrNewFiles
+                    |> List.map (fun file -> file.RelativePath)
+                    |> Set.ofList
+
+                let latestFilesToRefresh =
+                    files
+                    |> List.filter (fun file ->
+                        changedOrNewRelativePaths.Contains(file.RelativePath)
+                        || not (File.Exists(Path.Combine(latestRoot, file.RelativePath))))
+
+                let staleLatestRelativePaths =
+                    previousLatestFiles
+                    |> Map.toSeq
+                    |> Seq.map fst
+                    |> Seq.filter (fun relativePath -> not (Map.containsKey relativePath currentFilesByRelativePath))
+                    |> Seq.toList
+
+                let archiveFiles =
+                    files
+                    |> List.filter (fun file ->
+                        file.Kind = "session_index"
+                        || changedOrNewRelativePaths.Contains(file.RelativePath))
+
+                if previousLatestFiles.IsEmpty && Directory.Exists(latestRoot) then
+                    Directory.Delete(latestRoot, true)
+
+                Directory.CreateDirectory(latestRoot) |> ignore
+
+                for file in latestFilesToRefresh do
+                    copyFileToRoot sourceRoot latestRoot file
+
+                for relativePath in staleLatestRelativePaths do
+                    deleteLatestFile latestRoot relativePath
+
+                for file in archiveFiles do
+                    copyFileToRoot sourceRoot archiveRoot file
 
                 let latestManifestRelativePath =
                     normalizePath (Path.Combine("providers", "codex", "latest", "export-manifest.toml"))
@@ -148,7 +232,7 @@ module CodexSessionExport =
                     normalizePath (Path.Combine("providers", "codex", "archive", request.SnapshotName, "export-manifest.toml"))
 
                 writeManifest (Path.Combine(objectsRoot, latestManifestRelativePath)) request files
-                writeManifest (Path.Combine(objectsRoot, archiveManifestRelativePath)) request files
+                writeManifest (Path.Combine(objectsRoot, archiveManifestRelativePath)) request archiveFiles
 
                 Ok
                     { SourceRoot = sourceRoot
@@ -158,4 +242,4 @@ module CodexSessionExport =
                       ArchiveRoot = archiveRoot
                       LatestManifestRelativePath = latestManifestRelativePath
                       ArchiveManifestRelativePath = archiveManifestRelativePath
-                      Files = files }
+                      Files = archiveFiles }
