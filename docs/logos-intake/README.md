@@ -12,6 +12,7 @@ Use these notes when you have source metadata now, but the richer canonical/impo
 
 Examples:
 
+- published blog posts and articles
 - forum support threads
 - Talkyard forum threads
 - Discord threads and channel discussions

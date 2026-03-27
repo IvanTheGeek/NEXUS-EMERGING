@@ -30,14 +30,16 @@ The reason this matters is scope. `FnHCI` is meant to cover:
 - human workflow
 - cross-surface behavior and accessibility concerns
 
-At the current understanding, `FnUI` becomes one lens or sub-area inside `FnHCI`, not the whole thing. The Bolero investigation contributed the substrate insight: build on the rendering/runtime seam without inheriting the framework's ideology as the final model. From there, the concept widened into a platform-neutral projection model over multiple human-facing surfaces.
+At the current understanding, `FnUI` becomes a narrower visual/UI-specific system line inside `FnHCI`, not the whole thing. The Bolero investigation contributed the substrate insight: build on the rendering/runtime seam without inheriting the framework's ideology as the final model. From there, the concept widened into a platform-neutral projection model over multiple human-facing surfaces.
 
 The newer `FnHCI Concept Overview` conversation reinforces that this is not just a naming tweak. It frames `FnHCI` as a unifying concept for the work already happening in NEXUS: a way to think about human-computer interaction as a projection concern that spans visual interfaces, terminal interaction, APIs, and other operational surfaces without collapsing them into a single UI-only idea.
+
+The first explicit `FnUI` foundation boundary now lives in [`docs/fnui-foundation.md`](../fnui-foundation.md), and the current namespace/package mapping lives in [`docs/fnhci-namespace-map.md`](../fnhci-namespace-map.md).
 
 ## Working Notes
 
 - What are the stable core primitives of FnHCI, separate from any one runtime like Blazor or Bolero?
-- How should FnUI, FnCLI, FnAPI, and accessibility concerns relate as lenses or subdomains under FnHCI?
+- How should FnUI, FnCLI, FnAPI, and accessibility concerns relate as subsystems or lenses under FnHCI?
 - Which parts of FnHCI belong in NEXUS universal graph language versus a software-development-specific lens?
 
 ## Source Conversations

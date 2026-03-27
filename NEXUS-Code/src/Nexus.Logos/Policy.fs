@@ -309,6 +309,7 @@ module KnownAccessContexts =
 [<RequireQualifiedAccess>]
 module KnownAcquisitionKinds =
     let manualNote = AcquisitionKindId.create "manual-note"
+    let gitSync = AcquisitionKindId.create "git-sync"
     let webScrape = AcquisitionKindId.create "web-scrape"
     let apiPull = AcquisitionKindId.create "api-pull"
     let manualExport = AcquisitionKindId.create "manual-export"
@@ -316,6 +317,7 @@ module KnownAcquisitionKinds =
 
     let private catalog =
         [ manualNote, "Manually entered note-based intake."
+          gitSync, "Captured by synchronizing or cloning a version-controlled repository."
           webScrape, "Captured through a web-scrape flow."
           apiPull, "Captured through an API pull."
           manualExport, "Captured from a manually produced export artifact."

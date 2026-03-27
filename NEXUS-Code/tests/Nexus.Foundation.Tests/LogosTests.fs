@@ -72,18 +72,23 @@ module LogosTests =
                   let intakeChannelSlugs = report.IntakeChannels |> List.map (fun item -> item.Slug)
                   let accessContextSlugs = report.AccessContexts |> List.map (fun item -> item.Slug)
                   let acquisitionKindSlugs = report.AcquisitionKinds |> List.map (fun item -> item.Slug)
+                  let signalKindSlugs = report.SignalKinds |> List.map (fun item -> item.Slug)
                   let rightsPolicySlugs = report.RightsPolicies |> List.map (fun item -> item.Slug)
                   let sensitivitySlugs = report.Sensitivities |> List.map (fun item -> item.Slug)
 
+                  Expect.isTrue (sourceSystemSlugs |> List.contains "blog") "Expected blog to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "forum") "Expected forum to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "talkyard") "Expected talkyard to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "discord") "Expected discord to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "email") "Expected email to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "issue-tracker") "Expected issue-tracker to be an explicit LOGOS source system."
                   Expect.isTrue (sourceSystemSlugs |> List.contains "app-feedback-surface") "Expected app-feedback-surface to be an explicit LOGOS source system."
+                  Expect.isTrue (intakeChannelSlugs |> List.contains "published-article") "Expected published-article to be an explicit LOGOS intake channel."
                   Expect.isTrue (intakeChannelSlugs |> List.contains "discord-channel") "Expected discord-channel to be an explicit LOGOS intake channel."
                   Expect.isTrue (intakeChannelSlugs |> List.contains "discord-thread") "Expected discord-thread to be an explicit LOGOS intake channel."
+                  Expect.isTrue (signalKindSlugs |> List.contains "article") "Expected article to be an explicit LOGOS signal kind."
                   Expect.isTrue (accessContextSlugs |> List.contains "registered-user") "Expected registered-user to be an explicit LOGOS access context."
+                  Expect.isTrue (acquisitionKindSlugs |> List.contains "git-sync") "Expected git-sync to be an explicit LOGOS acquisition kind."
                   Expect.isTrue (acquisitionKindSlugs |> List.contains "web-scrape") "Expected web-scrape to be an explicit LOGOS acquisition kind."
                   Expect.isTrue (rightsPolicySlugs |> List.contains "personal-training-only") "Expected personal-training-only to be an explicit LOGOS rights policy."
                   Expect.isTrue (rightsPolicySlugs |> List.contains "cc-by") "Expected cc-by to be an explicit LOGOS rights policy."

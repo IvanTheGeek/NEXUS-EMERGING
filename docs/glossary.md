@@ -57,6 +57,16 @@ An append-only record in the canonical history that states what was observed, re
 
 A graph-level assertion derived from canonical history and tied back to provenance.
 
+## FnHCI
+
+The broader NEXUS interaction concern and top interaction namespace line, covering visual UI, CLI, API, accessibility, and other human-computer interaction surfaces without collapsing them into one renderer or one interface type.
+
+## FnUI
+
+The narrower visual/UI-specific system and likely public/package line within FnHCI.
+
+FnUI is the line most likely to represent the Bolero-replacement system on top of Blazor while also providing the NEXUS GUI-facing application shell, navigation, views, and operator workflows without becoming the source of truth for NEXUS state.
+
 ## Graph Substrate
 
 The shared structural layer of nodes, edges, and assertions derived from observed history.

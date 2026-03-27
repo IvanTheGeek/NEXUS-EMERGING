@@ -6,9 +6,10 @@ module Program =
     [<EntryPoint>]
     let main argv =
         testList
-            "nexus"
+            "nexus-foundation"
             [ KernelTests.tests
               LogosTests.tests
+              BlogImportTests.tests
               ProviderAdapterTests.tests
               WorkflowTests.tests
               ImportSnapshotTests.tests

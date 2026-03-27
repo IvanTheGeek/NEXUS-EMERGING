@@ -24,6 +24,7 @@ Current guides:
 - [`find-working-graph-nodes.md`](find-working-graph-nodes.md)
 - [`git-auth-for-codex.md`](git-auth-for-codex.md)
 - [`import-codex-sessions.md`](import-codex-sessions.md)
+- [`import-logos-blog-repo.md`](import-logos-blog-repo.md)
 - [`import-provider-export.md`](import-provider-export.md)
 - [`render-graphviz-dot.md`](render-graphviz-dot.md)
 - [`rebuild-artifact-projections.md`](rebuild-artifact-projections.md)

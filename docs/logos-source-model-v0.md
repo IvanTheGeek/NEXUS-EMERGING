@@ -13,6 +13,7 @@ The goal is to name the smallest stable concepts needed to represent where a sig
 This is especially relevant for later sources such as:
 
 - AI conversations
+- published blog posts and articles
 - forum threads
 - Talkyard forum threads
 - Discord channels and threads
@@ -128,6 +129,7 @@ Current concrete source-system allowlist:
 - `claude`
 - `grok`
 - `codex`
+- `blog`
 - `forum`
 - `talkyard`
 - `discord`
@@ -138,6 +140,7 @@ Current concrete source-system allowlist:
 Current concrete intake-channel allowlist:
 
 - `ai-conversation`
+- `published-article`
 - `forum-thread`
 - `discord-channel`
 - `discord-thread`
@@ -149,6 +152,7 @@ Current concrete signal-kind allowlist:
 
 - `conversation`
 - `message`
+- `article`
 - `bug-report`
 - `feedback`
 - `support-question`
@@ -186,6 +190,7 @@ Current access and rights allowlists:
   - `api-client`
 - acquisition kinds:
   - `manual-note`
+  - `git-sync`
   - `web-scrape`
   - `api-pull`
   - `manual-export`
@@ -223,6 +228,16 @@ Current non-chat LOGOS note baseline:
 - derived sanitized notes resolve into:
   - `private` when the resulting policy is still restricted
   - `public-safe` only when the explicit public-safe policy boundary is crossed for both handling and rights
+
+Published writing note:
+
+- owner-controlled public Markdown writing can now enter LOGOS through a Git-backed import path
+- the current concrete form is a Markdown blog repository imported as:
+  - `source_system = blog`
+  - `intake_channel = published-article`
+  - `signal_kind = article`
+  - `acquisition_kind = git-sync`
+- those notes are modeled as `public-safe` from entry only when the rights and handling policy explicitly allow that
 
 Discord note:
 

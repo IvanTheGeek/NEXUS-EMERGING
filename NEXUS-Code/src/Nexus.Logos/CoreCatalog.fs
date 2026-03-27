@@ -10,6 +10,11 @@ namespace Nexus.Logos
 [<RequireQualifiedAccess>]
 module KnownSourceSystems =
     /// <summary>
+    /// Published blog or article sources.
+    /// </summary>
+    let blog = SourceSystemId.create "blog"
+
+    /// <summary>
     /// ChatGPT provider capture and export sources.
     /// </summary>
     let chatgpt = SourceSystemId.create "chatgpt"
@@ -63,7 +68,8 @@ module KnownSourceSystems =
     /// The explicit allowlist of recognized LOGOS source systems.
     /// </summary>
     let all =
-        [ chatgpt
+        [ blog
+          chatgpt
           claude
           grok
           codex
@@ -75,7 +81,8 @@ module KnownSourceSystems =
           appFeedbackSurface ]
 
     let private catalog =
-        [ chatgpt, "ChatGPT provider capture and export sources."
+        [ blog, "Published blog or article sources."
+          chatgpt, "ChatGPT provider capture and export sources."
           claude, "Claude provider capture and export sources."
           grok, "Grok provider capture and export sources."
           codex, "Local Codex session capture sources."
@@ -118,6 +125,11 @@ module KnownSourceSystems =
 [<RequireQualifiedAccess>]
 module CoreIntakeChannels =
     /// <summary>
+    /// Published article or blog-post intake.
+    /// </summary>
+    let publishedArticle = IntakeChannelId.create "published-article"
+
+    /// <summary>
     /// AI conversational intake such as chat or session transcripts.
     /// </summary>
     let aiConversation = IntakeChannelId.create "ai-conversation"
@@ -156,7 +168,8 @@ module CoreIntakeChannels =
     /// The explicit allowlist of recognized LOGOS intake channels.
     /// </summary>
     let all =
-        [ aiConversation
+        [ publishedArticle
+          aiConversation
           forumThread
           discordChannel
           discordThread
@@ -165,7 +178,8 @@ module CoreIntakeChannels =
           appFeedback ]
 
     let private catalog =
-        [ aiConversation, "AI conversational intake such as chat or session transcripts."
+        [ publishedArticle, "Published article or blog-post intake."
+          aiConversation, "AI conversational intake such as chat or session transcripts."
           forumThread, "Forum-thread intake."
           discordChannel, "Discord channel intake."
           discordThread, "Discord thread intake."
@@ -205,6 +219,11 @@ module CoreIntakeChannels =
 [<RequireQualifiedAccess>]
 module CoreSignalKinds =
     /// <summary>
+    /// A published article or blog post viewed as a LOGOS signal.
+    /// </summary>
+    let article = SignalKindId.create "article"
+
+    /// <summary>
     /// A conversational thread or session viewed as a LOGOS signal.
     /// </summary>
     let conversation = SignalKindId.create "conversation"
@@ -233,14 +252,16 @@ module CoreSignalKinds =
     /// The explicit allowlist of recognized LOGOS signal kinds.
     /// </summary>
     let all =
-        [ conversation
+        [ article
+          conversation
           message
           bugReport
           feedback
           supportQuestion ]
 
     let private catalog =
-        [ conversation, "A conversational thread or session viewed as a LOGOS signal."
+        [ article, "A published article or blog post viewed as a LOGOS signal."
+          conversation, "A conversational thread or session viewed as a LOGOS signal."
           message, "An individual message viewed as a LOGOS signal."
           bugReport, "A bug report viewed as a LOGOS signal."
           feedback, "A feedback submission viewed as a LOGOS signal."

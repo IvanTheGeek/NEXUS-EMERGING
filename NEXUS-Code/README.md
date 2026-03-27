@@ -1,6 +1,6 @@
 # NEXUS-Code
 
-This folder will hold the F# solution, importer core, provider adapters, CLI entry points, tests, and later supporting tools.
+This folder will hold the F# solution, importer core, provider adapters, CLI entry points, tests, and later supporting tools plus FnHCI/FnUI host/runtime work.
 
 Near-term focus:
 
@@ -15,6 +15,12 @@ Near-term focus:
 
 The first code scaffold is intentionally small and centered on the canonical ingestion layer.
 
+- `src/Nexus.FnHCI/`
+  current project path for the `FnTools.FnHCI` interaction namespace and shared interaction-line primitives
+- `src/Nexus.FnHCI.UI/`
+  current project path for the `FnTools.FnHCI.UI` renderer-neutral visual shell and navigation boundary
+- `src/Nexus.FnHCI.UI.Blazor/`
+  current project path for the `FnTools.FnHCI.UI.Blazor` host seam
 - `src/Nexus.Kernel/`
   small semantic kernel for ontology-level role and relation primitives
 - `src/Nexus.Logos/`
@@ -39,6 +45,7 @@ Working commands now include:
 - `write-sample-event-store`
 - `import-provider-export`
 - `import-codex-sessions`
+- `import-logos-blog-repo`
 - `capture-artifact-payload`
 - `rebuild-graph-assertions`
 - `export-graphviz-dot`
@@ -46,7 +53,7 @@ Working commands now include:
 - `rebuild-artifact-projections`
 - `report-unresolved-artifacts`
 - `rebuild-conversation-projections`
-- `dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`
+- `./NEXUS-Code/tests/run-all-tests.sh`
 
 Use built-in CLI help for quick guidance:
 
@@ -59,6 +66,7 @@ See:
 - [`docs/how-to/capture-artifact-payload.md`](../docs/how-to/capture-artifact-payload.md)
 - [`docs/how-to/import-provider-export.md`](../docs/how-to/import-provider-export.md)
 - [`docs/how-to/import-codex-sessions.md`](../docs/how-to/import-codex-sessions.md)
+- [`docs/how-to/import-logos-blog-repo.md`](../docs/how-to/import-logos-blog-repo.md)
 - [`docs/how-to/rebuild-artifact-projections.md`](../docs/how-to/rebuild-artifact-projections.md)
 - [`docs/how-to/rebuild-conversation-projections.md`](../docs/how-to/rebuild-conversation-projections.md)
 - [`docs/how-to/create-concept-note.md`](../docs/how-to/create-concept-note.md)
@@ -69,8 +77,22 @@ See:
 - [`docs/how-to/run-tests.md`](../docs/how-to/run-tests.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](../docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](../docs/logos-source-model-v0.md)
+- [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](../docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
+- [`docs/fnhci-namespace-map.md`](../docs/fnhci-namespace-map.md)
+- [`docs/fnui-foundation.md`](../docs/fnui-foundation.md)
+- [`docs/fnhci-ui-blazor-requirements.md`](../docs/fnhci-ui-blazor-requirements.md)
 - [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](../docs/fsharp-documentation-convention.md)
+- [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](../docs/decisions/0017-docs-and-tests-ship-with-work.md)
+
+## Working Expectations
+
+When changing code here, treat docs and tests as part of the work rather than optional follow-up.
+
+- update or add tests when runtime behavior changes
+- update CLI help and runbooks when commands or workflow expectations change
+- update source xmldoc when public API surfaces change
+- if a change is docs-only or tests are not applicable, say that explicitly
 
 ## Testing Approach
 
@@ -79,5 +101,11 @@ The current testing stack is:
 - `Expecto` for standard tests
 - `Expecto.FsCheck` for invariants and property-style tests
 - `Verify.Expecto` for snapshot verification of generated TOML artifacts
+
+The suite is now split by concern line:
+
+- `Nexus.Foundation.Tests`
+- `FnTools.Tests`
+- `CheddarBooks.Tests`
 
 When learning a library used here, prefer its repo docs and examples first, then source, with XML/API inspection used only when exact behavior needs confirmation.

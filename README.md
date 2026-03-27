@@ -16,6 +16,56 @@ The current focus is the ingestion foundation:
 - keep provenance strong enough to support reparsing later
 - avoid forcing the final NEXUS ontology too early
 
+## App And Tool Lines
+
+NEXUS is the foundation workspace, but it is already supporting multiple public-facing lines of work.
+
+### Cheddar
+
+Cheddar is the broader application and branding line for practical life-organization and money-related tools.
+
+Start here:
+
+- [`docs/application-domains/cheddar/README.md`](docs/application-domains/cheddar/README.md)
+
+Current surfaced directions include:
+
+- `CheddarBooks` as the small-business and recordkeeping division
+- `CheddarMoney` as a broader personal-finance direction
+- other small practical tools that help everyday life organization and financial clarity
+
+### CheddarBooks
+
+CheddarBooks is a division under Cheddar focused on micro-business and small-business concerns.
+
+Start here:
+
+- [`docs/application-domains/cheddarbooks-foundation.md`](docs/application-domains/cheddarbooks-foundation.md)
+- [`docs/application-domains/cheddarbooks/README.md`](docs/application-domains/cheddarbooks/README.md)
+
+Current surfaced direction includes:
+
+- the flagship long-term `CheddarBooks` app as a free, open, privacy-conscious alternative to QuickBooks and Xero
+- `LaundryLog` as the first concrete tool app
+- `PerDiemLog` as the next likely complementary tool app
+- other related bookkeeping and support flows that may later converge into the broader CheddarBooks system
+
+### FnTools
+
+FnTools is orthogonal to Cheddar.
+
+It is the technical and developer-tooling line for reusable libraries, protocol integrations, servers, and operational tooling.
+
+Start here:
+
+- [`docs/fntools-foundation.md`](docs/fntools-foundation.md)
+
+Current surfaced direction includes:
+
+- `FnAPI.Penpot`
+- `FnMCP.Penpot`
+- later MCP, networking, OpenWrt, and other technical tooling lines
+
 ## Workspace Boundaries
 
 This workspace intentionally separates three concerns, even though they currently live under one root:
@@ -38,6 +88,15 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
+- [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
+- [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
+- [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
+- [`docs/fnhci-ui-blazor-requirements.md`](docs/fnhci-ui-blazor-requirements.md)
+- [`docs/fnhci-conversation-reading-surface.md`](docs/fnhci-conversation-reading-surface.md)
+- [`docs/laundrylog-fnui-proving-ground.md`](docs/laundrylog-fnui-proving-ground.md)
+- [`docs/application-domains/cheddar/README.md`](docs/application-domains/cheddar/README.md)
+- [`docs/application-domains/`](docs/application-domains/README.md)
+- [`docs/fntools-foundation.md`](docs/fntools-foundation.md)
 - [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](docs/fsharp-documentation-convention.md)
 - [`docs/glossary.md`](docs/glossary.md)
@@ -45,6 +104,21 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/how-to/`](docs/how-to/README.md)
 - [`docs/how-to/cli-commands.md`](docs/how-to/cli-commands.md)
 - [`docs/decisions/`](docs/decisions/)
+- [`docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`](docs/decisions/0018-namespace-and-repo-boundaries-by-line.md)
+
+## Working Expectations
+
+Work in NEXUS is expected to ship with the supporting docs and tests it needs.
+
+- update the relevant docs when behavior, structure, terminology, or architecture changes
+- update or add tests when code behavior changes
+- update CLI help, runbooks, and xmldoc when public command or API surfaces change
+- if a change is docs-only or tests are not applicable, state that explicitly rather than leaving it ambiguous
+
+See:
+
+- [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](docs/decisions/0017-docs-and-tests-ship-with-work.md)
+- [`docs/how-to/run-tests.md`](docs/how-to/run-tests.md)
 
 Repository docs are the primary onboarding surface. Prefer:
 
@@ -82,6 +156,8 @@ Already established:
 - A first LOGOS pool-boundary model exists so future public-facing flows can depend on explicit `public-safe` types instead of loose policy checks.
 - A first LOGOS public-safe export workflow now exists and only emits notes that successfully cross that explicit `public-safe` boundary plus rights that allow public distribution.
 - Public-safe export manifests now surface attribution obligations explicitly for later prominent UI/help/about exposure.
+- Public owner-controlled Markdown blog repositories can now be imported into `public-safe` LOGOS notes for durable public writing memory.
+- FnHCI now explicitly owns the top interaction namespace, while FnUI is tracked as the narrower visual/UI system and likely package line for the Bolero-replacement path and the real NEXUS GUI.
 - Non-chat LOGOS notes now enter explicit `raw`, `private`, or `public-safe` pool paths at creation time instead of relying on a later inferred layout.
 - Restricted-by-default intake and explicit publication are now named architectural rules.
 - A first explicit overlap-candidate report exists without collapsing acquisition history automatically.
