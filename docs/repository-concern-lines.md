@@ -19,6 +19,7 @@ Scope:
 - ontology boundaries
 - cross-project principles
 - core vocabulary
+- FORGE direction for functionalizing repeated work into deterministic reviewed surfaces
 
 Primary docs:
 
@@ -26,6 +27,7 @@ Primary docs:
 - [`docs/glossary.md`](glossary.md)
 - [`docs/nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
+- [`docs/forge-foundation.md`](forge-foundation.md)
 
 Typical branch names:
 
