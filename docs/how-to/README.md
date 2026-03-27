@@ -10,6 +10,7 @@ Use it for:
 
 Current guides:
 
+- [`bootstrap-cheddarbooks-repo.md`](bootstrap-cheddarbooks-repo.md)
 - [`capture-artifact-payload.md`](capture-artifact-payload.md)
 - [`bootstrap-fntools-repo.md`](bootstrap-fntools-repo.md)
 - [`cli-commands.md`](cli-commands.md)

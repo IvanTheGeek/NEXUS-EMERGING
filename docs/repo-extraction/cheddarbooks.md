@@ -87,7 +87,7 @@ CheddarBooks/
 ## Extraction Steps
 
 1. Create the new `CheddarBooks` repo from the `NEXUS` baseline `bb87d037` or later updated baseline after the `FnTools` extraction is stable.
-2. Copy the owned projects, tests, and docs into the new repo root.
+2. Use the bootstrap runbook and script to stage the owned projects, tests, and docs into the new repo root.
 3. Rename project folders and project files:
    - `Nexus.CheddarBooks.LaundryLog` -> `CheddarBooks.LaundryLog`
    - `Nexus.CheddarBooks.LaundryLog.UI` -> `CheddarBooks.LaundryLog.UI`
@@ -119,3 +119,7 @@ After the repo exists and builds cleanly:
 1. create the first app shell and event-modeling path docs in the new repo
 2. move active LaundryLog implementation work there
 3. leave NEXUS with outward links instead of continuing to host the app code
+
+## Runbook
+
+- [`../how-to/bootstrap-cheddarbooks-repo.md`](../how-to/bootstrap-cheddarbooks-repo.md)
