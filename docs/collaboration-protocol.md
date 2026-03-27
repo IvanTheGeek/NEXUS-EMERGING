@@ -42,6 +42,21 @@ Before significant work:
 6. inspect the branch relationship to `main`
 7. inspect relevant source and tests
 
+## Tooling Expectations
+
+When a collaborator expects a standard local tool and it is not installed or not available in the current environment:
+
+- say so explicitly
+- do not silently substitute a weaker workaround if the missing tool meaningfully affects the workflow
+- prefer giving the user the exact tool name and installation need so they can install it if desired
+- once the tool is available, prefer the expected tool over ad hoc substitutes
+
+Examples:
+
+- `gh` for GitHub repo and PR workflows
+- visualization tools such as `dot` or `sfdp`
+- other build, packaging, or repo-management tools that materially change the normal workflow
+
 ## Branching Expectations
 
 - `main` is the current converged shared baseline
