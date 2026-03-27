@@ -13,6 +13,20 @@ That might mean:
 - a household keeping track of recurring laundry costs
 - anyone who wants a simple record when receipts are missing, awkward, or easy to lose
 
+## Origin And Motivation
+
+The original motivation is personal and practical:
+
+- you are a truck driver
+- you do laundry on the road often
+- you want that recurring cost visible in your financial reporting
+- you also want it available as a defensible business-travel deduction for income-tax purposes
+
+That combination matters because laundry on the road is real money spent in the course of work, but it is also exactly the kind of expense that is easy to lose track of if it is not captured while it is happening.
+
+The goal of LaundryLog is not only convenience.
+It is to create a trustworthy journal of those expenses while the facts are still fresh.
+
 ## The Problem Space
 
 Laundry expenses are usually small, repetitive, and easy to forget.
@@ -33,6 +47,13 @@ Those costs often happen in a setting where:
 
 By the time you need the information later, the details can be fuzzy.
 
+For the motivating truck-driver case, the problem is sharper:
+
+- receipts often are not received or kept
+- the expense amounts are often small
+- the deduction still matters over time
+- later reconstruction from memory alone is weak
+
 ## The Scenario LaundryLog Is For
 
 LaundryLog is for the moment when you are actually doing laundry and want to capture what happened while it is still fresh.
@@ -44,6 +65,35 @@ A typical scenario looks like this:
 3. you log one or more expenses as they happen
 4. you keep a running sense of what the total has become
 5. later, you still have a usable record even if the receipt is gone
+
+## Why Audit Defense Matters
+
+Part of the reason this app exists is audit defense.
+
+The current motivating idea is:
+
+- the laundry expense should be logged with amount, place, and date
+- the record should be created close to when the expense happened
+- later, that journal can stand on its own better than memory alone
+- if a credit card was used, a later CheddarBooks flow may also be able to match a statement line item back to the LaundryLog entry
+
+That means LaundryLog is not only about expense capture.
+It is also about building a stronger evidence trail for later review.
+
+The current IRS grounding for this direction is:
+
+- IRS travel guidance includes dry cleaning and laundry among deductible travel expenses
+- IRS Publication 463 says documentary evidence generally isn’t required for an expense other than lodging if it is less than `$75`
+- the same publication emphasizes timely kept records and says a log maintained on a weekly basis can count as a timely kept record
+
+That does not remove the need for accurate records.
+It strengthens the case for a good journal when receipts are absent or weak.
+
+Official sources to refine against later:
+
+- [IRS Publication 463](https://www.irs.gov/publications/p463)
+- [IRS travel deductions overview](https://www.irs.gov/newsroom/business-travelers-should-check-out-these-deductions-before-hitting-the-road)
+- [IRS recordkeeping guidance](https://www.irs.gov/businesses/small-businesses-self-employed/what-kind-of-records-should-i-keep)
 
 ## What The App Should Feel Like
 
