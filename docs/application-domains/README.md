@@ -13,6 +13,10 @@ Application-domain docs should describe the concrete system itself while still l
 
 Current application domains:
 
+- [`Cheddar`](cheddar/README.md)
 - [`CheddarBooks`](cheddarbooks/README.md)
 
 For the current user-facing tool-app explanation, start with [`CheddarBooks LaundryLog Introduction`](cheddarbooks/laundrylog/introduction.md).
+
+FnTools is a separate technical/tooling line rather than an application domain under Cheddar.
+See [`docs/fntools-foundation.md`](../fntools-foundation.md).

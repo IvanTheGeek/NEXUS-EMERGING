@@ -11,6 +11,7 @@ module Program =
               LaundryLogTests.tests
               KernelTests.tests
               LogosTests.tests
+              BlogImportTests.tests
               ProviderAdapterTests.tests
               WorkflowTests.tests
               ImportSnapshotTests.tests

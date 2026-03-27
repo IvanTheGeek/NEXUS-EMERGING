@@ -1,6 +1,6 @@
 # CheddarBooks Foundation
 
-CheddarBooks is an application domain and branding area, not only a single app.
+CheddarBooks is a division under Cheddar, not only a single app.
 
 It is currently the home for the first concrete tool-app work branching out from the NEXUS and FnUI foundations.
 
@@ -17,6 +17,7 @@ Those two roles should stay connected, but they should not be confused.
 
 CheddarBooks now needs its own application-domain home because:
 
+- it is a real division under the broader Cheddar line
 - it is a concrete product and branding direction
 - it can hold more than one concrete tool app or support flow
 - it has its own usage goals and user-facing identity
@@ -31,6 +32,11 @@ From the imported discussion history so far, the current first concrete tool app
 - a good candidate for browser-first plus PWA packaging
 - likely to benefit from optional cloud-backed capabilities
 - a domain where offline use and later convergence matter
+
+The imported history also already points to:
+
+- `PerDiemLog` as the next likely CheddarBooks tool app
+- the eventual flagship `CheddarBooks` app itself as the broader bookkeeping and accounting target
 
 ## Relationship To FnUI
 
@@ -82,6 +88,7 @@ LaundryLog currently pressures the platform and the CheddarBooks domain in these
 
 The current CheddarBooks docs now live in:
 
+- [`cheddar/README.md`](cheddar/README.md)
 - [`cheddarbooks/README.md`](cheddarbooks/README.md)
 - [`cheddarbooks/laundrylog/introduction.md`](cheddarbooks/laundrylog/introduction.md)
 - [`cheddarbooks/laundrylog/requirements.md`](cheddarbooks/laundrylog/requirements.md)

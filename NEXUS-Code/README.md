@@ -45,6 +45,7 @@ Working commands now include:
 - `write-sample-event-store`
 - `import-provider-export`
 - `import-codex-sessions`
+- `import-logos-blog-repo`
 - `capture-artifact-payload`
 - `rebuild-graph-assertions`
 - `export-graphviz-dot`
@@ -65,6 +66,7 @@ See:
 - [`docs/how-to/capture-artifact-payload.md`](../docs/how-to/capture-artifact-payload.md)
 - [`docs/how-to/import-provider-export.md`](../docs/how-to/import-provider-export.md)
 - [`docs/how-to/import-codex-sessions.md`](../docs/how-to/import-codex-sessions.md)
+- [`docs/how-to/import-logos-blog-repo.md`](../docs/how-to/import-logos-blog-repo.md)
 - [`docs/how-to/rebuild-artifact-projections.md`](../docs/how-to/rebuild-artifact-projections.md)
 - [`docs/how-to/rebuild-conversation-projections.md`](../docs/how-to/rebuild-conversation-projections.md)
 - [`docs/how-to/create-concept-note.md`](../docs/how-to/create-concept-note.md)
@@ -81,6 +83,16 @@ See:
 - [`docs/fnhci-ui-blazor-requirements.md`](../docs/fnhci-ui-blazor-requirements.md)
 - [`docs/repository-concern-lines.md`](../docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](../docs/fsharp-documentation-convention.md)
+- [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](../docs/decisions/0017-docs-and-tests-ship-with-work.md)
+
+## Working Expectations
+
+When changing code here, treat docs and tests as part of the work rather than optional follow-up.
+
+- update or add tests when runtime behavior changes
+- update CLI help and runbooks when commands or workflow expectations change
+- update source xmldoc when public API surfaces change
+- if a change is docs-only or tests are not applicable, say that explicitly
 
 ## Testing Approach
 

@@ -46,6 +46,7 @@ Primary docs:
 - [`docs/fsharp-documentation-convention.md`](fsharp-documentation-convention.md)
 - [`docs/decisions/0003-testing-stack-and-library-onboarding.md`](decisions/0003-testing-stack-and-library-onboarding.md)
 - [`docs/decisions/0005-explicit-allowlists-over-catchalls.md`](decisions/0005-explicit-allowlists-over-catchalls.md)
+- [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](decisions/0017-docs-and-tests-ship-with-work.md)
 
 Typical branch names:
 
@@ -170,30 +171,40 @@ Typical branch names:
 - `discord-integration`
 - `github-ingestion`
 
-### Application Domains
+### App And Tool Lines
 
 Scope:
 
-- systems built on top of NEXUS
-- domain-specific modeling beyond the platform foundation
+- concrete product and tool lines built on top of NEXUS
+- application-domain modeling beyond the platform foundation
+- branding/division boundaries that affect branch shape and documentation placement
 
 Examples:
 
+- Cheddar
 - CheddarBooks
 - LaundryLog within CheddarBooks
+- PerDiemLog within CheddarBooks
+- FnTools
+- FnAPI.Penpot and FnMCP.Penpot within FnTools
 - future CheddarBooks support/debugging flows
 - other downstream applications
 
 Primary docs:
 
 - [`docs/application-domains/README.md`](application-domains/README.md)
+- [`docs/application-domains/cheddar/README.md`](application-domains/cheddar/README.md)
 - [`docs/application-domains/cheddarbooks-foundation.md`](application-domains/cheddarbooks-foundation.md)
+- [`docs/fntools-foundation.md`](fntools-foundation.md)
 
 Typical branch names:
 
+- `cheddar-foundation`
 - `cheddarbooks-foundation`
 - `cheddarbooks-laundrylog-tool`
 - `cheddarbooks-support-model`
+- `fntools-foundation`
+- `penpot-integration`
 
 ## How To Use This Map
 

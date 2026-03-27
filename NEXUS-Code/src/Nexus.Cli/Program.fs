@@ -63,6 +63,7 @@ module Program =
         | VerifyWorkingGraphBatch of eventStoreRoot: string * objectsRoot: string * importId: ImportId
         | RebuildWorkingGraphIndex of eventStoreRoot: string
         | RebuildConversationProjections of eventStoreRoot: string
+        | ImportLogosBlogRepo of request: ImportLogosBlogRepoRequest
         | CreateLogosIntakeNote of request: CreateLogosIntakeNoteRequest
         | CreateLogosSanitizedNote of request: CreateLogosSanitizedNoteRequest
         | CreateConceptNote of request: CreateConceptNoteRequest
@@ -704,7 +705,7 @@ module Program =
                       "--source-system <slug>", "Required. Explicit allowlisted source system. Run report-logos-catalog to inspect values."
                       "--source-instance <slug>", "Optional stable source-instance slug such as one concrete forum host or repo surface."
                       "--access-context <public-anonymous|registered-user|owner|admin|bot|api-client>", "Explicit access context. Defaults to owner."
-                      "--acquisition-kind <manual-note|web-scrape|api-pull|manual-export|live-capture>", "Explicit acquisition kind. Defaults to manual-note."
+                      "--acquisition-kind <manual-note|git-sync|web-scrape|api-pull|manual-export|live-capture>", "Explicit acquisition kind. Defaults to manual-note."
                       "--intake-channel <slug>", "Required. Explicit allowlisted intake channel."
                       "--signal-kind <slug>", "Required. Explicit allowlisted signal kind."
                       "--entry-pool <raw|private|public-safe>", "Choose which LOGOS pool path the new note enters. Defaults to raw."
@@ -733,6 +734,27 @@ module Program =
                       "Choosing public-safe at entry requires a policy that crosses the explicit PublicSafe pool boundary."
                       "At least one explicit locator is required."
                       "Detailed guide: docs/how-to/create-logos-intake-note.md" ] }
+        | "import-logos-blog-repo" ->
+            Some
+                { Name = name
+                  Summary = "Import a public owner-controlled Markdown blog repo into public-safe LOGOS intake notes."
+                  Usage =
+                    [ sprintf "%s import-logos-blog-repo --repo-root <path> --source-base-uri <uri>" cliInvocation
+                      sprintf "%s import-logos-blog-repo --repo-root /tmp/blog.ivanrainbolt.com --source-base-uri https://blog.ivanrainbolt.com" cliInvocation ]
+                  Options =
+                    [ "--repo-root <path>", "Required. Root directory of the Markdown blog repository."
+                      "--source-base-uri <uri>", "Required. Public base URI used to build source page locators."
+                      "--source-instance <slug>", "Optional explicit source-instance slug. Defaults to a slug derived from the source-base-uri host."
+                      "--tag <slug>", "Optional extra tag slug to apply to every imported note. Repeatable."
+                      "--docs-root <path>", sprintf "Override the docs root. Defaults to %s." defaultDocsRoot ]
+                  Examples =
+                    [ sprintf "%s import-logos-blog-repo --repo-root /tmp/blog.ivanrainbolt.com --source-base-uri https://blog.ivanrainbolt.com" cliInvocation
+                      sprintf "%s import-logos-blog-repo --repo-root /tmp/blog.ivanrainbolt.com --source-base-uri https://blog.ivanrainbolt.com --source-instance blog-ivanrainbolt-com --tag public-writing" cliInvocation ]
+                  Notes =
+                    [ "This command is currently aimed at owner-controlled public blog repos whose Markdown files carry front matter like title, slug, datePublished, cuid, and tags."
+                      "Imported notes land in docs/logos-intake/public-safe/ with source_system=blog, intake_channel=published-article, signal_kind=article, acquisition_kind=git-sync, and rights_policy=owner-controlled."
+                      "Files without the expected front matter are skipped instead of aborting the whole import."
+                      "Detailed guide: docs/how-to/import-logos-blog-repo.md" ] }
         | "create-logos-sanitized-note" ->
             Some
                 { Name = name
@@ -790,6 +812,7 @@ module Program =
           "verify-working-graph-batch"
           "rebuild-working-graph-index"
           "rebuild-conversation-projections"
+          "import-logos-blog-repo"
           "create-logos-intake-note"
           "create-logos-sanitized-note"
           "create-concept-note" ]
@@ -2749,6 +2772,74 @@ module Program =
 
             loop defaultDocsRoot None None None None None None None None LogosPool.Raw None None None None None None [] None None [] args
 
+    let private parseImportLogosBlogRepo (args: string list) =
+        if containsHelpSwitch args then
+            Ok (ShowHelp (Some "import-logos-blog-repo"))
+        else
+            let rec loop docsRoot repoRoot sourceBaseUri sourceInstance tags remaining =
+                match remaining with
+                | [] ->
+                    match repoRoot, sourceBaseUri with
+                    | None, _ ->
+                        eprintfn "Missing required option for import-logos-blog-repo: --repo-root"
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                    | _, None ->
+                        eprintfn "Missing required option for import-logos-blog-repo: --source-base-uri"
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                    | Some repoRootValue, Some sourceBaseUriValue ->
+                        Ok
+                            (ImportLogosBlogRepo
+                                { DocsRoot = docsRoot
+                                  RepoRoot = repoRootValue
+                                  SourceBaseUri = sourceBaseUriValue
+                                  SourceInstanceId = sourceInstance
+                                  ExtraTags = List.rev tags })
+                | "--docs-root" :: value :: rest ->
+                    loop value repoRoot sourceBaseUri sourceInstance tags rest
+                | "--repo-root" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid repo root: %s" value
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                    else
+                        loop docsRoot (Some normalized) sourceBaseUri sourceInstance tags rest
+                | "--source-base-uri" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid source base URI: %s" value
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                    else
+                        loop docsRoot repoRoot (Some normalized) sourceInstance tags rest
+                | "--source-instance" :: value :: rest ->
+                    try
+                        let identifier = SourceInstanceId.create value
+                        loop docsRoot repoRoot sourceBaseUri (Some identifier) tags rest
+                    with :? ArgumentException ->
+                        eprintfn "Unsupported LOGOS source instance: %s" value
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                | "--tag" :: value :: rest ->
+                    let normalized = value.Trim()
+
+                    if String.IsNullOrWhiteSpace(normalized) then
+                        eprintfn "Invalid tag: %s" value
+                        printCommandHelp "import-logos-blog-repo"
+                        Error 1
+                    else
+                        loop docsRoot repoRoot sourceBaseUri sourceInstance (normalized :: tags) rest
+                | option :: _ ->
+                    eprintfn "Unknown option for import-logos-blog-repo: %s" option
+                    printCommandHelp "import-logos-blog-repo"
+                    Error 1
+
+            loop defaultDocsRoot None None None [] args
+
     let private parseCreateLogosSanitizedNote (args: string list) =
         if containsHelpSwitch args then
             Ok (ShowHelp (Some "create-logos-sanitized-note"))
@@ -2950,6 +3041,8 @@ module Program =
             parseRebuildWorkingGraphIndex rest
         | "rebuild-conversation-projections" :: rest ->
             parseRebuildConversationProjections rest
+        | "import-logos-blog-repo" :: rest ->
+            parseImportLogosBlogRepo rest
         | "create-logos-intake-note" :: rest ->
             parseCreateLogosIntakeNote rest
         | "create-logos-sanitized-note" :: rest ->
@@ -4531,6 +4624,42 @@ module Program =
             eprintfn "%s" error
             1
 
+    let private importLogosBlogRepo request =
+        match LogosBlogImports.importRepo request with
+        | Error error ->
+            eprintfn "%s" error
+            1
+        | Ok result ->
+            printfn "LOGOS blog repo imported."
+            printfn "  Repo root: %s" result.RepoRoot
+            printfn "  Docs root: %s" result.DocsRoot
+            printfn "  Source base URI: %s" result.SourceBaseUri
+            printfn "  Source instance: %s" (SourceInstanceId.value result.SourceInstanceId)
+            printfn "  Source system: %s" (SourceSystemId.value KnownSourceSystems.blog)
+            printfn "  Intake channel: %s" (IntakeChannelId.value CoreIntakeChannels.publishedArticle)
+            printfn "  Signal kind: %s" (SignalKindId.value CoreSignalKinds.article)
+            printfn "  Acquisition kind: %s" (AcquisitionKindId.value KnownAcquisitionKinds.gitSync)
+            printfn "  Entry pool: %s" (LogosPool.value LogosPool.PublicSafe)
+            printfn "  Rights policy: %s" (RightsPolicyId.value KnownRightsPolicies.ownerControlled)
+            printfn "  Imported posts: %d" result.ImportedPosts.Length
+            printfn "  Skipped posts: %d" result.SkippedPosts.Length
+
+            if not result.ImportedPosts.IsEmpty then
+                printfn "  Imported:"
+
+                result.ImportedPosts
+                |> List.iter (fun post ->
+                    printfn "    %s | %s | %s" post.PostSlug post.NoteSlug post.RelativeSourcePath)
+
+            if not result.SkippedPosts.IsEmpty then
+                printfn "  Skipped:"
+
+                result.SkippedPosts
+                |> List.iter (fun post ->
+                    printfn "    %s | %s" post.RelativeSourcePath post.Reason)
+
+            0
+
     let private createLogosSanitizedNote request =
         match LogosSanitizedNotes.create request with
         | Ok result ->
@@ -4630,6 +4759,8 @@ module Program =
             rebuildWorkingGraphIndex eventStoreRoot
         | Ok (RebuildConversationProjections eventStoreRoot) ->
             rebuildConversationProjections eventStoreRoot
+        | Ok (ImportLogosBlogRepo request) ->
+            importLogosBlogRepo request
         | Ok (CreateLogosIntakeNote request) ->
             createLogosIntakeNote request
         | Ok (CreateLogosSanitizedNote request) ->

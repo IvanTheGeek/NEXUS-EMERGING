@@ -146,6 +146,13 @@ The CLI supports both:
 - The note now enters an explicit LOGOS pool path at creation time: `raw`, `private`, or `public-safe`.
 - Details: [`docs/how-to/create-logos-intake-note.md`](create-logos-intake-note.md)
 
+`import-logos-blog-repo`
+
+- Imports an owner-controlled public Markdown blog repo into durable `public-safe` LOGOS notes.
+- Use it when you want public writing in Git to become explicit LOGOS material without pretending the Git repo itself is the only working surface.
+- The current path is intentionally narrow and expects Markdown files with front matter such as `title`, `slug`, `datePublished`, `cuid`, and `tags`.
+- Details: [`docs/how-to/import-logos-blog-repo.md`](import-logos-blog-repo.md)
+
 `create-logos-sanitized-note`
 
 - Creates a derived sanitized LOGOS note from an existing restricted intake note.
@@ -289,6 +296,13 @@ LOGOS intake seeding:
 5. Keep the restricted source note under `docs/logos-intake/<pool>/`.
 6. Refine the derived note under `docs/logos-intake-derived/<pool>/` for the intended sharing scope.
 
+Public writing import:
+
+1. Keep the canonical public article repo in Git.
+2. Run `import-logos-blog-repo`.
+3. Run `report-logos-handling` if you want an audit view over the imported notes.
+4. Run `export-logos-public-notes` if you want an explicit exported public-safe subset and manifest.
+
 Manual artifact hydration:
 
 1. Identify a target artifact with `report-unresolved-artifacts`.
@@ -310,6 +324,7 @@ Unless overridden, the CLI uses repository-local defaults:
 - [`docs/how-to/compare-provider-exports.md`](compare-provider-exports.md)
 - [`docs/how-to/import-provider-export.md`](import-provider-export.md)
 - [`docs/how-to/import-codex-sessions.md`](import-codex-sessions.md)
+- [`docs/how-to/import-logos-blog-repo.md`](import-logos-blog-repo.md)
 - [`docs/how-to/capture-artifact-payload.md`](capture-artifact-payload.md)
 - [`docs/how-to/render-graphviz-dot.md`](render-graphviz-dot.md)
 - [`docs/how-to/rebuild-conversation-projections.md`](rebuild-conversation-projections.md)

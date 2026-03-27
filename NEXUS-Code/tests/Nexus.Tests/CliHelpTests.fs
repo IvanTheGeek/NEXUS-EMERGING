@@ -153,6 +153,19 @@ module CliHelpTests =
                   Expect.stringContains result.StandardOutput "docs/how-to/create-logos-intake-note.md" "Expected the intake note guide link."
                   Expect.equal result.StandardError "" "Did not expect stderr from help create-logos-intake-note.")
 
+              testCase "LOGOS blog repo help exposes the public blog import workflow" (fun () ->
+                  let result = TestHelpers.runCli [ "help"; "import-logos-blog-repo" ]
+
+                  Expect.equal result.ExitCode 0 "Expected help import-logos-blog-repo to exit successfully."
+                  Expect.stringContains result.StandardOutput "Command: import-logos-blog-repo" "Expected the command header."
+                  Expect.stringContains result.StandardOutput "--repo-root <path>" "Expected repo-root guidance."
+                  Expect.stringContains result.StandardOutput "--source-base-uri <uri>" "Expected source-base-uri guidance."
+                  Expect.stringContains result.StandardOutput "--source-instance <slug>" "Expected source-instance guidance."
+                  Expect.stringContains result.StandardOutput "published-article" "Expected the blog-specific intake channel note."
+                  Expect.stringContains result.StandardOutput "git-sync" "Expected the git-sync acquisition kind note."
+                  Expect.stringContains result.StandardOutput "docs/how-to/import-logos-blog-repo.md" "Expected the blog-import guide link."
+                  Expect.equal result.StandardError "" "Did not expect stderr from help import-logos-blog-repo.")
+
               testCase "LOGOS sanitized note help exposes the derived sanitization workflow" (fun () ->
                   let result = TestHelpers.runCli [ "help"; "create-logos-sanitized-note" ]
 
