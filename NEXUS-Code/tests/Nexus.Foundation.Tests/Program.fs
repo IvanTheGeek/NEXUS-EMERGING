@@ -12,6 +12,7 @@ module Program =
               BlogImportTests.tests
               ProviderAdapterTests.tests
               WorkflowTests.tests
+              CommitCheckpointTests.tests
               ImportSnapshotTests.tests
               ImportSnapshotHistoryTests.tests
               CurrentIngestionTests.tests

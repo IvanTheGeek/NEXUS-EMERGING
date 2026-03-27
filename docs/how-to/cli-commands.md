@@ -119,6 +119,20 @@ The CLI supports both:
 - Use this after exporting Codex sessions into the object layer.
 - Details: [`docs/how-to/import-codex-sessions.md`](import-codex-sessions.md)
 
+`capture-codex-commit-checkpoint`
+
+- Exports the current Codex local-session state, imports it, and links it to the current Git `HEAD` commit.
+- Use it after a commit when you want a durable path from that commit back to the Codex chat that led to it.
+- Writes a durable checkpoint manifest under `work-batches/commit-checkpoints/<repo>/<commit>.toml`.
+- Details: [`docs/how-to/capture-codex-commit-checkpoint.md`](capture-codex-commit-checkpoint.md)
+
+`report-codex-commit-checkpoint`
+
+- Reports the durable checkpoint linked to a repo commit.
+- Use it after copying a commit SHA from GitHub when you want the linked Codex import and conversation hints.
+- Defaults to the current Git `HEAD` commit when `--commit <sha>` is omitted.
+- Details: [`docs/how-to/capture-codex-commit-checkpoint.md`](capture-codex-commit-checkpoint.md)
+
 `capture-artifact-payload`
 
 - Manually hydrates an artifact payload that was referenced earlier.
@@ -258,6 +272,12 @@ Provider import:
 5. Run `compare-import-snapshots --base-import-id <uuid> --current-import-id <uuid>` if you want normalized snapshot semantics for one specific import pair after import.
 6. Run `rebuild-conversation-projections`.
 7. Run `report-conversation-overlap-candidates --left-provider codex --right-provider chatgpt` if you want a first explicit cross-source overlap candidate check.
+
+Codex commit checkpoint:
+
+1. Make the Git commit in the target repo.
+2. Run `capture-codex-commit-checkpoint`.
+3. Later, run `report-codex-commit-checkpoint --repo-root <path> --commit <sha>` when you want the linked Codex import and conversation hints for that commit.
 8. Run `rebuild-artifact-projections`.
 9. Run `rebuild-graph-assertions` if you want to refresh the thin graph layer.
 10. Run `export-graphviz-dot` if you want an external graph view.

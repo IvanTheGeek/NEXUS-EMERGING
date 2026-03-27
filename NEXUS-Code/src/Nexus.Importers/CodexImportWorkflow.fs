@@ -341,4 +341,10 @@ module CodexImportWorkflow =
           WorkingGraphCatalogRelativePath = Some workingGraphCatalogRelativePath
           WorkingGraphIndexRelativePath = Some workingGraphIndexRelativePath
           WorkingGraphAssertionCount = Some workingGraph.GraphAssertionCount
+          ConversationSummaries =
+            intake.Conversations
+            |> List.map (fun conversation ->
+                { ProviderConversationId = conversation.ProviderConversationId
+                  Title = conversation.Title
+                  MessageCountHint = conversation.MessageCountHint })
           Counts = counts }

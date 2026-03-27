@@ -45,6 +45,8 @@ Working commands now include:
 - `write-sample-event-store`
 - `import-provider-export`
 - `import-codex-sessions`
+- `capture-codex-commit-checkpoint`
+- `report-codex-commit-checkpoint`
 - `import-logos-blog-repo`
 - `capture-artifact-payload`
 - `rebuild-graph-assertions`
@@ -64,6 +66,7 @@ See:
 
 - [`docs/how-to/cli-commands.md`](../docs/how-to/cli-commands.md)
 - [`docs/how-to/capture-artifact-payload.md`](../docs/how-to/capture-artifact-payload.md)
+- [`docs/how-to/capture-codex-commit-checkpoint.md`](../docs/how-to/capture-codex-commit-checkpoint.md)
 - [`docs/how-to/import-provider-export.md`](../docs/how-to/import-provider-export.md)
 - [`docs/how-to/import-codex-sessions.md`](../docs/how-to/import-codex-sessions.md)
 - [`docs/how-to/import-logos-blog-repo.md`](../docs/how-to/import-logos-blog-repo.md)

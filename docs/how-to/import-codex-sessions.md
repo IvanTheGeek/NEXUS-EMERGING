@@ -56,7 +56,13 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- import-codex-s
 
 ## Recommended Follow-Up
 
-After importing, rebuild conversation projections:
+If you want the imported Codex state explicitly linked to a Git commit, prefer the higher-level checkpoint flow instead of running export and import separately:
+
+```bash
+dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- capture-codex-commit-checkpoint
+```
+
+Otherwise, after importing, rebuild conversation projections:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- rebuild-conversation-projections
