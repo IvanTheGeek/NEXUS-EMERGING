@@ -97,6 +97,7 @@ When behavior changes:
 - update or add tests
 - update docs and runbooks
 - update public help and xmldoc when public surfaces change
+- keep navigation-oriented Markdown docs GitHub-clickable with valid relative links instead of dead or plain-text path references
 
 If a change is docs-only or tests are not applicable, say that explicitly.
 

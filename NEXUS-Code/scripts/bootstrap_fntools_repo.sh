@@ -238,9 +238,9 @@ Current included test project:
 
 Start here:
 
-- \`docs/foundation.md\`
-- \`docs/namespace-map.md\`
-- \`docs/fnui-requirements.md\`
+- [\`docs/foundation.md\`](docs/foundation.md)
+- [\`docs/namespace-map.md\`](docs/namespace-map.md)
+- [\`docs/fnui-requirements.md\`](docs/fnui-requirements.md)
 EOF
 
 write_file "$destination_root/bootstrap-source.toml" <<EOF

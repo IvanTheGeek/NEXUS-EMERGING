@@ -247,9 +247,9 @@ Current included test project:
 
 Start here:
 
-- \`docs/foundation.md\`
-- \`docs/laundrylog/introduction.md\`
-- \`docs/laundrylog/requirements.md\`
+- [\`docs/foundation.md\`](docs/foundation.md)
+- [\`docs/laundrylog/introduction.md\`](docs/laundrylog/introduction.md)
+- [\`docs/laundrylog/requirements.md\`](docs/laundrylog/requirements.md)
 EOF
 
 write_file "$destination_root/bootstrap-source.toml" <<EOF
@@ -274,8 +274,8 @@ write_file "$destination_root/docs/foundation.md" <<'EOF'
 
 See:
 
-- `./cheddarbooks-docs/README.md`
-- `./laundrylog/introduction.md`
+- [\`cheddarbooks-docs/README.md\`](cheddarbooks-docs/README.md)
+- [\`laundrylog/introduction.md\`](laundrylog/introduction.md)
 EOF
 
 if [[ "$dry_run" == "true" ]]; then

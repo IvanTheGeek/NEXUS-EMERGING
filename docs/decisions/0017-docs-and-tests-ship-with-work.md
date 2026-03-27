@@ -29,6 +29,7 @@ Working rule:
 - update the relevant docs when behavior, structure, terminology, workflow, or architecture changes
 - update or add tests when code behavior changes
 - update CLI help, runbooks, and xmldoc when public command or API surfaces change
+- keep Markdown navigation surfaces GitHub-clickable with valid relative links instead of plain path text or broken targets
 - if a change is docs-only or tests are not applicable, say that explicitly rather than leaving the omission ambiguous
 
 ## Consequences
@@ -36,6 +37,7 @@ Working rule:
 This means:
 
 - documentation updates are expected as part of normal implementation
+- documentation intended as navigation should work as navigation when viewed on GitHub
 - tests are expected as part of normal implementation
 - docs-only changes do not require fake tests
 - behavior-changing code without tests should be treated as incomplete unless there is a clearly stated reason
