@@ -29,6 +29,8 @@ not from memory of prior conversations alone.
 
 Important discoveries should become durable repo memory before collaborators rely on them repeatedly.
 
+Important repeated work should also be pushed toward deterministic and reviewable repo surfaces instead of remaining dependent on the habits or capabilities of one particular AI.
+
 ## Start-Of-Work Checklist
 
 Before significant work:
@@ -98,6 +100,7 @@ When behavior changes:
 - update docs and runbooks
 - update public help and xmldoc when public surfaces change
 - keep navigation-oriented Markdown docs GitHub-clickable with valid relative links instead of dead or plain-text path references
+- when a repeated workflow becomes important enough, prefer encoding it into reviewed functions, scripts, commands, or schemas rather than relying on prompt memory alone
 
 If a change is docs-only or tests are not applicable, say that explicitly.
 
@@ -105,6 +108,7 @@ See:
 
 - [`decisions/0017-docs-and-tests-ship-with-work.md`](decisions/0017-docs-and-tests-ship-with-work.md)
 - [`how-to/run-tests.md`](how-to/run-tests.md)
+- [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 
 ## Durable Learning Expectations
 
@@ -121,6 +125,7 @@ Do not assume future collaborators will recover the learning from chat history a
 See:
 
 - [`decisions/0021-important-discoveries-become-durable-repo-memory.md`](decisions/0021-important-discoveries-become-durable-repo-memory.md)
+- [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 
 ## Decision Expectations
 

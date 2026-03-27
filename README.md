@@ -87,6 +87,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-ingestion-architecture.md`](docs/nexus-ingestion-architecture.md)
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
+- [`docs/forge-foundation.md`](docs/forge-foundation.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
 - [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
@@ -154,6 +155,7 @@ Already established:
 - Raw artifacts must be preserved.
 - Canonical history should prefer `Observed` language at the ingestion layer.
 - Working CLI importers exist for ChatGPT, Claude, Grok, and Codex capture.
+- FORGE is now explicitly being treated as the NEXUS line for turning repeated useful AI-assisted work into deterministic, reviewable system surfaces.
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 - Normalized import snapshots exist for provider-export imports and can be rebuilt for older imports.
