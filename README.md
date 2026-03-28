@@ -64,6 +64,7 @@ Current surfaced direction includes:
 
 - `FnAPI.Penpot`
 - `FnMCP.Penpot`
+- Event Modeling tooling, with local Penpot as a likely near-term integration seam
 - later MCP, networking, OpenWrt, and other technical tooling lines
 
 ## Workspace Boundaries
@@ -88,6 +89,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/forge-foundation.md`](docs/forge-foundation.md)
+- [`docs/event-modeling-tool-foundation.md`](docs/event-modeling-tool-foundation.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
 - [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
@@ -158,6 +160,7 @@ Already established:
 - Canonical history should prefer `Observed` language at the ingestion layer.
 - Working CLI importers exist for ChatGPT, Claude, Grok, and Codex capture.
 - FORGE is now explicitly being treated as the NEXUS line for turning repeated useful AI-assisted work into deterministic, reviewable system surfaces.
+- External Event Modeling tools have proven insufficient as the primary long-term workflow, and building our own Event Modeling tool is now an explicit direction with Penpot treated as a near-term integration surface.
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
 - Canonical events and import manifests can be written into `NEXUS-EventStore/`.
 - Normalized import snapshots exist for provider-export imports and can be rebuilt for older imports.

@@ -20,6 +20,7 @@ Scope:
 - cross-project principles
 - core vocabulary
 - FORGE direction for functionalizing repeated work into deterministic reviewed surfaces
+- Event Modeling tool direction and its relationship to FORGE and FnTools
 
 Primary docs:
 
@@ -28,6 +29,7 @@ Primary docs:
 - [`docs/nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
 - [`docs/forge-foundation.md`](forge-foundation.md)
+- [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
 
 Typical branch names:
 
@@ -193,6 +195,7 @@ Examples:
 - PerDiemLog within CheddarBooks
 - FnTools
 - FnAPI.Penpot and FnMCP.Penpot within FnTools
+- Event Modeling tooling and Penpot integration work within FnTools
 - future CheddarBooks support/debugging flows
 - other downstream applications
 
