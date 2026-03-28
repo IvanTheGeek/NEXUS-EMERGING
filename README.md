@@ -93,6 +93,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](docs/fnhci-ui-blazor-requirements.md)
 - [`docs/fnhci-conversation-reading-surface.md`](docs/fnhci-conversation-reading-surface.md)
+- [`docs/penpot-live-backend-and-export.md`](docs/penpot-live-backend-and-export.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](docs/laundrylog-fnui-proving-ground.md)
 - [`docs/application-domains/cheddar/README.md`](docs/application-domains/cheddar/README.md)
 - [`docs/application-domains/`](docs/application-domains/README.md)

@@ -27,6 +27,8 @@ From the imported discussion history so far, the current known directions includ
 - broader MCP and technical tooling work
 - networking-focused tools with interest in OpenWrt and related operator concerns
 
+For the current live Penpot/backend/export workflow that should inform those lines, see [Penpot Live Backend And Export](penpot-live-backend-and-export.md).
+
 ## Relationship To Cheddar
 
 FnTools is not a sub-brand of Cheddar.
