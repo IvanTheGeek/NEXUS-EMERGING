@@ -241,6 +241,13 @@ Current strongest repro:
 So the current issue is no longer \"can instances be created on PATHS\".
 It is \"instance text overrides are stored but not rendered\".
 
+Current non-fixes already tested:
+
+- detaching the instance before applying the text overrides
+- forcing a text reflow by resizing the text nodes after the write
+
+In the current lab, both of those still left canvas and export rendering the stale master/default text.
+
 ## Current Upstream Evidence
 
 Penpot community and GitHub history show that nearby component-override problems are real and recurring, even if the exact current slice-shell export issue has not yet been matched one-for-one.
