@@ -38,9 +38,18 @@ This keeps Penpot work closer to FORGE:
 
 ## What A `.penpot` File Is
 
-A `.penpot` file is a ZIP archive containing JSON records.
+Current Penpot export/import docs describe the exported `.penpot` format as essentially:
 
-That matters because it means Penpot files are already inspectable with normal archive and text tooling.
+- a ZIP archive
+- with binary assets alongside readable JSON structure
+
+Penpot also documents that the older binary `.penpot` format is deprecated.
+
+So the correct current working rule is:
+
+- do not assume `.penpot` means opaque binary
+- first verify the actual file you have
+- expect current exported Penpot files to be inspectable with normal archive and text tooling
 
 Useful first commands:
 
@@ -49,7 +58,7 @@ file LaundryLog.penpot
 unzip -l LaundryLog.penpot
 ```
 
-For your current LaundryLog file, the archive shape already shows:
+Your current `LaundryLog.penpot` file matches that current documented shape. Its archive contents already show:
 
 - top-level file metadata JSON
 - per-page metadata JSON
@@ -95,9 +104,10 @@ Examples directly observed from the current file:
 
 So the current evidence says:
 
-- Penpot stores the model as explicit JSON records
+- current exported Penpot files store the model as explicit JSON records plus archive-contained assets
 - page and shape hierarchy is materialized on disk
 - component and variant-related information is inspectable without the GUI
+- older binary `.penpot` assumptions should not be treated as the default for current files
 
 ## Live Access Surfaces
 
@@ -166,3 +176,4 @@ This should later turn into stable tool surfaces, likely in `FnTools`:
 - [FnTools Foundation](fntools-foundation.md)
 - [FORGE Foundation](forge-foundation.md)
 - [Inspect Penpot Files And Live Surfaces](how-to/inspect-penpot-file-and-live-surfaces.md)
+- [Penpot export/import docs](https://help.penpot.app/user-guide/import-export/)
