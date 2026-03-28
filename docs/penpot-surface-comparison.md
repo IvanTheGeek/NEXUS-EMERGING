@@ -80,6 +80,7 @@ Verified in the current local setup:
 - duplicating a component base, evolving the duplicate, and instantiating it back into the board is a practical live workflow
 - for duplicated slice-card shells, directly editing inherited text nodes did not reliably show up in exported visuals
 - the current reliable workaround is to keep the component shell and overlay fresh local text nodes for per-card variation
+- inspect-style API surfaces are available through `generateStyle` and `generateMarkup`, and they are useful comparison surfaces when the visual export path is suspicious
 
 Verified current live file example:
 
@@ -96,6 +97,41 @@ Current local operational note:
 - Codex uses `mcp-remote` against the Penpot `/sse` endpoint
 
 That is a machine-local operational finding and should be re-verified in other environments.
+
+## Current Text Mutation Lab Findings
+
+The current `TextMutationLab.V1` in the live `LaundryLog` Penpot file established a sharper result set.
+
+Verified outcomes:
+
+- fresh non-component text exports correctly in both `png` and `svg`
+- direct text edits on a component-derived slice instance were visible in live shape data but did not appear in exported visuals
+- detaching that instance did not by itself make inherited text edits export correctly
+- renaming the edited inherited text node did not make the export honor the changed text
+- hiding the inherited text node and overlaying a fresh local text node did export correctly
+
+So the current problem appears narrower than \"Penpot text is broken\".
+
+The stronger current reading is:
+
+- fresh local text is fine
+- inherited text inside this component-derived slice shell is the unstable case for export
+
+## Current Token Caveat
+
+The current slice-title texts in this experiment had no token bindings.
+
+That means the current overlay workaround preserved resolved visual style, but it did not prove token-preserving behavior.
+
+So the current practical warning is:
+
+- overlay text is acceptable as a current experiment workaround
+- it should not automatically be treated as the final pattern for token-governed component systems
+- for real reusable UI/component work, stay as high as possible on the ladder of:
+  - component instance
+  - variant/stateful component
+  - detached instance
+  - fully local overlay or one-off text
 
 ## Current Exported File Findings
 
