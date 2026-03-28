@@ -85,6 +85,32 @@ What should not be carried forward uncritically:
 - the exact visual ordering of earlier slice pages
 - the assumption that those TOML files are now the authoritative shape
 
+### Recovered Slice HTML Milestones
+
+The strongest surviving recovery path for the EM-1 HTML look-and-feel work is the git history on `main`.
+
+Earlier imported conversation history recorded these now-missing remote branches:
+
+- `experiment`
+- `TOML`
+- `claude/eager-nash`
+- `claude/sweet-goodall`
+
+But the current GitHub remote only exposes `main`, so the practical recovery surface is the commit lineage that remains there.
+
+Useful milestones:
+
+- `d47c513`
+  base command-slice HTML concept
+- `f229656`
+  GWT row added and layout refined
+- `e6f1b00`
+  view-slice section added
+- `f63e1af`
+  read-model row added and badge grouping refined
+
+These commits are useful because they show the visual evolution from a single command-slice card toward the calmer slice-card language that later inspired the current Penpot direction.
+
 ## Bolero To FnHCI/FnUI Source Chain
 
 The current FnHCI/FnUI direction did not appear in isolation.
