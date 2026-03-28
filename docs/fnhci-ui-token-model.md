@@ -13,9 +13,10 @@ The goal is to keep the token model:
 
 The current Penpot evidence is now strong enough to justify a first explicit token-model note.
 
-Real `.penpot` exports already show:
+Real `.penpot` exports now show:
 
-- first-class `tokens.json`
+- first-class `tokens.json` in some files
+- `design-tokens/v1` feature support even in files that have not yet emitted a populated `tokens.json`
 - token sets
 - theme groups
 - active theme selection metadata
@@ -189,6 +190,8 @@ The future NEXUS and FnTools direction should likely be:
 - preserve Penpot-compatible naming where it helps
 - keep enough structure to support other runtimes too
 
+The first concrete proving-ground note for this direction now lives in [LaundryLog FnHCI.UI Token Vocabulary](fnhci-ui-laundrylog-token-vocabulary.md).
+
 ## Runtime Mapping Direction
 
 The token model should be renderer-neutral enough to project into multiple runtime targets.
@@ -250,5 +253,6 @@ Key sources for this direction include:
 - [Penpot Access And Structure](penpot-access-and-structure.md)
 - [FnHCI And Penpot Abstraction Boundary](fnhci-penpot-abstraction.md)
 - [Penpot Working Loop For Event Modeling And FnHCI](penpot-working-loop.md)
+- [LaundryLog FnHCI.UI Token Vocabulary](fnhci-ui-laundrylog-token-vocabulary.md)
 - [Penpot Design Tokens Starter Pack](https://community.penpot.app/t/penpot-design-tokens-starter-pack/8982)
 - [Breakpoint themes discussion](https://community.penpot.app/t/is-it-possible-to-create-breakpoints-modes-like-in-figma/9731/4)
