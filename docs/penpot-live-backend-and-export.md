@@ -88,12 +88,21 @@ Machine-local secrets should stay outside repos.
 
 ## Current MCP Limitation
 
-The current Penpot MCP setup appears to allow only one active transport connection at a time.
+The official Penpot MCP architecture is:
+
+- AI client connects to the MCP server
+- Penpot MCP plugin connects to that same server via WebSocket
+- the server relays tool execution into the Penpot Plugin API inside the live design file
+
+That is the intended model.
+
+However, the current local setup is still hitting a transport limitation in practice.
 
 Current observed effect:
 
 - if the Penpot plugin is already connected
 - Codex MCP access may fail with an `Already connected to a transport` error
+- restarting the local MCP server does not currently clear that failure reliably
 
 So today:
 
