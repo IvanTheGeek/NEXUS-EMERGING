@@ -1,0 +1,168 @@
+# Penpot Access And Structure
+
+This note captures the first durable Penpot working model for NEXUS, FnTools, and later FORGE work.
+
+The goal is to make Penpot interaction inspectable and repeatable for both humans and AI, rather than leaving understanding trapped inside one GUI session or one model's memory.
+
+## Why This Matters
+
+Penpot is now important to NEXUS for two related reasons:
+
+- it is a near-term visual and collaborative surface for Event Modeling and UI work
+- it provides practical integration seams through backend/API access and MCP/plugin access
+
+That means AI should not treat Penpot as "just a drawing app".
+
+Penpot work should be approached as a set of stable, inspectable surfaces:
+
+- the `.penpot` file artifact
+- the live backend/API surface
+- the live MCP/plugin surface
+- the GUI as the final visual confirmation surface
+
+## Preferred Inspection Order
+
+When AI or humans need to understand a Penpot file or workspace, prefer this order:
+
+1. durable repo notes that already explain the modeling conventions
+2. offline `.penpot` file inspection
+3. local Penpot backend/API docs and endpoints
+4. live MCP/plugin interaction against the currently open file
+5. manual GUI inspection only after the structured surfaces above
+
+This keeps Penpot work closer to FORGE:
+
+- deterministic where possible
+- reviewable
+- easier to translate into scripts, functions, and later F# tooling
+
+## What A `.penpot` File Is
+
+A `.penpot` file is a ZIP archive containing JSON records.
+
+That matters because it means Penpot files are already inspectable with normal archive and text tooling.
+
+Useful first commands:
+
+```bash
+file LaundryLog.penpot
+unzip -l LaundryLog.penpot
+```
+
+For your current LaundryLog file, the archive shape already shows:
+
+- top-level file metadata JSON
+- per-page metadata JSON
+- per-page object JSON files keyed by shape id
+
+## First Real Structure Observed
+
+From the current `LaundryLog.penpot` artifact:
+
+- top-level file metadata:
+  - `files/<file-id>.json`
+- page metadata:
+  - `files/<file-id>/pages/<page-id>.json`
+- page root object:
+  - `files/<file-id>/pages/<page-id>/00000000-0000-0000-0000-000000000000.json`
+- other shapes and components:
+  - `files/<file-id>/pages/<page-id>/<shape-id>.json`
+
+Examples directly observed from the current file:
+
+- file metadata includes:
+  - `name = "LaundryLog"`
+  - `features`
+  - `id`
+  - `projectId`
+  - `teamId`
+  - `modifiedAt`
+  - `version`
+- page metadata includes:
+  - `id`
+  - `name`
+  - `index`
+- root/page object includes:
+  - `type`
+  - `fills`
+  - `shapes`
+  - geometry and transform data
+- a component-like shape such as `Button.Counter` includes:
+  - `type = "frame"`
+  - `isVariantContainer = true`
+  - layout/flex data
+  - child `shapes`
+
+So the current evidence says:
+
+- Penpot stores the model as explicit JSON records
+- page and shape hierarchy is materialized on disk
+- component and variant-related information is inspectable without the GUI
+
+## Live Access Surfaces
+
+For local Penpot, there are currently two important live access paths:
+
+### Backend/API Surface
+
+The local backend/API surface is good for:
+
+- deterministic system-level operations
+- discovering stable request/response shapes
+- future F# client work such as `FnAPI.Penpot`
+
+Local example:
+
+- backend API docs:
+  - `http://localhost:9001/api/main/doc`
+
+### MCP And Plugin Surface
+
+The Penpot MCP/plugin surface is good for:
+
+- working against the currently open file
+- higher-level design-context tasks
+- experimentation while the dedicated NEXUS/FnTools tooling is still emerging
+
+Current local example:
+
+- plugin manifest:
+  - `http://localhost:4400/manifest.json`
+- MCP endpoint:
+  - `http://localhost:4401/mcp`
+
+## Guidance For AI
+
+When working with Penpot, AI should:
+
+- record important structural discoveries in repo docs
+- prefer extracting inspectable structure over relying on GUI memory
+- capture concrete examples from real `.penpot` files
+- distinguish clearly between:
+  - file artifact structure
+  - backend/API behavior
+  - MCP/plugin behavior
+  - visual interpretation in the GUI
+
+AI should not assume:
+
+- the GUI is the only source of truth
+- Penpot files are opaque binaries
+- MCP is a substitute for understanding the underlying artifact structure
+
+## What Should Become Deterministic Later
+
+This should later turn into stable tool surfaces, likely in `FnTools`:
+
+- Penpot file archive inspection helpers
+- normalized extraction of file/page/shape/component structure
+- Penpot API clients and request helpers
+- MCP-backed task helpers for live file interaction
+- later compiler-like transforms from Penpot structures into more deterministic NEXUS/FnTools surfaces
+
+## Related
+
+- [Event Modeling Tool Foundation](event-modeling-tool-foundation.md)
+- [FnTools Foundation](fntools-foundation.md)
+- [FORGE Foundation](forge-foundation.md)
+- [Inspect Penpot Files And Live Surfaces](how-to/inspect-penpot-file-and-live-surfaces.md)

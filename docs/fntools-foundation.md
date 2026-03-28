@@ -61,3 +61,4 @@ Typical branches include:
 - [`README.md`](README.md)
 - [`docs/repository-concern-lines.md`](repository-concern-lines.md)
 - [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
+- [`docs/penpot-access-and-structure.md`](penpot-access-and-structure.md)

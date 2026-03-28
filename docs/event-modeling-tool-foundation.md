@@ -29,6 +29,12 @@ Local Penpot is valuable because it may give us:
 
 Penpot is therefore a bridge surface, not the final product boundary.
 
+The important working rule is:
+
+- do not rely on the GUI alone
+- treat `.penpot` files, backend/API endpoints, and MCP/plugin access as inspectable system surfaces
+- record what is learned so later tooling can become deterministic
+
 ## Where The Work Belongs
 
 - `NEXUS`
@@ -52,5 +58,6 @@ Penpot is therefore a bridge surface, not the final product boundary.
 
 - [FORGE Foundation](forge-foundation.md)
 - [FnTools Foundation](fntools-foundation.md)
+- [Penpot Access And Structure](penpot-access-and-structure.md)
 - [0022: Functionalize Repeatable Work Into Deterministic Surfaces](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 - [0024: Build Our Own Event Modeling Tool And Use Penpot Transitionally](decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md)
