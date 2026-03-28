@@ -151,3 +151,7 @@ For the first importer foundation:
 NEXUS should preserve one evolving underlying reality while allowing many bounded meanings and many valid lenses over that same reality.
 
 The foundation should therefore favor provenance first, structure second, and interpretation as an explicit later layer rather than an implicit assumption baked into ingestion.
+
+## Related Direction
+
+For the current longer-term direction from semantic substrate toward specs and running artifacts, see [Graph, Spec, And Running Artifact Direction](graph-spec-artifact-direction.md).
