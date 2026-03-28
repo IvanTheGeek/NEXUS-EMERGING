@@ -117,6 +117,29 @@ The stronger current reading is:
 - fresh local text is fine
 - inherited text inside this component-derived slice shell is the unstable case for export
 
+## Current Component State Lab Findings
+
+The current `ComponentStateTokenLab.V1` on the live `LaundryLog` `PATHS` page narrowed the problem further.
+
+Verified outcomes:
+
+- `Button.Option` instance text edits exported correctly
+- `Button.Option` detached-instance text edits also exported correctly
+- `Input.Text` instance text edits exported correctly
+- `Input.Text` detached-instance text edits also exported correctly
+- a fresh overlay text node exported correctly once it was given an explicit visible size instead of remaining at a `1x1` default
+
+The stronger current reading is now:
+
+- the export/render problem is not a universal \"component text\" failure
+- it appears narrower, and the current leading suspect is the inherited text inside the recovered slice-card shells
+- detached instances are still a valid escape hatch when we intentionally want to break inheritance
+- but normal reusable component state work should stay higher on the ladder:
+  - component instance
+  - variant or explicit component state
+  - detached instance
+  - fresh local overlay or one-off text
+
 ## Current Token Caveat
 
 The current slice-title texts in this experiment had no token bindings.
@@ -132,6 +155,46 @@ So the current practical warning is:
   - variant/stateful component
   - detached instance
   - fully local overlay or one-off text
+
+The current token-application probe added one more caution:
+
+- `shape.applyToken(...)` currently threw a Penpot-side `check error` in this live plugin path
+- `token.applyToShapes(...)` completed in a first plain-text probe, but did not produce the expected visible token-binding evidence
+
+So the current working rule is:
+
+- treat token application through the current live plugin path as still under investigation
+- do not yet assume that a successful-looking token call means the token contract is durably bound and inspectable
+- re-verify token behavior explicitly before we lean on it for component-generation workflows
+
+## Current Upstream Evidence
+
+Penpot community and GitHub history show that nearby component-override problems are real and recurring, even if the exact current slice-shell export issue has not yet been matched one-for-one.
+
+Currently relevant upstream references:
+
+- Penpot Community: [Problem with components override](https://community.penpot.app/t/problem-with-components-override/6067)
+  - users reported that once instance text changed, later component style updates did not propagate as expected
+- Penpot Community: [Updating component style shouldn't require reseting text](https://community.penpot.app/t/updating-component-style-shouldnt-require-reseting-text/8480)
+  - users reported that changed text could block later text-style propagation
+  - one participant noted that tokens helped with color propagation but not font changes
+  - the thread later reported a fix/improvement in Penpot `2.10`
+- Penpot Community: [Components Overrides](https://community.penpot.app/t/components-overrides/8800)
+  - users reported that switching a button variant could drop text overrides and revert to the master label
+- GitHub: [bug: component "broken" after I switch variant - requires reset overrides #7931](https://github.com/penpot/penpot/issues/7931)
+  - open issue describing variant switching that only looks correct after `Reset Overrides`
+- GitHub: [feature: Enhance Plugin API with Component Properties #7518](https://github.com/penpot/penpot/issues/7518)
+  - open design-to-code request that explicitly calls out missing variant and token detail in the plugin API surface
+- GitHub: [bug: exporting changes the font of the content #6658](https://github.com/penpot/penpot/issues/6658)
+  - adjacent exporter issue showing that export/render differences are a real upstream concern, especially on self-hosted setups
+
+Current interpretation:
+
+- override and variant behavior are definitely known Penpot problem areas
+- exporter mismatches are also a known Penpot problem area
+- we have not yet found a published upstream report that exactly matches:
+  - \"edited inherited text inside this slice-card shell looks changed in live shape data but exports with the old base text\"
+- until that exact match is found, keep our local lab result recorded as a verified repo finding rather than pretending the upstream evidence is exact
 
 ## Current Exported File Findings
 
