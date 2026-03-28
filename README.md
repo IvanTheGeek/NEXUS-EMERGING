@@ -85,6 +85,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 
 - [`docs/nexus-core-conceptual-layers.md`](docs/nexus-core-conceptual-layers.md)
 - [`docs/graph-spec-artifact-direction.md`](docs/graph-spec-artifact-direction.md)
+- [`docs/event-modeling-ui-inspiration-lineage.md`](docs/event-modeling-ui-inspiration-lineage.md)
 - [`docs/nexus-ingestion-architecture.md`](docs/nexus-ingestion-architecture.md)
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)

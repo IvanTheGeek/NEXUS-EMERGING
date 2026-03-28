@@ -109,6 +109,8 @@ The first concrete runtime requirements for this line now live in [`docs/fnhci-u
 
 The first explicit reading-surface requirement now lives in [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md).
 
+The current visual and historical Event Modeling inspiration chain now lives in [`docs/event-modeling-ui-inspiration-lineage.md`](event-modeling-ui-inspiration-lineage.md).
+
 ## Current Branch
 
 The current foundation branch for this concern line is:
