@@ -208,18 +208,21 @@ So the current working rule is:
 
 ## Current Projection-Build Findings
 
-The current `PATH1.Row.V4.Clean` work on the live `LaundryLog` `PATHS` page added two more practical findings.
+The current `LaundryLog` `PATHS` page work added a more important split than first expected.
 
 Verified outcomes:
 
-- creating a readable path-row projection directly with `createBoard()` plus `createText("...")` is viable in the live plugin path
+- creating a readable path-row projection directly with `createBoard()` plus `createText("...")` is viable for live shape data and exported PNG output
 - for those created text nodes, explicit `resize(...)` was required before the exported PNG rendered the text reliably
-- attempts to use clone-like local duplication as a provenance-preserving bridge into the projection were not trustworthy enough to treat as a stable component-trace seam
+- however, the newer `V2` / `V3` / `V4` path-row lineage did not paint its text reliably on the live `PATHS` canvas even though the same text existed in live shape data and exported correctly
+- the older `PATH1.Row.V1` lineage did paint its text on the live canvas
+- cloning the visible `V1` board preserved a text-bearing lineage that can be evolved further for readable live `PATHS` work
 
 Current practical implication:
 
 - keep reusable component bases where they belong
-- but treat a readable path-row board as a derived projection surface
+- treat the readable path-row board as a derived projection surface
+- for now, prefer evolving the visible `V1` lineage for the live `PATHS` page instead of rebuilding the row from fresh `createText(...)` shells
 - if that projection is intentionally detached from the component ladder, carry that fact explicitly in naming and docs instead of assuming Penpot will retain a reliable back-link
 
 ## Current Upstream Evidence
