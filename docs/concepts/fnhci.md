@@ -36,6 +36,8 @@ The newer `FnHCI Concept Overview` conversation reinforces that this is not just
 
 The first explicit `FnUI` foundation boundary now lives in [`docs/fnui-foundation.md`](../fnui-foundation.md), and the current namespace/package mapping lives in [`docs/fnhci-namespace-map.md`](../fnhci-namespace-map.md).
 
+The current Penpot and cross-platform abstraction boundary now lives in [`docs/fnhci-penpot-abstraction.md`](../fnhci-penpot-abstraction.md).
+
 ## Working Notes
 
 - What are the stable core primitives of FnHCI, separate from any one runtime like Blazor or Bolero?

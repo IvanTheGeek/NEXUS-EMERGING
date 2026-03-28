@@ -30,6 +30,7 @@ Primary docs:
 - [`docs/nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
 - [`docs/forge-foundation.md`](forge-foundation.md)
 - [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
+- [`docs/penpot-working-loop.md`](penpot-working-loop.md)
 
 Typical branch names:
 

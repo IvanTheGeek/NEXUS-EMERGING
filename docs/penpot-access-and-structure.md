@@ -4,6 +4,8 @@ This note captures the first durable Penpot working model for NEXUS, FnTools, an
 
 The goal is to make Penpot interaction inspectable and repeatable for both humans and AI, rather than leaving understanding trapped inside one GUI session or one model's memory.
 
+Penpot is important here partly because it pressures the boundary with `FnHCI`: Penpot components and variants should be usable as design projections without becoming the owner of the cross-platform interaction primitive model.
+
 ## Why This Matters
 
 Penpot is now important to NEXUS for two related reasons:
@@ -172,6 +174,7 @@ This should later turn into stable tool surfaces, likely in `FnTools`:
 
 ## Related
 
+- [FnHCI And Penpot Abstraction Boundary](fnhci-penpot-abstraction.md)
 - [Event Modeling Tool Foundation](event-modeling-tool-foundation.md)
 - [FnTools Foundation](fntools-foundation.md)
 - [FORGE Foundation](forge-foundation.md)
