@@ -317,6 +317,80 @@ That proof used a recovered EM-1 slice-card language characterized by:
 - semantic row containers for `Screen`, `Command`, `Event`, and `View`
 - stronger colored title bars with lighter structured data panels below
 
+## Current Clean Slice Rebuild
+
+The live `LaundryLog` file now also has a clean slice family rebuilt from scratch instead of inheriting from the older recovered shell lineage.
+
+Current clean components:
+
+- `SliceRow.Screen.Clean.V1`
+- `SliceRow.Command.Clean.V1`
+- `SliceRow.Event.Clean.V1`
+- `SliceRow.View.Clean.V1`
+- `SliceRow.Ref.Clean.V1`
+- `CommandSlice.Clean.V1`
+- `ViewSlice.Clean.V1`
+
+Current clean projection:
+
+- `PATH1.Row.V2.Clean`
+
+Current working interpretation:
+
+- the clean slice family follows the EM-1 `f63e1af` / hosted `Slice.html` visual language closely enough to act as the current Penpot direction
+- the row components are now an explicit reusable seam beneath the shell components
+- the shell components are now an explicit reusable seam beneath the path-row instances
+- this is a better `FnHCI`-aligned ladder than the older detached-shell workaround
+
+Current component ladder:
+
+- row component
+- shell component
+- path-row instance
+
+Current token sets created in the live file:
+
+- `EventModel.Foundation.V1`
+- `EventModel.Viewport.Tablet.V1`
+- `EventModel.Viewport.Desktop.V1`
+- `EventModel.Viewport.Wide.V1`
+
+Current practical token rule:
+
+- the token catalog now exists as a local Penpot design-system seam
+- this pass aligned the clean slice values to those tokens
+- direct token binding on the new slice family is still a deliberate next step rather than something we should pretend is already fully trustworthy
+
+## Current Active-Page Targeting Quirk
+
+The current live plugin path exposed an important operational quirk:
+
+- top-level board creation and top-level reparenting followed the active Penpot page
+- attempts to place or move top-level shapes onto a different page before switching the active page did not land where a normal tree mutation model would suggest
+
+Current practical rule:
+
+- before page-level creation or cleanup, explicitly switch the active page first
+- then perform top-level board creation or top-level reparenting
+- then re-verify where the shapes actually landed
+
+This matters for future automation because page targeting cannot currently be treated as a purely abstract tree write.
+
+## Current Upstream Share Candidates
+
+The best current candidates to share upstream are:
+
+- a focused plugin/API report about top-level page targeting and cross-page reparenting behavior for live component/main-instance work
+- a focused question or report about just-created token-theme handling on the plugin path, since the first direct theme pass ran into missing `activeSets` behavior and we fell back to direct set activation
+
+The older slice-shell export/render problem is still worth sharing later, but only after we reduce it to a smaller reproducible case.
+
+Why hold that one a little longer:
+
+- the new clean slice family works better
+- the old failure now looks tied to a specific recovered component lineage
+- we do not yet have a minimal repro that is clean enough to be a good upstream report
+
 ## Working Rule
 
 For current Penpot work:
@@ -325,5 +399,6 @@ For current Penpot work:
 - treat MCP/plugin as the primary current-file and live Penpot-context surface
 - treat exported `.penpot` files as explicit checkpoints
 - do not default to whole-page `export_shape`; prefer board-level or shape-level export until page export is re-verified
+- explicitly target the active page before top-level board creation or top-level reparenting
 - if duplicated component text does not render reliably, prefer overlay text on the detached shell instead of assuming inherited text edits are authoritative
 - keep this comparison note current as new findings emerge
