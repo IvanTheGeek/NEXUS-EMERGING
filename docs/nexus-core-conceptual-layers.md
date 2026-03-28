@@ -155,3 +155,5 @@ The foundation should therefore favor provenance first, structure second, and in
 ## Related Direction
 
 For the current longer-term direction from semantic substrate toward specs and running artifacts, see [Graph, Spec, And Running Artifact Direction](graph-spec-artifact-direction.md).
+
+For the current ATLAS-oriented clarification about selectable lenses over a fuller model, see [ATLAS, Lenses, And The Fuller Model](atlas-lenses-and-full-model-direction.md).

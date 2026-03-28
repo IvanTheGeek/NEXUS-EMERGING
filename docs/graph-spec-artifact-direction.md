@@ -86,3 +86,5 @@ For now:
 - keep generated or compiled artifacts downstream from those durable meanings
 
 That keeps the system honest while still moving toward the longer-term graph/spec/artifact direction.
+
+For the current clarification that Event Modeling is one lens over a fuller model rather than the whole model, see [ATLAS, Lenses, And The Fuller Model](atlas-lenses-and-full-model-direction.md).

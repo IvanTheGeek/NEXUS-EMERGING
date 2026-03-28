@@ -84,6 +84,7 @@ These boundaries are real design seams now and can become separate systems later
 Core project memory lives in the repo so humans and AI agents can recover intent quickly:
 
 - [`docs/nexus-core-conceptual-layers.md`](docs/nexus-core-conceptual-layers.md)
+- [`docs/atlas-lenses-and-full-model-direction.md`](docs/atlas-lenses-and-full-model-direction.md)
 - [`docs/graph-spec-artifact-direction.md`](docs/graph-spec-artifact-direction.md)
 - [`docs/event-modeling-ui-inspiration-lineage.md`](docs/event-modeling-ui-inspiration-lineage.md)
 - [`docs/nexus-ingestion-architecture.md`](docs/nexus-ingestion-architecture.md)

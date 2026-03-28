@@ -25,6 +25,7 @@ Primary docs:
 - [`README.md`](../README.md)
 - [`docs/glossary.md`](glossary.md)
 - [`docs/nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
+- [`docs/atlas-lenses-and-full-model-direction.md`](atlas-lenses-and-full-model-direction.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
 
 Typical branch names:
