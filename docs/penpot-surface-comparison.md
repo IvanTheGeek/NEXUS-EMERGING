@@ -225,6 +225,12 @@ Current practical implication:
 - for now, prefer evolving the visible `V1` lineage for the live `PATHS` page instead of rebuilding the row from fresh `createText(...)` shells
 - if that projection is intentionally detached from the component ladder, carry that fact explicitly in naming and docs instead of assuming Penpot will retain a reliable back-link
 
+Additional live finding:
+
+- the explicit Plugin API seam that matches dragging from the Penpot Assets tab is `LibraryComponent.instance()`
+- the `V3` slices on `PATHS` are real connected component instances
+- current instance text overrides are visible in live shape data, but the export render path still appears to prefer the master text content in the current test cases
+
 ## Current Upstream Evidence
 
 Penpot community and GitHub history show that nearby component-override problems are real and recurring, even if the exact current slice-shell export issue has not yet been matched one-for-one.
