@@ -90,6 +90,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/forge-foundation.md`](docs/forge-foundation.md)
 - [`docs/event-modeling-tool-foundation.md`](docs/event-modeling-tool-foundation.md)
+- [`docs/penpot-access-and-structure.md`](docs/penpot-access-and-structure.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
 - [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
