@@ -81,6 +81,8 @@ Verified in the current local setup:
 - for duplicated slice-card shells, directly editing inherited text nodes did not reliably show up in exported visuals
 - the current reliable workaround is to keep the component shell and overlay fresh local text nodes for per-card variation
 - inspect-style API surfaces are available through `generateStyle` and `generateMarkup`, and they are useful comparison surfaces when the visual export path is suspicious
+- `createText("...")` works in the live plugin path, but the created text can remain at `1x1` until it is explicitly resized
+- a detached or otherwise local projection should not be treated as having trustworthy provenance back to a reusable component source unless that trace is carried separately in naming or docs
 
 Verified current live file example:
 
@@ -134,6 +136,7 @@ The stronger current reading is now:
 - the export/render problem is not a universal \"component text\" failure
 - it appears narrower, and the current leading suspect is the inherited text inside the recovered slice-card shells
 - detached instances are still a valid escape hatch when we intentionally want to break inheritance
+- detached or local projections are not a trustworthy provenance trail back to a component source by themselves
 - but normal reusable component state work should stay higher on the ladder:
   - component instance
   - variant or explicit component state
@@ -202,6 +205,22 @@ So the current working rule is:
 - treat token application through the current live plugin path as still under investigation
 - do not yet assume that a successful-looking token call means the token contract is durably bound and inspectable
 - re-verify token behavior explicitly before we lean on it for component-generation workflows
+
+## Current Projection-Build Findings
+
+The current `PATH1.Row.V4.Clean` work on the live `LaundryLog` `PATHS` page added two more practical findings.
+
+Verified outcomes:
+
+- creating a readable path-row projection directly with `createBoard()` plus `createText("...")` is viable in the live plugin path
+- for those created text nodes, explicit `resize(...)` was required before the exported PNG rendered the text reliably
+- attempts to use clone-like local duplication as a provenance-preserving bridge into the projection were not trustworthy enough to treat as a stable component-trace seam
+
+Current practical implication:
+
+- keep reusable component bases where they belong
+- but treat a readable path-row board as a derived projection surface
+- if that projection is intentionally detached from the component ladder, carry that fact explicitly in naming and docs instead of assuming Penpot will retain a reliable back-link
 
 ## Current Upstream Evidence
 
