@@ -97,6 +97,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
 - [`docs/fnhci-penpot-abstraction.md`](docs/fnhci-penpot-abstraction.md)
 - [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
+- [`docs/fnhci-ui-token-model.md`](docs/fnhci-ui-token-model.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](docs/fnhci-ui-blazor-requirements.md)
 - [`docs/fnhci-conversation-reading-surface.md`](docs/fnhci-conversation-reading-surface.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](docs/laundrylog-fnui-proving-ground.md)

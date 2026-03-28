@@ -221,6 +221,7 @@ with `Button` as the clearest first pressure point because it is already visible
 
 - [FnHCI Namespace Map](fnhci-namespace-map.md)
 - [FnUI Foundation](fnui-foundation.md)
+- [FnHCI.UI Token Model](fnhci-ui-token-model.md)
 - [FnHCI.UI.Blazor Requirements](fnhci-ui-blazor-requirements.md)
 - [Penpot Working Loop For Event Modeling And FnHCI](penpot-working-loop.md)
 - [Penpot Access And Structure](penpot-access-and-structure.md)

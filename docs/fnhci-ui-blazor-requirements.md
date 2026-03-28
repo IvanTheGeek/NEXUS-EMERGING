@@ -15,6 +15,7 @@ See also:
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
 - [`docs/fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
+- [`docs/fnhci-ui-token-model.md`](fnhci-ui-token-model.md)
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)
 - [`docs/fnhci-ui-native-host-requirements.md`](fnhci-ui-native-host-requirements.md)
@@ -178,6 +179,12 @@ Penpot should fit beside this as a design and authoring projection surface:
 - Penpot maps design components and variants to that primitive
 - Blazor maps the same primitive to runtime output
 
+The same general rule should apply to tokens:
+
+- Penpot can author and validate tokens
+- `FnHCI.UI` should keep a stable token-model direction
+- `FnHCI.UI.Blazor` should consume and project those tokens into the browser/runtime layer
+
 This does not mean `FnHCI.UI.Blazor` must immediately support every other target.
 
 It does mean the abstraction should avoid premature coupling to:
@@ -225,10 +232,11 @@ The next practical code steps should likely be:
 
 1. define the renderer-neutral shell/view model more fully
 2. define the first primitive catalog for cross-platform controls such as `Button` and `TextInput`
-3. define a Blazor host adapter over that shell and primitive set
-4. define the first view contracts for ingestion, concepts, LOGOS, graph, and help/about
-5. define how interaction commands and view state cross the host seam
-6. evaluate which public package names should exist from the start versus later
+3. define the first token-model catalog for foundations, semantic tokens, and theme axes
+4. define a Blazor host adapter over that shell, primitive set, and token model
+5. define the first view contracts for ingestion, concepts, LOGOS, graph, and help/about
+6. define how interaction commands and view state cross the host seam
+7. evaluate which public package names should exist from the start versus later
 
 ## External References
 

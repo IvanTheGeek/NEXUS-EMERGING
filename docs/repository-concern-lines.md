@@ -144,6 +144,7 @@ Primary docs:
 
 - [`docs/concepts/fnhci.md`](concepts/fnhci.md)
 - [`docs/fnui-foundation.md`](fnui-foundation.md)
+- [`docs/fnhci-ui-token-model.md`](fnhci-ui-token-model.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
 - [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md)
 - [`docs/fnhci-ui-web-requirements.md`](fnhci-ui-web-requirements.md)

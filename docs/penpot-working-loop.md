@@ -206,6 +206,7 @@ Do not rely on Penpot alone for:
 ## Related
 
 - [FnHCI And Penpot Abstraction Boundary](fnhci-penpot-abstraction.md)
+- [FnHCI.UI Token Model](fnhci-ui-token-model.md)
 - [Event Modeling Tool Foundation](event-modeling-tool-foundation.md)
 - [Penpot Access And Structure](penpot-access-and-structure.md)
 - [FORGE Foundation](forge-foundation.md)
