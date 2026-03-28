@@ -35,6 +35,7 @@ Examples include:
 - bootstrap and maintenance scripts
 - schema-guided production paths
 - compiler-like behavior when the rules are explicit enough
+- Event Modeling tooling that turns repeated modeling work into inspectable surfaces instead of leaving it in one-off diagrams or prompts
 
 ## Relationship To AI
 
@@ -50,9 +51,12 @@ The goal is that future work depends less on the capabilities of a particular AI
 - `FORGE` is one part of that NEXUS foundation direction
 - `FnTools` may host reusable tools that embody FORGE ideas
 - downstream apps such as `CheddarBooks` should benefit from those surfaces instead of re-solving the same work ad hoc
+- Event Modeling tool work is one concrete place where FORGE should move from AI-assisted exploration toward deterministic, reviewable behavior
 
 ## Related
 
 - [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
+- [`decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md`](decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md)
+- [`event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
 - [`repository-concern-lines.md`](repository-concern-lines.md)
 - [`collaboration-protocol.md`](collaboration-protocol.md)

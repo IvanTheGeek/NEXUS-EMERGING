@@ -24,6 +24,7 @@ From the imported discussion history so far, the current known directions includ
   a reusable Penpot API library
 - `FnMCP.Penpot`
   a higher-level MCP/tooling line over that library
+- Event Modeling tool work, likely using Penpot as an early integration seam rather than the final product boundary
 - broader MCP and technical tooling work
 - networking-focused tools with interest in OpenWrt and related operator concerns
 
@@ -52,9 +53,11 @@ Typical branches include:
 
 - `fntools-foundation`
 - `penpot-integration`
+- `event-modeling-tool-foundation`
 - `openwrt-tooling`
 
 ## Related
 
 - [`README.md`](README.md)
 - [`docs/repository-concern-lines.md`](repository-concern-lines.md)
+- [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
