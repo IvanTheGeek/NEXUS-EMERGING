@@ -2,6 +2,12 @@
 
 Use this when you need to understand a Penpot file or local Penpot workspace in a way that can later become deterministic tooling.
 
+Important format note:
+
+- current exported `.penpot` files should be treated as ZIP archives with readable JSON structure and assets
+- older binary `.penpot` format references exist historically, but Penpot documents that older binary format as deprecated
+- verify the actual artifact in front of you instead of assuming the older format
+
 ## Inspect The File Artifact
 
 Confirm the file type:
@@ -15,6 +21,8 @@ List archive contents:
 ```bash
 unzip -l /path/to/file.penpot
 ```
+
+If `unzip -l` shows structured archive contents, continue with file/page/shape inspection rather than treating the file as opaque.
 
 Read top-level file metadata:
 
@@ -98,3 +106,4 @@ The purpose is to keep Penpot work:
 
 - [Penpot Access And Structure](../penpot-access-and-structure.md)
 - [Event Modeling Tool Foundation](../event-modeling-tool-foundation.md)
+- [Penpot export/import docs](https://help.penpot.app/user-guide/import-export/)
