@@ -76,6 +76,8 @@ Verified in the current local setup:
 - live board enumeration works
 - board-level `export_shape` works
 - whole-page `export_shape` is currently unreliable and should not be the default export attempt
+- component-oriented live board editing works well through the plugin surface
+- duplicating a component base, evolving the duplicate, and instantiating it back into the board is a practical live workflow
 
 Verified current live file example:
 
@@ -112,6 +114,59 @@ It is not the live backend state.
 - Which live mutation operations are easier through backend API versus plugin context?
 - Do backend `update-file` mutations appear immediately in an open Penpot UI without manual refresh?
 - Which operations are available only in plugin context and not via backend API?
+
+## Current Mutation Comparison
+
+The current comparison is no longer purely inferred.
+
+### MCP / Plugin Path
+
+Verified practical fit for:
+
+- creating new slice-card structures
+- duplicating component bases
+- evolving those duplicates into new visual bases
+- instantiating those bases back into the Event Model board
+
+This is currently the stronger surface for component-driven board work.
+
+### Backend API Path
+
+Verified practical fit for:
+
+- live file and page inspection
+- export and checkpoint generation
+- lower-level mutation surface exposure through `update-file`
+
+But the current mutation seam is stricter and lower-level.
+
+A first live `update-file` mutation attempt against a LaundryLog `ViewSlice` failed because the payload must satisfy Penpot's internal shape schema very precisely. In particular, enum-like stroke values were not accepted when passed as naive JSON strings.
+
+So the current practical rule is:
+
+- use MCP/plugin for live component-driven visual editing
+- use backend API for inspection, export, and lower-level patch work once the exact schema contract is known
+
+## Current LaundryLog Slice Proof
+
+The current live LaundryLog file now includes first-pass recovered slice-language proofs built through the MCP/plugin path:
+
+- `CommandSlice.Base.V2`
+- `ViewSlice.Base.V2`
+
+And visible PATH 1 instances derived from those bases:
+
+- `PATH1: CommandSlice - Set Location (V2 Instance)`
+- `PATH1: ViewSlice - Ready (V2 Instance)`
+
+That proof used a recovered EM-1 slice-card language characterized by:
+
+- narrow calm slice cards
+- strong outer border and tinted header band
+- small system pill and uppercase slice-type marker
+- title plus short subtitle
+- semantic row containers for `Screen`, `Command`, `Event`, and `View`
+- stronger colored title bars with lighter structured data panels below
 
 ## Working Rule
 
