@@ -99,6 +99,7 @@ Penpot should therefore be treated as:
 - an inspectable artifact surface
 - a design projection surface
 - an adapter boundary
+- a likely shared token and theming surface
 
 not as:
 
@@ -140,6 +141,28 @@ The first durable reusable code line should likely separate:
   Penpot artifact and backend access
 - `FnMCP.Penpot`
   higher-level live Penpot interaction helpers
+
+The current design-token evidence also suggests a future shared token line, likely owned outside raw Penpot files but mappable to and from them.
+
+That future line will likely need to distinguish:
+
+- foundation tokens
+  raw scales, colors, spacing, opacity, radius, typography families, and similar bases
+- semantic tokens
+  interaction-facing meanings such as button background, layer text, input border, and similar roles
+- theme axes
+  dimensions such as density, color mode, and color theme
+- active theme selection
+  which orthogonal theme combinations are currently applied
+
+The current Penpot token examples also suggest that semantic tokens may need to sit above raw foundations in a structured way. Real examples include meanings such as:
+
+- `buttonPrimary.background.default`
+- `buttonSecondary.border.focused`
+- `layerBase.text`
+- `input.border`
+
+That is useful because it is already closer to `FnHCI` and `FnUI` concerns than a raw palette alone, while still remaining independent of one renderer.
 
 That lets Penpot integration become strong without making Penpot the abstraction owner.
 
