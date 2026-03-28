@@ -164,6 +164,27 @@ The current Penpot token examples also suggest that semantic tokens may need to 
 
 That is useful because it is already closer to `FnHCI` and `FnUI` concerns than a raw palette alone, while still remaining independent of one renderer.
 
+The breakpoint-theme example suggests another important requirement:
+
+- theme axes should remain orthogonal where possible
+
+So instead of flattening everything into one combined token space such as:
+
+- `light-mobile`
+- `dark-mobile`
+- `light-desktop`
+- `dark-desktop`
+
+the better model is likely:
+
+- a color-mode axis
+- a breakpoint axis
+- later possibly brand, density, or contrast axes
+
+with active theme selection combining them as needed.
+
+That is closer both to Penpot's current theme model and to how CSS conditions compose.
+
 That lets Penpot integration become strong without making Penpot the abstraction owner.
 
 ## First Deterministic Surfaces To Aim For

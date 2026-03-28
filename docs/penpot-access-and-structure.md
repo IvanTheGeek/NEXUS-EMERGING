@@ -135,6 +135,33 @@ In that real example:
 
 That means Penpot token support is already rich enough to pressure our own future token and theming model, not just color swatch exchange.
 
+From the smaller `Tokens and breakpoints.penpot` example file in `tmp/`, Penpot tokens can also model responsive breakpoint behavior directly through token sets and themes.
+
+In that real example:
+
+- token sets included:
+  - `Global`
+  - `Mobile`
+  - `Tablet`
+  - `Desktop`
+- the `Global` set carried default viewport and text-size tokens
+- the device-specific sets overrode viewport width/height and typography values
+- `$themes` defined a `Breakpoint` group with:
+  - `Mobile`
+  - `Tablet`
+  - `Desktop`
+- each breakpoint theme enabled:
+  - the shared `Global` set
+  - one device-specific set
+
+That means Penpot is already modeling breakpoint responsiveness as:
+
+- shared defaults
+- orthogonal theme/set activation
+- selective overrides
+
+not as one giant duplicated token matrix.
+
 The current Penpot community resources also reinforce this direction. The starter-pack thread points users toward:
 
 - the starter kit template itself
@@ -143,6 +170,14 @@ The current Penpot community resources also reinforce this direction. The starte
 - tutorials specifically about importing and exporting tokens as JSON
 
 That is a strong sign that Penpot tokens should be treated as a serious interchange surface, not just editor-local styling state.
+
+The breakpoint thread adds an especially important rule from Laura Kalbag:
+
+- multiple themes can be active simultaneously
+- breakpoint themes can cross-connect with color themes and other theme groups
+- this is meant to work more like CSS rules and media conditions than like one flat combined preset list
+
+That is a very important signal for our future token model because it suggests we should preserve orthogonal theme axes instead of collapsing everything into combined names like `light-mobile` or `dark-desktop`.
 
 So the current evidence says:
 
@@ -223,3 +258,4 @@ This should later turn into stable tool surfaces, likely in `FnTools`:
 - [Penpot export/import docs](https://help.penpot.app/user-guide/import-export/)
 - [Penpot Design Tokens Starter Pack](https://community.penpot.app/t/penpot-design-tokens-starter-pack/8982)
 - [Design tokens starter kit thread](https://community.penpot.app/t/design-tokens-starter-kit/8781/6?u=ivanthegeek)
+- [Breakpoint themes discussion](https://community.penpot.app/t/is-it-possible-to-create-breakpoints-modes-like-in-figma/9731/4)
