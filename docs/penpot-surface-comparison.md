@@ -154,6 +154,28 @@ So the current working explanation is:
 - the stale embedded-SVG side is winning in the final export surface
 - this is why live shape data can look correct while exported visuals still show the base component text
 
+## Current Mini-Shell Structure Lab Findings
+
+`MiniShellStructureLab.V1` pushed the investigation one step further by rebuilding shell-like components from scratch instead of reusing the recovered `CommandSlice.Base.V2` lineage.
+
+Verified outcomes:
+
+- a flat from-scratch shell component exported edited instance text correctly
+- a from-scratch shell with one nested row board also exported edited instance text correctly
+- a from-scratch shell with three nested row boards also exported edited instance text correctly
+- adding the outer heavy stroke, rounded corners, drop shadow, and rounded nested rows still did not reproduce the stale-base-text problem
+
+That means the current best reading is now:
+
+- nested rows by themselves are not the trigger
+- outer rounded borders and shadows by themselves are not the trigger
+- the problem is likely tied to the specific lineage or internal shape state of the recovered `CommandSlice.Base.V2` family rather than to the general slice-shell pattern
+
+Current practical implication:
+
+- rebuilding the slice-shell component family cleanly from scratch is now a credible corrective path
+- we should not assume the current `CommandSlice.Base.V2` behavior defines what a clean Penpot slice-shell component must do
+
 ## Current Token Caveat
 
 The current slice-title texts in this experiment had no token bindings.
