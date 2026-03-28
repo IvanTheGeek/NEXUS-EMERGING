@@ -229,7 +229,17 @@ Additional live finding:
 
 - the explicit Plugin API seam that matches dragging from the Penpot Assets tab is `LibraryComponent.instance()`
 - the `V3` slices on `PATHS` are real connected component instances
-- current instance text overrides are visible in live shape data, but the export render path still appears to prefer the master text content in the current test cases
+- current instance text overrides are visible in live shape data, but both the live canvas and the export render path still appear to prefer the master text content in the current test cases
+
+Current strongest repro:
+
+- `PATH1.Row.V6.InstanceBased` on the live `PATHS` page is built only from `CommandSlice.Clean.V3` and `ViewSlice.Clean.V3` library instances
+- the stored text values on those instances reflect the intended LaundryLog overrides
+- the Penpot canvas still paints the master/default text such as `myCommand`, `myView`, and `description`
+- the export path follows the same stale master-render behavior
+
+So the current issue is no longer \"can instances be created on PATHS\".
+It is \"instance text overrides are stored but not rendered\".
 
 ## Current Upstream Evidence
 
