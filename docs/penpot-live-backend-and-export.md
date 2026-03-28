@@ -144,6 +144,18 @@ Current known limitation:
 
 - whole-page `export_shape` still hit an HTTP-side error in the current setup
 
+## Export Guardrail
+
+Do not assume whole-page visual export is a safe default in the current Penpot MCP/plugin path.
+
+Current practical rule:
+
+- do not use whole-page `export_shape` as the default export attempt
+- prefer board-level or shape-level `export_shape` when a visual snapshot is needed
+- prefer backend `export-binfile` when a full live-file checkpoint is needed
+
+Until the page-level export path is re-verified in this environment, treat whole-page visual export as a known fragile operation rather than a normal workflow step.
+
 ## Current Write-Propagation Expectation
 
 Because the Penpot app and the backend API are both operating on the same live backend state, backend writes should be expected to appear in the live Penpot app.
@@ -186,6 +198,7 @@ For current NEXUS, FnTools, and CheddarBooks work:
 - use the live backend as the primary current-state surface
 - use MCP/plugin when current-file context or live Penpot interactions matter
 - use exported `.penpot` files as explicit checkpoints
+- do not default to whole-page `export_shape`; use board/shape export or backend file export instead
 - keep backend credentials in machine-local secret storage
 - keep local MCP bridge details in machine-local operational notes, not as secret values in repos
 - update the Penpot surface comparison note when new capability or limitation findings emerge

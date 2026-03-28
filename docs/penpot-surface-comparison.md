@@ -75,6 +75,7 @@ Verified in the current local setup:
 - live file/page enumeration works
 - live board enumeration works
 - board-level `export_shape` works
+- whole-page `export_shape` is currently unreliable and should not be the default export attempt
 
 Verified current live file example:
 
@@ -119,4 +120,5 @@ For current Penpot work:
 - treat backend API as the primary live state and export surface
 - treat MCP/plugin as the primary current-file and live Penpot-context surface
 - treat exported `.penpot` files as explicit checkpoints
+- do not default to whole-page `export_shape`; prefer board-level or shape-level export until page export is re-verified
 - keep this comparison note current as new findings emerge
