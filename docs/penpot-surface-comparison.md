@@ -78,6 +78,8 @@ Verified in the current local setup:
 - whole-page `export_shape` is currently unreliable and should not be the default export attempt
 - component-oriented live board editing works well through the plugin surface
 - duplicating a component base, evolving the duplicate, and instantiating it back into the board is a practical live workflow
+- for duplicated slice-card shells, directly editing inherited text nodes did not reliably show up in exported visuals
+- the current reliable workaround is to keep the component shell and overlay fresh local text nodes for per-card variation
 
 Verified current live file example:
 
@@ -159,6 +161,18 @@ And visible PATH 1 instances derived from those bases:
 - `PATH1: CommandSlice - Set Location (V2 Instance)`
 - `PATH1: ViewSlice - Ready (V2 Instance)`
 
+It now also includes a first readable `PATHS` page row projection:
+
+- `PATH1.Row.V1`
+
+Current practical characteristics of that row:
+
+- one horizontal path row
+- a short path description above the row
+- detached slice-card shells derived from the V2 bases
+- per-card content rendered through fresh overlay text nodes
+- screen slots still acting as screenshot-like placeholders rather than full embedded screenshots
+
 That proof used a recovered EM-1 slice-card language characterized by:
 
 - narrow calm slice cards
@@ -176,4 +190,5 @@ For current Penpot work:
 - treat MCP/plugin as the primary current-file and live Penpot-context surface
 - treat exported `.penpot` files as explicit checkpoints
 - do not default to whole-page `export_shape`; prefer board-level or shape-level export until page export is re-verified
+- if duplicated component text does not render reliably, prefer overlay text on the detached shell instead of assuming inherited text edits are authoritative
 - keep this comparison note current as new findings emerge
