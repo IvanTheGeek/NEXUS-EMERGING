@@ -27,7 +27,10 @@ From the imported discussion history so far, the current known directions includ
 - broader MCP and technical tooling work
 - networking-focused tools with interest in OpenWrt and related operator concerns
 
-For the current live Penpot/backend/export workflow that should inform those lines, see [Penpot Live Backend And Export](penpot-live-backend-and-export.md).
+For the current live Penpot/backend/export workflow and the current surface comparison that should inform those lines, see:
+
+- [Penpot Live Backend And Export](penpot-live-backend-and-export.md)
+- [Penpot Surface Comparison](penpot-surface-comparison.md)
 
 ## Relationship To Cheddar
 

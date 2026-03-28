@@ -27,7 +27,7 @@ The practical split is:
 - backend API
   primary live state and automation surface
 - MCP/plugin
-  useful live interaction surface, but may have connection constraints
+  live Penpot-context surface for current file, current page, selection, and plugin-driven operations
 - exported `.penpot`
   portable artifact for snapshot inspection, sharing, and offline analysis
 
@@ -55,6 +55,14 @@ The local Penpot backend currently exposes useful authenticated API methods incl
 - `import-binfile`
 
 That is enough to treat the backend as a real automation surface for future `FnAPI.Penpot` / `FnMCP.Penpot` work.
+
+The backend docs also expose mutation-oriented methods including:
+
+- `update-file`
+- `update-file-library-sync-status`
+- `update-file-snapshot`
+
+So the backend is not only a read/export surface.
 
 ## Current Export Behavior
 
@@ -96,24 +104,89 @@ The official Penpot MCP architecture is:
 
 That is the intended model.
 
-However, the current local setup is still hitting a transport limitation in practice.
+The originally tried `@penpot/mcp@2.14.0` setup did hit a transport limitation in practice.
 
-Current observed effect:
+Observed effect on that version:
 
 - if the Penpot plugin is already connected
 - Codex MCP access may fail with an `Already connected to a transport` error
 - restarting the local MCP server does not currently clear that failure reliably
 
-So today:
+## Current Local MCP Working State
 
-- backend API is the more reliable automation surface
-- MCP is still useful, but should be treated as connection-sensitive until proven otherwise
+The local MCP path is now working with the following machine-local operational shape:
+
+- `@penpot/mcp@2.15.0-rc.1.116`
+- Codex configured with a stdio MCP bridge:
+  `npx -y mcp-remote http://localhost:4401/sse --allow-http --transport sse-only --debug`
+
+This is an operational finding for the current machine and current Penpot setup.
+
+It should not be treated as a permanent repo-wide invariant without re-verification.
+
+Current verified MCP/plugin results:
+
+- live file access works
+- live page enumeration works
+- live board enumeration works
+- board-level `export_shape` works
+
+Current verified example:
+
+- file: `LaundryLog`
+- pages:
+  - `Components`
+  - `Screens`
+  - `PATHS`
+  - `Event Model`
+
+Current known limitation:
+
+- whole-page `export_shape` still hit an HTTP-side error in the current setup
+
+## Current Write-Propagation Expectation
+
+Because the Penpot app and the backend API are both operating on the same live backend state, backend writes should be expected to appear in the live Penpot app.
+
+That expectation is strengthened by the existence of authenticated mutation methods such as `update-file`, which accepts:
+
+- `id`
+- `sessionId`
+- `revn`
+- `vern`
+- `changes` or `changesWithMetadata`
+
+However, this specific write-through behavior has not yet been proven end-to-end in the current NEXUS workflow with a disposable live mutation and an observed on-screen update.
+
+So the current rule is:
+
+- inferred: yes, backend writes should surface in the live app
+- proven: not yet in a safe disposable test we have recorded durably
+
+## Surface Comparison Rule
+
+When working on Penpot integrations, do not rely on one surface alone.
+
+Actively compare and record the differences between:
+
+- backend API
+- MCP/plugin
+- exported `.penpot` file
+
+When a capability is discovered on one surface but not the others, update the comparison note rather than leaving that knowledge only in chat.
+
+See:
+
+- [Penpot Surface Comparison](penpot-surface-comparison.md)
 
 ## Current Working Guidance
 
 For current NEXUS, FnTools, and CheddarBooks work:
 
 - use the live backend as the primary current-state surface
+- use MCP/plugin when current-file context or live Penpot interactions matter
 - use exported `.penpot` files as explicit checkpoints
 - keep backend credentials in machine-local secret storage
+- keep local MCP bridge details in machine-local operational notes, not as secret values in repos
+- update the Penpot surface comparison note when new capability or limitation findings emerge
 - record important live/export workflow findings durably rather than leaving them only in chat
