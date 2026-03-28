@@ -2,6 +2,7 @@ namespace Nexus.Tests
 
 open System
 open System.IO
+open System.Threading.Tasks
 open Expecto
 open Nexus.EventStore
 open Nexus.Importers
@@ -224,6 +225,46 @@ module CommitCheckpointTests =
                       Expect.equal checkpoint.CommitSha secondCommitSha "Expected the post-commit checkpoint SHA to match the new commit."
                       Expect.equal checkpoint.CommitSummary "Second fixture checkpoint commit" "Expected the post-commit checkpoint summary."
                       Expect.equal checkpoint.Counts.ConversationsSeen 1 "Expected the hook-driven capture to import the fixture Codex conversation." ))
+
+              testCase "SharedFileGate serializes cross-repo checkpoint access to shared roots" (fun () ->
+                  TestHelpers.withTempDirectory "nexus-shared-file-gate" (fun tempRoot ->
+                      let lockPath = Path.Combine(tempRoot, ".commit-checkpoint.lock")
+
+                      let heldLock =
+                          match
+                              SharedFileGate.acquireWith
+                                  { MaxAttempts = 0
+                                    InitialDelayMs = 1 }
+                                  lockPath
+                          with
+                          | Ok value -> value
+                          | Error message -> failwith message
+
+                      match
+                          SharedFileGate.acquireWith
+                              { MaxAttempts = 0
+                                InitialDelayMs = 1 }
+                              lockPath
+                      with
+                      | Ok competingLock ->
+                          SharedFileGate.release competingLock
+                          failwith "Expected the second lock acquisition to be refused while the first lock is still held."
+                      | Error message ->
+                          Expect.stringContains message ".commit-checkpoint.lock" "Expected the lock acquisition error to mention the shared gate path."
+
+                      SharedFileGate.release heldLock
+
+                      let reacquired =
+                          Task.Run(fun () ->
+                              SharedFileGate.acquireWith
+                                  { MaxAttempts = 2
+                                    InitialDelayMs = 1 }
+                                  lockPath)
+                          |> fun task -> task.Result
+
+                      match reacquired with
+                      | Error message -> failwith message
+                      | Ok value -> SharedFileGate.release value ))
 
               testCase "CodexSessionExport keeps latest full while archiving only changed transcripts after a baseline export" (fun () ->
                   TestHelpers.withTempDirectory "nexus-codex-export-incremental" (fun tempRoot ->

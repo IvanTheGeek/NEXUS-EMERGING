@@ -140,6 +140,20 @@ The stronger current reading is now:
   - detached instance
   - fresh local overlay or one-off text
 
+The current strongest structural clue came from comparing `generateMarkup` results:
+
+- for the problematic slice shell, `generateMarkup(type = "html")` included both:
+  - live edited HTML text nodes
+  - stale base-value text inside embedded SVG fragments
+- for simpler controls like `Button.Option` and `Input.Text`, the generated HTML did not show that same mixed HTML plus stale-SVG pattern
+- `generateMarkup(type = "svg")` for the slice shell followed the stale base-value path, which matches the broken visual export
+
+So the current working explanation is:
+
+- the slice shell is traveling through a mixed markup path
+- the stale embedded-SVG side is winning in the final export surface
+- this is why live shape data can look correct while exported visuals still show the base component text
+
 ## Current Token Caveat
 
 The current slice-title texts in this experiment had no token bindings.

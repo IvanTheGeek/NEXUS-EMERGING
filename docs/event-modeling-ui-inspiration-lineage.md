@@ -79,6 +79,12 @@ What is useful there:
 - the idea of a graph-oriented substrate under higher-level lenses
 - historical hosting-mode experiments across WASM, server, and hybrid shapes
 
+One still-live hosted reference from that line is:
+
+- [EM-1 Slice working file](https://em1.ivanthegeek.com/wwwroot/Slice.html)
+
+That page is useful as a direct presentation reference for the card feel and section rhythm, even though it is not the current semantic source of truth.
+
 What should not be carried forward uncritically:
 
 - Bolero as the long-term answer

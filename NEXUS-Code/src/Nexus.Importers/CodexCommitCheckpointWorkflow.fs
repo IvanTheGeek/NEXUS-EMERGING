@@ -160,76 +160,84 @@ module CodexCommitCheckpointWorkflow =
         | Ok gitHead ->
             let eventStoreRoot = Path.GetFullPath(request.EventStoreRoot)
             let objectsRoot = Path.GetFullPath(request.ObjectsRoot)
-            let manifestRelativePath = CommitCheckpoints.manifestRelativePath gitHead.RepoSlug gitHead.CommitSha
+            let captureLockPath = Path.Combine(objectsRoot, "providers", "codex", ".commit-checkpoint.lock")
 
-            if CommitCheckpoints.exists eventStoreRoot gitHead.RepoSlug gitHead.CommitSha && not request.Force then
-                Error
-                    $"A Codex commit checkpoint already exists for {gitHead.RepoSlug}@{gitHead.CommitSha}. Rerun with --force to overwrite {manifestRelativePath}."
-            else
-                let capturedAt = DateTimeOffset.UtcNow
-                let snapshotName = buildSnapshotName capturedAt gitHead.RepoSlug gitHead.CommitShortSha
+            match SharedFileGate.acquire captureLockPath with
+            | Error message -> Error message
+            | Ok heldLock ->
+                try
+                    let manifestRelativePath = CommitCheckpoints.manifestRelativePath gitHead.RepoSlug gitHead.CommitSha
 
-                match
-                    CodexSessionExport.run
-                        { SourceRoot = request.CodexSourceRoot
-                          ObjectsRoot = objectsRoot
-                          SnapshotName = snapshotName }
-                with
-                | Error message -> Error message
-                | Ok exportResult ->
-                    let importRequest =
-                        { SnapshotRoot = exportResult.ArchiveRoot
-                          ObjectsRoot = objectsRoot
-                          EventStoreRoot = eventStoreRoot }
+                    if CommitCheckpoints.exists eventStoreRoot gitHead.RepoSlug gitHead.CommitSha && not request.Force then
+                        Error
+                            $"A Codex commit checkpoint already exists for {gitHead.RepoSlug}@{gitHead.CommitSha}. Rerun with --force to overwrite {manifestRelativePath}."
+                    else
+                        let capturedAt = DateTimeOffset.UtcNow
+                        let snapshotName = buildSnapshotName capturedAt gitHead.RepoSlug gitHead.CommitShortSha
 
-                    let importResult = CodexImportWorkflow.run importRequest
+                        match
+                            CodexSessionExport.run
+                                { SourceRoot = request.CodexSourceRoot
+                                  ObjectsRoot = objectsRoot
+                                  SnapshotName = snapshotName }
+                        with
+                        | Error message -> Error message
+                        | Ok exportResult ->
+                            let importRequest =
+                                { SnapshotRoot = exportResult.ArchiveRoot
+                                  ObjectsRoot = objectsRoot
+                                  EventStoreRoot = eventStoreRoot }
 
-                    let checkpoint : CommitCheckpoints.CodexCommitCheckpoint =
-                        { RepoSlug = gitHead.RepoSlug
-                          RepoRoot = gitHead.RepoRoot
-                          BranchName = gitHead.BranchName
-                          RemoteOrigin = gitHead.RemoteOrigin
-                          CommitSha = gitHead.CommitSha
-                          CommitShortSha = gitHead.CommitShortSha
-                          CommitSummary = gitHead.CommitSummary
-                          CommitMessage = gitHead.CommitMessage
-                          CapturedAt = capturedAt
-                          EventStoreRoot = eventStoreRoot
-                          SnapshotName = snapshotName
-                          SnapshotRoot = exportResult.ArchiveRoot
-                          SnapshotManifestRelativePath = exportResult.ArchiveManifestRelativePath
-                          RootArtifactRelativePath = importResult.RootArtifactRelativePath
-                          ImportId = importResult.ImportId
-                          ImportManifestRelativePath = importResult.ManifestRelativePath
-                          WorkingGraphManifestRelativePath = importResult.WorkingGraphManifestRelativePath
-                          WorkingGraphCatalogRelativePath = importResult.WorkingGraphCatalogRelativePath
-                          WorkingGraphIndexRelativePath = importResult.WorkingGraphIndexRelativePath
-                          Counts = importResult.Counts
-                          Conversations =
-                            importResult.ConversationSummaries
-                            |> List.map (fun conversation ->
-                                { ProviderConversationId = conversation.ProviderConversationId
-                                  Title = conversation.Title
-                                  MessageCountHint = conversation.MessageCountHint })
-                          ManifestRelativePath = manifestRelativePath }
+                            let importResult = CodexImportWorkflow.run importRequest
 
-                    let checkpointManifestRelativePath = CommitCheckpoints.write eventStoreRoot checkpoint
+                            let checkpoint : CommitCheckpoints.CodexCommitCheckpoint =
+                                { RepoSlug = gitHead.RepoSlug
+                                  RepoRoot = gitHead.RepoRoot
+                                  BranchName = gitHead.BranchName
+                                  RemoteOrigin = gitHead.RemoteOrigin
+                                  CommitSha = gitHead.CommitSha
+                                  CommitShortSha = gitHead.CommitShortSha
+                                  CommitSummary = gitHead.CommitSummary
+                                  CommitMessage = gitHead.CommitMessage
+                                  CapturedAt = capturedAt
+                                  EventStoreRoot = eventStoreRoot
+                                  SnapshotName = snapshotName
+                                  SnapshotRoot = exportResult.ArchiveRoot
+                                  SnapshotManifestRelativePath = exportResult.ArchiveManifestRelativePath
+                                  RootArtifactRelativePath = importResult.RootArtifactRelativePath
+                                  ImportId = importResult.ImportId
+                                  ImportManifestRelativePath = importResult.ManifestRelativePath
+                                  WorkingGraphManifestRelativePath = importResult.WorkingGraphManifestRelativePath
+                                  WorkingGraphCatalogRelativePath = importResult.WorkingGraphCatalogRelativePath
+                                  WorkingGraphIndexRelativePath = importResult.WorkingGraphIndexRelativePath
+                                  Counts = importResult.Counts
+                                  Conversations =
+                                    importResult.ConversationSummaries
+                                    |> List.map (fun conversation ->
+                                        { ProviderConversationId = conversation.ProviderConversationId
+                                          Title = conversation.Title
+                                          MessageCountHint = conversation.MessageCountHint })
+                                  ManifestRelativePath = manifestRelativePath }
 
-                    Ok
-                        { RepoRoot = gitHead.RepoRoot
-                          RepoSlug = gitHead.RepoSlug
-                          BranchName = gitHead.BranchName
-                          RemoteOrigin = gitHead.RemoteOrigin
-                          CommitSha = gitHead.CommitSha
-                          CommitShortSha = gitHead.CommitShortSha
-                          CommitSummary = gitHead.CommitSummary
-                          CommitMessage = gitHead.CommitMessage
-                          CapturedAt = capturedAt
-                          SnapshotName = snapshotName
-                          SnapshotRoot = exportResult.ArchiveRoot
-                          SnapshotManifestRelativePath = exportResult.ArchiveManifestRelativePath
-                          CheckpointManifestRelativePath = checkpointManifestRelativePath
-                          ImportResult = importResult }
+                            let checkpointManifestRelativePath = CommitCheckpoints.write eventStoreRoot checkpoint
+
+                            Ok
+                                { RepoRoot = gitHead.RepoRoot
+                                  RepoSlug = gitHead.RepoSlug
+                                  BranchName = gitHead.BranchName
+                                  RemoteOrigin = gitHead.RemoteOrigin
+                                  CommitSha = gitHead.CommitSha
+                                  CommitShortSha = gitHead.CommitShortSha
+                                  CommitSummary = gitHead.CommitSummary
+                                  CommitMessage = gitHead.CommitMessage
+                                  CapturedAt = capturedAt
+                                  SnapshotName = snapshotName
+                                  SnapshotRoot = exportResult.ArchiveRoot
+                                  SnapshotManifestRelativePath = exportResult.ArchiveManifestRelativePath
+                                  CheckpointManifestRelativePath = checkpointManifestRelativePath
+                                  ImportResult = importResult }
+                finally
+                    SharedFileGate.release heldLock
 
     /// <summary>
     /// Reports the durable checkpoint linked to a repo commit, defaulting to the current Git HEAD commit.
