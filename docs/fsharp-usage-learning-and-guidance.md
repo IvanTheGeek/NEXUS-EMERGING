@@ -245,6 +245,19 @@ If the team later needs to prove that a path button advances exactly one screen 
 - use the direct browser surface to understand the current bug
 - then prefer a Playwright-style harness for the repeatable assertion
 
+For horizontally scrolling path surfaces, a useful learned rule is:
+
+- do not guess whole-column targets from container widths alone
+- measure the real rendered column starts in the browser
+- derive the logical left-edge targets from those measured positions
+- and allow explicit trailing space when a readable whole-column target needs a small blank tail at the far right
+
+And if button-driven smooth scrolling is still drifting or stopping early:
+
+- do not keep guessing at CSS widths
+- verify whether the browser is applying native smooth scrolling the way the interaction needs
+- if not, prefer an explicit programmatic animation that keeps the related scroll surfaces in sync from one shared target value
+
 ## Relationship To Existing Docs
 
 This note complements, not replaces:
