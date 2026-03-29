@@ -52,8 +52,9 @@ I wrote up the deeper details here:
 
 And I already filed or linked one narrower bug/aspect post separately, so I’m not trying to rehash all of that here:
 
-- Existing GitHub issue: `TODO_EXISTING_GITHUB_ISSUE_URL`
-- Existing forum post: `TODO_EXISTING_FORUM_POST_URL`
+- Existing GitHub issue: <https://github.com/penpot/penpot/issues/8826>
+- Existing forum plugin note: <https://community.penpot.app/t/what-s-working-and-what-s-missing-in-penpot-plugins/9785/8?u=ivanthegeek>
+- Existing forum text-rendering note: <https://community.penpot.app/t/penpot-bug-report-on-text-rendering-overrides/10460?u=ivanthegeek>
 
 I also think this older thread is worth keeping in view as trace:
 

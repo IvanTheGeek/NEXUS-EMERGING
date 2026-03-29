@@ -35,8 +35,11 @@ Current public Penpot trace that should be included in that chain:
 
 Additional already-posted public links from this specific workstream should be added here once collected:
 
-- existing GitHub issue for one MCP aspect: `TODO add URL`
-- existing Penpot forum post for one MCP aspect: `TODO add URL`
+- existing GitHub issue for one MCP aspect:
+  - [penpot/penpot issue #8826](https://github.com/penpot/penpot/issues/8826)
+- existing Penpot forum posts for related aspects:
+  - [What’s working and what’s missing in Penpot plugins?](https://community.penpot.app/t/what-s-working-and-what-s-missing-in-penpot-plugins/9785/8?u=ivanthegeek)
+  - [Penpot bug report on text rendering overrides](https://community.penpot.app/t/penpot-bug-report-on-text-rendering-overrides/10460?u=ivanthegeek)
 
 ## Why Penpot Was Attractive
 
