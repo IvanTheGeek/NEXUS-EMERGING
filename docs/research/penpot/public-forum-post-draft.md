@@ -48,7 +48,7 @@ It is more: Penpot was useful research, but it became more integration friction 
 
 I wrote up the deeper details here:
 
-- Deep retrospective: `TODO_GITHUB_RETRO_URL`
+- Deep retrospective: <https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/export-window-analysis/docs/research/penpot/codex-mcp-retrospective.md>
 
 And I already filed or linked one narrower bug/aspect post separately, so I’m not trying to rehash all of that here:
 
@@ -68,7 +68,7 @@ If the Penpot team or other users are interested, the deeper note includes:
 
 ## Suggested GitHub Human-Facing Link
 
-After the branch is pushed, prefer a normal GitHub blob URL such as:
+Current branch-based URL:
 
 `https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/export-window-analysis/docs/research/penpot/codex-mcp-retrospective.md`
 
