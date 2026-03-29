@@ -235,6 +235,32 @@ Useful lens:
 
 - `Screen Path Lens`
 
+### Path Page Labeling Rule
+
+For the current LaundryLog-style path pages, use this practical hierarchy:
+
+- `domain`
+  broader and usually page-level, not repeated on every step
+- `bounded context`
+  shown per step when it helps disambiguate meaning
+- `lens`
+  shown per step and controllable at the page level when the viewer wants to enable or disable families of meaning
+- `surface`
+  the concrete rendered thing being shown for that step
+
+Example:
+
+- `Context · RuntimeOrchestration`
+- `app runtime lens`
+- `Screen.AppStart - Runtime Checks`
+
+Short rule:
+
+- do not use `lens` as a substitute for `context`
+- on a path page, `context` answers “what semantic area is this step in?”
+- `lens` answers “from what viewing/projection perspective are we currently looking at it?”
+- the broader `domain` can usually stay implicit unless the page specifically needs to teach it
+
 #### InteractionComposition
 
 This is the bounded context for how an interaction surface is composed from reusable primitives, layout rules, states, and tokens.
