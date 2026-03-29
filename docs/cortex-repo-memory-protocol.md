@@ -128,6 +128,8 @@ Before finishing a meaningful piece of work:
 
 - if terminology changed, update the glossary or the relevant terminology doc
 - if architecture or behavior changed, update the durable docs that explain it
+- if code, renderer, command behavior, or visible behavior changed, add or update tests by default
+- if a relevant test was not added or updated, say why explicitly
 - if a discovery will matter later, record it durably instead of leaving it only in chat
 - if a note is only scratch, leave it in scratch and do not pretend it is doctrine
 - if canonical history is affected, append or add correction records rather than rewriting it

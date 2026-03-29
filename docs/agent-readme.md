@@ -66,6 +66,8 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 
 - update the relevant durable docs
 - update tests when code behavior changes
+- when renderer, UI, HTML, CSS, command behavior, or visible behavior changes, add or update tests by default
+- if a relevant test is not added or updated, say why explicitly
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
 
