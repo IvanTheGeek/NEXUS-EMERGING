@@ -37,6 +37,7 @@ Use this order unless the task is extremely narrow:
 High-value next docs in this branch usually include:
 
 - [`nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
+- [`fsharp-usage-learning-and-guidance.md`](fsharp-usage-learning-and-guidance.md)
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
 - [`nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
 - [`nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
@@ -70,6 +71,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - if a relevant test is not added or updated, say why explicitly
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
+- when a repeat F# seam or implementation preference becomes clear, record it in the appropriate durable guidance surface instead of leaving it as one-off chat memory
 
 When work is docs-only or tests are not applicable, say so explicitly.
 

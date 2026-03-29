@@ -15,6 +15,7 @@ Use it to orient quickly, then go to the linked durable docs.
 - avoid forcing the final ontology too early
 - make repo-as-memory and agent-readability more explicit
 - support multiple concern lines from the foundation rather than collapsing everything into one product story
+- start hardening reusable F# guidance and learned seams so future agents and humans can recover them without rediscovery
 
 ## Current Truths
 
@@ -39,6 +40,7 @@ Use it to orient quickly, then go to the linked durable docs.
 - keep the ingestion and canonical-history direction traceable
 - support extracted repos such as CheddarBooks with local memory surfaces while retaining upstream doctrine here
 - move repeated AI-assisted workflows toward more deterministic surfaces where practical
+- keep building a reusable F# knowledgebase that can later be reworked into stronger onboarding and training material
 
 ## Read Next
 
@@ -46,6 +48,7 @@ Use it to orient quickly, then go to the linked durable docs.
 - [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
 - [`index.md`](index.md)
 - [`glossary.md`](glossary.md)
+- [`fsharp-usage-learning-and-guidance.md`](fsharp-usage-learning-and-guidance.md)
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
 - [`logos-source-model-v0.md`](logos-source-model-v0.md)
 - [`nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
