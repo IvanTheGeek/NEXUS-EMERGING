@@ -35,6 +35,10 @@ Start here when you need orientation instead of one specific deep document.
 
 - [`how-to/`](how-to/)
 
+## Research
+
+- [`research/README.md`](research/README.md)
+
 ## Notes About This Index
 
 - this file is a read-optimized map
