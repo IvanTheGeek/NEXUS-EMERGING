@@ -260,6 +260,14 @@ And if button-driven smooth scrolling is still drifting or stopping early:
 - verify whether the browser is applying native smooth scrolling the way the interaction needs
 - if not, prefer an explicit programmatic animation that keeps the related scroll surfaces in sync from one shared target value
 
+For local `file://` HTML artifacts that need update awareness:
+
+- do not assume the page can reliably `fetch()` itself like a served web app
+- verify what the actual browser/file-origin behavior allows
+- if direct self-fetch is blocked, prefer a small regenerated sidecar manifest script that the page can poll
+- keep the current artifact version in that companion file
+- and keep sticky viewer/update preferences in browser `localStorage`, not in the artifact itself
+
 ## Relationship To Existing Docs
 
 This note complements, not replaces:
