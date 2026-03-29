@@ -57,8 +57,11 @@ The motivating idea was not shallow design export.
 
 It was closer to:
 
+- penpotDesign -> ingestion -> model
 - model -> projection -> artifact
 - with Penpot as one of the live projection surfaces
+
+That is, part of the real hope was that a design created in Penpot, or an already-existing design brought into Penpot, could be ingested into the modeling layer and then used as part of real app production rather than treated only as a terminal design artifact.
 
 ### Motivation Trace
 
