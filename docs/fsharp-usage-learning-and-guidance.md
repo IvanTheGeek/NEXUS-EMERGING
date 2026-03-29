@@ -166,6 +166,28 @@ For renderer, HTML, CSS, UI, generated-output, or visible-behavior work:
 
 Do not rely on memory or assumption when the real artifact can be inspected locally.
 
+### 6. Distinguish Inspection Surfaces From Automation Harnesses
+
+A browser that an AI can inspect or control directly is not the same thing as a durable automation harness.
+
+Direct browser inspection is useful for:
+
+- visual debugging
+- layout checks
+- confirming what rendered right now
+
+Automation harnesses such as Playwright are useful for:
+
+- repeatable browser assertions
+- stable path checks
+- rerunnable bug reproduction
+- later CI-friendly verification
+
+Short rule:
+
+- inspect directly to understand the current behavior
+- use automation harnesses when the behavior needs to be proven repeatably
+
 ## The Current Usual Way
 
 The current NEXUS-wide usual way is:
@@ -210,6 +232,18 @@ If a repo learns that `dotnet build` and tests should be run serially against on
 - keep the local command rule in that repo
 - do not assume the same command pattern applies everywhere
 - keep the broader NEXUS rule at the level of “verify behavior and record local procedure where it matters”
+
+### Example 4: Browser Control Versus Playwright
+
+If an AI can open a generated HTML file and inspect it in a browser:
+
+- that is a useful inspection surface
+- it is not automatically the same thing as a reusable browser test
+
+If the team later needs to prove that a path button advances exactly one screen column at a time:
+
+- use the direct browser surface to understand the current bug
+- then prefer a Playwright-style harness for the repeatable assertion
 
 ## Relationship To Existing Docs
 

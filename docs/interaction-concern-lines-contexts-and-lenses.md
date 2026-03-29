@@ -359,6 +359,97 @@ One practical chain for the current LaundryLog direction is:
 
 That chain is useful because it stops one screen artifact from pretending to be the whole truth. The screen work is real, but it is only one woven part of the fuller model.
 
+## Browser Control, Playwright, And The Term Set
+
+The recent LaundryLog HTML/CSS work also exposed a useful distinction between:
+
+- direct browser inspection/control
+- explicit browser automation frameworks such as Playwright
+
+They are related, but they are not the same thing.
+
+### Direct Browser Inspection Or Control
+
+This is best understood as an inspection and debugging surface.
+
+It is useful for:
+
+- looking at the current rendered artifact
+- checking layout or visible state quickly
+- confirming what the browser actually showed
+- manually exploring a path while the shape is still in flux
+
+In the current term set, this mainly supports:
+
+- `InteractionComposition`
+- `ScreenPath`
+
+It is especially useful through:
+
+- `Interaction Composition Lens`
+- `Screen Path Lens`
+
+Short rule:
+
+- direct browser control is good for inspection, exploration, and visual debugging
+- it is not automatically a durable automation contract
+
+### Playwright Or Similar Browser Automation
+
+Playwright, Selenium, and similar tools are not mainly “another way to look at the browser.”
+
+They are repeatable automation harnesses.
+
+They are useful for:
+
+- scripted navigation
+- deterministic clicking and typing
+- waiting for stable UI states
+- asserting path behavior
+- capturing reproducible failures
+- running the same browser checks later in CI or by other humans
+
+In the current term set, this most naturally supports:
+
+- `InteractionComposition`
+  when the question is whether the rendered interaction surface behaves correctly
+- `ScreenPath`
+  when the question is whether ordered visible states transition correctly
+- `RuntimeOrchestration`
+  when startup, routing, hydration, or app/runtime coordination changes what is shown
+
+Short rule:
+
+- Playwright is best understood as a deterministic testing and verification surface over the same interaction/runtime concerns
+
+### Practical Distinction
+
+Use direct browser inspection when:
+
+- the goal is to understand what the current artifact does
+- the work is still being shaped visually
+- a human or AI needs quick feedback about what rendered
+
+Use Playwright-style automation when:
+
+- the behavior should be repeatable
+- the path should be asserted rather than just observed
+- the result should be rerunnable by other humans, AI, or CI
+- a bug needs a stable reproduction harness
+
+### LaundryLog Example
+
+For the current LaundryLog HTML path and screen work:
+
+- opening the generated HTML file and inspecting it visually is direct browser inspection
+- clicking through it manually to see what feels wrong is still direct browser inspection
+- a future scripted check that asserts the path nav buttons move exactly one column at a time would be Playwright-style automation
+
+So:
+
+- browser inspection helps us understand the current interaction surface
+- Playwright would help us prove the surface behaves correctly in a repeatable way
+
 ## What This Means For FnHCI
 
 `FnHCI` should not be reduced to only:
