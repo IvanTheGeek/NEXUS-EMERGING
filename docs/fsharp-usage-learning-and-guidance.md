@@ -258,6 +258,31 @@ Automation harnesses such as Playwright are useful for:
 - rerunnable bug reproduction
 - later CI-friendly verification
 
+### 7. Prefer `dotnet fsi --exec` Over Raw REPL Heredocs
+
+When F# Interactive is used from shell automation, artifact generation, or AI tool execution:
+
+- do not treat raw `dotnet fsi <<'EOF' ... EOF` REPL invocation as the preferred normal path
+- prefer a checked-in `.fsx` script or a temporary `.fsx` file
+- run it with `dotnet fsi --exec path/to/script.fsx`
+
+Why:
+
+- raw `dotnet fsi` behaves like the REPL and may exit with code `1` after evaluating the script body even when the F# code itself succeeded
+- the command display from wrapped shell tools can make `$\"...\"` F# interpolation look shell-mangled even when the actual script content is still correct
+- `--exec` gives a cleaner non-interactive execution shape and a more trustworthy success/failure signal
+
+Working rule:
+
+- if the task is one-off, write a temporary `.fsx` file and run it with `--exec`
+- if the task is recurring or important, prefer a checked-in `.fsx` helper script
+- use a quoted heredoc such as `<<'EOF'` only for writing the script file content, not for driving the `dotnet fsi` REPL directly
+
+Short version:
+
+- the real issue is usually REPL-mode invocation, not F# string interpolation
+- the preferred solution is `.fsx` plus `dotnet fsi --exec`
+
 Short rule:
 
 - inspect directly to understand the current behavior
