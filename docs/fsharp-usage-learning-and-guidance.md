@@ -251,6 +251,8 @@ For horizontally scrolling path surfaces, a useful learned rule is:
 - measure the real rendered column starts in the browser
 - derive the logical left-edge targets from those measured positions
 - and allow explicit trailing space when a readable whole-column target needs a small blank tail at the far right
+- if a separate scroll rail is representing that logical range, size the rail from the logical range too, not only from the native content width
+- and if stable scrollbar gutters are enabled, account for the rail's full box width rather than only its client width
 
 And if button-driven smooth scrolling is still drifting or stopping early:
 
