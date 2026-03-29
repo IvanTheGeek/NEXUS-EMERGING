@@ -9,8 +9,8 @@ It is intentionally brief and should link outward to:
 
 Before posting:
 
-1. push the branch or merge the note so the GitHub blob URL is real
-2. replace the placeholders below
+1. make sure the `main` GitHub blob URL is the one you want to reference
+2. adjust tone/length as desired for the forum audience
 3. add any already-posted public links from this same workstream
 
 ## Suggested Title
@@ -27,6 +27,7 @@ Why I was trying it:
 
 - I wanted Penpot to act as a live visual projection surface for Event Modeling, screen paths, and reusable UI/state work
 - I was interested in the bridge between design, modeling, AI manipulation, and later generated application surfaces
+- I was hoping for not only `model -> projection -> artifact`, but also `penpotDesign -> ingestion -> model`, where an existing design could feed back into modeling and real app production
 - I was specifically trying to see whether Penpot could function as more than a passive design artifact in this workflow
 
 What worked:
