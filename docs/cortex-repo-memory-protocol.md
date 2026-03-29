@@ -99,6 +99,7 @@ When in doubt:
 - prefer durable docs over chat memory
 - prefer additive correction over silent replacement
 - prefer traceable derivation over unexplained summaries
+- for concrete code, renderer, HTML, CSS, and UI work, inspect the actual local source and current artifacts before changing behavior; do not rely on memory or inferred structure when the code can be read directly
 
 ## Agent Startup Protocol
 
