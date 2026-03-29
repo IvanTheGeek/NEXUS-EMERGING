@@ -15,6 +15,8 @@ This is not a single upstream bug report.
 
 It is a retrospective over one serious integration attempt.
 
+When this note is linked publicly, it should be framed as Ivan's research/opinion surface rather than as an official Penpot bug report or neutral product documentation.
+
 ## Current Publication Strategy
 
 The recommended publication stack for this material is:
@@ -22,6 +24,8 @@ The recommended publication stack for this material is:
 1. a focused GitHub issue for one concrete reproducible bug
 2. a shorter Penpot community forum post for the broader narrative
 3. this deeper research note as the full evidence and interpretation trail
+
+For public linking, prefer human-facing GitHub blob URLs to this note rather than local file-system paths.
 
 Current public Penpot trace that should be included in that chain:
 
@@ -253,4 +257,3 @@ When a shorter public Penpot post is created from this work:
 - keep the public text concise
 - link here for the full trail
 - keep exact logs and stronger interpretation here rather than dumping them into the public post
-

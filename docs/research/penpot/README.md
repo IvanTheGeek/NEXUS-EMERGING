@@ -11,3 +11,4 @@ Use it when:
 Current notes:
 
 - [`codex-mcp-retrospective.md`](codex-mcp-retrospective.md)
+- [`public-forum-post-draft.md`](public-forum-post-draft.md)
