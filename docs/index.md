@@ -15,6 +15,7 @@ Start here when you need orientation instead of one specific deep document.
 ## Core Foundation Docs
 
 - [`nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
+- [`interaction-concern-lines-contexts-and-lenses.md`](interaction-concern-lines-contexts-and-lenses.md)
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
 - [`nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
 - [`nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)

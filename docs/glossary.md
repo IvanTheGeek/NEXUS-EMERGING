@@ -41,6 +41,12 @@ The append-only normalized event history maintained by NEXUS.
 
 In the current bounded context, it is the canonical store for observed acquisition history. It is derived from acquisition inputs and intended to be durable, provenance-preserving, and reparsable.
 
+## Concern Line
+
+A practical thread of work, meaning, or pressure that clearly matters even if its final bounded-context shape is not yet settled.
+
+Use it to name emerging areas without pretending their final semantic boundary is already stable.
+
 ## Domain
 
 A broad area of reality or work that a part of the graph concerns, such as `Ingestion` or `SoftwareDevelopment`.

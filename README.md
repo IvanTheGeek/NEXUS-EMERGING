@@ -34,6 +34,7 @@ These boundaries are real design seams now and can become separate systems later
 Core project memory lives in the repo so humans and AI agents can recover intent quickly:
 
 - `docs/nexus-core-conceptual-layers.md`
+- `docs/interaction-concern-lines-contexts-and-lenses.md`
 - `docs/nexus-ingestion-architecture.md`
 - `docs/nexus-graph-materialization-plan.md`
 - `docs/nexus-ontology-imprint-alignment.md`

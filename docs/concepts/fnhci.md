@@ -32,6 +32,29 @@ The reason this matters is scope. `FnHCI` is meant to cover:
 
 At the current understanding, `FnUI` becomes one lens or sub-area inside `FnHCI`, not the whole thing. The Bolero investigation contributed the substrate insight: build on the rendering/runtime seam without inheriting the framework's ideology as the final model. From there, the concept widened into a platform-neutral projection model over multiple human-facing surfaces.
 
+## Current Structural Direction
+
+The current NEXUS interaction direction is being hardened more explicitly in [`../interaction-concern-lines-contexts-and-lenses.md`](../interaction-concern-lines-contexts-and-lenses.md).
+
+The practical reading right now is:
+
+- `FnHCI` is the broader interaction-system area
+- `FnUI` is one projection family or sub-area inside that larger direction
+- current interaction-bounded-context pressure is clustering around:
+  - `ApplicationLifecycle`
+  - `RuntimeOrchestration`
+  - `ScreenPath`
+  - `InteractionComposition`
+- `EventModeling` remains a neighboring business context that must weave correctly with those interaction concerns rather than being collapsed into them
+
+LaundryLog gives a concrete working example:
+
+- `AppStarted` belongs to `ApplicationLifecycle`
+- startup checks and first-route decisions belong to `RuntimeOrchestration`
+- ordered screen states belong to `ScreenPath`
+- HTML/CSS or later Android-native surface building belongs to `InteractionComposition`
+- business commands, events, and business views still belong to `EventModeling`
+
 ## Working Notes
 
 - What are the stable core primitives of FnHCI, separate from any one runtime like Blazor or Bolero?
