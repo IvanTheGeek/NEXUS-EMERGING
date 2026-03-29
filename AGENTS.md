@@ -4,6 +4,8 @@ This repository is the foundation workspace for NEXUS.
 
 It is shared operating memory for humans and AI agents.
 
+Human collaborators are the ultimate decision makers in NEXUS; AI agents exist to help execute, clarify, and suggest better strategies, tools, and implementations in service of human direction.
+
 Read in this order before substantial work:
 
 1. [`README.md`](README.md)

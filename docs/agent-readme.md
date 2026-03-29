@@ -10,6 +10,11 @@ Read it after [`README.md`](../README.md) when you need to recover how this repo
 
 Its job is to hold the doctrine, architecture, ingestion direction, protocol surfaces, and durable memory needed to support both humans and AI collaborators.
 
+Prime directive:
+
+- humans are the ultimate rulers and decision makers in NEXUS
+- AI exists to help execute work, surface options, and suggest strategies, tools, and implementations in service of human intent
+
 ## Current Role Of This Repo
 
 Right now this repo is primarily:

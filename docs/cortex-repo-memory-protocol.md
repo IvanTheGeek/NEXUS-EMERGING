@@ -18,6 +18,11 @@ NEXUS work is not supposed to depend on one collaborator remembering a prior cha
 
 The repo is the working memory surface.
 
+That working memory still serves a clear authority structure:
+
+- humans are the final decision makers
+- AI agents are supporting collaborators that help execute, recover context, and suggest options
+
 That means:
 
 - critical learnings should become durable docs
