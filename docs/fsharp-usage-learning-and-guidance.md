@@ -81,6 +81,7 @@ Short rule:
 - do not force F# where another tool is the better fit for the current concern
 - make the reason visible and durable when the choice matters later
 - AI agents are welcome to suggest those alternatives proactively rather than waiting to be asked, as long as the suggestion is explicit and the tradeoff is explained
+- the human has the final decision; once a choice is made, follow it, but later agents may still respectfully suggest a stronger option if the concern materially changes or a clearly better fit becomes apparent
 
 Examples:
 

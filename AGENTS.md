@@ -23,6 +23,7 @@ Working rules:
 - for UI, HTML, CSS, renderer, and screen work, inspect the actual local source and current artifacts before changing behavior
 - when a repeat F# seam, preference, or verification rule becomes clear, record it durably so later agents do not have to rediscover it
 - AI agents are welcome to proactively suggest better-fit tools or languages when the current concern calls for them; make the tradeoff visible and keep the broader F#-centered direction clear
+- the human has the final decision; once that decision is made, use it, while still allowing respectful future prompting when a materially better option becomes apparent
 
 Primary references:
 
