@@ -22,6 +22,7 @@ Working rules:
 - if a relevant test is not added or updated, say why explicitly
 - for UI, HTML, CSS, renderer, and screen work, inspect the actual local source and current artifacts before changing behavior
 - when a repeat F# seam, preference, or verification rule becomes clear, record it durably so later agents do not have to rediscover it
+- AI agents are welcome to proactively suggest better-fit tools or languages when the current concern calls for them; make the tradeoff visible and keep the broader F#-centered direction clear
 
 Primary references:
 

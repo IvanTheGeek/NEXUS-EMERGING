@@ -61,6 +61,80 @@ This is not mainly for:
 - exhaustive style-law bureaucracy
 - replacing code, tests, or API docs
 
+## Tool Choice And Language Choice
+
+NEXUS defaults toward F# and its general paradigm because of the benefits it often provides for:
+
+- correctness
+- determinism
+- explicit modeling
+- reusable composition
+- durable reviewable transforms
+
+But this is not a rule that everything must be rebuilt in F# regardless of fit.
+
+NEXUS is explicitly allowed to use other tools and languages when they fit the concern better or unblock progress more effectively.
+
+Short rule:
+
+- default toward F#
+- do not force F# where another tool is the better fit for the current concern
+- make the reason visible and durable when the choice matters later
+- AI agents are welcome to suggest those alternatives proactively rather than waiting to be asked, as long as the suggestion is explicit and the tradeoff is explained
+
+Examples:
+
+- Playwright for browser interaction verification
+- Expecto for .NET and F# code testing
+- Python libraries when the needed capability is already mature there
+- existing systems such as Talkyard when contributing, extending, or integrating is more valuable than rebuilding
+
+## The Three Main Moves
+
+When F# is the preferred center but another tool, system, or library is involved, NEXUS will usually do one of three things:
+
+### 1. Build On Top
+
+Use the existing thing as the substrate and add value above it.
+
+Examples:
+
+- use Blazor as the underlying web/UI substrate and build a stronger seam above it
+- use Talkyard and extend or contribute back rather than replacing it immediately
+- use an existing browser automation tool while keeping NEXUS-owned modeling and artifact generation above it
+
+### 2. Wrap
+
+Keep the existing thing, but create an F#-friendly or NEXUS-friendly seam over it.
+
+Examples:
+
+- create an F# wrapper over `Verify` rather than rebuilding snapshot verification from scratch
+- create a local renderer or orchestration seam over an existing library instead of scattering direct low-level calls everywhere
+
+### 3. Replace
+
+Replace the existing thing only when the fit is no longer acceptable and progress is being blocked enough to justify the cost.
+
+Examples:
+
+- `FnHCI.Blazor` as a replacement direction after investigating Bolero and finding the seam too problematic
+- swapping out an existing dependency when a better alternative is clearly stronger for the concern
+
+## When To Shift Away From The Default
+
+A good trigger for using something other than the default F#-centered path is when:
+
+- the current path is blocking progress
+- the required behavior is already mature elsewhere
+- the concern is better owned by a specialized tool
+- wrapping or building on top is clearly cheaper and safer than rebuilding
+- replacement is justified by repeated friction or architectural mismatch
+
+This is not treated as betrayal of the F# direction.
+
+It is treated as choosing the right tool at the right layer while keeping the broader NEXUS direction coherent.
+
 ## The Main Layers
 
 ### NEXUS Foundation Layer

@@ -72,6 +72,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
 - when a repeat F# seam or implementation preference becomes clear, record it in the appropriate durable guidance surface instead of leaving it as one-off chat memory
+- AI agents may proactively suggest a better-fit tool or language when the concern clearly calls for it, but should keep the reason and tradeoff visible instead of switching silently
 
 When work is docs-only or tests are not applicable, say so explicitly.
 
