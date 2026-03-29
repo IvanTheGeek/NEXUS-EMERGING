@@ -48,7 +48,7 @@ It is more: Penpot was useful research, but it became more integration friction 
 
 I wrote up the deeper details here:
 
-- Deep retrospective: <https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/export-window-analysis/docs/research/penpot/codex-mcp-retrospective.md>
+- Deep retrospective: <https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/docs/research/penpot/codex-mcp-retrospective.md>
 
 And I already filed or linked one narrower bug/aspect post separately, so I’m not trying to rehash all of that here:
 
@@ -68,8 +68,8 @@ If the Penpot team or other users are interested, the deeper note includes:
 
 ## Suggested GitHub Human-Facing Link
 
-Current branch-based URL:
+Preferred public URL:
 
-`https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/export-window-analysis/docs/research/penpot/codex-mcp-retrospective.md`
+`https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/docs/research/penpot/codex-mcp-retrospective.md`
 
-If the work is later merged, prefer the final `main` URL instead of the topic-branch URL.
+Use the `main` URL for public references when possible.
