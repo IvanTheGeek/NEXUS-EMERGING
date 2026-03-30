@@ -346,6 +346,39 @@ Short rule:
 - inspect directly to understand the current behavior
 - use automation harnesses when the behavior needs to be proven repeatably
 
+### 9. When Interpolated Expressions Need Quoted Defaults, Lift Them Into A `let` First
+
+In F#, interpolated strings can fail with `FS3373` when the embedded expression itself carries quoted literals or nested defaults such as `Option.defaultValue "Entry"` directly inside `$"..."`.
+
+Typical symptom:
+
+- `Invalid interpolated string`
+- the reported line often looks simple, but the quoted literal lives inside the interpolation expression rather than in the outer string
+
+Preferred shape:
+
+- compute the value in a nearby `let` binding first
+- interpolate the already-bound value
+
+Prefer:
+
+```fsharp
+let selectedMachineText = selectedMachine |> Option.defaultValue "Entry"
+appendLine builder $"<span>{htmlEncode selectedMachineText}</span>"
+```
+
+Instead of:
+
+```fsharp
+appendLine builder $"<span>{htmlEncode (selectedMachine |> Option.defaultValue "Entry")}</span>"
+```
+
+Why:
+
+- the `let` binding is clearer to read
+- it avoids the quoted-literal seam inside the interpolation expression
+- it produces a more stable fix than trying to juggle the outer string punctuation
+
 ## The Current Usual Way
 
 The current NEXUS-wide usual way is:
