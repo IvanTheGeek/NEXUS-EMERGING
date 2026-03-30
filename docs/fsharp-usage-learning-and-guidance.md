@@ -316,6 +316,31 @@ Short version:
 - the real issue is usually REPL-mode invocation, not F# string interpolation
 - the preferred solution is `.fsx` plus `dotnet fsi --exec`
 
+### 8. When Expecto Reports Offside `let` Errors, Check Recent Parentheses First
+
+In long `Expecto` `testList` / `testCase` bodies, a stray extra closing parenthesis can surface as a much more confusing compiler failure later in the same block.
+
+Typical symptoms:
+
+- `Unexpected keyword 'let' or 'use' in expression`
+- `Unexpected syntax or possible incorrect indentation`
+- `Unmatched '['`
+- the reported line is a later `let` binding or assertion, not the true mistake
+
+Preferred debugging order:
+
+- inspect the most recent pipeline, function call, or `List.iter` / `List.map` block above the reported line
+- count closing parentheses before changing indentation
+- only treat it as a real indentation problem after ruling out a prematurely closed expression
+
+Observed seam:
+
+- in a long LaundryLog `Expecto` test block, one extra `)` after `List.iter` made later `let` bindings look offside even though the indentation was correct
+
+Short rule:
+
+- for long F# test blocks, treat sudden offside `let` / unmatched `[` compiler errors as a likely delimiter problem first, not automatically an indentation problem
+
 Short rule:
 
 - inspect directly to understand the current behavior
