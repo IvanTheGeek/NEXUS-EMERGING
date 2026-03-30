@@ -80,6 +80,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - AI agents may proactively suggest a better-fit tool or language when the concern clearly calls for it, but should keep the reason and tradeoff visible instead of switching silently
 - the human's decision is the controlling one once made; later agents should follow it, while still being allowed to respectfully surface a materially better option if one becomes apparent
 - for Playwright MCP browser work, do not assume `file://` is a valid target; the MCP browser sandbox blocks `file:` URLs, so serve local artifacts over `http://127.0.0.1/...` (or similar local HTTP) first and use that as the browser target
+- when a repo already provides checked-in helper scripts for recurring build, refresh, verification, or test flows, use those scripts as the default path instead of reconstructing the flow ad hoc
 
 When work is docs-only or tests are not applicable, say so explicitly.
 

@@ -187,6 +187,7 @@ Examples:
 - a renderer needs direct artifact inspection
 - a generated output should be verified through snapshot tests
 - a local build/test sequence must be run serially
+- a repo-provided verify script should be preferred over ad hoc command reconstruction
 
 ### 2. Prefer The Usual Way When It Exists
 
@@ -200,6 +201,7 @@ Examples:
 - use the repo’s established test stack rather than a new ad hoc harness
 - use the repo’s established renderer verification pattern rather than guessing
 - follow the repo’s established doc/source/test layering rather than moving everything into one layer
+- when a repo already has a checked-in helper script for build/test/refresh/verify, use that script as the normal entry point unless there is a task-specific reason not to
 
 ### 3. Ask When “This Time” Could Reasonably Mean Something Different
 
