@@ -258,6 +258,28 @@ Automation harnesses such as Playwright are useful for:
 - rerunnable bug reproduction
 - later CI-friendly verification
 
+### 7. Distinguish `file://` From Local HTTP In Browser Automation
+
+For local generated HTML artifacts, manual browser review and browser automation do not always share the same access rules.
+
+Current durable rule:
+
+- `file://` may still be acceptable for manual browser opening or a secondary smoke check
+- Playwright MCP should not default to `file://`
+- the Playwright MCP browser sandbox blocks `file:` URLs
+- when using Playwright MCP against a local artifact, serve the tracked artifact tree over local HTTP first, then target `http://127.0.0.1/...`
+
+Practical consequence:
+
+- use `file://` only when the task specifically calls for manual or secondary compatibility verification
+- for interactive MCP browser debugging and for the formal Playwright browser suite, use local HTTP as the normal path
+
+Example:
+
+- tracked LaundryLog workspace HTML is reviewed from `workspace/`
+- Playwright Test serves that workspace tree over local HTTP
+- Playwright MCP should do the same instead of trying to open the tracked artifact directly with `file://`
+
 ### 7. Prefer `dotnet fsi --exec` Over Raw REPL Heredocs
 
 When F# Interactive is used from shell automation, artifact generation, or AI tool execution:
