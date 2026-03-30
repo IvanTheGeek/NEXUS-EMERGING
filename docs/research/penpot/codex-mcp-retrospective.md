@@ -68,17 +68,17 @@ That is, part of the real hope was that a design created in Penpot, or an alread
 Useful historical references:
 
 - bootstrap the event model from the design surface:
-  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625)
+  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625](../../../NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625)
 - use Penpot for the event model until equivalent in-app functionality existed:
-  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040)
+  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040](../../../NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040)
 - define a graph/model to Penpot interface:
-  - [019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22)
+  - [019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22](../../../NEXUS-EventStore/projections/conversations/019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22)
 - prove design export into an app pipeline:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148)
 - represent a screen state as a board built from reusable components:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159)
 - recreate an already-designed HTML screen in Penpot:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618)
 
 ## What Worked
 
@@ -95,8 +95,8 @@ Several things did work well enough to matter:
 
 Good durable summaries:
 
-- [penpot-live-backend-and-export.md#L1](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L1)
-- [penpot-projection.md#L1](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L1)
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L1`
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L1`
 
 ## What Failed Or Became Too Fragile
 
@@ -114,12 +114,12 @@ Codex hit:
 
 Best exact references:
 
-- [rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073](/home/ivan/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073)
-- [rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27077](/home/ivan/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27077)
+- local Codex session log: `~/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073`
+- local Codex session log: `~/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27077`
 
 Durable interpretation:
 
-- [penpot-live-backend-and-export.md#L100](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L100)
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L100`
 
 ### 2. Plugin/API Surface Divergence
 
@@ -133,8 +133,8 @@ That meant:
 
 Durable notes:
 
-- [penpot-surface-comparison.md#L1](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L1)
-- [penpot-live-backend-and-export.md#L1](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L1)
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L1`
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L1`
 
 ### 3. Instance Overrides Stored But Not Rendered
 
@@ -152,8 +152,8 @@ But in the current lab:
 
 Best durable references:
 
-- [penpot-surface-comparison.md#L228](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L228)
-- [penpot-projection.md#L261](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L261)
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L228`
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L261`
 
 ### 4. Active-Page / Top-Level Placement Quirks
 
@@ -163,11 +163,11 @@ That meant automation had to respect Penpot page focus in a way that felt more o
 
 Best durable reference:
 
-- [penpot-surface-comparison.md#L411](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L411)
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L411`
 
 Historical trace:
 
-- [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398)
+- [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398)
 
 ### 5. Token And Render Uncertainty
 
@@ -181,9 +181,9 @@ Current local durable cautions:
 
 Best references:
 
-- [penpot-projection.md#L400](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L400)
-- [penpot-surface-comparison.md#L200](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L200)
-- [penpot-live-backend-and-export.md#L140](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L140)
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md#L400`
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-surface-comparison.md#L200`
+- local companion note in adjacent worktree: `NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md#L140`
 
 ## Why Penpot Was Abandoned For Now
 
@@ -199,7 +199,7 @@ The decision was:
 
 The best concise local summary of that shift is:
 
-- [html-path-renderer-proving-ground.md#L1](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md#L1)
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md#L1`
 
 Short reason:
 
@@ -215,9 +215,9 @@ The active work shifted to deterministic renderers:
 
 That replacement direction lives here:
 
-- [html-path-renderer-proving-ground.md#L1](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md#L1)
-- [html-screen-renderer-proving-ground.md#L1](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-renderer-proving-ground.md#L1)
-- [html-screen-path-renderer-proving-ground.md#L1](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md#L1)
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md#L1`
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/html-screen-renderer-proving-ground.md#L1`
+- local companion note in adjacent repo/branch: `CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md#L1`
 
 ## Suggested Public Post Split
 
@@ -231,7 +231,7 @@ Use it for:
 
 Reference:
 
-- [rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073](/home/ivan/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073)
+- local Codex session log: `~/.codex/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl#L27073`
 
 ### Forum Post
 
