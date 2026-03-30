@@ -243,6 +243,15 @@ For renderer, HTML, CSS, UI, generated-output, or visible-behavior work:
 
 Do not rely on memory or assumption when the real artifact can be inspected locally.
 
+When rendering a live DOM preview of an interactive surface:
+
+- do not wrap the whole preview in a literal `<button>` if the preview already contains buttons, inputs, links, or other interactive controls
+- that creates invalid nested interactive HTML and browsers may silently restructure the DOM in ways that break scaling, clipping, and layout assumptions
+- prefer either:
+  - a non-button activator wrapper with `role="button"` and keyboard handling
+  - or a separate explicit expand button beside the preview
+- if the preview must be visually scaled, use a clipped preview frame with explicit sizing instead of hoping a bare `transform: scale(...)` contract will preserve layout on its own
+
 ### 6. Distinguish Inspection Surfaces From Automation Harnesses
 
 A browser that an AI can inspect or control directly is not the same thing as a durable automation harness.
