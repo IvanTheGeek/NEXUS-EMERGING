@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1432-7a4d-9d89-d758658b64f0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1432-7f53-a663-660bbf12b664"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.182Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "aeb7a5977b08c6fd41a1c4ebaba61a6d97ffd3871f7225e103dd0d62ebce9167"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000162-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000162-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000162-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 25
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS Ingestion Architecture v0**\n\nThis first system is the acquisition and provenance foundation for NEXUS, not the final NEXUS graph itself. The near-term job is to preserve source truth, normalize it into an append-only canonical history, and keep enough structure that we can reparse and evolve the higher layers later.\n\n**Local Boundaries**\n\nUse one workspace for now, but keep three explicit system boundaries:\n\n- `NEXUS-Code/`\n  F# importer, provider adapters, serialization, CLI, tests, later GUI/tools.\n- `NEXUS-Objects/`\n  Immutable provider zips, extracted working snapshots, attachments, audio, manually added recovered artifacts.\n- `NEXUS-EventStore/`\n  Git-backed append-only canonical events, import manifests, projections, and later graph-derived views.\n\nThat gives us clean seams now and an easy future split into separate systems.\n\n**Core Rules**\n\n- Provider exports are acquisition inputs, not absolute truth.\n- The original provider zip is preserved unchanged.\n- Extracted working files are derived convenience data.\n- Canonical history is append-only.\n- Rolling-window absence never deletes prior facts.\n- Referenced-but-missing artifacts are valid unresolved references.\n- Later manual artifact capture appends new facts; it does not rewrite history.\n- Reparse from raw source is expected and designed for.\n\n**Minimum Stable Base Types**\n\nThese are the types worth stabilizing now because they are about identity, provenance, and append-only history rather than final ontology.\n\n- `ProviderKind`\n  `ChatGpt | Claude | Other`\n- `SourceAcquisitionKind`\n  `ExportZip | ManualArtifactAdd | ApiCapture | BrowserCapture`\n- `ImportId`\n- `CanonicalEventId`\n- `ConversationId`\n- `MessageId`\n- `ArtifactId`\n- `TurnId` as optional and weakly inferred for now\n- `ProviderRef`\n  provider + provider object kind + provider IDs\n- `RawObjectRef`\n  points into `NEXUS-Objects` for zip, extracted file, attachment, or manual artifact\n- `ContentHash`\n- `ObservedAt`\n- `OccurredAt`\n- `ImportedAt`\n\n**Canonical History Layer**\n\nThis is the stable base we should build first.\n\n- `ImportManifest`\n  one record per import run with counts, source artifact, window kind, and results\n- `CanonicalEventEnvelope`\n  stable metadata like IDs, timestamps, provenance, hashes, source refs\n- `CanonicalEventBody`\n  discriminated union for event meaning\n\nInitial event kinds should stay narrow:\n\n- `ProviderArtifactReceived`\n- `RawSnapshotExtracted`\n- `ConversationDiscovered`\n- `MessageObserved`\n- `MessageRevisionObserved`\n- `ArtifactReferenced`\n- `ArtifactPayloadCaptured`\n- `ImportCompleted`\n\nThis gives us trustworthy ingestion without overcommitting the NEXUS ontology.\n\n**Thin Graph Overlay**\n\nWe should define only a minimal graph-compatible layer now, separate from canonical ingestion history.\n\n- `NodeId`\n- `NodeKind`\n- `EdgeId`\n- `EdgeKind`\n- `FactId`\n- `FactProvenance`\n- `GraphAssertion`\n  subject, predicate/edge, object or value, provenance back to canonical event IDs\n\nImportant boundary:\n- canonical events record what was observed/imported\n- graph assertions express evolving interpretation over that history\n\nThat separation lets us improve graph theory later without corrupting the raw-to-canonical foundation.\n\n**What Belongs Where**\n\nCanonical history now:\n\n- conversations\n- messages\n- imports\n- revisions\n- artifact references\n- artifact payload capture\n- provenance links to raw objects\n\nDeferred to later ontology work:\n\n- full canonical treatment of Claude `projects`, `memories`, `users`\n- full canonical treatment of all attachments/audio/documents as rich domain entities\n- cross-provider identity resolution\n- domain layers like software development knowledge\n- automated artifact capture\n- full live API capture workflow\n- final NEXUS graph semantics\n\n**Recommended v1 Position**\n\nBuild the first version around:\n- preserving provider zips\n- extracting working raw snapshots\n- importing conversations and messages\n- recording artifact references, including unresolved ones\n- supporting later manual artifact hydration\n- keeping the graph layer intentionally thin and reparsable\n\nThe next sensible step is to turn this note into a concrete `v0` workspace structure plus the first F# type definitions for the canonical layer only."
+

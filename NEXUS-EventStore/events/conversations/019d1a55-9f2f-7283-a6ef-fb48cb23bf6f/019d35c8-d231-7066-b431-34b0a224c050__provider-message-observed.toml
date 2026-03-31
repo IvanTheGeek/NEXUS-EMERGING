@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d35c8-d231-7066-b431-34b0a224c050"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d35c8-d231-71cc-8435-ff649cefc269"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T18:42:55.982Z"
+observed_at = "2026-03-28T18:50:44.799618Z"
+imported_at = "2026-03-28T18:50:44.799618Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d35c8-cabf-72dd-9ed8-3a0d1f62fb69"
+
+[content_hash]
+algorithm = "sha256"
+value = "54cb3f879c7f4cc58c44be2bcdcdca35c1d5b9707d8b0bc4f2d8abdac9a51ab4"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-033418-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-033418-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T18-50-42Z__cheddarbooks__d8cd352d/session_index.jsonl"
+archived_at = "2026-03-28T18:50:43.6198163Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T18-50-42Z__cheddarbooks__d8cd352d/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T18:50:43.6198163Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-033418-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3290
+
+[[body.segments]]
+kind = "plain_text"
+text = "Here’s the footer grammar I’d use.\n\n```text\n[ Properties ]                                [ business ]\n[ Properties ]                              [ classic em ]\n[ Properties ]                                 [ ui lens ]\n```\n\nSo the rule is:\n\n- left side: content toggle\n  - `Properties`\n  - later maybe `Details` if we want softer language\n\n- right side: lens/context/audience badge\n  - `business`\n  - `classic em`\n  - `ui lens`\n\nThat gives the footer two clear jobs:\n- left answers: “what can I reveal here?”\n- right answers: “from what lens/context is this block being shown?”\n\nApplied to the current slice blocks:\n\n```text\nCommand block footer:\n[ Properties ]                                [ business ]\n\nEvent block footer:\n[ Properties ]                                [ business ]\n\nView block footer:\n[ Properties ]                              [ classic em ]\n\nScreen block footer:\n[ Properties ]                                 [ ui lens ]\n```\n\nIf we later need actor/role too, I would not mix it into the same right badge immediately. I’d either:\n- keep actor up in the block badges, or\n- add a second right-side badge only when that lens is active\n\nSo my recommendation is still:\n- label: `Properties`\n- footer grammar: left toggle, right lens/context badge\n\nIf you want, I can apply that exact footer pattern to the HTML renderer next."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1432-75b9-b3f1-8b20620d71f8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1432-70b7-86a4-df8be3287307"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T15:38:44.166Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "ac6c777d1e9a8ba1277af3b1cfbdab65969977fcd4f2aefa447aa27327283e6d"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-022259-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-022259-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-022259-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2012
+
+[[body.segments]]
+kind = "plain_text"
+text = "The two options solve different problems.\n\n`post-commit` hook/setup command:\n- reason: make capture happen consistently without relying on memory\n- benefit: every commit gets a checkpoint automatically, so coverage is high and the workflow becomes habitual\n- benefit: better for multi-repo work because the same hook can be installed in `NEXUS`, `FnTools`, `CheddarBooks`, later others\n- downside: it adds friction to every commit, can fail if roots are unavailable, and needs a clear opt-out story\n\n`tighter message-range linking`:\n- reason: improve precision inside the checkpoint\n- benefit: instead of “this commit maps to this imported Codex conversation,” we can say “this commit came from these specific messages/turns”\n- benefit: much better for later GitHub UI ideas, audit trails, and exact human review\n- benefit: stronger foundation if we later want commit pages to open the exact chat segment\n- downside: it is a harder modeling problem, because we need reliable batch boundaries or transcript offsets rather than just commit-level anchoring\n\nSo the tradeoff is:\n- hook = better capture coverage\n- message-range linking = better trace precision\n\nMy recommendation is:\n1. do the `post-commit` setup next\n2. keep the current commit-level manifest\n3. then add tighter message-range linking after we have enough real checkpoint usage to see what boundaries are actually stable\n\nThat order gives us immediate practical value first, then deeper fidelity once we have real data to shape it."
+

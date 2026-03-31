@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1435-7f84-84a2-2b9dac9cca6e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1435-70ff-a49e-08e620bbd13b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.321Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "dbb5b8917d389aa6fe7a1b3324608aca99eb818df16c5ca0ba0fa04d23ae75b7"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-004529-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-004529-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-004529-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 434
+
+[[body.segments]]
+kind = "plain_text"
+text = "The xmldoc pass through the domain and projection layers is in and pushed as `80577644`.\n\nI added concise source docs to:\n- [IDs.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/IDs.fs)\n- [Time.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/Time.fs)\n- [Provenance.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/Provenance.fs)\n- [CanonicalHistory.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/CanonicalHistory.fs)\n- [Graph.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/Graph.fs)\n- [ConversationProjections.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/ConversationProjections.fs)\n- [ArtifactProjections.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/ArtifactProjections.fs)\n- [ArtifactProjectionReports.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/ArtifactProjectionReports.fs)\n\nThis pass focused on:\n- domain meaning for IDs, provenance, canonical events, and graph types\n- projection/report entry points and their rebuildable-view semantics\n- stable links back to the repo docs where deeper explanation already exists\n\nVerification stayed green:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n\nCurrent result: `10` tests passed, `0` failed.\n\nThe remaining obvious xmldoc surface after this is the lower-level event-store helpers like `TomlDocument` and maybe the provider parsers themselves."
+

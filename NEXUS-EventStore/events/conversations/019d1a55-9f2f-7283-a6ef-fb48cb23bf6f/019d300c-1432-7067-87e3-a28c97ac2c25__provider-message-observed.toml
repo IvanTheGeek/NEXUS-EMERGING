@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1432-7067-87e3-a28c97ac2c25"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1432-7b4e-be4b-29604657328c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.182Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "c96293c020c0202cc78072a8de5f3bddab46b180e12d3c8386a3b8fc02ba9c8a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000152-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000152-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000152-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 23
+
+[[body.segments]]
+kind = "plain_text"
+text = "I don’t think it’s too soon to define some base types. I do think it’s too soon to lock the full graph ontology.\n\nBecause you’re preserving raw provider artifacts, we have the freedom to rerun normalization later. That means we should define only the parts that need to be stable now, and leave the more opinionated “NEXUS graph layer” intentionally thin at first.\n\nWhat I’d recommend is a staged model:\n\n- Stage 1: acquisition truth\n  - provider artifact received\n  - import batch run\n  - raw snapshot/extraction created\n  - conversation/message/artifact references observed\n- Stage 2: canonical conversation history\n  - conversations, messages, revisions, imports, artifact references\n  - strong provenance and dedupe\n- Stage 3: graph overlay\n  - generic nodes, edges, claims/facts, links to canonical events\n  - keep this minimal until your base theory is clearer\n- Stage 4: NEXUS-specific layers\n  - domain layers like software development, modeling, systems, etc.\n\nSo my answer is: define base graph-compatible primitives now, but do not force the whole event store to look like the final NEXUS graph yet.\n\nA good compromise would be to define these now:\n\n- `ProviderRef`\n- `ImportId`\n- `ArtifactId`\n- `ConversationId`\n- `MessageId`\n- `CanonicalEventId`\n- `OccurredAt` / `ObservedAt` / `ImportedAt`\n- `RawSourceRef`\n- `CanonicalEvent`\n- `ArtifactReference`\n- `EntityRef`\n- `RelationRef` or `EdgeRef`\n\nThen keep the graph layer very small, like:\n\n- `NodeKind`\n- `NodeId`\n- `EdgeKind`\n- `EdgeId`\n- `FactId`\n- `FactProvenance`\n\nThat gives us enough structure so later NEXUS graph work has somewhere to attach, without forcing early decisions about ontology, reasoning, or domain semantics.\n\nFor the folder setup, your idea makes sense. I’d do it as one workspace with explicit boundaries:\n\n- `NEXUS-Code/`\n- `NEXUS-Objects/`\n- `NEXUS-EventStore/`\n\nThat way we can prototype locally as one working environment, while still designing as if they are separate systems. Later we can split them cleanly because the boundaries were real from the start.\n\nThe key architectural rule I’d use is:\n\n- raw/object layer is rerunnable source input\n- canonical event layer is append-only observed history\n- graph layer is derived and evolvable\n\nThat means yes, we absolutely can rerun sources later when the graph layer gets smarter. In fact, I think we should plan for reparsing from day one.\n\nMy recommendation for the next step is not code yet, but a short design note with:\n\n- the three local system boundaries\n- the minimum stable base types\n- which types belong to canonical history vs graph overlay\n- what is explicitly deferred\n\nIf you want, I can draft that next in a compact form so we can tune it together before any scaffolding."
+

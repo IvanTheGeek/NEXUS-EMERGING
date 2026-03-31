@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d397e-d837-7f18-92e2-e057c23cd6b4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d397e-d837-7d29-aeb3-3219ed08ef0d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T11:44:38.434Z"
+observed_at = "2026-03-29T12:08:25.6155545Z"
+imported_at = "2026-03-29T12:08:25.6155545Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d397e-d10f-71de-bd6a-21daac438a01"
+
+[content_hash]
+algorithm = "sha256"
+value = "f7fe3703456ad6a6eeddd77712e8cdbe303dad0df93b505d7a61f01e9b63d0b3"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-029811-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-029811-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T12-08-20Z__cheddarbooks__1f4c4bc9/session_index.jsonl"
+archived_at = "2026-03-29T12:08:22.8045783Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T12-08-20Z__cheddarbooks__1f4c4bc9/sessions/2026/03/29/rollout-2026-03-29T07-44-36-019d3969-02cf-7513-8e9a-e12be00dd196.jsonl"
+archived_at = "2026-03-29T12:08:22.8045783Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-029811-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2882
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. The best place to post this is **not a new issue**.\n\nBest target:\n- comment on [penpot/penpot issue #8691](https://github.com/penpot/penpot/issues/8691)\n\nWhy:\n- it is already the exact issue:\n  `Plugin API: document createComponent() board-on-root requirement and cross-page reparenting limitation`\n- your new finding is a stronger, more concrete version of the same problem\n- adding evidence there is better than fragmenting it into another report\n\nGood secondary place, if you want broader plugin-dev visibility:\n- [What’s working and what’s missing in Penpot plugins?](https://community.penpot.app/t/what-s-working-and-what-s-missing-in-penpot-plugins/9785)\n\nWhy:\n- Penpot explicitly asked for plugin feedback there\n- one developer in that thread also said bug-reporting for plugin work is unclear\n\nSources:\n- [Penpot help center](https://help.penpot.app/)\n- [penpot/penpot issues](https://github.com/penpot/penpot/issues)\n- [issue #8691](https://github.com/penpot/penpot/issues/8691)\n- [plugin feedback thread](https://community.penpot.app/t/what-s-working-and-what-s-missing-in-penpot-plugins/9785)\n\nCopy/paste this into a comment on [issue #8691](https://github.com/penpot/penpot/issues/8691):\n\n```md\nI can confirm this is still a real limitation in live Plugin API work, and I hit a slightly stronger version of it while building reusable Event Modeling slice components in a local Penpot 2.14 self-hosted setup through the MCP/plugin path.\n\nWhat I observed:\n- top-level board creation and top-level reparenting followed the active page\n- if I expected a top-level board to land on or move to another page without first making that page active, it did not land where a normal tree-mutation mental model would suggest\n- in practice, I had to explicitly target the active page first, then create or reorganize top-level boards, then verify where they actually landed\n\nConcrete example:\n- I created a clean reusable component family for Event Modeling slices:\n  - row components\n  - shell components\n  - path-row instances\n- I wanted the reusable catalog surfaces on a `Components` page and the working path projection on a `PATHS` page\n- because of the active-page behavior, the component main-instance lineage stayed on the active page I was working in\n- the practical workaround was to keep catalog instances on the `Components` page while the underlying main-instance lineage remained on the active working page\n\nSo the current practical rule for automation is:\n1. switch to the target page first\n2. then create or reorganize top-level boards\n3. then verify where the shapes actually landed\n\nThis feels important to document explicitly because it is not the behavior many plugin authors or agent workflows will assume from `appendChild()` / reparenting semantics alone.\n\nIf useful, I can reduce this into a smaller reproduction script, but I wanted to confirm that the page-targeting limitation is still reproducible in current plugin-driven work.\n```\n\nIf you also want a short forum version for the community thread, use this:\n\n```md\nI hit a real Plugin API limitation that might be worth documenting more clearly.\n\nIn live plugin/MCP work, top-level board creation and top-level reparenting followed the active page. So for automation, I had to:\n1. switch to the target page first\n2. then create or reorganize top-level boards\n3. then verify where they actually landed\n\nThis came up while building reusable Event Modeling slice components across `Components` and `PATHS` pages. The closest GitHub issue I found is:\nhttps://github.com/penpot/penpot/issues/8691\n\nI added more concrete reproduction context there.\n```\n\nMy recommendation:\n- post the GitHub comment first\n- then optionally post the shorter forum note pointing to the GitHub issue"
+

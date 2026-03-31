@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1432-7508-a275-8e93fe92682e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1432-71b8-828a-d3199673d15d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.205Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "0f53b6c9a0d84ff3942e01db5ff10e84513b7109b4b530da431111b0ee28b5f9"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000285-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000285-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000285-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 46
+
+[[body.segments]]
+kind = "plain_text"
+text = "**NEXUS Core Conceptual Layers v0**\n\nNEXUS is grounded in the idea that reality is one underlying connected graph, while different people and purposes need different ways to localize, name, and work with that reality. The system should therefore separate source truth, interpreted structure, semantic boundaries, and viewpoint.\n\n**1. Observed History**\n\nThis is the acquisition and provenance layer.\n\nIt records what NEXUS actually encountered from:\n- provider exports\n- manual artifact additions\n- later API capture\n- later browser/session capture\n\nThis layer is append-only and epistemically conservative. It should say what was observed, referenced, captured, revised, or imported, without pretending to know more than the source provides.\n\nExamples:\n- `ProviderArtifactReceived`\n- `RawSnapshotExtracted`\n- `ProviderConversationObserved`\n- `ProviderMessageObserved`\n- `ProviderMessageRevisionObserved`\n- `ArtifactReferenced`\n- `ArtifactPayloadCaptured`\n- `ImportCompleted`\n\nPurpose:\n- preserve evidence\n- preserve provenance\n- support reparsing\n- avoid premature ontology decisions\n\n**2. Graph Substrate**\n\nThis is the normalized structural layer derived from observed history.\n\nIt represents:\n- nodes\n- edges\n- claims/assertions\n- provenance back to observed history\n\nThe graph substrate is the shared underlying reality inside NEXUS. It is where relationships can accumulate across providers, imports, artifacts, and later interpretations.\n\nPurpose:\n- provide a common structural base\n- enable re-interpretation without losing source truth\n- support multiple semantic and presentational layers above it\n\nImportant rule:\n- not everything must be stored as graph first\n- observed history remains the foundation\n- graph structure is derived from that foundation\n\n**3. Domain**\n\nA domain says what area of reality or work a part of the graph concerns.\n\nExamples:\n- `Ingestion`\n- `KnowledgeManagement`\n- `SoftwareDevelopment`\n- `UX`\n- `BusinessOperations`\n- `PersonalSystems`\n\nA domain is broader than a bounded context. It helps organize major areas of meaning, but does not by itself define exact language or rules.\n\nPurpose:\n- partition the graph into meaningful areas\n- support higher-level organization\n- allow NEXUS to grow into many kinds of work without losing coherence\n\n**4. Bounded Context**\n\nA bounded context defines a specific meaning boundary within a domain.\n\nIt determines:\n- vocabulary\n- rules\n- responsibilities\n- interpretation discipline\n\nExamples within `SoftwareDevelopment`:\n- `EventModeling`\n- `Requirements`\n- `Implementation`\n- `Architecture`\n\nExamples within the NEXUS foundation:\n- `Ingestion`\n- `CanonicalHistory`\n- `ArtifactReconciliation`\n\nPurpose:\n- keep meanings precise\n- prevent term collision\n- allow multiple valid models to coexist without confusion\n\nGuidance:\n- use `BoundedContext`, not bare `Context`, in the model wherever possible\n\n**5. Lens**\n\nA lens is a way of viewing or working with the underlying graph for a purpose.\n\nA lens does not change the truth underneath. It:\n- aliases vocabulary\n- groups related structures\n- filters what is relevant\n- emphasizes certain relationships\n- supports a particular user perspective or task\n\nExamples:\n- `DeveloperLens`\n- `BusinessLens`\n- `UXLens`\n- `PersonalKnowledgeLens`\n- `EventModelingLens`\n\nPurpose:\n- let one underlying graph be understandable to different people\n- support multiple valid perspectives without duplicating truth\n- localize complexity without fragmenting the model\n\n**Relationship Between the Layers**\n\n- `ObservedHistory` records evidence.\n- `GraphSubstrate` expresses normalized structure.\n- `Domain` says what part of reality/work this concerns.\n- `BoundedContext` says what meanings and rules apply.\n- `Lens` says how we are looking at it right now.\n\n**Initial v0 Guidance**\n\nFor the first importer foundation:\n- implement `ObservedHistory` first\n- keep `GraphSubstrate` thin but planned\n- introduce `Domain`, `BoundedContext`, and `Lens` conceptually now\n- avoid overcommitting the graph ontology too early\n- let richer NEXUS semantics emerge through later interpretation and reparsing\n\n**Suggested Minimal Type Concepts**\n\n- `DomainId`\n- `BoundedContextId`\n- `LensId`\n- `NodeId`\n- `EdgeId`\n- `FactId`\n- `GraphAssertion`\n- `FactProvenance`\n\n**Working Principle**\n\nNEXUS should preserve one evolving underlying reality, while allowing many bounded meanings and many valid lenses over that same reality. The foundation must therefore favor provenance first, structure second, and interpretation as an explicit later layer rather than an implicit assumption baked into ingestion."
+

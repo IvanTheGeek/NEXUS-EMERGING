@@ -38,6 +38,29 @@ The first explicit `FnUI` foundation boundary now lives in [`docs/fnui-foundatio
 
 The current Penpot and cross-platform abstraction boundary now lives in [`docs/fnhci-penpot-abstraction.md`](../fnhci-penpot-abstraction.md).
 
+## Current Structural Direction
+
+The current NEXUS interaction direction is being hardened more explicitly in [`../interaction-concern-lines-contexts-and-lenses.md`](../interaction-concern-lines-contexts-and-lenses.md).
+
+The practical reading right now is:
+
+- `FnHCI` is the broader interaction-system area
+- `FnUI` is one projection family or sub-area inside that larger direction
+- current interaction-bounded-context pressure is clustering around:
+  - `ApplicationLifecycle`
+  - `RuntimeOrchestration`
+  - `ScreenPath`
+  - `InteractionComposition`
+- `EventModeling` remains a neighboring business context that must weave correctly with those interaction concerns rather than being collapsed into them
+
+LaundryLog gives a concrete working example:
+
+- `AppStarted` belongs to `ApplicationLifecycle`
+- startup checks and first-route decisions belong to `RuntimeOrchestration`
+- ordered screen states belong to `ScreenPath`
+- HTML/CSS or later Android-native surface building belongs to `InteractionComposition`
+- business commands, events, and business views still belong to `EventModeling`
+
 ## Working Notes
 
 - What are the stable core primitives of FnHCI, separate from any one runtime like Blazor or Bolero?

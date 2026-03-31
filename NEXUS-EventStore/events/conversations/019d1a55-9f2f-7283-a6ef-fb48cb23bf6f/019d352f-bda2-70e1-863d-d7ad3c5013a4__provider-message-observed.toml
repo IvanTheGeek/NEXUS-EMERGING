@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d352f-bda2-70e1-863d-d7ad3c5013a4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d352f-bda2-7242-a25d-dd6955335ef4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T15:50:03.864Z"
+observed_at = "2026-03-28T16:03:30.9271759Z"
+imported_at = "2026-03-28T16:03:30.9271759Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d352f-afef-7603-9261-a85bb8609b5f"
+
+[content_hash]
+algorithm = "sha256"
+value = "709d582de07287f6d12bb6cd1f817c21924a8130e7374ca4efa0e208ab6a4ada"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-031260-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-031260-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T16-03-29Z__cheddarbooks__1845a3d7/session_index.jsonl"
+archived_at = "2026-03-28T16:03:29.9469045Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T16-03-29Z__cheddarbooks__1845a3d7/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T16:03:29.9469045Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-031260-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3035
+
+[[body.segments]]
+kind = "plain_text"
+text = "That refinement pass is in.\n\nUpdated preview:\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nWhat changed:\n- tighter page header so more of the row is visible immediately\n- one more notch narrower on the slice cards\n- smaller text across the page and cards\n- `USER` then `SCREEN` now sit on one right-aligned row\n- screen title starts lower and no longer fights the badges\n- screen title is no longer bold\n- property areas are now real collapsible `details` panels\n- property text wraps and clips inside the card instead of spilling out\n- row heights still stay aligned because the slice grid remains fixed\n\nCommit:\n- `ca6046c` `model: refine html slice density and badges`\n\nVerification is still green:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `17` tests passed\n\nIf this is moving in the right direction, the next useful refinement is probably:\n- make the command/event/view property panels use the same visible height budget more intentionally\n- or start introducing the first `GWT` band under the slices now that the cards are much tighter"
+

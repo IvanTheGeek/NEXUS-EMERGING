@@ -54,7 +54,29 @@ Important rule:
 - observed history remains the foundation
 - graph structure is derived from that foundation
 
-## 3. Domain
+## 3. Concern Line
+
+A concern line is a practical thread of work, meaning, or pressure that clearly matters even if its final semantic boundary is not fully settled yet.
+
+Use it when:
+
+- the area is clearly real
+- the terms are still being worked out
+- we do not want to pretend the final bounded-context shape is already stable
+
+Examples:
+
+- app startup behavior
+- screen-path flow
+- interaction composition
+- business Event Modeling
+
+Guidance:
+
+- use concern lines to organize emerging work without freezing the final structure too early
+- promote recurring concern lines to bounded contexts when vocabulary, rules, and responsibility become stable enough
+
+## 4. Domain
 
 A domain says what area of reality or work a part of the graph concerns.
 
@@ -69,7 +91,7 @@ Examples:
 
 A domain is broader than a bounded context. It helps organize major areas of meaning, but does not by itself define exact language or rules.
 
-## 4. Bounded Context
+## 5. Bounded Context
 
 A bounded context defines a specific meaning boundary within a domain.
 
@@ -97,7 +119,7 @@ Guidance:
 
 - use `BoundedContext`, not bare `Context`, in the model wherever possible
 
-## 5. Lens
+## 6. Lens
 
 A lens is a way of viewing or working with the underlying graph for a purpose.
 
@@ -121,6 +143,7 @@ Examples:
 
 - `ObservedHistory` records evidence.
 - `GraphSubstrate` expresses normalized structure.
+- `ConcernLine` helps name an emerging thread of work before final context boundaries are stable.
 - `Domain` says what part of reality or work this concerns.
 - `BoundedContext` says what meanings and rules apply.
 - `Lens` says how we are looking at it right now.
@@ -131,7 +154,7 @@ For the first importer foundation:
 
 - implement `ObservedHistory` first
 - keep `GraphSubstrate` thin but planned
-- introduce `Domain`, `BoundedContext`, and `Lens` conceptually now
+- introduce `ConcernLine`, `Domain`, `BoundedContext`, and `Lens` conceptually now
 - avoid overcommitting the graph ontology too early
 - let richer NEXUS semantics emerge through later interpretation and reparsing
 

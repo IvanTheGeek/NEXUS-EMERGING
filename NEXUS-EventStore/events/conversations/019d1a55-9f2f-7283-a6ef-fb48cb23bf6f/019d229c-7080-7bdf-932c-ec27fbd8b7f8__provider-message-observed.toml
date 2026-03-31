@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7080-7bdf-932c-ec27fbd8b7f8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7080-7ca4-8695-872a17673966"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T10:43:37.847Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "42c19033246f00214bfd6d3dcce5f7dea9e82af328a451be0864c6abf866deb7"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-007615-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-007615-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-007615-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 730
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, you’re right to expect that.\n\nCurrent behavior is:\n\n- `rebuild-graph-assertions` has incremental status output\n- `import-provider-export` does **not** yet emit step-by-step progress\n- the importer currently stays quiet and then prints the summary at the end\n\nThis import did finish, and it was a real new ChatGPT export:\n\n- `88` conversations seen\n- `5599` messages seen\n- `71` artifact refs seen\n- `515` new events appended\n- `5246` duplicates skipped\n- `0` revisions\n- `0` reparses\n\nCompared to the prior ChatGPT export, that means this new zip added:\n\n- `13` new conversations\n- `496` new messages\n- `3` new artifact references\n\nThe manifest is here:\n- [019d1f70-b326-7d1e-a106-73dbd399f911.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports/019d1f70-b326-7d1e-a106-73dbd399f911.toml)\n\nSo the answer is:\n- yes, we should have progress clues\n- no, the import path doesn’t have them yet\n- this is now a clear next improvement, and I recommend I add importer status emission next"
+

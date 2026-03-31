@@ -2,6 +2,8 @@
 
 This document defines the documentation convention for F# code in NEXUS.
 
+For the broader concern line around learned F# seams, AI-facing guidance, and when to ask for clarification, also use [`fsharp-usage-learning-and-guidance.md`](fsharp-usage-learning-and-guidance.md).
+
 ## Purpose
 
 NEXUS wants documentation to be useful in three places at once:

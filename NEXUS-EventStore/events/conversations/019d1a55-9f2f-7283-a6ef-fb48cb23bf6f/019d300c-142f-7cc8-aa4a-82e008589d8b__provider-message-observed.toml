@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142f-7cc8-aa4a-82e008589d8b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142f-7721-a140-bd8f9600c97d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T11:58:49.435Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "e8dba5440d116691fbdd17641b58fdc6023f2afc62e1131cacb2a936ce6f0cef"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-017509-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-017509-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-017509-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1572
+
+[[body.segments]]
+kind = "plain_text"
+text = "Discord and Talkyard are now explicit in the LOGOS intake foundation.\n\nPushed on `logos-intake-foundation`:\n- `d9cf732b` — `Add Discord and Talkyard LOGOS sources`\n\nWhat changed:\n- added `discord` and `talkyard` as allowlisted LOGOS source systems in [CoreCatalog.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/CoreCatalog.fs)\n- added `discord-channel` and `discord-thread` as allowlisted intake channels in [CoreCatalog.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/CoreCatalog.fs)\n- updated tests, glossary, source-model docs, and intake examples so the repo now reflects:\n  - `forum` as the generic category\n  - `talkyard` as the current concrete forum implementation\n  - `discord` as a first-class intake surface now, with room for later outbound use\n\nValidation is still clean:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `103` tests passed\n\nThe branch is clean and synced. The next strongest move is a first real Talkyard-specific intake adapter or import flow, since that’s now your concrete forum surface rather than just a generic future category."
+

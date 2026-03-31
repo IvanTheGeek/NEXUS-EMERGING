@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d299b-6608-7414-9a5f-502c41255839"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d299b-6607-770b-b0e7-8f376b2dfb67"
+conversation_id = "019d299b-6607-770b-b0e7-8f376b2dfb67"
+message_id = "019d299b-6608-7095-ab8e-1f9882895250"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T12:16:57.6829979Z"
+observed_at = "2026-03-26T10:05:38.4563037Z"
+imported_at = "2026-03-26T10:05:38.4563037Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d299b-59a0-70a6-9feb-678970b1d72a"
+
+[content_hash]
+algorithm = "sha256"
+value = "cf4cd6fe470d284860edea3abbed2efe8191a139163198a63482bcd3ff72977b"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+conversation_native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "29dd0e70-a9a2-41b9-a518-f421236ada61"
+conversation_native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+message_native_id = "29dd0e70-a9a2-41b9-a518-f421236ada61"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-25-01-04-04-3ef8fcd0ea8b4ae29d8addd7200fbd72.zip"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "29dd0e70-a9a2-41b9-a518-f421236ada61"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 17
+
+[[body.segments]]
+kind = "plain_text"
+text = "I think that is the better pattern too.\n\nIt gives you:\n\n- clean source files\n- useful IntelliSense\n- room for big conceptual docs, examples, rationale, invariants, and diagrams elsewhere\n- less pain when large docs would otherwise drown out the code\n\nA solid approach is:\n\n```fsharp\n/// <summary>\n/// Creates a new ledger entry from a validated command.\n/// </summary>\n/// <remarks>\n/// Full behavior, invariants, and event-flow notes:\n/// docs/accounting/create-ledger-entry.md\n/// </remarks>\nval createLedgerEntry : ValidatedCommand -> LedgerEntry\n```\n\nOr for a type:\n\n```fsharp\n/// <summary>\n/// Represents an immutable projection of account state.\n/// </summary>\n/// <remarks>\n/// See docs/domain/account-view.md for lifecycle, assumptions, and examples.\n/// </remarks>\ntype AccountView =\n    { AccountId : AccountId\n      Balance : decimal }\n```\n\nWhat works especially well is to split documentation into layers:\n\n- **In source**: brief purpose, key invariant, maybe one warning\n- **In external doc**: full explanation, examples, diagrams, edge cases, business meaning\n- **In tests**: executable examples of behavior\n\nThat usually maps nicely to how people actually consume the code:\n- IntelliSense for quick orientation\n- markdown doc for understanding\n- tests for proof\n\nA very good template for source comments is:\n\n```fsharp\n/// <summary>\n/// One-sentence purpose.\n/// </summary>\n/// <remarks>\n/// Key invariant or caution.\n/// Full notes: docs/path/to/file.md\n/// </remarks>\n```\n\nAnd then in the markdown file, keep sections like:\n\n```markdown\n# Create Ledger Entry\n\n## Purpose\nWhat this function means in the domain.\n\n## Inputs\nWhat each input represents.\n\n## Rules / Invariants\nWhat must always be true.\n\n## Output\nWhat is produced and what is not.\n\n## Event flow\nCommand -> Event -> Projection notes.\n\n## Examples\nConcrete examples.\n\n## Related symbols\n- `createLedgerEntry`\n- `LedgerEntry`\n- `LedgerEvent`\n```\n\nA couple practical tips:\n\n- use stable doc paths so links do not churn\n- prefer one conceptual doc per concept, not per tiny function\n- only link out when the extra detail is genuinely helpful\n- keep the in-code summary meaningful even if the external doc is never opened\n\nFor your style of modeling, this can work really well because the source can hold the concise API truth, while the external docs hold the deeper domain meaning and modeling rationale.\n\nI can sketch a small repo convention for this, like a `docs/domain`, `docs/write`, `docs/read`, and `docs/decisions` structure aligned to your NEXUS ideas."
+

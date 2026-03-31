@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d302c-8a5e-75cb-a9c3-4e9506d88b99"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d302c-8a5e-7b69-b525-badcb24afc43"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T16:37:59.52Z"
+observed_at = "2026-03-27T16:41:55.3868687Z"
+imported_at = "2026-03-27T16:41:55.3868687Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d302c-7dba-7dbf-a17c-225f862d1827"
+
+[content_hash]
+algorithm = "sha256"
+value = "5090c6d2a780314b221ae0636fdaaee4f4185d86887967502518a3a9c0fc7997"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-023256-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-023256-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-41-54Z__nexus-merge-m7skp3__110a78ef/session_index.jsonl"
+archived_at = "2026-03-27T16:41:54.594399Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-41-54Z__nexus-merge-m7skp3__110a78ef/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:41:54.594399Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-023256-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2117
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done.\n\nThe next commit-time speed step is now in `main` at `d01d232c`:\n- the managed `post-commit` hook now prefers the built CLI DLL:\n  - `dotnet /home/ivan/NEXUS/NEXUS-EMERGING-main/NEXUS-Code/src/Nexus.Cli/bin/Debug/net10.0/Nexus.Cli.dll ...`\n- and only falls back to:\n  - `dotnet run --project ...`\n  if the built DLL is not present\n\nUpdated files:\n- [CodexCommitCheckpointHooks.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/CodexCommitCheckpointHooks.fs)\n- [CommitCheckpointTests.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Foundation.Tests/CommitCheckpointTests.fs)\n- [install-codex-commit-checkpoint-hook.md](/tmp/nexus-merge-M7SKP3/docs/how-to/install-codex-commit-checkpoint-hook.md)\n\nVerified:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj`\n- `116` foundation tests passed\n\nI also updated the stable runtime worktree at [NEXUS-EMERGING-main](/home/ivan/NEXUS/NEXUS-EMERGING-main), rebuilt the CLI there, and reinstalled the real hooks in:\n- [NEXUS-EMERGING hook](/home/ivan/NEXUS/NEXUS-EMERGING/.git/hooks/post-commit)\n- [FnTools hook](/home/ivan/NEXUS/FnTools/.git/hooks/post-commit)\n- [CheddarBooks hook](/home/ivan/NEXUS/CheddarBooks/.git/hooks/post-commit)\n\nThose hooks now visibly prefer `NEXUS_CLI_DLL` and only fall back to `NEXUS_CLI_PROJECT` if needed.\n\nSo yes: commit checkpoints should now be faster for two reasons:\n- sparse incremental Codex checkpoint archives\n- DLL-first hook execution instead of project startup on every commit"
+

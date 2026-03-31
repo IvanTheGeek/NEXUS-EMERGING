@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d34f3-44c9-712b-b550-b188811c0c8c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d34f3-44c9-7b5b-a9a7-d1bca5bbf970"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T14:29:52.125Z"
+observed_at = "2026-03-28T14:57:28.2928196Z"
+imported_at = "2026-03-28T14:57:28.2928196Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d34f3-38e4-7186-8d29-d9c688ffbabb"
+
+[content_hash]
+algorithm = "sha256"
+value = "f0ee6d7aa5d7dec6b91025908f336883df7d02f2466665a0eb26c1c87c6ddc54"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-030762-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-030762-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T14-57-26Z__nexus-emerging__51dba21a/session_index.jsonl"
+archived_at = "2026-03-28T14:57:27.1826616Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T14-57-26Z__nexus-emerging__51dba21a/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T14:57:27.1826616Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-030762-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2984
+
+[[body.segments]]
+kind = "plain_text"
+text = "Exploration result: the cleanest seam is still `LibraryComponent.instance()`, but it does not fix the render problem by itself.\n\nWhat I proved:\n- `PATH1.Row.V6.InstanceBased` on `PATHS` is built only from real `CommandSlice.Clean.V3` and `ViewSlice.Clean.V3` library instances.\n- The stored text overrides on those instances are correct in live shape data.\n- Penpot still renders the master/default text on both the live canvas and export.\n- I also tested two likely workarounds and neither fixed it:\n  - detach the instance before editing text\n  - force a text reflow by resizing text nodes after the write\n\nScratch lab boards now on `PATHS`:\n- `PATH1.Row.V6.InstanceBased`\n- `InstanceOverrideWorkaroundLab.V1`\n- `InstanceOverrideWorkaroundLab.V2`\n\nSo the current best temporary working pattern is a hybrid:\n- keep `CommandSlice.Clean.V3` and `ViewSlice.Clean.V3` as the real reusable bases on `Components`\n- use asset instances for structure/layout\n- do not rely on plugin-driven text overrides yet\n- for readable automated path projections, keep using the visible older lineage when needed\n- for real design work, manual Penpot-side text editing is still the most plausible temporary path until upstream fixes the override rendering bug\n\nI recorded the new findings here:\n- [penpot-surface-comparison.md](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md)\n- [penpot-projection.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md)\n\nLatest commits:\n- NEXUS: `9f3ec41c`\n- CheddarBooks: `0ad7a26`\n\nNo code tests were run; this was live Penpot investigation plus docs."
+

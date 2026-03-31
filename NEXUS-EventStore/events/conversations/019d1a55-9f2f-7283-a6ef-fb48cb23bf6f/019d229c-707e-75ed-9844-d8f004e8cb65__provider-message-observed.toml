@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707e-75ed-9844-d8f004e8cb65"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707e-784d-94cc-225e6a3f7583"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T15:26:48.619Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "6f9bb705e0d41c6194e186c08442473f57fa77ffd4fae855259c64c73a080bbe"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-004334-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-004334-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-004334-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 409
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. The XML doc minimum I’d recommend is:\n\n1. Document every public type and every public member with `<summary>`.\n2. Add `<param>` for every parameter, `<typeparam>` for every generic parameter, and `<returns>` when the return meaning isn’t trivial.\n3. Add `<remarks>` for behavioral semantics that are not obvious from the signature:\n   defaults, side effects, async/parallel behavior, cancellation, idempotence, ordering, exceptions, and “when to use this vs the other overload.”\n4. Use `<inheritdoc>` on inherited/implemented members so the generated XML file is complete for consumers.\n5. Add `<example>` on the real entry points, not everywhere.\n6. Add `<see>` / `<seealso>` links across related API families.\n\nFor AI specifically, the real minimum that would have reduced our Expecto/FsCheck friction is this:\n\n- A module/type summary that says what area the API is for.\n- A summary on the primary entry points.\n- A short example on the primary entry points.\n- Docs on config records and their fields.\n- Docs on public values/functions that act as defaults or entry handles, like `defaultConfig`.\n- Cross-links between sibling functions like `testProperty`, `testPropertyWithConfig`, focused/ignored variants, and config types.\n\nThe key point is: XML docs should not try to replace the README. They should answer “what does this API do, what do these parameters mean, what behavior matters, and what related API should I look at next?”\n\nSo I’d use this rule:\n\n- README/docs explain the model and workflow.\n- XML docs explain exact API intent and semantics.\n- Examples bridge the two.\n\nIf you want a sharper “AI-usable minimum,” I’d phrase it as:\n\n- `<summary>`: purpose, not name repetition\n- `<param>`: semantic role, not type restatement\n- `<returns>`: what the caller gets back conceptually\n- `<remarks>`: defaults, side effects, ordering, cancellation, idempotence, relationship to sibling APIs\n- `<example>`: one happy-path snippet for each entry-point API\n- `<seealso>`: point to the next likely API\n\nOne subtle but important addition for F# libraries:\n- document public module values, record fields, DU cases, and builder/config helpers just as carefully as methods\n- otherwise the generated XML can still leave gaps exactly where F# users and AI agents need guidance\n\nMicrosoft’s guidance supports the baseline here: document all public types and public members, use `<summary>` at bare minimum, and use tags like `<param>`, `<returns>`, `<typeparam>`, and explicit `<inheritdoc>` for distributed libraries. Sources: [Recommended XML tags](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/recommended-tags).\n\nI couldn’t load the specific shared ChatGPT page you linked, so I based this on our Expecto issue and the official XML-doc guidance rather than that exact conversation’s text. If you want, I can turn this into a short repo decision/checklist next."
+

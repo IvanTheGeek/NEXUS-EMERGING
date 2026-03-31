@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d32c1-5a0d-7ed8-92ae-efef8802276a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d32c1-5a0d-7113-926e-c8468957bdc7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T04:41:46.62Z"
+observed_at = "2026-03-28T04:43:43.4482194Z"
+imported_at = "2026-03-28T04:43:43.4482194Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d32c1-51d8-7450-a78d-f7d6775f7440"
+
+[content_hash]
+algorithm = "sha256"
+value = "6d0ca5259ef85b880e0acf88992a0b16c4d965150a0b0cd71c81221295563071"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-025977-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-025977-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T04-43-42Z__cheddarbooks__32b601b7/session_index.jsonl"
+archived_at = "2026-03-28T04:43:42.6719525Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T04-43-42Z__cheddarbooks__32b601b7/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T04:43:42.6719525Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-025977-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2481
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, but I would not make a hidden pre-prompt your primary mechanism.\n\nBest setup for your workflow:\n\n1. `~/.codex/AGENTS.md`\n   This is the global backstop for all repos.\n   Yours already exists at [/home/ivan/.codex/AGENTS.md](/home/ivan/.codex/AGENTS.md), but it is empty right now.\n\n2. Repo-root `AGENTS.md`\n   One in `NEXUS-EMERGING`, one in `CheddarBooks`, pointing to the repo’s real memory docs.\n\n3. Keep the real protocol in repo docs\n   The AGENTS files should be short and should direct Codex to:\n   - read [README.md](/tmp/nexus-merge-M7SKP3/README.md)\n   - then [agent-readme.md](/tmp/nexus-merge-M7SKP3/docs/agent-readme.md)\n   - then [current-focus.md](/tmp/nexus-merge-M7SKP3/docs/current-focus.md)\n   - follow [cortex-repo-memory-protocol.md](/tmp/nexus-merge-M7SKP3/docs/cortex-repo-memory-protocol.md)\n\nWhy this is better than a pure config pre-prompt:\n- it is visible\n- it is reviewable\n- it works as shared repo governance\n- it is easier for other AI and humans to follow too\n\nWhat I found locally:\n- your current Codex config at [/home/ivan/.codex/config.toml](/home/ivan/.codex/config.toml) has no custom pre-prompt/developer instructions\n- Codex officially supports:\n  - global `~/.codex/AGENTS.md`\n  - repo `AGENTS.md`\n  - optional fallback filenames via `project_doc_fallback_filenames`\n  - optional `developer_instructions` in `config.toml`\n\nSo my recommendation is:\n\n- use `~/.codex/AGENTS.md` for global invariants\n- use repo `AGENTS.md` for local entry rules\n- keep `config.toml` pre-prompt use minimal, or skip it\n\nA good global `~/.codex/AGENTS.md` for you would be something like:\n\n```md\n# Global Working Agreements\n\n- Treat the repository as shared operating memory for humans and AI agents.\n- Prefer durable repo docs over chat memory for anything that should matter later.\n- Distinguish scratch, durable project memory, canonical history, and derived views.\n- Do not rewrite canonical history to simplify the story; corrections should be additive.\n- At startup, read the repo README, then the repo agent README, then current focus.\n- When important terminology, architecture, or protocol changes, record it durably in the repo.\n- If an expected tool is missing, say so explicitly instead of silently working around it.\n```\n\nAnd then each repo `AGENTS.md` should be short and point to its local docs.\n\nOfficial support for this:\n- [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md)\n- [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)\n\nIf you want, I can set this up now by:\n- filling [/home/ivan/.codex/AGENTS.md](/home/ivan/.codex/AGENTS.md)\n- adding repo-root `AGENTS.md` files to both repos\n- keeping them aligned with the new protocol docs"
+

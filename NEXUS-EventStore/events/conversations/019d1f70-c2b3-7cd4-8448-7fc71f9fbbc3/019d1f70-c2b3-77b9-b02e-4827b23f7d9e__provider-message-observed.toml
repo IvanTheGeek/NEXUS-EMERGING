@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b3-77b9-b02e-4827b23f7d9e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b3-7cd4-8448-7fc71f9fbbc3"
+conversation_id = "019d1f70-c2b3-7cd4-8448-7fc71f9fbbc3"
+message_id = "019d1f70-c2b3-70e2-9b07-d8597c242a54"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-21T17:30:36.1514599Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "e2deb895fd92416996a6699e3ea3dfbf412972945965b998fd9db15f25028001"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bed3de-a7c4-8325-84da-91360b06f926"
+conversation_native_id = "69bed3de-a7c4-8325-84da-91360b06f926"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "f194cb73-402c-44ae-ae68-7b09e1e7ce87"
+conversation_native_id = "69bed3de-a7c4-8325-84da-91360b06f926"
+message_native_id = "f194cb73-402c-44ae-ae68-7b09e1e7ce87"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "f194cb73-402c-44ae-ae68-7b09e1e7ce87"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 9
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — and this is exactly where you want to separate **raw snapshot files** from **canonical appended events**.\n\nThe key issue is:\n\n- exports are often **snapshots**\n- your event store wants **append-only truth**\n- Git diff is useful for snapshots\n- but snapshot files alone are a bad long-term source of truth\n\nSo the strategy is:\n\n## Use two layers\n\n### 1. Raw export snapshots\nThese are the files you imported from ChatGPT or Claude.\n\nThey should be stored as snapshots, and Git can diff them.\n\n### 2. Canonical normalized events\nThese are your own append-only event records derived from the snapshots.\n\nThese should not depend on “last 30 days” continuing to be available.\n\n---\n\n# Best strategy\n\n## Do not overwrite your only raw file\n\nYou *can* reuse the same filename and let Git show the diff, but I would not make that your only copy pattern.\n\nBecause if the provider changes export structure, omits something, or gives you an incomplete export one day, then your current raw file stops being a reliable archive.\n\nInstead, do this:\n\n### Keep:\n- a **latest snapshot** path with stable filename for easy diff\n- an **archived timestamped snapshot** path for durable history\n\nSo both can exist.\n\nExample:\n\n```text\ndata/raw/chatgpt/\n  latest/\n    all.json\n    last-30-days.json\n\n  archive/\n    2026-03-21-all.json\n    2026-03-22-last-30-days.json\n    2026-03-23-last-30-days.json\n```\n\nThat gives you:\n\n- easy diff on `latest/all.json`\n- permanent immutable historical raw files in `archive/`\n\nThis is the safest pattern.\n\n---\n\n# Why “last 30 days” is tricky\n\nA rolling export like “last 30 days” is not append-only.\n\nIt is a **moving window**:\n- today includes day 1..30\n- tomorrow includes day 2..31\n\nSo if you only keep one `last-30-days.json`, old content falls out of the file.\n\nThat makes it bad as a source of truth.\n\nSo the rule should be:\n\n## Rule\nA rolling export is a **capture input**, not your truth store.\n\nTruth store must be your normalized event append layer.\n\n---\n\n# What to do on import\n\nWhen you import any export:\n\n1. save raw snapshot\n2. parse records/messages/conversations\n3. detect which items are already known\n4. append only new canonical events\n5. optionally update projections\n6. commit\n\nSo even if the export overlaps with prior exports, your canonical store should only gain new things.\n\n---\n\n# Deduplication is the real answer\n\nThe important thing is not whether the raw file name stays the same.\n\nThe important thing is whether your importer can answer:\n\n- have I already seen this conversation?\n- have I already seen this message?\n- have I already seen this provider object?\n- has this content changed?\n\nSo you need dedupe keys.\n\n---\n\n# Recommended identity strategy\n\nFor each imported item, keep:\n\n- `provider`\n- `provider_conversation_id`\n- `provider_message_id` if available\n- content hash\n- timestamp\n- import batch id\n\nThen your importer can say:\n\n- same provider id and same hash → already known, skip append\n- same provider id but changed content → append a correction/supersession event or store new raw revision\n- new provider id → append new events\n\n---\n\n# Strong recommendation on files\n\n## Raw files\nTreat raw files as **snapshots**.\n\nUse both:\n- stable “latest” names\n- immutable archived timestamped names\n\n## Canonical files\nTreat canonical event files as **append-only**.\n\nNever delete older events because the export window rolled forward.\n\n---\n\n# Suggested repo layout\n\n```text\ndata/\n  raw/\n    chatgpt/\n      latest/\n        full-export.json\n        last-30-days.json\n      archive/\n        2026-03-21T101500-full-export.json\n        2026-03-22T093000-last-30-days.json\n\n  imports/\n    2026-03-21T101500-chatgpt-import.toml\n    2026-03-22T093000-chatgpt-import.toml\n\n  events/\n    conversations/\n      conv_abc/\n        000001-conversation-discovered.toml\n        000002-message-imported.toml\n        000003-message-imported.toml\n        000004-response-imported.toml\n```\n\n---\n\n# Import manifest is very helpful\n\nEach import should have its own manifest, something like:\n\n```toml\nimport_id = \"imp_2026_03_21_101500\"\nprovider = \"chatgpt\"\nraw_snapshot = \"data/raw/chatgpt/archive/2026-03-21T101500-full-export.json\"\nwindow_kind = \"full\"\nimported_at = \"2026-03-21T10:15:00Z\"\nconversations_seen = 124\nmessages_seen = 4821\nnew_events_appended = 37\nduplicates_skipped = 4784\n```\n\nThen later you know exactly:\n- what file was used\n- what kind of export it was\n- what changed\n\n---\n\n# Full export vs rolling export strategy\n\n## Early stage\nDo occasional **full exports** as safety anchors.\n\nFor example:\n- first import = full export\n- then maybe weekly or monthly full export\n\n## Routine stage\nUse rolling exports like:\n- last day\n- last 7 days\n- last 30 days\n\nBut only as incremental feed material.\n\nWhy?\nBecause the rolling windows can miss older history if something goes wrong.\n\nSo a good pattern is:\n\n- **full export** = baseline / audit anchor\n- **rolling exports** = convenient incremental ingestion\n\n---\n\n# Important principle\n\nYour importer should never assume:\n\n“if it is not in today’s export, it no longer exists.”\n\nThat would be wrong for rolling exports.\n\nInstead:\n\n- absence from a later rolling export means nothing\n- presence of a previously unseen record means append it\n- presence of a known record means skip or verify\n\n---\n\n# Should the same raw filename be reused?\n\n## Yes, for convenience\nGood for:\n- quick Git diff of “latest export”\n- simple scripts\n\n## No, not as the only file\nBad because:\n- you lose immutable historical raw snapshots\n- rolling windows are not durable\n- debugging imports later becomes harder\n\nSo the best answer is:\n**reuse one stable filename and also archive each import under a timestamped filename.**\n\n---\n\n# What about “stacking” 30-day files?\n\nYou can, but think of them as **snapshot batches**, not append logs.\n\nFor example:\n\n- `2026-03-21-last-30-days.json`\n- `2026-03-22-last-30-days.json`\n- `2026-03-23-last-30-days.json`\n\nThose stack fine in raw archive.\n\nBut they will overlap heavily, so your importer must dedupe against canonical state.\n\nThat is normal.\n\n---\n\n# The cleanest mental model\n\n## Raw layer\n“Whatever the provider gave me on that date.”\n\n## Import manifest layer\n“What I did with that snapshot.”\n\n## Canonical event layer\n“The stable append-only truth I derived.”\n\n## Projection layer\n“What I currently believe the conversation/thread/message state is.”\n\n---\n\n# Practical recommendation for you\n\nI would start with this exact policy:\n\n## Policy\n1. Every import gets a unique `import_id`.\n2. Every raw export is copied to an archive path with timestamp.\n3. A stable `latest/...` filename is optionally updated for convenient diffing.\n4. Importer parses raw snapshot and appends only new canonical events.\n5. Rolling exports are allowed, but never trusted as sole history.\n6. Full exports are taken periodically as baseline snapshots.\n\n---\n\n# Simple workflow examples\n\n## First time\n- export all available\n- save as archive snapshot\n- update `latest/full-export.json`\n- normalize everything\n- append canonical events\n- commit\n\n## Tomorrow\n- export last 30 days\n- save as archive snapshot\n- update `latest/last-30-days.json`\n- importer dedupes\n- append only new events\n- commit\n\n## Later once a month\n- export all available again\n- save archive snapshot\n- update `latest/full-export.json`\n- importer verifies and fills any gaps\n- commit\n\nThat is a very solid pattern.\n\n---\n\n# One more subtlety: provider edits\n\nSometimes a provider may revise/export content slightly differently later.\n\nSo there are two kinds of dedupe:\n\n## 1. Exact duplicate\nSame provider ids, same content hash  \n→ skip\n\n## 2. Same logical object, changed content\nSame provider ids, different content hash  \n→ keep raw revision, then either:\n- append `MessageRevisedObserved`, or\n- append a new canonical representation version\n\nDo not silently overwrite canonical truth without recording that something changed.\n\n---\n\n# My recommendation in one sentence\n\n**Use rolling exports as overlapping raw snapshots, archive each one immutably, optionally keep a stable latest filename for Git diff, and append only deduplicated canonical events into your real store.**\n\nThe strongest next step would be for me to give you:\n- a concrete folder layout,\n- TOML schemas for `import manifest` and canonical events,\n- and F# dedupe rules for full vs last-30-days imports."
+

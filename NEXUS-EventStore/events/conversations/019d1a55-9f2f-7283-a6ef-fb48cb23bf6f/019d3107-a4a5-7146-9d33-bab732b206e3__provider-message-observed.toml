@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3107-a4a5-7146-9d33-bab732b206e3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3107-a4a5-7235-8068-2f1d318ed72f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T20:04:14.946Z"
+observed_at = "2026-03-27T20:41:15.5290505Z"
+imported_at = "2026-03-27T20:41:15.5290505Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3107-9c08-71ae-98aa-63e4bb77018c"
+
+[content_hash]
+algorithm = "sha256"
+value = "d08528a40346a764bde0114b4a31fb99968d5d198cfed5e04ebc5682f4a05ff1"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-024071-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-024071-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T20-41-14Z__cheddarbooks__b967aedf/session_index.jsonl"
+archived_at = "2026-03-27T20:41:14.9320725Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T20-41-14Z__cheddarbooks__b967aedf/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T20:41:14.9320725Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-024071-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2242
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done on `CheddarBooks` branch `laundrylog-event-modeling` at `8056e83`.\n\nThe command is now explicitly specified here:\n- [commands.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/commands.md)\n\nFirst command:\n- `CaptureLaundryLocation`\n\nFirst-pass command fields:\n- `location_name`\n- `capture_method`\n\nOptional command fields:\n- `coordinates`\n- `matched_location_id`\n- `notes`\n\nConcrete example:\n```toml\ncommand_name = \"CaptureLaundryLocation\"\nlocation_name = \"Love's #123 - Springfield, OH\"\ncapture_method = \"manual-text\"\n```\n\nExpected resulting event:\n```toml\nevent_name = \"LaundryLocationCaptured\"\nlocation_name = \"Love's #123 - Springfield, OH\"\ncapture_method = \"manual-text\"\nrecorded_at_utc = \"2026-03-27T13:42:00Z\"\n```\n\nI also wired that command layer into:\n- [event-modeling README](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/README.md)\n- [starting-point.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/starting-point.md)\n- [path-1-first-entry.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/path-1-first-entry.md)\n- [domain-model.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/domain-model.md)\n\nSo now we have:\n- command\n- event\n- sample fields\n- sample data\n\nThis was docs-only, so I didn’t run tests."
+

@@ -17,7 +17,7 @@ It should point to stronger sources such as:
 
 - `README.md`
 - glossary entries
-- decision records
+- decision notes
 - requirements
 - architecture notes
 - code and tests

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3edb-277a-7021-98da-a87549675b64"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3edb-277a-7a51-ba5f-610a40ff7830"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T11:52:26.529Z"
+observed_at = "2026-03-30T13:07:20.5023947Z"
+imported_at = "2026-03-30T13:07:20.5023947Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3edb-1d36-7ae6-bb94-f88a6bc22dd1"
+
+[content_hash]
+algorithm = "sha256"
+value = "beed6aead5a342f01d44e953d0f3e39a2c8d236e19a67ecfd872d76690f160fd"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-040587-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-040587-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T13-07-15Z__cheddarbooks__91db582f/session_index.jsonl"
+archived_at = "2026-03-30T13:07:17.4752183Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T13-07-15Z__cheddarbooks__91db582f/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T13:07:17.4752183Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-040587-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4057
+
+[[body.segments]]
+kind = "plain_text"
+text = "You’re seeing a real duplication, not just a wording problem.\n\nIn the current NM renderer, the top-right label is a hybrid thing called `columnKindLabel`, and right now it maps like this:\n- boot surface + lifecycle context -> `LIFECYCLE`\n- boot surface otherwise -> `RUNTIME`\n- app screen surface -> `SCREEN`\n- AEM command slice -> `COMMAND`\n- AEM view slice -> `VIEW`\n\nSo in `AppStarted`:\n- top-right `LIFECYCLE`\n- pill `[Lifecycle]`\n\nare effectively pointing at the same classification family today.\n\nThat means your discomfort is correct: in the first few columns, the top-right label is not really giving a different concept than the lens pill. It only becomes clearly different in the AEM columns, where:\n- top-right `COMMAND` / `VIEW`\n- pill `[AEM]`\n\nare actually different things.\n\nI think the cleaner split is this:\n\n- the pills above `Step 01 · 01-app-started`\n  should carry the explicit classifications:\n  - `App Runtime`\n  - `ApplicationLifecycle`\n  - `Lifecycle`\n  - `System`\n\n- the top-right label should become a true surface/shell kind, not a lens-like label:\n  - `BOOT`\n  - `SCREEN`\n  - `COMMAND`\n  - `VIEW`\n\nThat way:\n\n```text\n[App Runtime] [ApplicationLifecycle] [Lifecycle] [System]     BOOT\nStep 01 · 01-app-started\nAppStarted\n```\n\nNow every piece is doing a different job:\n- `App Runtime` = broad family/group\n- `ApplicationLifecycle` = bounded context\n- `Lifecycle` = lens/view family\n- `System` = actor/role\n- `BOOT` = actual surface kind being shown in the slot\n\nThat feels much less muddy to me than keeping `LIFECYCLE` in the top-right.\n\nAnd yes, if we adopt that shape, I agree those classification pills belong above the step key line, not below the snapshot. That reads much more like “this is what this column is” before you get into the step id and title.\n\nThe main decision I think we need next is whether the top-right label should:\n- stay, but become a true surface kind like `BOOT`\n- or disappear entirely once the classification row moves to the top"
+

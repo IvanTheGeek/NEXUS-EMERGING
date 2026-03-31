@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1431-738f-9c0e-d628032b6464"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1431-75c8-9536-5217c48e65b1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T14:51:50.081Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "d723a5988b8ffd459902acce18ff5bfe0a4b939fd206309524def787d0d4ac6f"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-021782-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-021782-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-021782-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1988
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, this is possible, and the current shape of NEXUS is actually pretty close already.\n\nWhat we already have:\n- Codex raw-session export: [export_codex_sessions.fsx](/tmp/nexus-merge-M7SKP3/NEXUS-Code/scripts/export_codex_sessions.fsx)\n- Codex session parsing: [CodexSessions.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/CodexSessions.fs)\n- Codex canonical import: [CodexImportWorkflow.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/CodexImportWorkflow.fs)\n\nSo the missing piece is not “can NEXUS ingest this?” It can. The missing piece is a checkpointing/link layer between:\n- the Codex session log state\n- the Git commit\n- the repo/worktree context\n\nMy recommendation is: tie it to commits first.\n\nWhy:\n- a commit is a stable checkpoint\n- “batch” is otherwise fuzzier\n- the user prompt/assistant execution boundary is meaningful, but the commit is the strongest durable anchor for later traceability\n\nSo the first practical flow should be:\n\n1. make a commit\n2. snapshot current Codex logs\n3. import that Codex snapshot\n4. write a small linkage record:\n   - repo path\n   - branch\n   - commit SHA\n   - commit message\n   - codex snapshot name\n   - codex import ID\n   - imported-at timestamp\n\nThat gives us the first real-time-ish ingestion seam.\n\nI would not start by trying to infer every prompt/response “batch” from the transcript. I’d start with:\n- `commit-linked session checkpoint`\n\nThen later we can refine toward:\n- commit -> exact conversation/message range\n- maybe even prompt/response batch boundaries if the transcript format supports it reliably\n\nThe best first implementation shape is probably:\n- a new command like `capture-codex-work-batch`\n- or a Git `post-commit` hook that calls a NEXUS CLI command\n\nI would strongly prefer the CLI command first, then optionally generate the hook from it.\n\nSo the first slice would be:\n\n- `capture-codex-work-batch --repo-root <path> --snapshot-root <path>`\n- it would:\n  - read `HEAD`\n  - export Codex sessions\n  - import Codex sessions\n  - write a linkage manifest under something like:\n    - `NEXUS-EventStore/work-batches/<timestamp>__<shortsha>.toml`\n\nThat would get the “first layer of ingestion” you’re asking for without overcommitting the ontology too early.\n\nSo short answer:\n- yes, possible\n- yes, commit is the right first anchor\n- yes, this can become near-real-time repo/session traceability\n- and the clean first implementation is commit-linked Codex checkpoint capture, not full prompt-batch inference\n\nIf you want, I can make that first `capture-codex-work-batch` flow next."
+

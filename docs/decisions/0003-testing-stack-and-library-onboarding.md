@@ -51,6 +51,7 @@ For testing:
 - behavior-driven and workflow tests remain centered in Expecto
 - invariant tests should prefer `Expecto.FsCheck` over ad hoc property harnesses
 - generated canonical artifacts should be protected with snapshot tests when output shape matters
+- direct browser inspection is useful for understanding visible behavior, but it is not by itself a substitute for a repeatable browser automation harness when path behavior must be asserted deterministically
 
 For documentation and onboarding:
 

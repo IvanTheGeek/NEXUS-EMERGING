@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3576-7483-796f-88d1-f56b529c436e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3576-7483-78cd-b3d0-be0b2e4f3450"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T17:15:49.534Z"
+observed_at = "2026-03-28T17:20:46.9472503Z"
+imported_at = "2026-03-28T17:20:46.9472503Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3576-6d63-7645-8e20-5127a4f5ad57"
+
+[content_hash]
+algorithm = "sha256"
+value = "ff08b2e97ffda39c99718a97f395c61c1faeac4ad78531a80d80e08a5334c34c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-032616-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-032616-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T17-20-45Z__cheddarbooks__217332d0/session_index.jsonl"
+archived_at = "2026-03-28T17:20:45.8839129Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T17-20-45Z__cheddarbooks__217332d0/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T17:20:45.8839129Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-032616-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3200
+
+[[body.segments]]
+kind = "plain_text"
+text = "Tightened. I compacted the empty space around the slice title/description block and committed it in `CheddarBooks` as `f514c67` (`model: tighten html slice header spacing`).\n\nWhat changed:\n- reduced the reserved title row height\n- reduced the reserved description row height\n- cut the top margin above the title\n- removed the extra top margin above the description\n\nUpdated artifact:\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nUpdated render:\n![LaundryLog PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `19` tests passed\n\nThe row contracts still hold, so this tightened the slack without knocking the slice grid out of rhythm."
+

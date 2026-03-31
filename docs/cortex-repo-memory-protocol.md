@@ -18,6 +18,11 @@ NEXUS work is not supposed to depend on one collaborator remembering a prior cha
 
 The repo is the working memory surface.
 
+That working memory still serves a clear authority structure:
+
+- humans are the final decision makers
+- AI agents are supporting collaborators that help execute, recover context, and suggest options
+
 That means:
 
 - critical learnings should become durable docs
@@ -44,16 +49,15 @@ Scratch is useful, but it is not durable truth by default.
 
 Durable project memory is the human-and-agent-readable layer that should survive beyond one session.
 
-Examples:
+Examples in this branch:
 
 - `README.md`
 - `docs/agent-readme.md`
 - `docs/current-focus.md`
-- glossary entries
-- decision records
-- concept notes
-- concern-line docs
-- requirements and architecture notes
+- `docs/glossary.md`
+- architecture notes
+- decision notes
+- requirements and concept notes
 
 If a learning is likely to matter later, this is usually where it belongs.
 
@@ -83,7 +87,6 @@ Examples:
 - reports
 - context packs
 - current-focus summaries
-- concept overviews that point back to stronger sources
 
 Derived views are valuable, but they are not the deepest source truth.
 
@@ -101,16 +104,17 @@ When in doubt:
 - prefer durable docs over chat memory
 - prefer additive correction over silent replacement
 - prefer traceable derivation over unexplained summaries
+- for concrete code, renderer, HTML, CSS, and UI work, inspect the actual local source and current artifacts before changing behavior; do not rely on memory or inferred structure when the code can be read directly
 
 ## Agent Startup Protocol
 
 When an AI agent or human collaborator starts work here:
 
-1. read [`README.md`](../README.md)
+1. read [`repo-overview.md`](repo-overview.md) when browsing the docs site, or the root `README.md` when working directly in the repo
 2. read [`docs/agent-readme.md`](agent-readme.md)
 3. read [`docs/current-focus.md`](current-focus.md)
 4. read [`docs/glossary.md`](glossary.md)
-5. read the relevant decision records, concept notes, concern-line docs, and runbooks
+5. read the relevant decision notes, architecture notes, and runbooks
 6. inspect the relevant code, tests, and branch context
 
 If the task is narrow, do not read the whole repo.
@@ -129,6 +133,8 @@ Before finishing a meaningful piece of work:
 
 - if terminology changed, update the glossary or the relevant terminology doc
 - if architecture or behavior changed, update the durable docs that explain it
+- if code, renderer, command behavior, or visible behavior changed, add or update tests by default
+- if a relevant test was not added or updated, say why explicitly
 - if a discovery will matter later, record it durably instead of leaving it only in chat
 - if a note is only scratch, leave it in scratch and do not pretend it is doctrine
 - if canonical history is affected, append or add correction records rather than rewriting it
@@ -190,7 +196,6 @@ Avoid these:
 - [`docs/index.md`](index.md)
 - [`docs/context-packs/README.md`](context-packs/README.md)
 - [`docs/session-handoffs/README.md`](session-handoffs/README.md)
-- [`docs/collaboration-protocol.md`](collaboration-protocol.md)
 
 ## Operating Mantra
 

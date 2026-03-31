@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1431-7fce-939b-3fdc217fb41f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1431-77c8-82f2-febca3638a5c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T14:10:20.696Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "faa529982495ea902479417adc33c4c6094513e8126acad52fec75bcf0ac3f29"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-021168-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-021168-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-021168-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1899
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, exactly.\n\nTwo normal patterns are:\n\n1. Merge branch into `main`\n- branch work is accepted\n- `main` becomes the new converged baseline\n\n2. Merge `main` back into another long-lived branch\n- that branch picks up everything accepted since it diverged\n- it continues forward with the newer shared foundation\n\nSo a long-lived branch can do both over time:\n- contribute changes into `main`\n- receive newer changes back from `main`\n\nThat is how you keep multiple active concern-line branches current without losing the shape of the work.\n\nExample flow:\n1. work on `fnui-foundation`\n2. merge `fnui-foundation` into `main`\n3. continue work on `cheddarbooks-foundation`\n4. merge `main` into `cheddarbooks-foundation` so it picks up the latest FnUI changes\n5. later merge `cheddarbooks-foundation` back into `main`\n\nThat creates visible convergence points in the graph, which is what you said you wanted.\n\nA good practical rule is:\n- merge into `main` when a branch has reached a coherent checkpoint\n- merge `main` into long-lived branches whenever shared foundation changes matter to that branch\n\nSo yes, your understanding is right."
+

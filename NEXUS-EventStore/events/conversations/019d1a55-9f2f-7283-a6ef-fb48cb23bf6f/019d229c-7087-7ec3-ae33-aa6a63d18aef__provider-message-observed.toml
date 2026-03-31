@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7087-7ec3-ae33-aa6a63d18aef"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7087-783e-845f-d6dbde0bb190"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T21:36:29.444Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "e373e91aeb15d394cc33d985849a2520de110d7ea30d131489b6e9343be6253a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-011242-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-011242-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-011242-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1070
+
+[[body.segments]]
+kind = "plain_text"
+text = "I can’t change that GitHub repo setting from here.\n\nDo this on GitHub:\n\n1. Open the repo: [NEXUS-EMERGING](https://github.com/IvanTheGeek/NEXUS-EMERGING)\n2. Click `Settings`\n3. In the left sidebar, click `Branches`\n4. In `Default branch`, click the switch/edit control\n5. Change the default branch from `codex/nexus-ingestion-foundation` to `main`\n6. Confirm the change\n\nAfter that, if you want the local remote HEAD to match, run:\n\n```bash\ngit -C /home/ivan/NEXUS/NEXUS-EMERGING remote set-head origin -a\ngit -C /home/ivan/NEXUS/NEXUS-EMERGING remote show origin\n```\n\nYou should then see:\n- `HEAD branch: main`\n\nI would wait to delete `codex/nexus-ingestion-foundation` until after that setting is changed. If you want, once you’ve flipped it on GitHub, I can do the local cleanup and help create the next focused branch."
+

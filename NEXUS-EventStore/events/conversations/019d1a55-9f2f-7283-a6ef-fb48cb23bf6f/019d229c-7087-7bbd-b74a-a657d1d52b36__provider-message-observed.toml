@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7087-7bbd-b74a-a657d1d52b36"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7087-7686-b278-c9404e6e003e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T22:25:07.465Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "a5d8fdc78f08bca236e99acf2964d81bd471d7a3fa231bab9c8be0a9bac1984b"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-011908-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-011908-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-011908-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1125
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, and what we’ve built is already pointing that way.\n\nThe clean future shape is:\n\n- provider/app UI as the interaction surface\n- prompt/response capture as it happens\n- the same canonical observed-history model underneath\n- raw request/response artifacts preserved\n- normalized snapshots and working indexes derived from that live stream\n\nSo later, your own UI can become the primary acquisition layer for:\n- ChatGPT-like API sessions\n- Claude-like API sessions\n- local tools\n- user feedback\n- LOGOS intake generally\n\nThat would let NEXUS record:\n- prompt-side intent/submission before send\n- response-side observations after receive\n- attachments/artifacts as they appear\n- session/project metadata\n- provenance from the exact API call or local action\n\nAnd yes, the Codex local-log pattern is a good precursor:\n- local raw log first\n- canonical import second\n- later live capture directly into the same canonical model\n\nI would frame that future path as:\n\n1. importer foundation\n2. live capture adapter\n3. your own NEXUS interaction UI\n4. unified intake across chats, feedback, bugs, forums, email, and app usage\n\nSo the system we have now is not a detour. It’s the offline/history-first version of the same architecture your live UI will eventually need."
+

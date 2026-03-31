@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3e76-5a57-790e-8cbc-92a237b51d7c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3e76-5a57-71bf-a420-871ca2cc009f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T11:10:41.931Z"
+observed_at = "2026-03-30T11:17:14.8942139Z"
+imported_at = "2026-03-30T11:17:14.8942139Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3e76-520e-70b0-9248-f14dd077c62b"
+
+[content_hash]
+algorithm = "sha256"
+value = "42005185364f39311bee2cfc19e0103b3dbf180dc7306464bf0bc13290e7cfde"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-040354-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-040354-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T11-17-10Z__cheddarbooks__6e6b981d/session_index.jsonl"
+archived_at = "2026-03-30T11:17:12.7365762Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T11-17-10Z__cheddarbooks__6e6b981d/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T11:17:12.7365762Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-040354-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4026
+
+[[body.segments]]
+kind = "plain_text"
+text = "The `UPDATES` section now renders in local browser/system time and keeps the relative age fresh in-page, so it shows the new shape instead of raw UTC text:\n`UPDATED AT: 7:01 AM EDT | 2 minutes ago`\n\nThis is live on both tracked review surfaces:\n- [screen path](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n- [NM path](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/nm-paths/LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html)\n\nImplementation details:\n- browser-side local formatting via `Intl.DateTimeFormat`\n- relative age refresh every 30 seconds\n- stable update-status test hooks added for both pages\n\nVerification ran through the repo script:\n- `/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh`\n- `36` Expecto tests passed\n- `12` Playwright tests passed\n\nCommit:\n- `b3572dc` `model: localize path update timestamps`"
+

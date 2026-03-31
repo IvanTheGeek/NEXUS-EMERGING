@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707c-78e0-aafa-93a194b84ce4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707c-7028-8307-c9f077f06070"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T20:33:51.829Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "fb126209a4a644a83be5856d9db1bc7a6fb312fe5cced47d670e85e0e5d672d8"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000749-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000749-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000749-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 106
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, and it’s in place now.\n\nI added a human-facing docs area here:\n\n- [docs/how-to/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/README.md)\n- [docs/how-to/export-codex-sessions.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/export-codex-sessions.md)\n\nI also linked `docs/how-to/` from the main [README.md](/home/ivan/NEXUS/NEXUS-EMERGING/README.md) so it’s discoverable from the repo root.\n\nThat guide explains:\n- what `dotnet fsi NEXUS-Code/scripts/export_codex_sessions.fsx` does\n- when to use it\n- the dry-run form\n- optional arguments\n- where the files end up afterward\n- the fact that it’s raw preservation, not canonical import\n\nIt’s committed as `adec31b` with message `Add human how-to guide for Codex session export`.\n\nThe repo is still only dirty because of untracked raw content in:\n- [NEXUS-Objects/providers](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers)\n- [RawDataExports](/home/ivan/NEXUS/NEXUS-EMERGING/RawDataExports)\n\nIf you want, next we can return to the main track and build the TOML serializer and file writer layer for canonical events and import manifests."
+

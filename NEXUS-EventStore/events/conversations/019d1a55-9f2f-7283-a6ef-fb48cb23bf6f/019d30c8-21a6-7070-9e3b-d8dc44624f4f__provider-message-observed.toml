@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d30c8-21a6-7070-9e3b-d8dc44624f4f"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d30c8-21a6-745b-b596-c693cc825fa4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T19:23:17.415Z"
+observed_at = "2026-03-27T19:31:53.4057486Z"
+imported_at = "2026-03-27T19:31:53.4057486Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d30c8-19bd-7d1c-b2ca-1683a0d8ea63"
+
+[content_hash]
+algorithm = "sha256"
+value = "579fc809ef92592adce064dbd831508b6951d336de6cdaacc50cbdfdad26f461"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-023827-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-023827-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T19-31-52Z__cheddarbooks__e39418e4/session_index.jsonl"
+archived_at = "2026-03-27T19:31:52.8142168Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T19-31-52Z__cheddarbooks__e39418e4/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T19:31:52.8142168Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-023827-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2200
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, exactly.\n\nOnce the PATH is credible in business terms, the next move is:\n- define the event properties\n- define example event data\n- pressure the names and boundaries with concrete examples\n\nThat is where the model usually either gets stronger or reveals a hidden problem.\n\nFor the current PATH, that likely means working event-by-event:\n\n1. `LaundryLocationCaptured`\n   define:\n   - required properties\n   - optional properties\n   - 2-3 example payloads\n   - manual-entry vs GPS-assisted examples\n\n2. `LaundryExpenseLogged`\n   define:\n   - required properties\n   - optional properties\n   - washer example\n   - dryer example\n\nThat will help us answer things like:\n- does location belong fully on `LaundryLocationCaptured`\n- what must be copied onto `LaundryExpenseLogged`\n- do we need stable ids yet\n- which timestamps matter now vs later\n\nSo yes, you’re right on the next step:\n- PATH first\n- then event properties\n- then example data\n- then we can start spotting commands, reads, policies, and invariants more clearly\n\nMy recommendation is to do:\n- `LaundryLocationCaptured` first\n- then `LaundryExpenseLogged`\n- using example event instances right in the markdown docs before we lock code shapes"
+

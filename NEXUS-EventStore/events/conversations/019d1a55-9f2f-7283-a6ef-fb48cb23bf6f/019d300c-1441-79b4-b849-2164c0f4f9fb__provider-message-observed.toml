@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1441-79b4-b849-2164c0f4f9fb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1441-7ba8-824b-6f695691df2e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.768Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "f3ed1ce744aa1520088041af01cc951ba24f0d1bd53a8ac635f59f441327babb"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-017520-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-017520-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-017520-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1574
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. It fits cleanly if we treat Talkyard as one platform with multiple instances and multiple acquisition paths.\n\n**Model**\nI’d model Talkyard across these separate dimensions:\n\n- platform: `talkyard`\n- instance: `talkyard.ivanthegeek.com` vs `forum.talkyard.io`\n- acquisition kind: `web-scrape` vs `api-pull`\n- auth scope: `public` vs `your-user` vs `admin`\n- underlying objects: thread, post, category, attachment\n\nThe important rule is:\n- scrape and API are separate observations of the same possible underlying discussion\n- preserve them separately first\n- reconcile them explicitly later\n\nThat matches the overlap rule we already adopted.\n\n**Flows**\nI think this becomes five distinct flows:\n\n1. Talkyard scrape capture flow\n   - preserve raw HTML, discovered links, timestamps, and extracted structured IDs\n   - record which instance and auth scope produced the capture\n\n2. Talkyard API capture flow\n   - preserve raw JSON and request metadata\n   - same instance/auth metadata\n\n3. Talkyard normalization flow\n   - normalize both scrape and API into the same canonical conversation/message style model\n   - likely `forum-thread` + `message` first\n\n4. Talkyard overlap reconciliation flow\n   - exact match first: same instance + native thread/post IDs or canonical URL\n   - fuzzy fallback later: title, time window, author handle, content similarity\n   - never silently collapse scrape into API or vice versa\n\n5. Talkyard outbound publication flow\n   - separate from ingestion\n   - same platform/instance vocabulary, different bounded context\n   - later NEXUS can publish to Discord or Talkyard without mixing “sent” with “observed”\n\n**What We Need Before Real Talkyard Intake**\nThe missing piece in our current model is a source-instance dimension. `talkyard` alone is not enough once we care about both your hosted instance and `forum.talkyard.io`.\n\nSo my recommended next implementation order is:\n\n1. Add `source_instance` or `source_authority` to LOGOS/import metadata.\n2. Add an explicit `acquisition_kind` allowlist:\n   - `web-scrape`\n   - `api-pull`\n   - maybe later `manual-export`\n3. Add a Talkyard raw-capture manifest shape.\n4. Implement scrape intake first, since it works now.\n5. Implement API intake second.\n6. Add Talkyard overlap-candidate reporting between scrape and API imports.\n7. Later add outbound/publication planning as a separate concern.\n\nMy recommendation is to do `1` and `2` next, before writing the first scraper. That keeps the architecture honest before real Talkyard data starts landing."
+

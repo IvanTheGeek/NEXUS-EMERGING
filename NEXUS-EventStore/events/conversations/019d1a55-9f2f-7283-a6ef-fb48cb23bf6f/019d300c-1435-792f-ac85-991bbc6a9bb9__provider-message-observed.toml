@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1435-792f-ac85-991bbc6a9bb9"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1435-71c2-b5e7-b0b0fdd91b26"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.335Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "12b1ea8a0c2bd095a044ce43edc88bfe3578cffc89b55e537ead5aaa124dc7dc"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-005218-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-005218-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-005218-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 486
+
+[[body.segments]]
+kind = "plain_text"
+text = "It aligns well with what we already have, with one important boundary: this is ontology-layer meaning, not ingestion-layer history.\n\nWhat already fits:\n- Your “Node stays structural, meaning is layered on top” matches [Graph.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/Graph.fs) and [nexus-core-conceptual-layers.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/nexus-core-conceptual-layers.md). We already separated structure from `Domain`, `BoundedContext`, and `Lens`.\n- “Projection is derived, not source truth” already matches [glossary.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/glossary.md) and the projection docs.\n- “Do not overcollapse write/read into a pipeline” is also aligned with the repo direction so far.\n\nWhere I’d be careful:\n- In this repo, `Event` in [CanonicalHistory.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Domain/CanonicalHistory.fs) currently means an append-only observed-history record. Your new “Event = Imprint interpreted in a time-based domain” is a different bounded-context meaning. That is okay, but we should explicitly document the term collision.\n- We do not yet have a first-class `Role` or `Meaning` abstraction in code. So “Imprint is a role, not structure” fits conceptually, but the codebase is not modeling that directly yet.\n- I would not jump straight to a hardcoded `NodeRole = Imprint | Event | Fact | ...` union unless we’re sure those names are stable. Right now a `RoleId` or `MeaningId` slug-based abstraction is safer.\n\nSo: is it time for a new base library? My answer is “yes, internally; not yet as the base of all NEXUS projects in a final sense.”\n\nWhat I’d recommend now:\n- Create a new project inside this repo, not a separate repo yet.\n- Make it a tiny kernel, something like `Nexus.Kernel` or `Nexus.Semantics`.\n- Put only the stable concepts there:\n  - `Node`\n  - `RoleId` or `MeaningId`\n  - `DomainId`\n  - `BoundedContextId`\n  - `LensId`\n  - relations like `Derivation`, `Interpretation`, maybe `Causality`\n  - constants like `imprint`\n- Do not move importer/event-store concerns into it.\n- Do not freeze `Event`, `Fact`, `Record`, `Projection` as universal primitives yet.\n\nSo the timing is:\n- new internal kernel project: yes, probably now\n- separate reusable foundational library for all future NEXUS projects: almost, but I’d wait until this imprint model is exercised in at least two real domains, not just ingestion\n\nThe next smart move is to write this down as a repo ontology note first, then carve the minimal kernel project from that note. If you want, I can draft that ontology alignment doc and the proposed `Nexus.Kernel` surface next."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3e7c-8365-7de8-b2c9-023adfb5bb3e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3e7c-8365-7a67-a1e6-571c6070b70d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T11:17:40.964Z"
+observed_at = "2026-03-30T11:23:59.0511589Z"
+imported_at = "2026-03-30T11:23:59.0511589Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3e7c-7ccb-7b58-bfb1-a7327f4dc1f1"
+
+[content_hash]
+algorithm = "sha256"
+value = "4c671922bcdb0695f558a627355407642b7cc07e9d500beef36b9a3361dfaa3c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-040443-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-040443-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T11-23-55Z__cheddarbooks__10704f4d/session_index.jsonl"
+archived_at = "2026-03-30T11:23:57.0649611Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T11-23-55Z__cheddarbooks__10704f4d/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T11:23:57.0649611Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-040443-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4037
+
+[[body.segments]]
+kind = "plain_text"
+text = "The NM page is updated and the legacy screen-path page was left alone.\n\nWhat changed:\n- the `LaundryLog` app pill now lives once in the NM header, top-left, before `PATH1-NM nm path`\n- the repeated outer NM column app pill is gone\n- embedded AEM internals still keep their own slice styling\n\nReview here:\n- [LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/nm-paths/LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html)\n\nUpdated code/tests:\n- [NmPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/NmPathHtmlRenderer.fs)\n- [path1-nm-path.spec.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/specs/path1-nm-path.spec.ts)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n\nVerification:\n- `/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh`\n- `36` Expecto tests passed\n- `12` Playwright tests passed\n\nCommit:\n- `6e6b981` `model: move nm app identity into header`"
+

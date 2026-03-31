@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d413d-33a2-7b0a-8d13-40bdecacb9c5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d413d-33a2-7579-b283-57b850dec1c0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-31T00:11:54.721Z"
+observed_at = "2026-03-31T00:13:41.1437593Z"
+imported_at = "2026-03-31T00:13:41.1437593Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d413d-2b97-7d3d-b31d-c11495ff9dd7"
+
+[content_hash]
+algorithm = "sha256"
+value = "f74fe0137a850c40fc090409f2696580c19a772aa687cb3ffa896b79c2597373"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-044748-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-044748-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-31T00-13-35Z__nexus-penpot-publish-aex7xs__14f5565b/session_index.jsonl"
+archived_at = "2026-03-31T00:13:38.5632549Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-31T00-13-35Z__nexus-penpot-publish-aex7xs__14f5565b/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-31T00:13:38.5632549Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-044748-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4467
+
+[[body.segments]]
+kind = "plain_text"
+text = "We’re in a much cleaner state now.\n\nRemaining live local branches:\n- `main`\n- `cortex-repo-memory-protocol`\n  `7` commits branch-only, `9` commits behind `main`\n  This is mostly docs/doctrine: AGENTS entrypoint, repo memory protocol, Penpot working-loop/token docs.\n- `penpot-surface-protocol`\n  `20` commits branch-only, `29` behind `main`\n  This is a coherent Penpot/protocol line with a small importer/code seam plus a lot of Penpot docs.\n- `export-window-analysis`\n  `28` commits branch-only, `83` behind `main`\n  This is the least merge-ready branch. Its diff is enormous and dominated by EventStore/import/checkpoint history plus docs cleanup.\n\nWhat I think we should do:\n1. `cortex-repo-memory-protocol`\n   Best first merge candidate.\n   It’s small, coherent, and mostly docs/protocol material.\n2. `penpot-surface-protocol`\n   Next candidate, but it should be converged with `main` first and reviewed as its own workstream.\n3. `export-window-analysis`\n   Do not merge into `main` yet.\n   It should stay as the active heavy branch and likely pull `main` into itself later, not the other way around.\n\nSo the repo is coherent enough now that the practical next move is:\n- merge-ready path: `cortex-repo-memory-protocol`\n- review-next path: `penpot-surface-protocol`\n- keep-separate path: `export-window-analysis`\n\nI also already removed the retired/redundant local branches, so we’re down to the meaningful set only.\n\nBest next action is to start with `cortex-repo-memory-protocol`: update it against `main`, resolve any overlap cleanly, and prepare that merge."
+

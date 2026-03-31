@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3fa4-a049-72ae-a075-ec1a47c2190c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3fa4-a049-7c64-8785-721805c21940"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T16:08:40.117Z"
+observed_at = "2026-03-30T16:47:24.6750189Z"
+imported_at = "2026-03-30T16:47:24.6750189Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3fa4-9802-79dc-a979-1ad4bfd258ff"
+
+[content_hash]
+algorithm = "sha256"
+value = "85967fd14af92bb846d45a591ac29a3cb092f1a9d5ae2a5c20ee5eb23f709de2"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-042281-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-042281-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T16-47-19Z__cheddarbooks__cf24ca85/session_index.jsonl"
+archived_at = "2026-03-30T16:47:22.0345439Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T16-47-19Z__cheddarbooks__cf24ca85/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T16:47:22.0345439Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-042281-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4227
+
+[[body.segments]]
+kind = "plain_text"
+text = "The NM page now enforces uniform row heights the way you described.\n\nWhat changed:\n- `SCREEN` compartments share one synchronized row height\n- the mixed primary row is synchronized across `INTERACTION`, `COMMAND`, `VIEW`, and `ORCHESTRATION`\n- the `EVENT` row is synchronized\n- the `GWT` row is synchronized\n- the actual visible boxes now stretch to fill those shared row heights, not just the outer slot wrappers\n\nReview here:\n- [LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/nm-paths/LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html)\n\nMain files:\n- [NmPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/NmPathHtmlRenderer.fs)\n- [path1-nm-path.spec.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/specs/path1-nm-path.spec.ts)\n\nVerification:\n- [verify-workspace-html.sh](/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh)\n- `36` Expecto tests passed\n- `14` Playwright tests passed\n\nCommits:\n- `d220b99` `model: align nm path compartments by shared rows`\n- `05fb95e` `fix: stretch nm row content uniformly`\n\nThe legacy screen-path artifact was left untouched again. The next likely refinement is visual treatment of the empty reserved rows so they feel intentional instead of just blank."
+

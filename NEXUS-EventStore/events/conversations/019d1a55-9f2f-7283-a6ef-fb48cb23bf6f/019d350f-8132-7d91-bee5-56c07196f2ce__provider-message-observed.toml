@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d350f-8132-7d91-bee5-56c07196f2ce"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d350f-8132-7138-915c-2f86f4559da1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T15:04:07.146Z"
+observed_at = "2026-03-28T15:28:19.8754589Z"
+imported_at = "2026-03-28T15:28:19.8754589Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d350f-79a3-7162-ade6-f80cc6bd9621"
+
+[content_hash]
+algorithm = "sha256"
+value = "1ae0c970df650603920fe41b9aba2cdadac8db5cef86fad9fe6b9e9094952c9c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-031085-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-031085-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T15-28-18Z__cheddarbooks__5eb62c96/session_index.jsonl"
+archived_at = "2026-03-28T15:28:19.0543223Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T15-28-18Z__cheddarbooks__5eb62c96/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T15:28:19.0543223Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-031085-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3016
+
+[[body.segments]]
+kind = "plain_text"
+text = "Two things are in place now.\n\nIn `NEXUS-EMERGING`, the missing startup spine is real in the current worktree, so the `README -> agent-readme -> current-focus` path will no longer fail just because this branch drifted. I added [agent-readme.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/agent-readme.md), [current-focus.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/current-focus.md), [cortex-repo-memory-protocol.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/cortex-repo-memory-protocol.md), [index.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/index.md), [context-packs/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/context-packs/README.md), and [session-handoffs/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/session-handoffs/README.md). That isolated docs commit is `51dba21a`. I did not touch the large unrelated event-store changes already in that worktree.\n\nIn `CheddarBooks`, the first deterministic LaundryLog path renderer is now in code. The new renderer lives in [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs), is wired into [CheddarBooks.LaundryLog.UI.fsproj](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/CheddarBooks.LaundryLog.UI.fsproj), documented in [html-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md), and covered by new tests in [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs). It renders `PATH 1` as self-contained HTML/CSS with explicit `CommandSlice` and `ViewSlice` cards, plus a classic EM lens and a UI-enriched lens. That commit is `84e352f`.\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `17` tests passed\n\nI also generated the first preview artifact here:\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nThe next strong move is to refine the slice-card visual language in the HTML renderer and then start separating the renderer-neutral slice/page model from the LaundryLog-specific example data so the right seams can migrate into `FnTools` cleanly."
+

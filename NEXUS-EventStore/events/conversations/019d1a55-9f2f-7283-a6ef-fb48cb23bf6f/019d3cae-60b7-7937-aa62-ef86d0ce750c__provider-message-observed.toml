@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3cae-60b7-7937-aa62-ef86d0ce750c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3cae-60b6-731c-8b09-48f60d850a2e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T02:47:25.078Z"
+observed_at = "2026-03-30T02:59:12.3360084Z"
+imported_at = "2026-03-30T02:59:12.3360084Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3cae-594f-7f95-b15a-85f934596597"
+
+[content_hash]
+algorithm = "sha256"
+value = "7293b2ca534132cb5cad4a03819445e65bc21f655446a73449bff256abdae369"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-039297-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-039297-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T02-59-05Z__cheddarbooks__f0e6a67b/session_index.jsonl"
+archived_at = "2026-03-30T02:59:08.7476986Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T02-59-05Z__cheddarbooks__f0e6a67b/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T02:59:08.7476986Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-039297-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3933
+
+[[body.segments]]
+kind = "plain_text"
+text = "`PATH1` now makes the step-to-step changes explicit.\n\nReview here:\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n\nWhat changed:\n- each path step now has a `What Changed` block\n- startup steps explain checkpoint progression in-place\n- screen steps explain what changed on the surface from the prior step\n- `Summary` hides that extra detail, while `Standard` and `Detailed` keep it available\n\nI also updated the renderer, the local note, and the test floor so this is durable:\n- [ScreenPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenPathHtmlRenderer.fs)\n- [html-screen-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md)\n\nVerification was run through the checked-in script:\n- [verify-workspace-html.sh](/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh)\n\nResult:\n- `34` Expecto tests passed\n- `6` Playwright tests passed\n\nCommit:\n- `8f56c86` `model: add path step change summaries`\n\nThe next strong move is to keep extending `PATH1` itself: either refine the startup/runtime wording further, or start weaving in the next lens row beside the screen path."
+

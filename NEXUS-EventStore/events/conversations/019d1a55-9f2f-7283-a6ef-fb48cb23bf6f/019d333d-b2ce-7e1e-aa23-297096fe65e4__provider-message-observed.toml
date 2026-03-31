@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2ce-7e1e-aa23-297096fe65e4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2ce-70c7-8c8f-01a318682de4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.767Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "939319567a438e7522b3e4fbba8381be34ad28487a06f071eda7eb67c8ca9605"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-026135-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-026135-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-026135-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2501
+
+[[body.segments]]
+kind = "plain_text"
+text = "Proceeded on `CheddarBooks` branch `laundrylog-fnhci-primitive-map` and committed it as `b112423820c5ba6a404bb99217c3f242e202e46a`.\n\nThe new main bridge doc is [fnhci-primitive-map.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/fnhci-primitive-map.md). It takes the current LaundryLog screens and Penpot components and maps them into first-pass reusable `FnHCI` primitives like:\n- `HeaderBar`\n- `TextInput`\n- `ActionButton`\n- `OptionButton`\n- `OptionGroup`\n- `Stepper`\n- `MoneyInput`\n- `SummaryBar`\n- `EntryCard`\n\nI also wired it into the local LaundryLog doc spine here:\n- [README.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/README.md)\n- [view-contracts.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/view-contracts.md)\n- [screens.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/screens.md)\n\nAs part of that, I fixed a couple of old broken local links in the touched LaundryLog docs so the updated reading path is now locally navigable.\n\nNo tests were run because this was docs-only.\n\nThe best next move from here is to take that primitive map and define the first explicit primitive state shapes, probably starting with:\n- `ActionButton`\n- `OptionGroup`\n- `Stepper`\n- `MoneyInput`\n\nThat would be the first step from design-language into code-language."
+

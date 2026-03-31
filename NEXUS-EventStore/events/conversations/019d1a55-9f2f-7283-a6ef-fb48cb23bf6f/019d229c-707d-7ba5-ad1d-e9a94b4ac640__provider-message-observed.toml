@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707d-7ba5-ad1d-e9a94b4ac640"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707d-7819-9422-635abb51b935"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T11:49:28.777Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "506abc1ac2ab6d4cb65d3eaaf9af22a64dfe7536950be116817e88d134301813"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-003903-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-003903-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-003903-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 363
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next testing layer is in and pushed as `cd633b37` on `codex/nexus-ingestion-foundation`.\n\nI added Verify-based snapshot coverage for the TOML wire format in [SnapshotTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/SnapshotTests.fs), with approved outputs in [canonical-event.verified.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/snapshots/canonical-event.verified.toml) and [import-manifest.verified.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/snapshots/import-manifest.verified.toml). I also added [NEXUS-Code.slnx](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx), updated the test project in [Nexus.Tests.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj), wired the tests into [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Program.fs), and documented the snapshot flow in [run-tests.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/run-tests.md). `.received.*` files are now ignored via [.gitignore](/home/ivan/NEXUS/NEXUS-EMERGING/.gitignore).\n\nVerification is green:\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n\nCurrent result: `7` tests passed, `0` failed.\n\nOne small environment note: `xxd` and `python` are not installed here. Nothing blocked, but I can use them if you add them later.\n\nThe next logical move is either `FsCheck` for invariants, or broader snapshot coverage for projections."
+

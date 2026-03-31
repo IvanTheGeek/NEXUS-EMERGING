@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707d-74ba-b102-cb04543ad40e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707d-7f06-9f1c-87c59f49ffac"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T10:23:55.977Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "3bfecae3839943ad163a172638c1a0156a8c5c0798e77bbc3b5fc508cbbdd829"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-002926-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-002926-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-002926-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 295
+
+[[body.segments]]
+kind = "plain_text"
+text = "The unresolved-artifact report slice is in and pushed as `64f9435`.\n\nThe new query/report logic is in [ArtifactProjectionReports.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/ArtifactProjectionReports.fs), and the CLI command is wired in [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs). You can now run:\n\n```bash\ndotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-unresolved-artifacts --limit 10\n```\n\nDocs are here:\n- [report-unresolved-artifacts.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/report-unresolved-artifacts.md)\n\nI verified the command against the real event store. Current snapshot:\n- total artifacts: `305`\n- payload captured: `0`\n- unresolved: `305`\n- ChatGPT unresolved: `68`\n- Claude unresolved: `237`\n\nThe branch is clean and synced. The next sensible move is either to start actually hydrating a first real artifact into the committed store, or add a small batch/intake workflow so you can drop several recovered files in and reconcile them in one run."
+

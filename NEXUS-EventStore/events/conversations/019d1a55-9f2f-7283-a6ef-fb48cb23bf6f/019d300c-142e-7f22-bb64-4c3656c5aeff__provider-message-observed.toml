@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142e-7f22-bb64-4c3656c5aeff"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142e-7d78-bc25-a82cf1908286"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-25T10:18:49.484Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "e2b4d4eb8e1ceef4915ddb04aed23fee720bd0e7209ec3e270ab414598b31caa"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-014675-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-014675-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-014675-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1344
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. This is a first-class NEXUS concern, and I think it should become an explicit rule before we go much further.\n\nWhat we have now helps, but it is not enough:\n- raw objects are separate from derived layers\n- canonical history is separate from projections\n- overlap is explicit, not collapsed\n\nWhat is still missing is a real data-handling model.\n\nThe core rule I’d add is:\n\n- import permission is not publication permission\n\nAnd then these follow from it:\n\n- raw intake defaults to restricted, not shareable\n- `canonical` does not mean `public`\n- projections, graphs, snapshots, and embeddings can still leak sensitive data\n- redaction/anonymization must be explicit derived transforms with provenance\n- public-safe artifacts should only come from approved sanitized derivatives\n\nSo for your examples:\n\n- personal ChatGPT chats\n  should be ingestible, but marked as private/personal and excluded from shared or public outputs by policy\n- customer CheddarBooks data\n  should be quarantined as customer-confidential raw intake\n  and only redacted/anonymized derived notes or case projections should ever become shareable\n\nI’d model this orthogonally to the rest of the ontology, not mixed into truth itself. Something like:\n\n- `Sensitivity`\n  examples: `personal-private`, `customer-confidential`, `internal`, `public`\n- `SharingScope`\n  examples: `owner-only`, `case-team`, `project-team`, `public`\n- `SanitizationStatus`\n  examples: `raw`, `redacted`, `anonymized`, `approved-for-sharing`\n- `RetentionClass`\n  examples: `ephemeral`, `case-bound`, `durable`\n\nAll of those should use explicit allowlisted values, which fits your preference exactly.\n\nOne especially important point for later LOGOS/RAG work:\n- vector stores are not automatically safe\n- embeddings over sensitive text should be treated as derived sensitive artifacts too\n- public/shared retrieval should use sanitized inputs, not raw private/customer data\n\nSo my recommendation is: this should be the next architectural slice before richer customer or user intake.\n\nThe next concrete move I’d take is:\n1. add a decision note for “restricted-by-default intake and explicit publication”\n2. add a small `Nexus.Logos` policy model for sensitivity/sharing/sanitization/retention\n3. extend LOGOS intake notes to carry that policy metadata\n4. later add redaction/anonymization workflows as explicit derived steps\n\nI think that is the right boundary to lock down now."
+

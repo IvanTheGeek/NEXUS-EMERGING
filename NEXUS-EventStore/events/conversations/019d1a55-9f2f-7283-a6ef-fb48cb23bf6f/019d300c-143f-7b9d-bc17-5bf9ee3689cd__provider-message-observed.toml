@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-143f-7b9d-bc17-5bf9ee3689cd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-143f-7fd5-9de1-4ee9d8f2d0ea"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.496Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "3aab936ad8f98cb067431807965772c47eea3c7dda512cd404ea1f1de9177d30"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-013609-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-013609-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-013609-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1251
+
+[[body.segments]]
+kind = "plain_text"
+text = "Added a cross-provider status command and pushed it as `46a9a857` on `codex/feature/export-window-analysis`.\n\nMain pieces:\n- [CurrentIngestion.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/CurrentIngestion.fs)\n- [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs)\n- [report-current-ingestion.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/report-current-ingestion.md)\n\nYou can run:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-current-ingestion\n```\n\nIt reports the latest import per provider, root-artifact SHA-256 when available, manifest counts, and normalized snapshot totals when present. The real store now shows all four providers current:\n- `chatgpt`: latest import `019d1f70-b326-7d1e-a106-73dbd399f911`, `88` conversations, `5599` messages, `71` artifacts\n- `claude`: latest import `019d19f8-e74f-76b6-a66c-a035a7cda06c`, `119` conversations, `3241` messages, `286` artifacts\n- `grok`: latest import `019d228c-b2db-7014-8503-80dd8170ccf0`, `4` conversations, `29` messages, `8` artifacts\n- `codex`: latest import `019d229c-687c-7a0b-98eb-c2c070542383`, `2` conversations, `1390` messages\n\nI also had to harden the Codex importer against NUL-padding lines in one real transcript; that fix is already pushed as `a90bede0`. Validation is green at `77` passing tests.\n\nLocal note: the code branch is clean and pushed, but the real event-store outputs are still local-only under [NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore), including the updated projection file [019d1a55-9f2f-7283-a6ef-fb48cb23bf6f.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d1a55-9f2f-7283-a6ef-fb48cb23bf6f.toml)."
+

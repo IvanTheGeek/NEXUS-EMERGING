@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d354d-3b9f-790a-b37e-8ae7349c2bea"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d354d-3b9f-7b6f-b5a5-adf2c26fefab"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T16:31:29.351Z"
+observed_at = "2026-03-28T16:35:45.1466385Z"
+imported_at = "2026-03-28T16:35:45.1466385Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d354d-337a-7a53-819a-9c75052689e8"
+
+[content_hash]
+algorithm = "sha256"
+value = "754c4d45416be81f0527c742049682fcf13358960b92cc79309caf799d507200"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-031943-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-031943-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T16-35-43Z__cheddarbooks__858ed297/session_index.jsonl"
+archived_at = "2026-03-28T16:35:44.1074989Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T16-35-43Z__cheddarbooks__858ed297/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T16:35:44.1074989Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-031943-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3126
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done.\n\nI made two related changes in the renderer:\n\n- long property values now use structured key/value rows, and the indent is token-like via `--property-value-indent`\n- command/view card body alignment is tighter because the cards now reserve consistent title/description space before the slice rows start\n\nUpdated files:\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nCurrent preview:\n![LaundryLog PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `18` tests passed\n\nRecent commits:\n- `a9a4d78` `model: stack long property values in path renderer`\n- `b56c628` `model: normalize path card spacing and property indent`\n\nOne honest note: the command/view row alignment is improved by normalizing the header space, but if you want it pixel-tight in all cases, the next pass should make the slice-row heights explicit shared tokens rather than inferred from card content."
+

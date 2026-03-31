@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3550-0273-7441-af9d-467e4ea61640"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3550-0273-784b-9a24-74544f7cd178"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T16:35:59.281Z"
+observed_at = "2026-03-28T16:38:47.1844271Z"
+imported_at = "2026-03-28T16:38:47.1844271Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d354f-fa90-7963-bd18-dad4597346ee"
+
+[content_hash]
+algorithm = "sha256"
+value = "23ae8e2593603ea8faf6e0ce8dca256e9c2d31131be5c602ca1254ee6e9ccde5"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-032054-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-032054-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T16-38-45Z__cheddarbooks__97887444/session_index.jsonl"
+archived_at = "2026-03-28T16:38:46.0918438Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T16-38-45Z__cheddarbooks__97887444/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T16:38:46.0918438Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-032054-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3141
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done.\n\nI made two concrete changes:\n\n- the property indent is now a shared token:\n  - `--property-value-indent`\n- the path cards now use stronger shared height contracts for:\n  - screen row height\n  - detail row height\n  - title height\n  - description height\n\nThat gives the command and view bodies a tighter common starting point instead of letting them drift based on text wrapping.\n\nUpdated files:\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nCurrent render:\n![LaundryLog PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `18` tests passed\n\nRecent commits:\n- `a9a4d78` `model: stack long property values in path renderer`\n- `b56c628` `model: normalize path card spacing and property indent`\n- `858ed29` `model: fix path row height contracts`\n\nOne honest note: this improves the row contract, but if you want the command/view row alignment to be absolutely exact in every case, the next step is to render the slice body from a shared row component model instead of two separate card layouts."
+

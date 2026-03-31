@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1437-740e-b0f0-6ca1bc7c10ea"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1437-7466-baf4-1473b58b769d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.39Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "150f9a83fa84ca3aacc00b50e4e29f70fda665825cdcd6105f5f3f7c316daa4e"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-008220-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-008220-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-008220-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 793
+
+[[body.segments]]
+kind = "plain_text"
+text = "It gives us durable evidence about rebuild behavior over time instead of relying on memory, terminal scrollback, or ad hoc notes.\n\nConcretely, a rebuild metrics/manifest file would record things like:\n- when the rebuild ran\n- against which event-store root\n- how many canonical event files were scanned\n- how many graph assertions were derived\n- elapsed derivation time\n- elapsed total time\n- maybe max memory if we capture it\n- maybe which code/normalization/materializer version produced it\n\nWhy that helps:\n\n- performance tracking\n  We can compare rebuilds across dates, dataset sizes, VM settings, and code changes.\n- architectural guidance\n  It gives real evidence for whether a new materializer or storage shape is helping.\n- operational clarity\n  You can see “this store was last fully rebuilt at X, from Y source size, with Z output size.”\n- AI/human continuity\n  Future me or Claude Code can read the manifest and understand prior rebuild behavior without reconstructing it from chat.\n- safety\n  If something looks odd later, we have a durable breadcrumb trail for the derived layer.\n\nIn NEXUS terms, it becomes part of project memory about the graph-materialization process, without pretending that the metrics are source truth for the graph itself.\n\nA simple first version could write one TOML file per rebuild under something like:\n- `NEXUS-EventStore/graph/rebuilds/<timestamp>-full-rebuild.toml`\n\nExample fields:\n- `rebuilt_at`\n- `mode = \"full\"`\n- `event_store_root`\n- `canonical_event_files_scanned`\n- `graph_assertions_written`\n- `derivation_elapsed_ms`\n- `total_elapsed_ms`\n- `materializer = \"graph-assertions-v1\"`\n- `approved_by_flag = true`\n\nSo the short answer is: it gives us an observable performance and operational history for the derived graph layer, which is exactly what we need before and during the move to incremental materialization."
+

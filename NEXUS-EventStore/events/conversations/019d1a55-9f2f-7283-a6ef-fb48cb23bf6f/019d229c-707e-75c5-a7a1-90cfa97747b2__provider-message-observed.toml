@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707e-75c5-a7a1-90cfa97747b2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707e-79f8-a49d-45f6cacbd229"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T15:10:39.87Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "c24c60276888b538d51f73377d2cbaa57e8125a5b53f6b13bbf40a8da589293c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-004246-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-004246-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-004246-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 395
+
+[[body.segments]]
+kind = "plain_text"
+text = "The FsCheck layer is in and pushed as `b7308ea7` on `codex/nexus-ingestion-foundation`.\n\nI added property-based importer invariants in [PropertyTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/PropertyTests.fs), wired them into [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Program.fs), added `Expecto.FsCheck` to [Nexus.Tests.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj), and updated [run-tests.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/run-tests.md).\n\nThe new properties cover:\n- duplicate provider-export imports stay idempotent across repeat counts\n- legacy normalization markers cause reparses, not fake revisions\n- repeated manual artifact hydration stays idempotent\n\nVerification is green:\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n\nCurrent suite result: `10` tests passed, `0` failed, in about `5.8s`.\n\nOne small note from the tooling side: `Expecto.FsCheck 10.2.3` currently pulls in `FsCheck 2.16.5`, even though `dotnet package search` shows newer FsCheck releases exist. I stayed with the version aligned to the Expecto integration package so the stack remains cohesive."
+

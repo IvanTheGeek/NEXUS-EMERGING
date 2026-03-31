@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d302c-8a5e-742f-bef3-30d4168656f4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d302c-8a5e-794d-996b-af4dea422ba8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T16:38:51.192Z"
+observed_at = "2026-03-27T16:41:55.3868687Z"
+imported_at = "2026-03-27T16:41:55.3868687Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d302c-7dba-7dbf-a17c-225f862d1827"
+
+[content_hash]
+algorithm = "sha256"
+value = "18fc2d3adf46ab9d6ad7670a04f827d3727a1a0d3e557dc9f91edf0dc5a7e7eb"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-023274-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-023274-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-41-54Z__nexus-merge-m7skp3__110a78ef/session_index.jsonl"
+archived_at = "2026-03-27T16:41:54.594399Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-41-54Z__nexus-merge-m7skp3__110a78ef/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:41:54.594399Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-023274-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2120
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. You’re right.\n\nThose last few commits on `main` are a real follow-on hardening sequence after the merge of `codex-commit-checkpoints`, and they should ideally have been done on a new branch and then merged back. The current graph shows:\n\n- proper branch + merge for `codex-commit-checkpoints`\n- then direct commits on `main`:\n  - `ed39e9d5`\n  - `e98632b3`\n  - `0119100c`\n  - `69786b9e`\n  - `d01d232c`\n\nThat history is valid, but it is not the branch discipline you said you want.\n\nMy recommendation:\n- leave these commits as-is\n- do not rewrite `main` now\n- from here on, use a follow-up branch even for post-merge hardening if it’s more than a tiny one-off\n\nWhy I would not rewrite these:\n- they are already pushed to `origin/main`\n- rewriting would mean force-pushing shared history\n- the only way to make the graph show them as a side branch now is history surgery\n\nIf you really wanted that topology retroactively, the only real path would be:\n1. create a branch from `d254cca7`\n2. cherry-pick those five commits onto it\n3. reset `main` back to `d254cca7`\n4. merge that branch into `main` with `--no-ff`\n5. force-push `main`\n\nI do not recommend that unless you explicitly want to rewrite published history.\n\nSo the clean correction is:\n- treat this as a lesson\n- tighten the rule going forward\n\nSuggested rule:\n- direct `main` commits only for truly tiny docs/admin fixes\n- anything involving code, tests, behavior, hooks, or workflow changes gets a branch\n- post-merge hardening gets a new branch like `codex-checkpoint-hardening` or `checkpoint-traceability-hardening`\n\nIf you want, I can add that clarification explicitly to the collaboration docs so future AI follows it too."
+

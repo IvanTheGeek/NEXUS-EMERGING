@@ -15,6 +15,7 @@ Use it to orient quickly, then go to the linked durable docs.
 - avoid forcing the final ontology too early
 - make repo-as-memory and agent-readability more explicit
 - support multiple concern lines from the foundation rather than collapsing everything into one product story
+- start hardening reusable F# guidance and learned seams so future agents and humans can recover them without rediscovery
 
 ## Current Truths
 
@@ -29,24 +30,25 @@ Use it to orient quickly, then go to the linked durable docs.
 ## Open Questions
 
 - what the final graph ontology should be
-- where the long-term Event Modeling tool should live operationally between NEXUS, FnTools, and Penpot
+- where the long-term Event Modeling tool should live between NEXUS, FnTools, and app-line repos
 - how much live capture and interaction should stay in the foundation repo versus extracted downstream repos
-- what the right next split points are for foundation doctrine versus reusable tooling versus concrete app lines
+- what the right next split points are for doctrine versus reusable tooling versus concrete app lines
 
 ## Next Likely Actions
 
 - keep making shared agent memory surfaces explicit
-- continue refining the Penpot, FnHCI, and FnUI boundary
 - keep the ingestion and canonical-history direction traceable
 - support extracted repos such as CheddarBooks with local memory surfaces while retaining upstream doctrine here
 - move repeated AI-assisted workflows toward more deterministic surfaces where practical
+- keep building a reusable F# knowledgebase that can later be reworked into stronger onboarding and training material
 
 ## Read Next
 
 - [`agent-readme.md`](agent-readme.md)
 - [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
 - [`index.md`](index.md)
-- [`repository-concern-lines.md`](repository-concern-lines.md)
 - [`glossary.md`](glossary.md)
+- [`fsharp-usage-learning-and-guidance.md`](fsharp-usage-learning-and-guidance.md)
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
 - [`logos-source-model-v0.md`](logos-source-model-v0.md)
+- [`nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)

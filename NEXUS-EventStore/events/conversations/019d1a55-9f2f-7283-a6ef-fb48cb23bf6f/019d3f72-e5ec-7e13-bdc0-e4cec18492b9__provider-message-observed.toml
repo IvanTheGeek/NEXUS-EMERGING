@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3f72-e5ec-7e13-bdc0-e4cec18492b9"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3f72-e5ec-73f5-a8bc-07c89753f548"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T15:21:07.42Z"
+observed_at = "2026-03-30T15:53:05.7418053Z"
+imported_at = "2026-03-30T15:53:05.7418053Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3f72-ddcd-7668-a87c-2430538ed769"
+
+[content_hash]
+algorithm = "sha256"
+value = "8f524ee430015744fd6b9aa2f9208e0e8502bfcd8e992b1b06847ba05e84789b"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-041992-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-041992-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T15-52-59Z__cheddarbooks__d220b99b/session_index.jsonl"
+archived_at = "2026-03-30T15:53:02.3994978Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T15-52-59Z__cheddarbooks__d220b99b/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T15:53:02.3994978Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-041992-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4200
+
+[[body.segments]]
+kind = "plain_text"
+text = "The EventModeling columns are flattened now in the NM page.\n\nWhat changed on the NM surface:\n- the nested `COMMAND SLICE` / `VIEW SLICE` shell is gone\n- the NM column is now the real outer container for AEM/business columns\n- the old inner AEM screen slot is no longer duplicated\n- `User` and `ui lens` moved into the NM `SCREEN` box for AEM columns\n- those moved pills keep contextual hover/click explanations\n\nReview here:\n- [LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/nm-paths/LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html)\n\nMain code/tests:\n- [NmPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/NmPathHtmlRenderer.fs)\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n- [path1-nm-path.spec.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/specs/path1-nm-path.spec.ts)\n\nI also checked it in the browser with Playwright MCP. Structurally, the lower AEM area is now just the `COMMAND` / `EVENT` / `VIEW` blocks and GWT content inside the NM column, not a second slice shell.\n\nVerification stayed on the normal repo flow:\n- [verify-workspace-html.sh](/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh)\n- `36` Expecto tests passed\n- `13` Playwright tests passed\n\nCommit:\n- `2542012` `model: flatten nm event modeling columns`\n\nThe next meaningful design decision is whether `AEM` stays as a header classification, or also moves down closer to the `SCREEN` box the way `User` and `ui lens` now do."
+

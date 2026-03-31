@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7086-7d95-bc23-cebf20c3378e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7086-769d-b0e1-6dd437718b1b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T18:16:25.901Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "b8f2470a742430b1fa090d44acc38be5b14452514c7313df499c2f93aa66cf01"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-009969-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-009969-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-009969-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 954
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. That’s one of the main advantages of the current layering.\n\nRight now the design is:\n\n- canonical history in [NEXUS-EventStore/events](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events) is the authority\n- working slice assertions in [NEXUS-EventStore/graph/working/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/working/imports) are derived\n- the SQLite file at [graph-working.sqlite](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/working/index/graph-working.sqlite) is only a working index over those slices\n\nSo for an important slice flow, we can absolutely do:\n\n1. Use the SQLite index for fast narrowing.\n2. Re-open the matching working assertion TOML files for that slice.\n3. Follow provenance back to the supporting canonical event IDs.\n4. If needed, follow canonical/raw refs all the way back to the source artifact.\n\nThat is exactly the kind of “fast path first, authoritative verification second” design this supports.\n\nOne important honesty note: we do **not** have a built-in command-level `--verify` mode yet. The architecture allows it, but the verification flow is not yet packaged as a first-class CLI option. So the right statement is:\n\n- `yes`, the design supports index-first plus canonical verification\n- `no`, that verification workflow is not fully implemented as a polished command yet\n\nA clean next step later would be something like:\n\n- `--verification fast`\n- `--verification assertion`\n- `--verification canonical`\n- maybe later `--verification raw`\n\nThat would let NEXUS choose speed or confidence explicitly per workflow, without ever pretending the index is truth."
+

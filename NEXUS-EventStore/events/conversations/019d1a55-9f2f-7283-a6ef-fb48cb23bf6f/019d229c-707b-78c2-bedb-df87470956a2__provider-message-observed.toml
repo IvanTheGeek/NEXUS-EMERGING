@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d229c-707b-78c2-bedb-df87470956a2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707b-7556-91ca-d17b6100264d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T20:33:51.701Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "dd5c3fe64506b59cccf7ccd971d3bd9f63fe5eb9eb1b3043ac87c5bcfe8a4ff1"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000008-user_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000008-user_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000008-user_message"
+role = "human"
+sequence_hint = 1
+
+[[body.segments]]
+kind = "plain_text"
+text = "discuss we me the following prompt\n\nI want to implement an F#-based import and event-recording system for LLM conversation history, with Git used as the durable history layer.\n\nPlease treat this as a fresh project and do not assume prior context. My intent is to build a system that can import exports from ChatGPT and Claude, normalize them into my own canonical event model, and store both raw snapshots and append-only normalized events in a Git repo.\n\nCore intent\n- Git is the durable history mechanism.\n- Conversations are domain entities / streams in the data model.\n- Conversations are NOT Git branches.\n- Git branches are for implementation work, parser experiments, ontology changes, and alternate modeling approaches.\n- Git tags are for milestones and snapshots, not for individual conversations.\n- Commits represent batches of appended/imported changes.\n\nWhat I want the system to do\n1. Import exported conversation data from ChatGPT and Claude.\n2. Preserve the raw export files.\n3. Normalize imported data into canonical append-only event files.\n4. Deduplicate overlapping imports.\n5. Support both:\n   - full exports\n   - rolling exports like last 30 days / last day / last 7 days\n6. Allow me to diff the latest raw export in Git while also keeping immutable archived raw snapshots.\n7. Be designed so that later I can also support live API capture, where:\n   - before sending a prompt, the system records prompt-side events and commits\n   - after receiving the response, it records response-side events and commits\n\nArchitectural principles\n- Keep BOTH raw and normalized data.\n- Never throw away the raw source.\n- The canonical normalized event store is append-only.\n- Rolling-window exports are only capture inputs, not the source of truth.\n- If data falls out of a rolling export later, that must NOT remove prior canonical events.\n- Absence from a later rolling export means nothing.\n- Presence of a new record means append it.\n- Presence of an already-known record means skip or verify.\n- If the same provider object appears with changed content, do not silently overwrite it; record that a revised version was observed.\n\nRecommended model\nTreat:\n- Conversation = domain entity / stream\n- Turn = optional grouping of related prompt/response/tool activity\n- Event = append-only canonical record\n- Raw export snapshot = immutable source input\n- Import manifest = record of what was imported and what changed\n\nDo NOT treat:\n- conversation as a Git branch\n- conversation as a Git tag\n\nProvider strategy\nPlease structure the code so there is:\n- one shared canonical normalization/event-writing core\n- provider-specific adapters/parsers for ChatGPT and Claude\n\nFor example, conceptually:\n- Provider adapter -> canonical intermediate representation -> canonical event writer\n\nSuggested repo/data layout\nPlease implement something close to this:\n\ndata/\n  raw/\n    chatgpt/\n      latest/\n        full-export.json\n        last-30-days.json\n      archive/\n        2026-03-21T101500-full-export.json\n        2026-03-22T093000-last-30-days.json\n    claude/\n      latest/\n        full-export.json\n        last-30-days.json\n      archive/\n        ...\n  imports/\n    2026-03-21T101500-chatgpt-import.toml\n    2026-03-22T093000-chatgpt-import.toml\n  events/\n    conversations/\n      conv_xxx/\n        000001-conversation-discovered.toml\n        000002-message-imported.toml\n        000003-response-imported.toml\n        ...\n  projections/\n    conversations/\n      conv_xxx.toml\n\nI am fine if you improve this structure, but preserve the intent:\n- raw snapshots\n- import manifests\n- append-only canonical events\n- optional rebuildable projections\n\nRaw snapshot strategy\nI want BOTH of these:\n1. stable “latest” filenames for convenient Git diff\n2. immutable archived timestamped raw snapshots for durable history\n\nExample:\n- overwrite/update latest/full-export.json\n- also write archive/2026-03-21T101500-full-export.json\n\nThis is important because I want:\n- easy diffs on latest files\n- permanent raw history in archive files\n\nImport manifest\nEach import should write a TOML manifest that records at least:\n- import_id\n- provider\n- raw snapshot path\n- window kind (full / last-30-days / etc.)\n- imported_at timestamp\n- counts seen\n- counts appended\n- duplicates skipped\n- maybe content revisions observed\n\nExample intent:\n\nimport_id = \"imp_2026_03_21_101500\"\nprovider = \"chatgpt\"\nraw_snapshot = \"data/raw/chatgpt/archive/2026-03-21T101500-full-export.json\"\nwindow_kind = \"full\"\nimported_at = \"2026-03-21T10:15:00Z\"\nconversations_seen = 124\nmessages_seen = 4821\nnew_events_appended = 37\nduplicates_skipped = 4784\n\nCanonical event strategy\nPlease define an initial canonical event schema in F# and TOML.\n\nAt minimum I want metadata like:\n- event_id\n- conversation_id\n- turn_id (optional if not inferable)\n- kind\n- provider\n- source_kind (export_import, live_api, manual_entry)\n- provider_conversation_id\n- provider_message_id\n- model (if known)\n- occurred_at\n- imported_at\n- raw_ref\n- content_hash\n- import_id\n\nKinds should start simple but support growth. Examples:\n- ConversationDiscovered\n- PromptSubmitted\n- ResponseReceived\n- MessageImported\n- AttachmentReferenced\n- ExportImported\n- TranscriptSegmentParsed\n- MessageRevisionObserved\n- EventsAppendedToStore\n\nI am okay if you improve the names, but keep the intent.\n\nDeduplication requirements\nThis is very important.\n\nThe importer must support overlapping imports, especially rolling windows.\n\nUse dedupe keys based on some combination of:\n- provider\n- provider_conversation_id\n- provider_message_id\n- content hash\n- timestamps\n\nBehavior:\n- same provider object id + same content hash = duplicate, skip append\n- same provider object id + different content hash = record a revision/change event, do not silently overwrite\n- new provider object = append\n\nAlso preserve provider IDs as foreign/source keys, but generate my own internal canonical IDs for:\n- conversation_id\n- event_id\n- turn_id\n- artifact_id\n- import_id\n\nF# implementation expectations\nPlease build:\n1. F# domain types for raw import metadata, canonical events, import manifests, and provider identity.\n2. Provider-specific parsers/adapters for ChatGPT and Claude exports.\n3. TOML serialization for canonical event files and import manifests.\n4. A simple importer workflow:\n   - read raw export\n   - archive raw snapshot\n   - update latest snapshot\n   - parse source records\n   - dedupe against canonical state\n   - append only new canonical events\n   - write import manifest\n5. A basic CLI or fsx entry point to run imports manually.\n\nPlease prefer readable structure over overengineering.\nI want something solid and extensible.\n\nDesign constraints / preferences\n- Language: F#\n- Favor clear composition and functional style\n- Keep raw and canonical layers explicitly separate\n- Make provider-specific parsing isolated from canonical model\n- Make it easy to later add live API capture\n- Avoid making Git structure carry domain meaning it should not carry\n- Conversations stay in the data model, not in Git branch names\n\nGit semantics I want respected\n- main branch = accepted truth/history\n- feature branches = parser/implementation/model experiments\n- tags = milestones like:\n  - import-chatgpt-2026-03-21\n  - parser-v0.1\n  - ontology-v0.3\n  - snapshot-before-reparse-2026-03-21\n\nDo not make one branch per conversation.\n\nWhat I want from you now\nPlease help me implement the first working version of this system.\n\nStart by giving me:\n1. a proposed project/file structure\n2. core F# types\n3. an initial TOML schema\n4. a simple importer pipeline\n5. dedupe logic\n6. placeholder provider adapters for ChatGPT and Claude\n7. a manual CLI/fsx entry point\n\nIf possible, scaffold the code in a way that I can iterate on it with you step by step.\n\nAlso, if you see places where my model should be improved, please explain the improvement but stay aligned to the core intentions above."
+

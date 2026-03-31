@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1436-7b97-b364-4944681a33ca"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1436-7462-89d0-8e32147a74e1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.377Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "ce27879f82c01b14487d8a1179bc49b97cc8b8acd924fcc0dc05f060c28a1878"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-007512-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-007512-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-007512-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 713
+
+[[body.segments]]
+kind = "plain_text"
+text = "I ran the new ChatGPT export through the real pipeline and pushed the result as `e99ed88b`.\n\nWhat happened:\n- The new raw ChatGPT zip was archived on **March 24, 2026 at 10:32:45 UTC** and recorded as a fresh import.\n- Canonical import result was fully overlapping:\n  - `75` conversations seen\n  - `5103` messages seen\n  - `68` artifact refs seen\n  - `3` new events appended\n  - `5246` duplicates skipped\n  - `0` revisions\n  - `0` reparses\n\nSo this export did **not** introduce any new canonical conversations or messages. It only appended the import-stream records:\n- [import manifest](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports/019d1f67-7c16-7721-b94f-27fe66ad3c76.toml)\n- [import event stream](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events/imports/019d1f67-7c16-7721-b94f-27fe66ad3c76)\n\nThat’s actually a good proof of the flow: raw acquisition was preserved, provenance was appended, and canonical history stayed deduped.\n\nI did **not** rebuild conversation/artifact projections or graph assertions, because there were no new conversation/artifact canonical events to project. The only remaining local-only change is the untracked generated graph output under [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph).\n\nOne useful thing also surfaced during this pass: your Borlero/Bolero clue was exactly right, and the real `FnHCI` note is now seeded from that source line at [fnhci.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/concepts/fnhci.md).\n\nNext best move:\n- compare this ChatGPT export against the previous one at the raw layer to see whether it was truly unchanged or just canonically unchanged."
+

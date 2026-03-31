@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3556-922e-7164-9293-977910fc686b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3556-922e-776e-8440-f9813d1c60b0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T16:39:06.687Z"
+observed_at = "2026-03-28T16:45:57.251683Z"
+imported_at = "2026-03-28T16:45:57.251683Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3556-8a83-708c-936f-675c5023cccf"
+
+[content_hash]
+algorithm = "sha256"
+value = "0b39fde9d0f51cd460d846e09f10b14e60925387f60de2665954c4c4c9ba7636"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-032122-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-032122-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T16-45-55Z__cheddarbooks__1350ab8e/session_index.jsonl"
+archived_at = "2026-03-28T16:45:56.1695123Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T16-45-55Z__cheddarbooks__1350ab8e/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T16:45:56.1695123Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-032122-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3150
+
+[[body.segments]]
+kind = "plain_text"
+text = "I moved it to the cleaner seam.\n\nWhat changed:\n- `CommandSlice` and `ViewSlice` now render through the same shared body-row model\n- the body is explicitly:\n  - `screen`\n  - `detail`\n  - `detail`\n- long property values still use the tokenized indent\n- the path controls and property toggles still work\n\nUpdated files:\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n\nCurrent artifact:\n![LaundryLog PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `18` tests passed\n\nRecent commits:\n- `858ed29` `model: fix path row height contracts`\n- `9788744` `model: share slice body row rendering`\n\nHonest read: this is the right architectural move, but the visual alignment is still only improved, not perfect. The next step, if you want it tighter, is to make the slice header itself a shared component contract too, not just the body rows."
+

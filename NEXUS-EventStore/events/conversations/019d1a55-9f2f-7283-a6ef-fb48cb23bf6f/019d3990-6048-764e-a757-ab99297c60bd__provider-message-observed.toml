@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3990-6048-764e-a757-ab99297c60bd"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3990-6048-7910-aabe-2fabc8b686da"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T12:20:54.963Z"
+observed_at = "2026-03-29T12:27:34.5530336Z"
+imported_at = "2026-03-29T12:27:34.5530336Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3990-5918-7154-b07f-321aa004d5c1"
+
+[content_hash]
+algorithm = "sha256"
+value = "1202e068d0cdd7e78375cceef054faffb8af861791b0c5fd4817b6832a0ae6af"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-037348-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-037348-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T12-27-28Z__cheddarbooks__501176d1/session_index.jsonl"
+archived_at = "2026-03-29T12:27:31.5217162Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T12-27-28Z__cheddarbooks__501176d1/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T12:27:31.5217162Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-037348-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3701
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes.\n\nThe detection/refresh behavior on the page itself has to be browser-side JavaScript, because it needs to:\n\n- poll the companion update manifest file\n- compare versions\n- show `update available`\n- remember `notify` vs `auto refresh`\n- trigger `window.location.reload()` when appropriate\n\nThe F# side’s job is:\n- generate the HTML\n- generate the companion manifest file\n- embed the small JS needed for the browser behavior\n\nSo the structure is:\n\n- `F#`\n  defines and emits the artifact\n- `HTML/CSS`\n  renders the page\n- `JavaScript`\n  handles live page behavior like polling, toggles, and refresh\n\nThat’s the right seam here."
+

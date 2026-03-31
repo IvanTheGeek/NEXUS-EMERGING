@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2cf-7a33-b69b-1df49b2a8ff5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2cf-7114-a061-3c24ada49991"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.789Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "dca480073c71c60bd54cc0e6bd4a5468652f9dae9b094c88f1df1a91fd10360b"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-026779-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-026779-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-026779-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2570
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, that error matches the DSL rule I inferred:\n\n- a node label gets its alias on first mention\n- later uses of that same node label must reuse the alias, not invent a second one\n\nSo `LogLaundryExpense(*logWasher)` followed later by `LogLaundryExpense(*logDryer)` is invalid there. Same for `LaundryExpenseLogged`.\n\nI fixed the file in place here:\n- [LaundryLog_path1_eventlanes.txt](/home/ivan/NEXUS/tmp/LaundryLog_path1_eventlanes.txt)\n\nWhat changed:\n- `LogLaundryExpense` now has one alias: `*logExpense`\n- `LaundryExpenseLogged` now has one alias: `*expenseLogged`\n- I added separate UI action nodes:\n  - `Log Washer Expense(*logWasherAction)`\n  - `Log Dryer Expense(*logDryerAction)`\n- the GWT section now also reuses `*logExpense` and `*expenseLogged`\n\nSo the file should now be much more compatible with Eventlanes’ aliasing rules.\n\nIf Eventlanes still complains, the next likely simplification would be:\n- remove the GWT blocks entirely\n- leave only the `[slice: ...]` sections plus `[schemas]`\n\nIf you paste this revised one and tell me the next parser complaint, I can keep tightening it."
+

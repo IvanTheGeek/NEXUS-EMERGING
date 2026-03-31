@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3946-be8b-7a01-8deb-3b2f318dd450"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3946-be8a-7df1-b0ab-2c9cc191e62e"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T11:03:26.706Z"
+observed_at = "2026-03-29T11:07:09.173979Z"
+imported_at = "2026-03-29T11:07:09.173979Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3946-b7f5-7d77-9a94-ac9156353dfe"
+
+[content_hash]
+algorithm = "sha256"
+value = "f4fc3f2a984ddcefc674674e300c30186f2d01b587558640ab424e01ba7d01a4"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-036438-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-036438-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T11-07-06Z__cheddarbooks__b065ff89/session_index.jsonl"
+archived_at = "2026-03-29T11:07:07.8156983Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T11-07-06Z__cheddarbooks__b065ff89/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T11:07:07.8156983Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-036438-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3625
+
+[[body.segments]]
+kind = "plain_text"
+text = "The path controls are stronger now.\n\nWhat changed:\n- more pronounced active button color\n- stronger disabled color when a button can’t be used\n- added `back to beginning` and `go to end` buttons\n- enlarged the VCR-style icons\n- changed step logic so next/previous snap to full screen-column boundaries instead of drifting by a small partial amount\n\nUpdated artifact:\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html](/home/ivan/NEXUS/tmp/laundrylog-screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n\nKey files:\n- [ScreenPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenPathHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n- [html-screen-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md)\n\nCommit:\n- `d908e5f` `model: add stepped path navigation controls`\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `31` tests passed\n\nIf the file is already open, reload it. The top rail should now sync with the screen strip, and the buttons should move by whole columns rather than nudging a little."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7086-7531-972f-f468a70c0765"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7086-794c-b134-077e7869692f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T18:13:30.624Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "ca69904dbe651f59529a98efad89359b64ca05d39d6c7f0a6f4204cee70198f0"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-009959-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-009959-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-009959-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 952
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next slice is in and pushed as `a880a6f3`.\n\nYou can now rebuild the SQLite working index from existing working slices with:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  rebuild-working-graph-index\n```\n\nThat rebuild path lives in [GraphWorkingIndex.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphWorkingIndex.fs), the CLI wiring is in [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs), and the runbook is here:\n- [rebuild-working-graph-index.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-working-graph-index.md)\n\nIt makes the SQLite layer properly rebuildable from `graph/working/imports/...`, which keeps it aligned with the NEXUS rule that indexes are derived working structures, not truth. I also added coverage for both help text and the real rebuild behavior in [CliHelpTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/CliHelpTests.fs) and [GraphWorkingIndexTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/GraphWorkingIndexTests.fs).\n\nValidation is green:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `41` tests passed\n\nThe only remaining local changes are still the intentionally untracked real-data outputs under [NEXUS-EventStore/events](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events), [NEXUS-EventStore/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports), and [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph)."
+

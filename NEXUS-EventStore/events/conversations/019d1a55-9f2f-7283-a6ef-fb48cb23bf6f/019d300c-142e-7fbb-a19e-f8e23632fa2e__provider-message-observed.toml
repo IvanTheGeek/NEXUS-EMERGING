@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142e-7fbb-a19e-f8e23632fa2e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142e-7fed-b2a7-503b12db2f5a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-25T09:57:03.587Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "82778ac7227695eb5b5af4fb97baab9bf84257b9e214fda636c6ddc3f5d8f2de"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-014278-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-014278-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-014278-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1313
+
+[[body.segments]]
+kind = "plain_text"
+text = "Done.\n\nCurrent branch names are now simplified in Git:\n- current local work branch: `export-window-analysis`\n- next branch: `logos-intake-foundation`\n\nRemote names were updated too:\n- created `origin/export-window-analysis`\n- deleted `origin/codex/feature/export-window-analysis`\n- created `origin/logos-intake-foundation`\n- deleted `origin/codex/feature/logos-intake-foundation`\n\nI also updated the branch-policy docs on `logos-intake-foundation` in commit `7c1db1ef` so they now prefer plain workstream names and explicitly allow multiple concurrent long-running branches when they represent different concerns.\n\nOne important practical note: your main workspace at [/home/ivan/NEXUS/NEXUS-EMERGING](/home/ivan/NEXUS/NEXUS-EMERGING) is still sitting on `export-window-analysis` because of the local event-store outputs under [NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore). The clean branch checkout for the next work is here:\n- `/tmp/nexus-merge-M7SKP3`\n\nSo yes, multiple longer-running branches are fine when they reflect real different concerns.\n\nNext, I’d proceed on `logos-intake-foundation` with:\n- explicit non-chat LOGOS source kinds\n- intake channels for forum/email/bug-report/app-feedback\n- a first small report or seed workflow for those sources\n\nIf you want, I’ll continue there next."
+

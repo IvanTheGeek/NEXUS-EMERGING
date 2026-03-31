@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b1-7542-a5a9-01dab93196c4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b0-717c-a17d-40e552f1a46d"
+conversation_id = "019d1f70-c2b0-717c-a17d-40e552f1a46d"
+message_id = "019d1f70-c2b1-7829-a309-7e5b2f845454"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-21T10:05:26.948565Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "a585ca4227e077b39ccfbc4382d5ac4ea46178a9fae1e2c8f8929265860bc1fe"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+conversation_native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "8da36121-6426-4b5d-a21f-4064f1b7dbfd"
+conversation_native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+message_native_id = "8da36121-6426-4b5d-a21f-4064f1b7dbfd"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "8da36121-6426-4b5d-a21f-4064f1b7dbfd"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 37
+
+[[body.segments]]
+kind = "plain_text"
+text = "👉 **Yes — multiple TimeShift snapshots (checkpoints) are absolutely meant to be kept.**\n\nThat’s actually the *whole design*.\n\n---\n\n## 🧠 Think of it like a timeline\n\nInstead of one backup, you get a series:\n\n```text\nSnapshot 1  →  Snapshot 2  →  Snapshot 3  →  Snapshot 4\n   (Mon)         (Tue)         (Before update)   (After config)\n```\n\n👉 You can restore to **any point**, not just the latest.\n\n---\n\n## 📸 What it looks like in practice\n\nimage_group{\"aspect_ratio\":\"1:1\",\"query\":[\"timeshift snapshot list linux mint multiple snapshots\",\"linux timeshift schedule hourly daily weekly snapshots\",\"timeshift restore selection list interface\",\"linux snapshot timeline concept\"],\"num_per_query\":1}\n\n---\n\n## ⚙️ How many snapshots can you keep?\n\n👉 As many as your disk allows — but usually controlled by **retention settings**.\n\nTimeShift lets you configure:\n\n- 🕐 Hourly snapshots\n- 📅 Daily snapshots\n- 📆 Weekly snapshots\n- 🗓 Monthly snapshots\n- 🏁 Boot snapshots\n\nExample config:\n\n```text\nKeep:\n- 5 daily\n- 3 weekly\n- 2 monthly\n```\n\n👉 It will automatically:\n- create new ones\n- delete old ones\n\n---\n\n## 💾 Storage efficiency (important)\n\nYou might think:\n\n> “Won’t this eat tons of space?”\n\n👉 Not really.\n\nIn **rsync mode**:\n- Uses **hard links**\n- Only stores **changes between snapshots**\n\nSo:\n\n```text\nSnapshot 1 = full baseline\nSnapshot 2 = only differences\nSnapshot 3 = only differences\n```\n\n👉 Very space efficient\n\n---\n\n## 🔥 Practical workflow (this is where it shines)\n\nYou can treat snapshots like **checkpoints in a game**:\n\n### Example:\n\n1. Snapshot → “clean system”\n2. Install dev tools\n3. Snapshot → “dev ready”\n4. Try something risky\n5. Break system 😅\n6. Restore → “dev ready”\n\n---\n\n## 🧠 This maps perfectly to your NEXUS thinking\n\nYou can literally think of it as:\n\n```text\nSystemState (v1) ──evolves──► SystemState (v2) ──evolves──► SystemState (v3)\n```\n\nEach snapshot:\n- is immutable\n- represents a known-good state\n- can be restored (replaced)\n\n👉 That’s **Immutable Evolution** in action\n\n---\n\n## ⚠️ One important constraint\n\nSnapshots live on a **single disk/location** by default.\n\nSo:\n- If your drive dies → snapshots are gone\n\n👉 TimeShift ≠ disaster backup\n\n---\n\n## 🧭 Best practice setup\n\nFor your kind of workflow:\n\n### Keep:\n```text\n3–5 daily\n2–3 weekly\n1–2 monthly\n```\n\n### And manually create before:\n- OS upgrades\n- driver installs\n- major config changes\n\n---\n\n## 🧠 Final answer\n\n👉 **Yes — multiple snapshots are normal and expected**  \n👉 They form a **timeline of system states**  \n👉 TimeShift manages them automatically based on your settings  \n\n---\n\nIf you want, I can help you design a **snapshot strategy tied to your dev workflow** (like tagging snapshots “pre-NEXUS-core-change”, etc.)."
+

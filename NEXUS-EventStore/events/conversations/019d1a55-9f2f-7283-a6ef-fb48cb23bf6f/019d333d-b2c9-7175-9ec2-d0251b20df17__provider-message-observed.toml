@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2c9-7175-9ec2-d0251b20df17"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2c9-7a15-a882-de16cb32bdc6"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.425Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "1d50e6582bdcd3a522ceb14ff81f91b8c199907a8174c8451ec7acca56fc574c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-018841-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-018841-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-018841-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1659
+
+[[body.segments]]
+kind = "plain_text"
+text = "I searched the actual imported chat history, and the strongest reference is [019d174f-2ce1-7496-a7f3-2e5cae80727e.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml). That thread supports exactly the correction you made:\n\n- `FnHCI` at the top, with `FnUI`, `FnCLI`, `FnAPI`, and `FnA11y` under it\n- concrete naming like `FnUI.Blazor`, `FnUI.HTML`, and `FnUI.android`\n- the explicit idea that `FnUI` may be the NuGet/marketing term over `FnHCI.UI.Blazor`\n\nSo I corrected the FnUI branch docs to match that recorded direction and pushed it as `935d13c0` on `fnui-foundation`.\n\nUpdated docs:\n- [fnhci-namespace-map.md](/tmp/nexus-merge-M7SKP3/docs/fnhci-namespace-map.md)\n- [fnui-foundation.md](/tmp/nexus-merge-M7SKP3/docs/fnui-foundation.md)\n- [0015-fnhci-owns-the-top-interaction-namespace.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md)\n- [fnhci.md](/tmp/nexus-merge-M7SKP3/docs/concepts/fnhci.md)\n- [glossary.md](/tmp/nexus-merge-M7SKP3/docs/glossary.md)\n\nThe model is now:\n- `FnHCI` owns the top interaction concern and namespace\n- the Bolero-replacement line belongs under that namespace\n- `FnUI` is the narrower visual system/package line, likely over `Nexus.FnHCI.UI.Blazor`\n\nI did not run build/tests on this last step because it was docs-only.\n\nThe next strong move is to turn that map into the first code/module scaffold:\n- `Nexus.FnHCI`\n- `Nexus.FnHCI.UI`\n- `Nexus.FnHCI.UI.Blazor`"
+

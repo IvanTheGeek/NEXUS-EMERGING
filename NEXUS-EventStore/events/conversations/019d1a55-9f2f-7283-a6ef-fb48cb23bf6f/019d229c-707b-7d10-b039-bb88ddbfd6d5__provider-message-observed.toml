@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707b-7d10-b039-bb88ddbfd6d5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707b-77a0-83e7-21bcdcc96b29"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T16:48:06.419Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "1b4cb6a8005eee65e667c2eef25ca11efa6945025a39d61b267b631b84a5207c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-001199-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-001199-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-001199-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 168
+
+[[body.segments]]
+kind = "plain_text"
+text = "No, not yet.\n\nRight now the single repo is still the right move because we are:\n- shaping the model\n- evolving the docs\n- building the code\n- validating the file layout\n\nKeeping those together is helping us move faster and keep intent aligned.\n\nI’d wait to split out a dedicated event-store repo until at least one of these becomes true:\n\n- the importer is producing real canonical history regularly\n- you want to version event data independently from code/docs\n- the event-store volume starts making the code repo awkward\n- you want different branching/lifecycle rules for code vs canonical history\n- you want automation or other tools to write to the event store without coupling to this code workspace\n\nSo my recommendation is:\n\n- keep one repo for now\n- keep the boundaries explicit in structure and docs\n- treat `NEXUS-EventStore/` as if it were already its own system\n- split it into a separate repo when real usage proves the boundary, not before\n\nThe key is that we already designed for the split. So waiting does not trap us.\n\nA good trigger point to revisit the split would be after:\n- first real ChatGPT import\n- first real Claude import\n- first dedupe/re-import pass\n- first projection rebuild\n\nOnce those work, we’ll know whether the event store wants to stand on its own."
+

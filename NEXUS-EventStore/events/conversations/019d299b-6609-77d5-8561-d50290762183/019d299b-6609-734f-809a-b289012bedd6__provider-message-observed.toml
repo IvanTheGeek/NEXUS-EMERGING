@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d299b-6609-734f-809a-b289012bedd6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d299b-6609-77d5-8561-d50290762183"
+conversation_id = "019d299b-6609-77d5-8561-d50290762183"
+message_id = "019d299b-6609-78b1-abe8-4e6de69cf716"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T20:43:17.1041419Z"
+observed_at = "2026-03-26T10:05:38.4563037Z"
+imported_at = "2026-03-26T10:05:38.4563037Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d299b-59a0-70a6-9feb-678970b1d72a"
+
+[content_hash]
+algorithm = "sha256"
+value = "cc788ab824b735f4e58a7d1d1e2a41f7098a35dc2c5ecbbe0408ac89f2e01609"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69c1a5de-d27c-832f-9973-847e7e3abfcb"
+conversation_native_id = "69c1a5de-d27c-832f-9973-847e7e3abfcb"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "001cccc4-fe56-4293-aae5-d6949d237c43"
+conversation_native_id = "69c1a5de-d27c-832f-9973-847e7e3abfcb"
+message_native_id = "001cccc4-fe56-4293-aae5-d6949d237c43"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-25-01-04-04-3ef8fcd0ea8b4ae29d8addd7200fbd72.zip"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "001cccc4-fe56-4293-aae5-d6949d237c43"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 3
+
+[[body.segments]]
+kind = "plain_text"
+text = "The **TOON file format** isn’t a widely standardized or universally recognized format like `.png`, `.jpg`, or `.fbx`. Its meaning depends heavily on the **software or context** where you encountered it. There are a few common possibilities:\n\n---\n\n## 🧩 1. “Toon” as Cel/Cartoon Shading Data\nIn many 3D pipelines, **“toon”** refers to **toon shading (cel shading)** rather than a file format itself.\n\n- Used in stylized rendering (anime/cartoon look)\n- Often tied to:\n  - Edge outlines\n  - Flat color bands\n  - Lighting ramps\n\n👉 In this case, a `.toon` file (if present) is usually:\n- A **custom config file**\n- Stores **shader parameters**, not geometry\n- Specific to a tool or engine\n\n---\n\n## 🎮 2. MikuMikuDance (MMD) Toon Textures\nOne of the **most common real uses** of “toon” files is in **entity[\"software\",\"MikuMikuDance\",\"3D animation software\"] (MMD)**.\n\n### What they are:\n- Files like:\n  ```\n  toon01.bmp\n  toon02.bmp\n  ...\n  toon10.bmp\n  ```\n- These are **gradient textures**, not a special binary format\n\n### Purpose:\n- Control how light shades a model\n- Enable anime-style lighting\n\n### Example:\nimage_group{\"aspect_ratio\":\"1:1\",\"query\":[\"MikuMikuDance toon texture gradient\",\"MMD toon01.bmp example\",\"anime toon shading gradient texture\",\"cel shading ramp texture example\"],\"num_per_query\":1}\n\n👉 These are usually:\n- `.bmp` images\n- Small grayscale or colored gradients\n- Referenced inside `.pmx` or `.pmd` model files\n\n---\n\n## 🧪 3. Proprietary / Game-Specific Files\nSome games or engines may use `.toon` as:\n- A **custom asset file**\n- A container for:\n  - Materials\n  - Shaders\n  - Stylization settings\n\nExamples (varies by engine):\n- Internal game tools\n- Modding communities\n- Older engines with custom pipelines\n\n👉 In these cases:\n- There is **no universal spec**\n- You need the **specific tool or game context**\n\n---\n\n## 🧱 4. Confusion with Similar Formats\nSometimes “toon file” is a misunderstanding of:\n\n| Actual Format | Meaning |\n|------|--------|\n| `.ton` | Tone mapping / LUT files |\n| `.toon shader` | Shader config (Unity, Unreal, etc.) |\n| `.mat` / `.shader` | Material files using toon shading |\n| `.ramp` | Gradient ramp textures |\n\n---\n\n## 🔍 How to Identify *Your* `.toon` File\nIf you have a specific file, check:\n\n1. **Open in a text editor**\n   - Human-readable? → config/shader file  \n   - Binary? → proprietary\n\n2. **File size**\n   - Very small → config  \n   - Image-sized → likely texture  \n   - Large → asset container\n\n3. **Where did it come from?**\n   - MMD → gradient texture  \n   - Game → custom format  \n   - 3D tool → shader/material data  \n\n---\n\n## 🧠 NEXUS Framing (this will click with you)\nThis is actually a perfect example of:\n\n- **Interpretation (Lens)**: “toon”\n- **Record (Imprint)**: the actual file\n- **Meaning depends on domain**\n\nSo:\n```\n\"toon\" ≠ format\n\"toon\" = rendering intent (interpretation lens)\n```\n\nThen each system chooses:\n```\nIntent → Record\n- MMD → bitmap gradient\n- Game → binary shader config\n- Engine → material/shader file\n```\n\n---\n\n## 👉 If you want\nDrop the `.toon` file (or tell me where you got it), and I can:\n- Reverse-engineer what it actually is\n- Show how to convert/use it\n- Map it into your NEXUS model (this would actually be a great real-world example)"
+

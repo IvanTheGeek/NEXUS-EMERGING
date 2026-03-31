@@ -2,7 +2,7 @@
 
 This file is the AI-first orientation surface for `NEXUS-EMERGING`.
 
-Read it after [`README.md`](../README.md) when you need to recover how this repo is meant to work without depending on prior chat history.
+Read it after [`repo-overview.md`](repo-overview.md) when you are browsing the docs site or after the root `README.md` when you are working directly in the repo.
 
 ## Mission
 
@@ -10,37 +10,43 @@ Read it after [`README.md`](../README.md) when you need to recover how this repo
 
 Its job is to hold the doctrine, architecture, ingestion direction, protocol surfaces, and durable memory needed to support both humans and AI collaborators.
 
+Prime directive:
+
+- humans are the ultimate rulers and decision makers in NEXUS
+- AI exists to help execute work, surface options, and suggest strategies, tools, and implementations in service of human intent
+
 ## Current Role Of This Repo
 
 Right now this repo is primarily:
 
-- the meta-memory repo
-- the doctrine and architecture repo
-- the ingestion and canonical-history foundation repo
+- the foundation repo for NEXUS
+- the ingestion and canonical-history repo
 - the place where shared collaboration rules should become durable and inspectable
+- the place where upstream doctrine should remain recoverable even when app lines are extracted elsewhere
 
 It is not only a code repo.
 
-It is also the operating memory surface for the broader NEXUS line.
+It is also an operating-memory surface for the broader NEXUS line.
 
 ## Read Next
 
 Use this order unless the task is extremely narrow:
 
-1. [`README.md`](../README.md)
+1. [`repo-overview.md`](repo-overview.md) for the docs-site projection, or the root `README.md` in the repo
 2. [`current-focus.md`](current-focus.md)
 3. [`index.md`](index.md)
 4. [`glossary.md`](glossary.md)
-5. [`collaboration-protocol.md`](collaboration-protocol.md)
-6. the relevant decision records, concern-line docs, and runbooks
+5. [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
+6. the relevant decision notes, architecture notes, how-to docs, and code/tests
 
-High-value next docs usually include:
+High-value next docs in this branch usually include:
 
+- [`nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
+- [`fsharp-usage-learning-and-guidance.md`](fsharp-usage-learning-and-guidance.md)
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
+- [`nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
+- [`nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
 - [`logos-source-model-v0.md`](logos-source-model-v0.md)
-- [`repository-concern-lines.md`](repository-concern-lines.md)
-- [`forge-foundation.md`](forge-foundation.md)
-- [`event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
 
 ## Memory Rules
 
@@ -51,7 +57,7 @@ This repo distinguishes between:
 - canonical historical record
 - derived views
 
-Use [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md) for the full rule set.
+Use [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md) for the full practical rule set.
 
 Short version:
 
@@ -66,8 +72,22 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 
 - update the relevant durable docs
 - update tests when code behavior changes
+- when renderer, UI, HTML, CSS, command behavior, or visible behavior changes, add or update tests by default
+- if a relevant test is not added or updated, say why explicitly
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
+- when a repeat F# seam or implementation preference becomes clear, record it in the appropriate durable guidance surface instead of leaving it as one-off chat memory
+- AI agents may proactively suggest a better-fit tool or language when the concern clearly calls for it, but should keep the reason and tradeoff visible instead of switching silently
+- the human's decision is the controlling one once made; later agents should follow it, while still being allowed to respectfully surface a materially better option if one becomes apparent
+- for Playwright MCP browser work, do not assume `file://` is a valid target; the MCP browser sandbox blocks `file:` URLs, so serve local artifacts over `http://127.0.0.1/...` (or similar local HTTP) first and use that as the browser target
+- when a repo already provides checked-in helper scripts for recurring build, refresh, verification, or test flows, use those scripts as the default path instead of reconstructing the flow ad hoc
+- when presenting command/event/view modeling, do not flatten it into a fixed linear triplet such as `COMMAND -> EVENT -> VIEW`
+- present it as:
+  - command slices produce durable event fact(s)
+  - view slices consume prior event fact(s)
+  - the consumed event need not come from the immediately previous slice
+  - multiple views may consume the same prior event
+- when an app-line repo has already corrected this seam multiple times, update the durable docs and AI guidance instead of relying on the next agent to rediscover the same correction from chat
 
 When work is docs-only or tests are not applicable, say so explicitly.
 
@@ -87,10 +107,9 @@ Use for:
 - glossary terms
 - decisions
 - architecture notes
-- concern-line maps
 - requirements
-- context packs
 - current-focus views
+- context packs
 
 If it should help the next collaborator orient correctly, it likely belongs here.
 
@@ -126,8 +145,8 @@ over:
 
 ## Related
 
-- [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
 - [`current-focus.md`](current-focus.md)
 - [`index.md`](index.md)
+- [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
 - [`context-packs/README.md`](context-packs/README.md)
 - [`session-handoffs/README.md`](session-handoffs/README.md)

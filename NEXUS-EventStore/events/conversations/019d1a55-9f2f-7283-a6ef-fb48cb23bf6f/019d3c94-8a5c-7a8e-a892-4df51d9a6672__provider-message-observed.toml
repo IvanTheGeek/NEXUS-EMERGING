@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3c94-8a5c-7a8e-a892-4df51d9a6672"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3c94-8a5c-7fb3-a1c0-d96a1c2c3da8"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T02:23:11.29Z"
+observed_at = "2026-03-30T02:30:58.8490567Z"
+imported_at = "2026-03-30T02:30:58.8490567Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3c94-8220-7c61-b42f-76734827508b"
+
+[content_hash]
+algorithm = "sha256"
+value = "c25c45ca17df7a179b9b636857f242f34b462ceb5d979586f6c4bb5200fa5841"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-038863-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-038863-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T02-30-54Z__nexus-emerging__694e766c/session_index.jsonl"
+archived_at = "2026-03-30T02:30:57.0368344Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T02-30-54Z__nexus-emerging__694e766c/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T02:30:57.0368344Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-038863-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3880
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Playwright MCP**\nI couldn’t verify it as live in this Codex session yet. What I could verify is:\n- there is no Playwright-specific MCP tool surface exposed to me right now\n- `list_mcp_resources` and `list_mcp_resource_templates` both came back empty\n- so the likely state is: installed locally, but not attached to this current session yet\n\nIf you just installed it, the usual next move is restarting/reloading the Codex app or MCP session. Once it surfaces as actual tools here, I can verify it directly.\n\n**Committed**\nThe Playwright harness and tracked workspace updates are committed in `CheddarBooks` as:\n- `e84f66fe59ec997450761012ebd8786ea21cf4eb` `test: add playwright browser harness for laundrylog paths`\n\nThe `CheddarBooks` worktree is clean now.\n\nMain additions:\n- [tests/browser/README.md](/home/ivan/NEXUS/CheddarBooks/tests/browser/README.md)\n- [tests/browser/package.json](/home/ivan/NEXUS/CheddarBooks/tests/browser/package.json)\n- [tests/browser/playwright.config.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/playwright.config.ts)\n- [tests/browser/specs/path1-screen-path.spec.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/specs/path1-screen-path.spec.ts)\n\nTracked review surface:\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n\nVerification I ran before commit:\n- `34` Expecto tests passed\n- `4` Playwright tests passed\n- HTML report is being produced at [playwright-report/index.html](/home/ivan/NEXUS/CheddarBooks/tests/browser/playwright-report/index.html)\n\nThe next good move is to use this new floor to keep refining `PATH1` safely, starting with the startup splash/checkpoint path and the lens behavior you want to see."
+

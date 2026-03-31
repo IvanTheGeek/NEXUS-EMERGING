@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d38e5-0be1-7887-89d2-00293e82644a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d38e5-0be1-74b1-950c-f42068e3f922"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T09:17:02.277Z"
+observed_at = "2026-03-29T09:20:26.3155416Z"
+imported_at = "2026-03-29T09:20:26.3155416Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d38e5-04cb-797a-b259-21f5f2d8d576"
+
+[content_hash]
+algorithm = "sha256"
+value = "2641c99f752d2db234eb73610fb94e17c796f638b766fd49287c1eb98c96c5cf"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-035245-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-035245-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T09-20-23Z__cheddarbooks__7899c0dc/session_index.jsonl"
+archived_at = "2026-03-29T09:20:24.772678Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T09-20-23Z__cheddarbooks__7899c0dc/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T09:20:24.772678Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-035245-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3484
+
+[[body.segments]]
+kind = "plain_text"
+text = "The GPS overlap is fixed in the LaundryLog hero screen.\n\nChanged:\n- [ScreenHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n\nWhat I changed:\n- restored a proper `box-sizing` baseline\n- made the location input a real shrinking flex child with `min-width: 0`\n- gave the GPS button a fixed flex basis so it can’t intrude into the input area\n- added a regression test for the location row layout contract\n\nUpdated artifact:\n- [LaundryLog_ScreenComponents.html](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.html)\n- ![LaundryLog screen components](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `26` tests passed\n\nCommit:\n- `60afc53` `model: fix laundrylog location row overlap`"
+

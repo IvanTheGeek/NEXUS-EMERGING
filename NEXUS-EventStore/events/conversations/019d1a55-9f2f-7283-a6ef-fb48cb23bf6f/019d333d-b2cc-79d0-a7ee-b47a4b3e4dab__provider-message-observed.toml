@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2cc-79d0-a7ee-b47a4b3e4dab"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2cc-729e-b589-bc0f9a6ed2c3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.639Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "e481748bcc780ae9ef9f8aa32b8a001208ea22ddf1d5c7d2b39050b1a30208e2"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-023335-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-023335-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-023335-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2130
+
+[[body.segments]]
+kind = "plain_text"
+text = "Immediate next:\n- merge [branch-governance-tightening](/tmp/nexus-merge-M7SKP3) into `main`\n- leave the older historical branches alone unless they reopen\n- stop growing app/library code in [NEXUS-EMERGING](/home/ivan/NEXUS/NEXUS-EMERGING) unless it is truly NEXUS-core\n\nFrom the current state, the only branch ahead of `main` is:\n- `branch-governance-tightening` at `110a78ef`\n\nSo the cleanest next phase is:\n\n1. `NEXUS-EMERGING`\n   Keep this focused on NEXUS doctrine, ingestion, LOGOS, cross-repo governance, and shared repo policy.\n\n2. `FnTools`\n   Start the real reusable-library work there.\n   Best next branch: `fnhci-ui-foundation`\n   Best next task: first real `FnTools.FnHCI` / `FnTools.FnHCI.UI.Blazor` host contracts and shell surfaces.\n\n3. `CheddarBooks`\n   Start the real app/domain work there.\n   Best next branch: `laundrylog-event-modeling`\n   Best next task: rough Event Modeling plus `PATH` docs for LaundryLog, then map those into app state and views.\n\nMy recommendation is:\n- merge the governance branch into `main`\n- then open `laundrylog-event-modeling` in [CheddarBooks](/home/ivan/NEXUS/CheddarBooks)\n- keep [FnTools](/home/ivan/NEXUS/FnTools) next in line for the UI/runtime side\n\nThat gives you the cleanest separation:\n- NEXUS decides and records\n- FnTools provides reusable interaction libraries\n- CheddarBooks proves the system with a real app"
+

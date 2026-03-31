@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1437-7056-8a38-5041166ade77"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1437-7716-ac32-c5d20f3a696d"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.411Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "c1fc8177aa2a01ce52b35a30e08337430d7dcd71f5c0040b65c9b36d22bbd4f1"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-009311-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-009311-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-009311-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 895
+
+[[body.segments]]
+kind = "plain_text"
+text = "Added and pushed as `7885ad96`.\n\nThere is now an explicit `--output-root <path>` option for both:\n\n- `export-graphviz-dot`\n- `render-graphviz-dot`\n\nRules are explicit:\n- use `--output <path>` for a full file path\n- or use `--output-root <path>` for a directory root with the NEXUS-generated file name\n- not both\n\nExamples:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  export-graphviz-dot \\\n  --provider claude \\\n  --output-root /tmp/nexus-graph-exports\n```\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  render-graphviz-dot \\\n  --input /tmp/nexus-graph-exports/nexus-graph__provider-claude.dot \\\n  --output-root /tmp/nexus-rendered\n```\n\nUpdated files:\n- [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs)\n- [GraphvizDot.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphvizDot.fs)\n- [GraphvizRendering.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphvizRendering.fs)\n- [export-graphviz-dot.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/export-graphviz-dot.md)\n- [render-graphviz-dot.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/render-graphviz-dot.md)\n\nValidation:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `36` tests passed\n\nThe only remaining local changes are still the intentionally untracked real-data event-store outputs under [NEXUS-EventStore/events](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events), [NEXUS-EventStore/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports), and [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph)."
+

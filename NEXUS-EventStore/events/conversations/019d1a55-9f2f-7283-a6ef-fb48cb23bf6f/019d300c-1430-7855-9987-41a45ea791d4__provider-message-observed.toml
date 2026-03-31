@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1430-7855-9987-41a45ea791d4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1430-7b34-a928-b2b70ed18f65"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T14:45:15.099Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "81aeb9ee6cc6983fc4deab2d8a705269d34ab987feaeba5145a60af8c83d6b43"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-019053-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-019053-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-019053-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1688
+
+[[body.segments]]
+kind = "plain_text"
+text = "The requirements doc is in and pushed on `fnui-foundation` as `1988cfe7`.\n\nMain doc:\n- [fnhci-ui-blazor-requirements.md](/tmp/nexus-merge-M7SKP3/docs/fnhci-ui-blazor-requirements.md)\n\nI also linked it from:\n- [fnui-foundation.md](/tmp/nexus-merge-M7SKP3/docs/fnui-foundation.md)\n- [fnhci-namespace-map.md](/tmp/nexus-merge-M7SKP3/docs/fnhci-namespace-map.md)\n- [README.md](/tmp/nexus-merge-M7SKP3/README.md)\n- [NEXUS-Code/README.md](/tmp/nexus-merge-M7SKP3/NEXUS-Code/README.md)\n- [repository-concern-lines.md](/tmp/nexus-merge-M7SKP3/docs/repository-concern-lines.md)\n\nIt now captures the key shape you described:\n- `FnHCI` stays the top namespace\n- `FnHCI.UI.Blazor` is the concrete Blazor runtime line\n- `FnUI` can remain the shorter package/marketing term\n- the system must support server-only, wasm-first, connected wasm, mixed web, and native-hosted shapes\n- official native-host lines are MAUI/WPF/WinForms Blazor Hybrid, while Photino/Electron stay future evaluation targets\n\nI grounded it in both the recorded chat history and current Microsoft docs:\n- [019d174f-2ce1-7496-a7f3-2e5cae80727e.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)\n- [019d174f-2cd6-772c-97db-8fdcb16a0050.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)\n- [ASP.NET Core Blazor render modes](https://learn.microsoft.com/aspnet/core/blazor/components/render-modes)\n- [Windows developer FAQ: hybrid and web development](https://learn.microsoft.com/windows/apps/get-started/windows-developer-faq)\n\nThis was docs-only, so I didn’t rerun build/tests for this last batch. The next strong move is to turn the requirements into code-facing contracts for the first real views and host commands on `fnui-foundation`."
+

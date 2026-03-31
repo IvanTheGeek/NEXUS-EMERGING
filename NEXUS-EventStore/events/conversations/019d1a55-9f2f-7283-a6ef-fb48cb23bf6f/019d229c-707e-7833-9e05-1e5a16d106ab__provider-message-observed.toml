@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707e-7833-9e05-1e5a16d106ab"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707e-7740-a0ef-94429bc5eda7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T14:57:07.072Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "13c31b069a73aef06ec12bf8de2632044978266d865321b1a37f5656555f7c9e"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-003912-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-003912-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-003912-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 365
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. On current Ubuntu/Debian systems, `python` usually means “install the compatibility shim to Python 3,” not a separate `python` package.\n\nThe normal fix is:\n\n```bash\nsudo apt install python3 python-is-python3\n```\n\nWhat that does:\n- `python3` installs the interpreter\n- `python-is-python3` makes `python` resolve to `python3`\n\nYou can verify it with:\n\n```bash\npython --version\npython3 --version\nwhich python\n```\n\nI would recommend using that package rather than making your own manual symlink in `/usr/local/bin`, because the package-managed route is cleaner and less surprising later.\n\nIf you also want the common packaging tools, then this is a good setup:\n\n```bash\nsudo apt install python3 python-is-python3 python3-pip python3-venv\n```\n\nIf you want, after you install it, I can quickly confirm from the shell that `python` resolves correctly here."
+

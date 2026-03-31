@@ -1,6 +1,10 @@
 # Repository Instructions
 
-This repository is the NEXUS foundation workspace.
+This repository is the foundation workspace for NEXUS.
+
+It is shared operating memory for humans and AI agents.
+
+Human collaborators are the ultimate decision makers in NEXUS; AI agents exist to help execute, clarify, and suggest better strategies, tools, and implementations in service of human direction.
 
 Read in this order before substantial work:
 
@@ -8,19 +12,25 @@ Read in this order before substantial work:
 2. [`docs/agent-readme.md`](docs/agent-readme.md)
 3. [`docs/current-focus.md`](docs/current-focus.md)
 4. [`docs/cortex-repo-memory-protocol.md`](docs/cortex-repo-memory-protocol.md)
-5. [`docs/glossary.md`](docs/glossary.md)
-6. the relevant decisions, concern-line docs, runbooks, code, and tests
+5. [`docs/fsharp-usage-learning-and-guidance.md`](docs/fsharp-usage-learning-and-guidance.md) when the work is primarily F#
+6. the relevant docs, code, and tests
 
 Working rules:
 
-- treat this repo as durable shared memory, not chat-only memory
+- do not rely on chat memory alone for project understanding
 - keep scratch, durable docs, canonical history, and derived views distinct
-- do not rewrite canonical history to tell a cleaner story
-- when a learning will matter later, record it durably in the repo
-- follow the repo memory protocol and collaboration protocol rather than inventing a private workflow
+- record durable learnings in the repo when they should matter later
+- when code, renderer, command behavior, or visible behavior changes, add or update tests by default
+- if a relevant test is not added or updated, say why explicitly
+- for UI, HTML, CSS, renderer, and screen work, inspect the actual local source and current artifacts before changing behavior
+- when a repeat F# seam, preference, or verification rule becomes clear, record it durably so later agents do not have to rediscover it
+- AI agents are welcome to proactively suggest better-fit tools or languages when the current concern calls for them; make the tradeoff visible and keep the broader F#-centered direction clear
+- the human has the final decision; once that decision is made, use it, while still allowing respectful future prompting when a materially better option becomes apparent
 
 Primary references:
 
+- [`docs/agent-readme.md`](docs/agent-readme.md)
+- [`docs/current-focus.md`](docs/current-focus.md)
 - [`docs/cortex-repo-memory-protocol.md`](docs/cortex-repo-memory-protocol.md)
-- [`docs/collaboration-protocol.md`](docs/collaboration-protocol.md)
-- [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
+- [`docs/fsharp-usage-learning-and-guidance.md`](docs/fsharp-usage-learning-and-guidance.md)
+- [`docs/index.md`](docs/index.md)
