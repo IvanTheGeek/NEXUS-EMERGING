@@ -16,4 +16,4 @@ These notes should still prefer durable links and explicit provenance.
 
 Current topics:
 
-- [`penpot/`](penpot/)
+- [`penpot/README.md`](penpot/README.md)

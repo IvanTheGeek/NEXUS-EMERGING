@@ -110,7 +110,7 @@ When in doubt:
 
 When an AI agent or human collaborator starts work here:
 
-1. read [`README.md`](../README.md)
+1. read [`repo-overview.md`](repo-overview.md) when browsing the docs site, or the root `README.md` when working directly in the repo
 2. read [`docs/agent-readme.md`](agent-readme.md)
 3. read [`docs/current-focus.md`](current-focus.md)
 4. read [`docs/glossary.md`](glossary.md)

@@ -1,4 +1,36 @@
+---
+title: NEXUS Docs
+---
+
 # Docs Index
+
+<div class="nexus-hero">
+  <p class="nexus-kicker">Shared operating memory for humans and AI agents</p>
+  <p>Foundation doctrine, ingestion architecture, glossary terms, runbooks, and derived operating views for <code>NEXUS-EMERGING</code>.</p>
+  <div class="nexus-actions">
+    <a class="nexus-button" href="current-focus/">Open Current Focus</a>
+    <a class="nexus-button secondary" href="how-to/preview-docs-site/">Preview This Site Locally</a>
+  </div>
+</div>
+
+<div class="nexus-map">
+  <a class="nexus-card" href="agent-readme/">
+    <span class="nexus-card-title">Agent Surface</span>
+    <span class="nexus-card-text">Orientation, contribution expectations, and durable collaboration rules.</span>
+  </a>
+  <a class="nexus-card" href="nexus-ingestion-architecture/">
+    <span class="nexus-card-title">Architecture</span>
+    <span class="nexus-card-text">The current ingestion and canonical-history direction.</span>
+  </a>
+  <a class="nexus-card" href="glossary/">
+    <span class="nexus-card-title">Vocabulary</span>
+    <span class="nexus-card-text">Terms that matter for keeping work aligned across humans and agents.</span>
+  </a>
+  <a class="nexus-card" href="how-to/">
+    <span class="nexus-card-title">Runbooks</span>
+    <span class="nexus-card-text">Repeatable commands and workflows for day-to-day work in NEXUS.</span>
+  </a>
+</div>
 
 This is the quick documentation map for humans and AI agents.
 
@@ -6,6 +38,7 @@ Start here when you need orientation instead of one specific deep document.
 
 ## Agent And Operating Surfaces
 
+- [`repo-overview.md`](repo-overview.md)
 - [`agent-readme.md`](agent-readme.md)
 - [`current-focus.md`](current-focus.md)
 - [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
@@ -25,15 +58,15 @@ Start here when you need orientation instead of one specific deep document.
 ## Glossary And Concepts
 
 - [`glossary.md`](glossary.md)
-- [`concepts/`](concepts/)
+- [`concepts/README.md`](concepts/README.md)
 
 ## Decisions
 
-- [`decisions/`](decisions/)
+- [`decisions/README.md`](decisions/README.md)
 
 ## How-To Docs
 
-- [`how-to/`](how-to/)
+- [`how-to/README.md`](how-to/README.md)
 
 ## Research
 

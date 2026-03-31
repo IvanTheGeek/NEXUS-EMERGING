@@ -101,3 +101,8 @@ Bootstrap milestone:
 
 - `codex/nexus-ingestion-foundation` is the first ingestion-foundation branch
 - it is intended to merge into `main` as an explicit milestone rather than disappearing into a fast-forward line
+
+Current naming preference:
+
+- use plain workstream branch names such as `export-window-analysis` or `logos-intake-foundation`
+- avoid agent-qualified prefixes unless they add real meaning

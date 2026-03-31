@@ -34,14 +34,20 @@ Rules:
 
 ## Working Shape
 
-Preferred branch kinds:
+Preferred branch names should describe the workstream itself.
 
-- `codex/feature/...`
+Examples:
+
+- `export-window-analysis`
   short-lived, one coherent slice, merged and usually deleted
-- `codex/epic/...`
-  longer-running stream with repeated merges into `main`
-- `codex/spike/...`
+- `logos-intake-foundation`
+  a longer-running stream when the work genuinely spans multiple merges
+- `graph-lens-spike`
   exploratory or experimental work that may or may not graduate
+
+Avoid agent-qualified prefixes unless they add real meaning.
+
+The branch graph should primarily describe the work, not which tool or agent happened to perform it.
 
 ## Initial Application
 

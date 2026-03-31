@@ -2,7 +2,7 @@
 
 This file is the AI-first orientation surface for `NEXUS-EMERGING`.
 
-Read it after [`README.md`](../README.md) when you need to recover how this repo is meant to work without depending on prior chat memory.
+Read it after [`repo-overview.md`](repo-overview.md) when you are browsing the docs site or after the root `README.md` when you are working directly in the repo.
 
 ## Mission
 
@@ -32,7 +32,7 @@ It is also an operating-memory surface for the broader NEXUS line.
 
 Use this order unless the task is extremely narrow:
 
-1. [`README.md`](../README.md)
+1. [`repo-overview.md`](repo-overview.md) for the docs-site projection, or the root `README.md` in the repo
 2. [`current-focus.md`](current-focus.md)
 3. [`index.md`](index.md)
 4. [`glossary.md`](glossary.md)
@@ -81,6 +81,13 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - the human's decision is the controlling one once made; later agents should follow it, while still being allowed to respectfully surface a materially better option if one becomes apparent
 - for Playwright MCP browser work, do not assume `file://` is a valid target; the MCP browser sandbox blocks `file:` URLs, so serve local artifacts over `http://127.0.0.1/...` (or similar local HTTP) first and use that as the browser target
 - when a repo already provides checked-in helper scripts for recurring build, refresh, verification, or test flows, use those scripts as the default path instead of reconstructing the flow ad hoc
+- when presenting command/event/view modeling, do not flatten it into a fixed linear triplet such as `COMMAND -> EVENT -> VIEW`
+- present it as:
+  - command slices produce durable event fact(s)
+  - view slices consume prior event fact(s)
+  - the consumed event need not come from the immediately previous slice
+  - multiple views may consume the same prior event
+- when an app-line repo has already corrected this seam multiple times, update the durable docs and AI guidance instead of relying on the next agent to rediscover the same correction from chat
 
 When work is docs-only or tests are not applicable, say so explicitly.
 

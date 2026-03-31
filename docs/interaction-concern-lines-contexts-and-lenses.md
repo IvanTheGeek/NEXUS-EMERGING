@@ -372,9 +372,9 @@ The current HTML/CSS screen work is best read as a `FnUI` projection inside the 
 - `AEM Lens`
   emphasizes Adam/Event Modeling business flow
 
-### 4. LaundryLog Example Chain
+### 4. LaundryLog Example Weave
 
-One practical chain for the current LaundryLog direction is:
+One practical weave for the current LaundryLog direction is:
 
 1. the user taps the app icon
 2. `AppStarted` belongs to `ApplicationLifecycle`
@@ -383,7 +383,28 @@ One practical chain for the current LaundryLog direction is:
 5. `CaptureLaundryLocation`, `LaundryLocationCaptured`, `LogLaundryExpense`, `LaundryExpenseLogged`, and `CurrentLaundrySession` belong to `EventModeling`
 6. the HTML/CSS surface that shows those states belongs to `InteractionComposition`
 
-That chain is useful because it stops one screen artifact from pretending to be the whole truth. The screen work is real, but it is only one woven part of the fuller model.
+That weave is useful because it stops one screen artifact from pretending to be the whole truth. The screen work is real, but it is only one woven part of the fuller model.
+
+Important presentation rule:
+
+- do not collapse this into a fixed linear `COMMAND -> EVENT -> VIEW` story
+- the better reading is:
+  - a command slice produces event fact(s)
+  - later view slices consume prior event fact(s)
+  - the consumed event does not need to come from the immediately previous slice
+  - multiple views may consume the same prior event
+
+So a phrase like:
+
+- `LaunchApp -> AppStarted -> SplashVisible`
+
+is too linear for the current NEXUS/LaundryLog rule.
+
+Better wording is:
+
+- `LaunchApp` is the command slice title
+- `AppStarted` is the event produced by that command slice
+- later view slices such as `SplashVisible` consume prior event fact(s) through their own view explanation rather than as a forced third link
 
 ## Browser Control, Playwright, And The Term Set
 
