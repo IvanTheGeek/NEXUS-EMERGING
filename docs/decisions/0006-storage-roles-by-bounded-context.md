@@ -56,6 +56,7 @@ Why:
 
 SQLite is not a replacement for the canonical event store.
 It is only a practical working index for the derived graph layer.
+The repository may keep that index path stable for tooling and reports while leaving the generated SQLite files machine-local and rebuildable rather than treating them as durable source-controlled truth.
 
 ### Analytical Exploration
 
@@ -147,6 +148,7 @@ They are adjacent, not interchangeable.
 - NEXUS should not collapse working index, analytics, retrieval, and graph traversal into one storage decision
 - the current canonical event store remains the stable source layer
 - if a persisted graph working index is introduced next, SQLite is the preferred first step
+- the generated SQLite working index should remain rebuildable cache/materialization, not a required committed artifact
 - DuckDB remains a likely later choice for analytics and discovery work
 - vector storage remains a later LOGOS/retrieval concern, not a replacement for structured history
 - graph databases remain deferred until graph-native workloads become clearly primary

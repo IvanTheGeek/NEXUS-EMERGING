@@ -24,5 +24,6 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- report-working
 ## Notes
 
 - This report reads the SQLite working index under `graph/working/index/graph-working.sqlite`.
+- That SQLite file is a local derived index and may need to be rebuilt after a fresh clone or intentional reset.
 - It is useful for understanding what a fresh provider export contributed before you inspect individual graph neighborhoods.
 - Use `find-working-graph-nodes` or `report-working-graph-neighborhood` afterward if you want to go deeper into one conversation node.

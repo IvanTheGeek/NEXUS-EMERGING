@@ -57,7 +57,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 9. Carries the same LOGOS metadata into the normalized import-snapshot manifest
 10. Materializes an import-local graph working batch under `NEXUS-EventStore/graph/working/imports/<import-id>/...`
 11. Updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
-12. Refreshes the SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
+12. Refreshes the local SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
 
 ## Progress Output
 
@@ -124,6 +124,7 @@ Optional overrides:
 
 - The raw object layer is ignored by Git in this repo for now.
 - The canonical event store is intended to be committed.
+- The SQLite graph working index is a local derived cache and may be rebuilt instead of committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
 - Each provider import now also records a normalized per-import snapshot so later full exports and rolling windows can be compared without confusing additive dedupe behavior for snapshot truth.
 - Provider-export imports now also enter NEXUS with restricted-by-default LOGOS metadata:

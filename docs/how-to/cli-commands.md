@@ -264,7 +264,7 @@ The CLI supports both:
 `rebuild-working-graph-index`
 
 - Rebuilds the SQLite graph working index from the existing graph working import batches.
-- Use it when the local working index is missing, stale, or intentionally reset.
+- Use it when the local working index is missing, stale, intentionally reset, or absent after a fresh clone.
 - Details: [`docs/how-to/rebuild-working-graph-index.md`](rebuild-working-graph-index.md)
 
 ## Common Workflow Sequences

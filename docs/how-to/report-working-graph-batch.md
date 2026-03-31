@@ -42,6 +42,7 @@ That index is refreshed automatically by:
 
 The index is a rebuildable working layer.
 It is not canonical truth.
+The repository does not need to keep that generated SQLite file under version control; rebuild it locally if it is missing.
 
 ## Output
 

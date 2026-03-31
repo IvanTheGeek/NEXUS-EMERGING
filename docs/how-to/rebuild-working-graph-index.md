@@ -7,6 +7,7 @@ Use it when:
 - `graph/working/index/graph-working.sqlite` is missing
 - you intentionally deleted or reset the index
 - you want to prove the SQLite layer is rebuildable from the working-batch files
+- you pulled the repo fresh and need to recreate the local derived index
 
 ## Command
 
@@ -36,6 +37,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - It does not touch canonical history.
 - It does not rebuild the durable `graph/assertions/` layer.
 - The SQLite index remains a derived working structure, not source truth.
+- The repository keeps the path stable, but the generated SQLite files under `graph/working/index/` are intentionally local and ignored by Git.
 
 ## Related Commands
 
