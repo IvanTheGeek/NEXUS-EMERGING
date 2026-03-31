@@ -70,4 +70,4 @@ Manifest example:
 ## Related Files
 
 - `NEXUS-Code/scripts/export_codex_sessions.fsx`
-- [`NEXUS-Code/docs/codex-session-export.md`](../../NEXUS-Code/docs/codex-session-export.md)
+- [`NEXUS-Code/docs/codex-session-export.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/docs/codex-session-export.md)

@@ -8,10 +8,10 @@ It is not the whole reason FnUI exists, but it is an excellent first application
 
 The recorded discussions already point to LaundryLog as a very good first proving ground inside the CheddarBooks domain:
 
-- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
-- [`019d174f-2c81-71f4-9610-205e18960e01.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2c81-71f4-9610-205e18960e01.toml)
-- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](../NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
-- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
+- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
+- [`019d174f-2c81-71f4-9610-205e18960e01.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2c81-71f4-9610-205e18960e01.toml)
+- [`019d174e-e9e9-7732-8fb0-053fb558797f.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-e9e9-7732-8fb0-053fb558797f.toml)
+- [`019d174f-2cc5-7148-bae0-e699e5da62b3.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cc5-7148-bae0-e699e5da62b3.toml)
 
 The current signal from that history is:
 

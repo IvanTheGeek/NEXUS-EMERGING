@@ -51,8 +51,8 @@ The current split is:
 
 The current requirements are grounded in the recorded discussions, especially:
 
-- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
-- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
+- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
+- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
 
 The most important current signals from those discussions are:
 

@@ -78,7 +78,7 @@ That means collaborators should not rely on chat memory alone to understand the 
 
 Before doing significant work, collaborators should orient themselves from the repo:
 
-1. read [`README.md`](../../README.md)
+1. read [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
 2. read [`repository-concern-lines.md`](../repository-concern-lines.md)
 3. read [`glossary.md`](../glossary.md)
 4. read the decision records and how-to docs for the relevant concern line

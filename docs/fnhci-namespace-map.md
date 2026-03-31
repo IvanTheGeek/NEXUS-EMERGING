@@ -48,7 +48,7 @@ Based on the current discussions, the likely interpretation is:
 
 The strongest current reference point is:
 
-- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
+- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
 
 That conversation currently captures three especially relevant steps:
 

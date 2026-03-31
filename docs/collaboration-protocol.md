@@ -35,7 +35,7 @@ Important repeated work should also be pushed toward deterministic and reviewabl
 
 Before significant work:
 
-1. read [`README.md`](../README.md)
+1. read [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
 2. read [`repository-concern-lines.md`](repository-concern-lines.md)
 3. read [`glossary.md`](glossary.md)
 4. read the relevant decision records and runbooks

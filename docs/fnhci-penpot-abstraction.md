@@ -20,11 +20,11 @@ The current design pressure is clear:
 
 The imported discussion history already points in this direction:
 
-- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
+- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
   says `FnUI` becomes a platform-neutral projection model and names lines such as `FnUI.Blazor`, `FnUI.HTML`, and `FnUI.android`
-- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
+- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
   says Penpot belongs in the target projection layer too
-- [`019d174e-eaa9-7b82-9c3f-c55499fe9fd6.toml`](../NEXUS-EventStore/projections/conversations/019d174e-eaa9-7b82-9c3f-c55499fe9fd6.toml)
+- [`019d174e-eaa9-7b82-9c3f-c55499fe9fd6.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-eaa9-7b82-9c3f-c55499fe9fd6.toml)
   reinforces that business behavior does not know about buttons
 
 ## Layering

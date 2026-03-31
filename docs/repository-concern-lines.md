@@ -24,7 +24,7 @@ Scope:
 
 Primary docs:
 
-- [`README.md`](../README.md)
+- [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
 - [`docs/glossary.md`](glossary.md)
 - [`docs/nexus-core-conceptual-layers.md`](nexus-core-conceptual-layers.md)
 - [`docs/atlas-lenses-and-full-model-direction.md`](atlas-lenses-and-full-model-direction.md)
@@ -100,7 +100,7 @@ Primary docs:
 - [`docs/nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
 - [`docs/how-to/import-provider-export.md`](how-to/import-provider-export.md)
 - [`docs/how-to/rebuild-graph-assertions.md`](how-to/rebuild-graph-assertions.md)
-- [`NEXUS-Code/README.md`](../NEXUS-Code/README.md)
+- [`NEXUS-Code/README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/README.md)
 
 Typical branch names:
 
@@ -235,7 +235,7 @@ For branching:
 
 For AI and human onboarding:
 
-1. read [`README.md`](../README.md)
+1. read [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
 2. read this concern-line map
 3. read [`docs/glossary.md`](glossary.md)
 4. read the decision records and how-to docs for the relevant concern line
@@ -243,7 +243,7 @@ For AI and human onboarding:
 
 ## Near-Term Implementation Plan
 
-1. Keep [`README.md`](../README.md) and [`NEXUS-Code/README.md`](../NEXUS-Code/README.md) linked to this map.
+1. Keep [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md) and [`NEXUS-Code/README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/README.md) linked to this map.
 2. Continue naming branches by workstream or concern line, not by agent/tool.
 3. When new decisions are added, sanity-check which concern line they belong to before writing them.
 4. When FnHCI/FnUI and external integrations grow, give them their own explicit architecture docs rather than burying them under ingestion notes.

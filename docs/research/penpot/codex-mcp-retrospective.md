@@ -68,17 +68,17 @@ That is, part of the real hope was that a design created in Penpot, or an alread
 Useful historical references:
 
 - bootstrap the event model from the design surface:
-  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625](../../../NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625)
+  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L625)
 - use Penpot for the event model until equivalent in-app functionality existed:
-  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040](../../../NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040)
+  - [019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2c90-79b5-beb8-99077a7d6fe0.toml#L1040)
 - define a graph/model to Penpot interface:
-  - [019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22](../../../NEXUS-EventStore/projections/conversations/019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22)
+  - [019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cce-7c36-a16b-4057b71a0212.toml#L22)
 - prove design export into an app pipeline:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L148)
 - represent a screen state as a board built from reusable components:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L159)
 - recreate an already-designed HTML screen in Penpot:
-  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618)
+  - [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L618)
 
 ## What Worked
 
@@ -167,7 +167,7 @@ Best durable reference:
 
 Historical trace:
 
-- [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398](../../../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398)
+- [019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml#L1398)
 
 ### 5. Token And Render Uncertainty
 

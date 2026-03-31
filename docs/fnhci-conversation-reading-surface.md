@@ -4,7 +4,7 @@ This note defines the first requirements for a human-readable conversation surfa
 
 Example motivating artifact:
 
-- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](../NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
+- [`019d174e-ea99-76b0-8ed6-1b124c5fe938.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea99-76b0-8ed6-1b124c5fe938.toml)
 
 ## Purpose
 

@@ -123,13 +123,13 @@ The current FnHCI/FnUI direction did not appear in isolation.
 
 The recorded source chain includes:
 
-- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
+- [`019d174f-2cd6-772c-97db-8fdcb16a0050.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cd6-772c-97db-8fdcb16a0050.toml)
   Bolero seam analysis, including the “build on Blazor as the substrate” line
-- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
+- [`019d174f-2ce1-7496-a7f3-2e5cae80727e.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2ce1-7496-a7f3-2e5cae80727e.toml)
   FnHCI / FnUI naming and the projection-model split
-- [`019d174f-2cc3-773c-9d90-ae4306d996d5.toml`](../NEXUS-EventStore/projections/conversations/019d174f-2cc3-773c-9d90-ae4306d996d5.toml)
+- [`019d174f-2cc3-773c-9d90-ae4306d996d5.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174f-2cc3-773c-9d90-ae4306d996d5.toml)
   slice graph, PATH, projection, agent/view semantics, and the split into two slices
-- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](../NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
+- [`019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/d0da2b9d1130c85ede291ede2cf0a7863653fd25/NEXUS-EventStore/projections/conversations/019d174e-ea7b-71ca-91ea-5f3ad56b32fd.toml)
   LaundryLog Penpot/Bolero proof-of-concept direction
 
 The important transition is:

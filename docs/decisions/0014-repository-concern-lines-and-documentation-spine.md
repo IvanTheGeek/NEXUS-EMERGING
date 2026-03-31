@@ -63,15 +63,15 @@ The documentation spine should make those concern lines easy to find.
 
 Expected entry points:
 
-- root [`README.md`](../../README.md)
+- root [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
   top-level orientation, active concern lines, and links into the deeper docs
 - [`docs/repository-concern-lines.md`](../repository-concern-lines.md)
   the operator-facing map of the concern lines, their branch shape, and their canonical homes
 - [`docs/glossary.md`](../glossary.md)
   stable shared vocabulary
-- [`docs/decisions/`](./)
+- [`docs/decisions/`](README.md)
   durable architectural and governance decisions
-- [`NEXUS-Code/README.md`](../../NEXUS-Code/README.md)
+- [`NEXUS-Code/README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/README.md)
   code-focused orientation and current module map
 
 Expected placement rules:

@@ -65,7 +65,7 @@ Typical branches include:
 
 ## Related
 
-- [`README.md`](README.md)
+- [`README.md`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/README.md)
 - [`docs/repository-concern-lines.md`](repository-concern-lines.md)
 - [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
 - [`docs/fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
