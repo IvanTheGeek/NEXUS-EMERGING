@@ -2,7 +2,7 @@
 
 This guide explains the current MkDocs proof-of-concept for projecting the repo docs into a browseable HTML site.
 
-The current setup uses the built-in `mkdocs` theme with a custom light-tech stylesheet.
+The current setup uses the built-in `mkdocs` theme with a custom light-tech stylesheet and a small JavaScript enhancement layer for quality-of-life behaviors such as code-block copy buttons.
 
 ## Why This Exists
 
@@ -15,6 +15,7 @@ The current setup uses the built-in `mkdocs` theme with a custom light-tech styl
 - `mkdocs.yml`
 - `requirements-docs.txt`
 - `docs/assets/stylesheets/light-matrix.css`
+- `docs/assets/javascripts/code-copy.js`
 
 ## Local Preview
 

@@ -28,4 +28,4 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- create-concept
 
 Related guide:
 
-- `docs/how-to/create-concept-note.md`
+- [`../how-to/create-concept-note.md`](../how-to/create-concept-note.md)
