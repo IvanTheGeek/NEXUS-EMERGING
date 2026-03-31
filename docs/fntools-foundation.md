@@ -20,6 +20,8 @@ FnTools is concerned with things like:
 
 From the imported discussion history so far, the current known directions include:
 
+- `FnTools.FnHCI`
+  reusable interaction primitives and UI-abstraction work that should be able to project into Blazor, HTML, Android, iOS, Penpot, and similar targets
 - `FnAPI.Penpot`
   a reusable Penpot API library
 - `FnMCP.Penpot`
@@ -61,4 +63,5 @@ Typical branches include:
 - [`README.md`](README.md)
 - [`docs/repository-concern-lines.md`](repository-concern-lines.md)
 - [`docs/event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
+- [`docs/fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
 - [`docs/penpot-access-and-structure.md`](penpot-access-and-structure.md)

@@ -26,6 +26,7 @@ Local Penpot is valuable because it may give us:
 - direct API access
 - plugin and MCP-oriented experimentation
 - a realistic target for early automation and synchronization work
+- a practical screen, path, and prototype surface while the dedicated Event Modeling tool does not exist yet
 
 Penpot is therefore a bridge surface, not the final product boundary.
 
@@ -34,6 +35,7 @@ The important working rule is:
 - do not rely on the GUI alone
 - treat `.penpot` files, backend/API endpoints, and MCP/plugin access as inspectable system surfaces
 - record what is learned so later tooling can become deterministic
+- treat Penpot as a visual working loop over deeper path and `FnHCI` semantics, not as the final semantic source of truth
 
 ## Where The Work Belongs
 
@@ -58,6 +60,7 @@ The important working rule is:
 
 - [FORGE Foundation](forge-foundation.md)
 - [FnTools Foundation](fntools-foundation.md)
+- [Penpot Working Loop For Event Modeling And FnHCI](penpot-working-loop.md)
 - [Penpot Access And Structure](penpot-access-and-structure.md)
 - [0022: Functionalize Repeatable Work Into Deterministic Surfaces](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 - [0024: Build Our Own Event Modeling Tool And Use Penpot Transitionally](decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md)

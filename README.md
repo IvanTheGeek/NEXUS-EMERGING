@@ -84,17 +84,24 @@ These boundaries are real design seams now and can become separate systems later
 
 Core project memory lives in the repo so humans and AI agents can recover intent quickly:
 
+- [`docs/index.md`](docs/index.md)
+- [`docs/agent-readme.md`](docs/agent-readme.md)
+- [`docs/current-focus.md`](docs/current-focus.md)
+- [`docs/cortex-repo-memory-protocol.md`](docs/cortex-repo-memory-protocol.md)
 - [`docs/nexus-core-conceptual-layers.md`](docs/nexus-core-conceptual-layers.md)
 - [`docs/nexus-ingestion-architecture.md`](docs/nexus-ingestion-architecture.md)
 - [`docs/nexus-graph-materialization-plan.md`](docs/nexus-graph-materialization-plan.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](docs/nexus-ontology-imprint-alignment.md)
 - [`docs/forge-foundation.md`](docs/forge-foundation.md)
 - [`docs/event-modeling-tool-foundation.md`](docs/event-modeling-tool-foundation.md)
+- [`docs/penpot-working-loop.md`](docs/penpot-working-loop.md)
 - [`docs/penpot-access-and-structure.md`](docs/penpot-access-and-structure.md)
 - [`docs/logos-source-model-v0.md`](docs/logos-source-model-v0.md)
 - [`docs/public-content-publishing-and-talkyard-comments.md`](docs/public-content-publishing-and-talkyard-comments.md)
 - [`docs/fnhci-namespace-map.md`](docs/fnhci-namespace-map.md)
+- [`docs/fnhci-penpot-abstraction.md`](docs/fnhci-penpot-abstraction.md)
 - [`docs/fnui-foundation.md`](docs/fnui-foundation.md)
+- [`docs/fnhci-ui-token-model.md`](docs/fnhci-ui-token-model.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](docs/fnhci-ui-blazor-requirements.md)
 - [`docs/fnhci-conversation-reading-surface.md`](docs/fnhci-conversation-reading-surface.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](docs/laundrylog-fnui-proving-ground.md)
@@ -110,6 +117,8 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/how-to/bootstrap-cheddarbooks-repo.md`](docs/how-to/bootstrap-cheddarbooks-repo.md)
 - [`docs/how-to/bootstrap-fntools-repo.md`](docs/how-to/bootstrap-fntools-repo.md)
 - [`docs/collaboration-protocol.md`](docs/collaboration-protocol.md)
+- [`docs/context-packs/README.md`](docs/context-packs/README.md)
+- [`docs/session-handoffs/README.md`](docs/session-handoffs/README.md)
 - [`docs/repo-extraction-plan.md`](docs/repo-extraction-plan.md)
 - [`docs/decisions/`](docs/decisions/)
 - [`docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`](docs/decisions/0018-namespace-and-repo-boundaries-by-line.md)
@@ -143,7 +152,7 @@ Tooling expectation:
 
 Repository docs are the primary onboarding surface. Prefer:
 
-1. docs/TOC first
+1. [`docs/index.md`](docs/index.md) first
 2. examples and tests next
 3. source after that
 4. XML docs and API-level inspection as supporting detail

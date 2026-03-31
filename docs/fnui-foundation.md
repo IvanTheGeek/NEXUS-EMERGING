@@ -6,6 +6,8 @@ The governing decision is:
 
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-namespace-map.md`](fnhci-namespace-map.md)
+- [`docs/fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
+- [`docs/fnhci-ui-token-model.md`](fnhci-ui-token-model.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
 - [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md)
 - [`docs/laundrylog-fnui-proving-ground.md`](laundrylog-fnui-proving-ground.md)
@@ -41,6 +43,8 @@ FnUI is:
 - the visual shell and navigable operator surface for NEXUS
 - the place where important operational and conceptual views can coexist
 - the place where public-use obligations such as attribution can be made prominent
+- the place where `FnHCI` interaction primitives become concrete visual projections without giving abstraction ownership to Penpot or one renderer
+- the place where a stable token model should help connect Penpot design intent to runtime rendering across multiple targets
 
 ## Namespace Direction
 
@@ -54,6 +58,8 @@ while public package naming may still use the narrower `FnUI` line:
 
 - `FnUI`
 - `FnUI.Blazor`
+
+Penpot fits into this area as a design and authoring projection surface, not as the owner of the canonical primitive model.
 
 The current code namespace now uses `FnTools.FnHCI.*`.
 
@@ -106,6 +112,8 @@ CheddarBooks LaundryLog is currently the clearest first proving ground for this 
 - Which runtime candidates should be evaluated after the host boundary is clearer?
 
 The first concrete runtime requirements for this line now live in [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md).
+
+The first explicit token-model direction for this line now lives in [`docs/fnhci-ui-token-model.md`](fnhci-ui-token-model.md).
 
 The first explicit reading-surface requirement now lives in [`docs/fnhci-conversation-reading-surface.md`](fnhci-conversation-reading-surface.md).
 

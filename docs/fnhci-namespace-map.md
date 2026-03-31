@@ -6,6 +6,7 @@ The governing decision is:
 
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 - [`docs/fnhci-ui-blazor-requirements.md`](fnhci-ui-blazor-requirements.md)
+- [`docs/fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
 
 ## Core Distinction
 
@@ -76,6 +77,12 @@ with package and outward naming such as:
 
 - `FnUI`
 - `FnUI.Blazor`
+
+The current Penpot direction fits this same split:
+
+- `FnTools.FnHCI` should own the semantic interaction primitive
+- Penpot should provide design and authoring projections over that primitive
+- runtime lines such as Blazor, HTML, Android, and iOS should adapt the primitive into concrete widgets
 
 ## Open Questions
 

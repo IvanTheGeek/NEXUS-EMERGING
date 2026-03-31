@@ -36,6 +36,7 @@ Examples include:
 - schema-guided production paths
 - compiler-like behavior when the rules are explicit enough
 - Event Modeling tooling that turns repeated modeling work into inspectable surfaces instead of leaving it in one-off diagrams or prompts
+- Penpot bridge tooling that helps move from visual boards and prototypes into reviewable structured surfaces without making Penpot the final source of truth
 
 ## Relationship To AI
 
@@ -58,5 +59,6 @@ The goal is that future work depends less on the capabilities of a particular AI
 - [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 - [`decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md`](decisions/0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md)
 - [`event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
+- [`penpot-working-loop.md`](penpot-working-loop.md)
 - [`repository-concern-lines.md`](repository-concern-lines.md)
 - [`collaboration-protocol.md`](collaboration-protocol.md)

@@ -82,3 +82,18 @@ CheddarBooks LaundryLog should influence the requirements by pressure-testing:
 - the state/view seams
 
 It should not prematurely force the whole FnUI line to become LaundryLog-specific.
+
+## Current Token Pressure
+
+LaundryLog is now also the first concrete proving ground for the token-model direction:
+
+- [FnHCI.UI Token Model](fnhci-ui-token-model.md)
+- [LaundryLog FnHCI.UI Token Vocabulary](fnhci-ui-laundrylog-token-vocabulary.md)
+
+The current Penpot file is already strong enough to pressure:
+
+- foundation color naming
+- semantic button and input tokens
+- typography tiers
+- mobile-first sizing and spacing
+- the first explicit breakpoint axis value

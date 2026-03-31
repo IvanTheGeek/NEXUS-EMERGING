@@ -9,6 +9,7 @@ Start here when you need orientation instead of one specific deep document.
 - [`agent-readme.md`](agent-readme.md)
 - [`current-focus.md`](current-focus.md)
 - [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)
+- [`collaboration-protocol.md`](collaboration-protocol.md)
 - [`context-packs/README.md`](context-packs/README.md)
 - [`session-handoffs/README.md`](session-handoffs/README.md)
 
@@ -20,20 +21,41 @@ Start here when you need orientation instead of one specific deep document.
 - [`nexus-ingestion-architecture.md`](nexus-ingestion-architecture.md)
 - [`nexus-graph-materialization-plan.md`](nexus-graph-materialization-plan.md)
 - [`nexus-ontology-imprint-alignment.md`](nexus-ontology-imprint-alignment.md)
-- [`logos-source-model-v0.md`](logos-source-model-v0.md)
+- [`forge-foundation.md`](forge-foundation.md)
+- [`event-modeling-tool-foundation.md`](event-modeling-tool-foundation.md)
 
 ## Glossary And Concepts
 
 - [`glossary.md`](glossary.md)
 - [`concepts/`](concepts/)
+- [`concepts/logos.md`](concepts/logos.md)
+- [`concepts/fnhci.md`](concepts/fnhci.md)
+
+## Concern-Line And Architecture Docs
+
+- [`repository-concern-lines.md`](repository-concern-lines.md)
+- [`logos-source-model-v0.md`](logos-source-model-v0.md)
+- [`fntools-foundation.md`](fntools-foundation.md)
+- [`fnui-foundation.md`](fnui-foundation.md)
+- [`fnhci-penpot-abstraction.md`](fnhci-penpot-abstraction.md)
+
+## App And Domain Docs
+
+- [`application-domains/README.md`](application-domains/README.md)
+- [`application-domains/cheddarbooks-foundation.md`](application-domains/cheddarbooks-foundation.md)
 
 ## Decisions
 
 - [`decisions/`](decisions/)
+- [`decisions/0020-converged-main-and-active-concern-line-branches.md`](decisions/0020-converged-main-and-active-concern-line-branches.md)
+- [`decisions/0021-important-discoveries-become-durable-repo-memory.md`](decisions/0021-important-discoveries-become-durable-repo-memory.md)
+- [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 
 ## How-To Docs
 
 - [`how-to/`](how-to/)
+- [`how-to/cli-commands.md`](how-to/cli-commands.md)
+- [`how-to/run-tests.md`](how-to/run-tests.md)
 
 ## Research
 
