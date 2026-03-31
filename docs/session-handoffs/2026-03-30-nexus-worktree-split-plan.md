@@ -52,23 +52,23 @@ Untracked docs-site files:
 
 - `mkdocs.yml`
 - `requirements-docs.txt`
-- `docs/repo-overview.md`
-- `docs/how-to/preview-docs-site.md`
-- `docs/decisions/README.md`
+- [`repo-overview.md`](../repo-overview.md)
+- [`how-to/preview-docs-site.md`](../how-to/preview-docs-site.md)
+- [`decisions/README.md`](../decisions/README.md)
 - `docs/assets/stylesheets/light-matrix.css`
 
 Tracked files already moving in the same direction:
 
 - `.gitignore`
-- `docs/index.md`
-- `docs/how-to/README.md`
-- `docs/research/README.md`
-- `docs/cortex-repo-memory-protocol.md`
-- `docs/agent-readme.md`
+- [`index.md`](../index.md)
+- [`how-to/README.md`](../how-to/README.md)
+- [`research/README.md`](../research/README.md)
+- [`cortex-repo-memory-protocol.md`](../cortex-repo-memory-protocol.md)
+- [`agent-readme.md`](../agent-readme.md)
 
 ### What Completion Looks Like
 
-- create the local virtualenv described in `docs/how-to/preview-docs-site.md`
+- create the local virtualenv described in [`how-to/preview-docs-site.md`](../how-to/preview-docs-site.md)
 - install `requirements-docs.txt`
 - run `mkdocs serve` or `mkdocs build`
 - confirm the docs site nav works and the new overview pages resolve
@@ -76,7 +76,7 @@ Tracked files already moving in the same direction:
 
 ### Risks
 
-- `docs/agent-readme.md` is shared with a separate doctrine update, so hunk staging may be needed if the commits should stay split
+- [`agent-readme.md`](../agent-readme.md) is shared with a separate doctrine update, so hunk staging may be needed if the commits should stay split
 - avoid bundling docs-site bootstrap with EventStore history
 
 ## Workstream 3: Branch Naming / Workflow Preference
@@ -84,8 +84,8 @@ Tracked files already moving in the same direction:
 ### Scope
 
 - `README.md`
-- `docs/decisions/0008-branch-topology-by-workstream.md`
-- `docs/how-to/git-auth-for-codex.md`
+- [`decisions/0008-branch-topology-by-workstream.md`](../decisions/0008-branch-topology-by-workstream.md)
+- [`how-to/git-auth-for-codex.md`](../how-to/git-auth-for-codex.md)
 
 ### What Completion Looks Like
 
@@ -105,8 +105,8 @@ Tracked files already moving in the same direction:
 
 The local upstream doctrine edits now in flight are:
 
-- `docs/agent-readme.md`
-- `docs/interaction-concern-lines-contexts-and-lenses.md`
+- [`agent-readme.md`](../agent-readme.md)
+- [`interaction-concern-lines-contexts-and-lenses.md`](../interaction-concern-lines-contexts-and-lenses.md)
 
 The intended rule is:
 
@@ -124,7 +124,7 @@ The intended rule is:
 
 ### Risks
 
-- `docs/agent-readme.md` overlaps the docs-site bootstrap edits, so this may require hunk staging if the commit boundary must stay pure
+- [`agent-readme.md`](../agent-readme.md) overlaps the docs-site bootstrap edits, so this may require hunk staging if the commit boundary must stay pure
 
 ## Suggested Commit Order
 
@@ -153,9 +153,9 @@ Alternative safe order:
 
 ## Read Next
 
-- `docs/how-to/preview-docs-site.md`
-- `docs/agent-readme.md`
-- `docs/interaction-concern-lines-contexts-and-lenses.md`
-- `docs/decisions/0008-branch-topology-by-workstream.md`
+- [`how-to/preview-docs-site.md`](../how-to/preview-docs-site.md)
+- [`agent-readme.md`](../agent-readme.md)
+- [`interaction-concern-lines-contexts-and-lenses.md`](../interaction-concern-lines-contexts-and-lenses.md)
+- [`decisions/0008-branch-topology-by-workstream.md`](../decisions/0008-branch-topology-by-workstream.md)
 - `NEXUS-EventStore/imports/`
 - `NEXUS-EventStore/work-batches/`

@@ -52,9 +52,9 @@ Durable project memory is the human-and-agent-readable layer that should survive
 Examples in this branch:
 
 - `README.md`
-- `docs/agent-readme.md`
-- `docs/current-focus.md`
-- `docs/glossary.md`
+- [agent-readme.md](agent-readme.md)
+- [current-focus.md](current-focus.md)
+- [glossary.md](glossary.md)
 - architecture notes
 - decision notes
 - requirements and concept notes

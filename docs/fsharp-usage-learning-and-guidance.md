@@ -470,9 +470,9 @@ This note complements, not replaces:
 
 Short mapping:
 
-- `fsharp-documentation-convention.md`
+- [`fsharp-documentation-convention.md`](fsharp-documentation-convention.md)
   where docs/source/tests each belong
-- `how-to/run-tests.md`
+- [`how-to/run-tests.md`](how-to/run-tests.md)
   how to run tests in the foundation repo
 - this note
   how learned F# guidance becomes durable and how AI should behave when implementation choices are not trivial

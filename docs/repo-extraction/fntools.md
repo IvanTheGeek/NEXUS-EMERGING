@@ -26,22 +26,22 @@ These project paths still carry older `Nexus.FnHCI` names, but the code namespac
 
 ### Docs That Move
 
-- `docs/fntools-foundation.md`
-- `docs/fnui-foundation.md`
-- `docs/fnhci-namespace-map.md`
-- `docs/fnhci-ui-blazor-requirements.md`
-- `docs/fnhci-ui-web-requirements.md`
-- `docs/fnhci-ui-native-host-requirements.md`
-- `docs/fnhci-conversation-reading-surface.md`
-- `docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`
+- [fntools-foundation.md](../fntools-foundation.md)
+- [fnui-foundation.md](../fnui-foundation.md)
+- [fnhci-namespace-map.md](../fnhci-namespace-map.md)
+- [fnhci-ui-blazor-requirements.md](../fnhci-ui-blazor-requirements.md)
+- [fnhci-ui-web-requirements.md](../fnhci-ui-web-requirements.md)
+- [fnhci-ui-native-host-requirements.md](../fnhci-ui-native-host-requirements.md)
+- [fnhci-conversation-reading-surface.md](../fnhci-conversation-reading-surface.md)
+- [decisions/0015-fnhci-owns-the-top-interaction-namespace.md](../decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
 
 ### Docs That Stay In NEXUS
 
-- `docs/concepts/fnhci.md`
+- [concepts/fnhci.md](../concepts/fnhci.md)
   this is still project-memory and concept history
-- `docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`
+- [decisions/0018-namespace-and-repo-boundaries-by-line.md](../decisions/0018-namespace-and-repo-boundaries-by-line.md)
   this is a NEXUS boundary/governance decision
-- `docs/repository-concern-lines.md`
+- [repository-concern-lines.md](../repository-concern-lines.md)
   this remains the umbrella concern-line map
 
 ## Recommended New Repo Root Shape

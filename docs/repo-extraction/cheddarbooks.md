@@ -34,26 +34,26 @@ The code namespaces now use:
 
 ### Docs That Move
 
-- `docs/application-domains/cheddarbooks-foundation.md`
-- `docs/application-domains/cheddarbooks/README.md`
-- `docs/application-domains/cheddarbooks/laundrylog/README.md`
-- `docs/application-domains/cheddarbooks/laundrylog/introduction.md`
-- `docs/application-domains/cheddarbooks/laundrylog/requirements.md`
-- `docs/application-domains/cheddarbooks/laundrylog/product.md`
-- `docs/application-domains/cheddarbooks/laundrylog/domain-model.md`
-- `docs/application-domains/cheddarbooks/laundrylog/privacy-and-ownership.md`
-- `docs/application-domains/cheddarbooks/laundrylog/delivery.md`
-- `docs/application-domains/cheddarbooks/laundrylog/convergence.md`
-- `docs/application-domains/cheddarbooks/laundrylog/data-sync-boundaries.md`
-- `docs/application-domains/cheddarbooks/laundrylog/view-contracts.md`
-- `docs/application-domains/cheddarbooks/laundrylog/screens.md`
-- `docs/application-domains/cheddarbooks/laundrylog/workflows.md`
+- [application-domains/cheddarbooks-foundation.md](../application-domains/cheddarbooks-foundation.md)
+- [application-domains/cheddarbooks/README.md](../application-domains/cheddarbooks/README.md)
+- [application-domains/cheddarbooks/laundrylog/README.md](../application-domains/cheddarbooks/laundrylog/README.md)
+- [application-domains/cheddarbooks/laundrylog/introduction.md](../application-domains/cheddarbooks/laundrylog/introduction.md)
+- [application-domains/cheddarbooks/laundrylog/requirements.md](../application-domains/cheddarbooks/laundrylog/requirements.md)
+- [application-domains/cheddarbooks/laundrylog/product.md](../application-domains/cheddarbooks/laundrylog/product.md)
+- [application-domains/cheddarbooks/laundrylog/domain-model.md](../application-domains/cheddarbooks/laundrylog/domain-model.md)
+- [application-domains/cheddarbooks/laundrylog/privacy-and-ownership.md](../application-domains/cheddarbooks/laundrylog/privacy-and-ownership.md)
+- [application-domains/cheddarbooks/laundrylog/delivery.md](../application-domains/cheddarbooks/laundrylog/delivery.md)
+- [application-domains/cheddarbooks/laundrylog/convergence.md](../application-domains/cheddarbooks/laundrylog/convergence.md)
+- [application-domains/cheddarbooks/laundrylog/data-sync-boundaries.md](../application-domains/cheddarbooks/laundrylog/data-sync-boundaries.md)
+- [application-domains/cheddarbooks/laundrylog/view-contracts.md](../application-domains/cheddarbooks/laundrylog/view-contracts.md)
+- [application-domains/cheddarbooks/laundrylog/screens.md](../application-domains/cheddarbooks/laundrylog/screens.md)
+- [application-domains/cheddarbooks/laundrylog/workflows.md](../application-domains/cheddarbooks/laundrylog/workflows.md)
 
 ### Docs That Stay In NEXUS
 
-- `docs/application-domains/cheddar/README.md`
+- [application-domains/cheddar/README.md](../application-domains/cheddar/README.md)
   umbrella portfolio and brand context
-- `docs/decisions/0018-namespace-and-repo-boundaries-by-line.md`
+- [decisions/0018-namespace-and-repo-boundaries-by-line.md](../decisions/0018-namespace-and-repo-boundaries-by-line.md)
   this is still the umbrella boundary decision
 - cross-line concept and doctrine notes
 
