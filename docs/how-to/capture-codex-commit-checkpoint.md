@@ -25,6 +25,7 @@ After the first baseline capture, the Codex checkpoint export now works incremen
 - those archive snapshots always include `session_index.jsonl`
 - unchanged transcript files are omitted from the archive snapshot
 - only changed transcript files are imported from the checkpoint archive
+- the shared checkpoint workflow now takes an internal file gate before writing shared object-store and event-store roots
 
 That keeps commit checkpoints faster without changing canonical truth boundaries.
 
@@ -99,5 +100,6 @@ The report prints the linked import and the conversation hints captured at check
 - One checkpoint manifest is stored per repo and commit SHA.
 - The command refuses to overwrite an existing checkpoint unless you pass `--force`.
 - The first capture is usually the heaviest one because it establishes the baseline Codex snapshot.
+- When several repos share the same NEXUS object and event-store roots, checkpoint capture is serialized internally so overlapping post-commit hooks do not trample the shared `providers/codex/latest/` surface.
 - This is the first layer of commit-to-chat traceability; richer exact-message linking can build on top of it later.
 - If you want this to happen automatically after every commit, install the managed hook with [`install-codex-commit-checkpoint-hook`](install-codex-commit-checkpoint-hook.md).

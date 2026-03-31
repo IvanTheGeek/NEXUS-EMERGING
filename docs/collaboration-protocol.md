@@ -122,12 +122,19 @@ When an important rule, discovery, correction, or architectural learning emerges
 - add or update tests when the learning should be enforced behaviorally
 - reference the durable record from the places where that learning matters
 
+For Penpot-specific work:
+
+- compare the backend API, MCP/plugin, and exported `.penpot` surfaces instead of assuming one surface tells the whole story
+- record verified differences and gaps durably so future collaborators do not have to rediscover them
+- update the Penpot comparison note when a capability is proven or ruled out
+
 Do not assume future collaborators will recover the learning from chat history alone.
 
 See:
 
 - [`decisions/0021-important-discoveries-become-durable-repo-memory.md`](decisions/0021-important-discoveries-become-durable-repo-memory.md)
 - [`decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](decisions/0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
+- [`penpot-surface-comparison.md`](penpot-surface-comparison.md)
 
 ## Decision Expectations
 

@@ -25,6 +25,7 @@ Important behavior:
 - after the first baseline capture, later hook-driven checkpoint archives only include `session_index.jsonl` plus changed transcripts
 - when a built `Nexus.Cli.dll` is available, the hook prefers `dotnet <dll>` over `dotnet run --project`
 - if that built CLI is not present yet, the hook falls back to `dotnet run --project`
+- when several repos point at the same shared NEXUS object and event-store roots, capture is serialized internally so overlapping hooks do not race on `providers/codex/latest/`
 
 ## Command
 
@@ -74,3 +75,4 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 - The installer is idempotent for the managed NEXUS block.
 - If `dotnet` is missing when the hook runs, the hook prints a warning and skips capture.
 - For faster commits, build the stable NEXUS CLI once so the hook can use the built DLL path instead of doing project startup work on every commit.
+- If a checkpoint still fails, inspect `.git/nexus-hooks/codex-commit-checkpoint.log` in the target repo before assuming the Git hook itself is broken.
