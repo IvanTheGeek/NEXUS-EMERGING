@@ -73,8 +73,9 @@ This avoids avoidable MSBuild file-copy contention and misleading build noise.
 ## Branching Expectations
 
 - `main` is the current converged shared baseline
-- long-lived branches are allowed when a concern line is still actively evolving
+- a single local `main` worktree is the preferred steady state when no concern line needs to evolve separately
 - short-lived branches are preferred for tightly scoped work
+- long-lived branches are allowed only when a concern line still has a real independent cadence across multiple merges
 - accepted work merges into `main` with `--no-ff`
 - active long-lived branches should periodically take merges from `main`
 - active long-lived branches may merge into `main` multiple times and continue afterward
@@ -91,6 +92,26 @@ Examples of long-lived concern-line branches:
 - `fntools-foundation`
 - `cheddarbooks-foundation`
 - `logos-intake-foundation`
+
+## Worktree Expectations
+
+A Git worktree is an additional checked-out working directory that shares the same repository object database.
+
+Use a linked worktree when it materially helps with one of these situations:
+
+- an active side branch needs to stay checked out without constantly switching the main workspace
+- merge or conflict-resolution work is easier in a separate temporary checkout
+- concurrent local work would otherwise fight over one directory's branch state
+- isolated build outputs or repo state are useful while reconciling branches
+
+Worktrees are an operating tool, not a branch-retention policy.
+
+That means:
+
+- do not keep extra worktrees around once the branch no longer needs an independent cadence
+- after merging and retiring a branch, remove its worktree if one exists
+- prefer returning to one local `main` worktree after convergence unless there is a clear reason not to
+- if a branch still needs to live, keeping a worktree for it can be a useful signal that the concern line is still active
 
 ## Implementation Expectations
 

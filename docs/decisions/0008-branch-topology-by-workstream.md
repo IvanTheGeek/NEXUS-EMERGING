@@ -24,6 +24,7 @@ Use branch topology to reflect workstreams.
 Rules:
 
 - `main` is accepted truth.
+- a single local `main` worktree is the normal steady state when no independent concern line is active.
 - merge accepted branches into `main` with `--no-ff`.
 - do not rely on fast-forward merges for accepted work.
 - prefer focused topic branches for coherent work items.
@@ -32,6 +33,8 @@ Rules:
 - when a topic branch is complete, merge it and then delete it.
 - when a branch represents an ongoing stream, keep it alive across multiple merges until that stream is actually done.
 - periodically merge active long-running branches with `main` or with each other when convergence matters.
+- use linked Git worktrees as a temporary operating tool for active side branches or merge/convergence work, not as evidence that a branch should remain alive indefinitely.
+- after a branch is merged and no longer needs an independent cadence, remove any extra worktree for it and delete the remote branch when the shared remote no longer needs that ref.
 - tag important milestones before or at merge points when the milestone itself should remain easy to find later.
 
 ## Working Shape
@@ -67,8 +70,10 @@ Positive:
 - Merge points show when a line of work became accepted truth.
 - Branches remain visible in history even after deletion because `--no-ff` merge commits preserve the shape.
 - Milestone tags make major waypoints easy to recover.
+- The repo can return to a simple `main`-only steady state between independent workstreams instead of accumulating stale branch/worktree clutter.
 
 Tradeoff:
 
 - Branch planning becomes a deliberate part of work.
 - Slightly more Git overhead is accepted in exchange for a more meaningful durable history.
+- Worktrees and remote branch refs also need intentional cleanup after convergence.
