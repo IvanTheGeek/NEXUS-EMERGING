@@ -31,6 +31,7 @@ Current guides:
 - [`import-provider-export.md`](import-provider-export.md)
 - [`install-codex-commit-checkpoint-hook.md`](install-codex-commit-checkpoint-hook.md)
 - [`preview-docs-site.md`](preview-docs-site.md)
+- [`publish-docs-site.md`](publish-docs-site.md)
 - [`render-graphviz-dot.md`](render-graphviz-dot.md)
 - [`rebuild-artifact-projections.md`](rebuild-artifact-projections.md)
 - [`rebuild-conversation-projections.md`](rebuild-conversation-projections.md)
