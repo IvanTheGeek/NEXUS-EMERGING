@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b6-75c4-ba40-9518a450bb57"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b6-733f-9d34-6947a46b2bb3"
+conversation_id = "019d1f70-c2b6-733f-9d34-6947a46b2bb3"
+message_id = "019d1f70-c2b6-75d6-bc1d-59fa12be62c3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T12:43:31.540539Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "579abe68b3dcda9942639b6312db6276c9cb545e4b3b2212ef8c8d6aef3f622a"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bfe34c-c66c-8333-904c-44db99e2d227"
+conversation_native_id = "69bfe34c-c66c-8333-904c-44db99e2d227"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "ef07bf79-9cb7-4edb-920c-144add29f6e0"
+conversation_native_id = "69bfe34c-c66c-8333-904c-44db99e2d227"
+message_native_id = "ef07bf79-9cb7-4edb-920c-144add29f6e0"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "ef07bf79-9cb7-4edb-920c-144add29f6e0"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 7
+
+[[body.segments]]
+kind = "plain_text"
+text = "Alright — let’s design this like you’re not just making a project…  \nyou’re bootstrapping **CORTEX inside a bounded context**.\n\nThis will be opinionated and aligned with your **Immutable Evolution + strict WRITE/READ separation**.\n\n---\n\n# 🧠 NEXUS Project Blueprint (ChatGPT Project Setup)\n\n## 🧭 1. Project Purpose (put this in Project Instructions)\n\nStart your project with a *clear contract*:\n\n```\nThis project implements the NEXUS modeling system.\n\nCore principles:\n- Immutable Evolution: systems evolve via replacement, never mutation\n- Strict separation of WRITE and READ models\n- WRITE = Interface → Command → Event\n- READ = Event → Projection → View → Interface\n\nRules:\n- Never mix READ and WRITE in the same flow\n- Commands never return data, only emit Events\n- Views are derived, never authoritative\n- All artifacts are versionable and replaceable\n\nThe assistant acts as a modeling partner, enforcing these constraints.\n```\n\n👉 This is your **governor**. Without this, drift will happen.\n\n---\n\n# 📁 2. Folder / Artifact Structure (inside the Project)\n\nThink of this like your **Source of Truth layer**, not just files.\n\n```\n/nexus\n  /core\n    ontology.md\n    principles.md\n    patterns.md\n\n  /write\n    /commands\n    /events\n    /interfaces\n\n  /read\n    /projections\n    /views\n    /interfaces\n\n  /contexts\n    /laundry_log\n    /cheddar_money\n    /zoning_ai\n\n  /slices\n    01_place_order.toml\n    02_record_payment.toml\n\n  /types\n    Types.fs\n\n  /meta\n    glossary.md\n    naming.md\n```\n\n---\n\n# 🧩 3. Core Files (these matter most)\n\n## 📜 `ontology.md`\nDefines your **universe**\n\nExample:\n```\n# NEXUS Ontology\n\n## Node Kinds\n- Thing\n- Concept\n- Role\n- State\n- Record\n- Artifact\n- Lens\n\n## Relationships\n- causes\n- results_in\n- projects_to\n- represents\n- depends_on\n```\n\n---\n\n## ⚙️ `Types.fs`\nThis is your **executable ontology**\n\nKeep it clean and *non-experimental*.\n\n```fsharp\ntype Command = {\n    Id: string\n    Name: string\n    Input: obj\n}\n\ntype Event = {\n    Id: string\n    Name: string\n    Data: obj\n}\n\ntype Projection<'E,'V> = {\n    Apply: 'V -> 'E -> 'V\n}\n```\n\n👉 Rule:  \n**No business logic here — only structure**\n\n---\n\n## 🧱 `patterns.md`\nThis is where you encode your **mental models**\n\nExample:\n\n```\n# Patterns\n\n## Command Pattern\nActor → Command → Event\n\n## Projection Pattern\nEvent → Projection → View\n\n## Anti-Pattern\nActor → Action → View (INVALID)\n```\n\n---\n\n# 🧾 4. Slice Format (TOML 👍)\n\nYou were onto something powerful here — make slices explicit artifacts.\n\n## Example: `01_place_order.toml`\n\n```toml\n[slice]\nid = \"place_order\"\ntype = \"command\"\n\n[interface]\nactor = \"Customer\"\naction = \"Place Order\"\n\n[command]\nname = \"PlaceOrder\"\ninput = [\"customerId\", \"items\"]\n\n[event]\nname = \"OrderPlaced\"\ndata = [\"orderId\", \"items\", \"timestamp\"]\n```\n\n---\n\n## Example: Projection Slice\n\n```toml\n[slice]\nid = \"order_history\"\ntype = \"projection\"\n\n[event]\nname = \"OrderPlaced\"\n\n[projection]\nname = \"BuildOrderHistory\"\n\n[view]\nname = \"OrderHistoryView\"\n```\n\n---\n\n# 🧠 5. How CORTEX (ChatGPT) Should Behave\n\nPut this in project instructions too:\n\n```\nWhen modeling:\n\n1. Always identify if the request is WRITE or READ\n2. Refuse to mix flows\n3. Suggest slices instead of abstractions\n4. Prefer explicit artifacts over implicit logic\n5. Evolve by replacement, not mutation\n\nWhen unclear:\n- Ask which side (WRITE or READ) this belongs to\n```\n\n---\n\n# 🔄 6. Workflow (THIS is the real power)\n\n## Step 1 — Idea\nYou say:\n> “I want a feature for tracking laundry loads”\n\n## Step 2 — CORTEX responds with slices\n- Command slice\n- Event\n- Projection slice\n\n## Step 3 — You refine\n- Add fields\n- Adjust naming\n\n## Step 4 — New version (Immutable Evolution)\nInstead of editing:\n\n```\n01_place_order.toml\n02_place_order_v2.toml\n```\n\n---\n\n# 🧬 7. Versioning Strategy (Critical)\n\nNever overwrite meaning.\n\n- ❌ `place_order.toml` (edited)\n- ✅ `place_order_v2.toml`\n\nAnd optionally:\n\n```\n/deprecated\n  place_order_v1.toml\n```\n\n---\n\n# 🧠 8. Contexts (Bounded Contexts)\n\nEach app = its own subgraph\n\n```\n/contexts/laundry_log/\n/contexts/cheddar_money/\n/contexts/zoning_ai/\n```\n\nEach contains:\n- its own slices\n- its own projections\n- shared core types\n\n---\n\n# ⚡ 9. Advanced Move (You’ll Like This)\n\nDefine **Lens files**\n\n```\n/lenses\n  fnui_blazor.md\n  fnui_html.md\n  fncli.md\n```\n\nThese describe how projections become artifacts:\n\n- UI\n- CLI\n- API\n- Printer (👀 kitchen ticket idea)\n\n---\n\n# 🚨 10. Guardrails (Non-Negotiable)\n\nYour project should enforce:\n\n- Commands DO NOT query\n- Events are facts (past tense, immutable)\n- Views are disposable\n- No “update” — only “replace”\n\n---\n\n# 🔥 What You Just Built\n\nThis isn’t just a project.\n\nYou now have:\n\n> **A persistent modeling environment where AI learns your architecture and enforces it**\n\nThis is dangerously close to:\n\n- a **living ontology**\n- a **slice compiler (event modeling)**\n- a **CORTEX training ground**\n\n---\n\n# 👉 If you want next step\n\nWe can:\n\n1. Generate a **ready-to-drop repo template (folders + starter files)**\n2. Build a **slice → code generator (F#)**\n3. Or design how this feeds into **FnHCI (UI/CLI/API projections)**\n\nJust tell me direction 👍"
+

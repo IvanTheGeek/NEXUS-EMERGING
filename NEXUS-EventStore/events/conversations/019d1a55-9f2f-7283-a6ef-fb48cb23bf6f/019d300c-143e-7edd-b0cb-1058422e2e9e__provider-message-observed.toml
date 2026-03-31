@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-143e-7edd-b0cb-1058422e2e9e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-143e-725f-809f-a3b0dd6188f2"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.47Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "e7ac80fc087d5f2104b0605d5c02de578426c47ed336e9a9e74d91c63d5ec19a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-012383-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-012383-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-012383-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1156
+
+[[body.segments]]
+kind = "plain_text"
+text = "**Current Check**\nBranch status is good: `codex/feature/export-window-analysis` is pushed and synced at commit `fbadc71b`. Code and docs are clean; the only remaining local changes are still the intentionally untracked real-data files under [NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore).\n\nI added the new backfill path in [ImportSnapshotBackfill.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Importers/ImportSnapshotBackfill.fs), wired it through [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs), and documented it in [rebuild-import-snapshots.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-import-snapshots.md). While doing that, the tests exposed a real preservation bug: same-provider imports inside the same second could collide into the same raw archive directory. I fixed that in [ImportWorkflow.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Importers/ImportWorkflow.fs). Validation is clean: `dotnet build` succeeded and the suite is now `68` passed, `0` failed.\n\n**What We Learned**\nI ran the new snapshot backfill against your real store. Result:\n- `8` imports processed\n- `7` normalized snapshots rebuilt\n- `1` unsupported skipped (`codex`, as expected for now)\n- `0` failures\n\nThat gave us a real snapshot baseline for historical ChatGPT imports. The key comparisons now confirm your export-window understanding much more cleanly:\n\n- Base ChatGPT full export `019d174f-26af-7760-b1cb-adabbd21ca23` vs repeated full export `019d1f67-7c16-7721-b94f-27fe66ad3c76`\n  - `0` added\n  - `0` removed\n  - `0` changed\n  - `75` unchanged\n\n- Base ChatGPT full export `019d174f-26af-7760-b1cb-adabbd21ca23` vs later full export `019d1f70-b326-7d1e-a106-73dbd399f911`\n  - `13` added\n  - `0` removed\n  - `0` changed\n  - `75` unchanged\n\nSo the current evidence says:\n- one later ChatGPT export was a true duplicate of the earlier full export\n- the newer March 24, 2026 full export was additive: it preserved the prior `75` conversations unchanged and added `13` new ones\n- there were no shared-conversation message deltas across those two full exports\n\n**Next**\nThe strongest next move is a provider import-history report for export-window analysis: one command that lists all imports for a provider in time order and shows snapshot deltas between adjacent imports. That would make your future `30`-day window reasoning much easier than comparing pairs manually."
+

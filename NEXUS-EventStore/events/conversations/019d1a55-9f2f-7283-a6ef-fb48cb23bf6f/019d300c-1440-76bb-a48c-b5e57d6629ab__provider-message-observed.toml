@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1440-76bb-a48c-b5e57d6629ab"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1440-71b8-95a1-67f831b7ec8f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.711Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "3f5e6cac8651c7c453b512f6f89704acec5d253523e0ec1978126f6160e4b1bb"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-015612-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-015612-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-015612-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1419
+
+[[body.segments]]
+kind = "plain_text"
+text = "My recommendation is: properties first, types at the boundaries.\n\nSo for this kind of policy data:\n- `sensitivity`\n- `sharing_scope`\n- `sanitization_status`\n- `retention_class`\n\nI would model them as explicit typed properties carried in records, not as wholly separate top-level structural types.\n\nThat is already the direction in [Policy.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/Policy.fs):\n- `SensitivityId`\n- `SharingScopeId`\n- `SanitizationStatusId`\n- `RetentionClassId`\n\nThese are not loose strings.\nThey are small strong types wrapping explicit allowlisted slugs.\n\nSo the shape is:\n\n- not boolean flags like `isPublic`\n- not vague freeform metadata\n- not separate ontology structures\n- yes to strong typed properties with constrained values\n\nWhy I prefer that:\n- one item can move from `raw` to `redacted` to `approved-for-sharing`\n- one item can be `customer-confidential` now and later have a derived public-safe version\n- that is state/classification, not a different structural kind\n- it composes better than a pile of booleans\n\nWhere I *would* use distinct types:\n- command/request boundaries when invalid combinations should be impossible\n\nFor example, if we later want to make some workflows safer, we could introduce boundary types like:\n- `RestrictedLogosNote`\n- `SanitizedLogosNote`\n- `ApprovedForSharingLogosNote`\n\nBut I would only do that when a workflow really benefits from the extra compile-time constraint. Internally, the shared representation should still likely carry the typed policy properties.\n\nSo short answer:\n- not simple flags\n- primarily typed properties\n- sometimes additional boundary types where they help make invalid states unrepresentable\n\nThat fits your preference well: explicit, allowlisted, deterministic, and strong without over-fragmenting the model."
+

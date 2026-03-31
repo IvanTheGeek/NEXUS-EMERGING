@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d391b-2a9f-7cd4-a200-8ec36c28d13a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d391b-2a9f-7da3-9a19-3e16b7cafe5b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T09:54:23.064Z"
+observed_at = "2026-03-29T10:19:32.9172505Z"
+imported_at = "2026-03-29T10:19:32.9172505Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d391b-22b5-7656-9dad-0953fb670d48"
+
+[content_hash]
+algorithm = "sha256"
+value = "5708713e01da3be92dc30ed974556541227e67b2d12ce9314bf53dbc68c5402d"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-035832-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-035832-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T10-19-29Z__nexus-emerging__d7f2e0ab/session_index.jsonl"
+archived_at = "2026-03-29T10:19:31.1577541Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T10-19-29Z__nexus-emerging__d7f2e0ab/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T10:19:31.1577541Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-035832-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3548
+
+[[body.segments]]
+kind = "plain_text"
+text = "`Infrastructure` and `operations` both feel wrong for this.\n\nMy recommendation:\n\n- best broad term: `App Runtime`\n- best lens name: `App Runtime Lens`\n\nWhy:\n- covers startup\n- covers route/control flow\n- covers local state hydration\n- covers PWA/WASM checks\n- covers sync/background mechanics\n- still sits above raw hosting/infrastructure\n\nIf you want a narrower term for just startup/resume/foreground/background:\n- `Application Lifecycle`\n\nIf you want a term for the coordinating behavior between UI system and business system:\n- `Runtime Orchestration`\n- or `App Mechanics`\n\nHow I’d use them:\n- `AEM Lens`\n  business/event truth\n- `Screen Path Lens`\n  user-visible screen/state progression\n- `App Runtime Lens`\n  startup, hydration, routing, sync, background checks, app-level mechanics\n\nSo for your `AppStarted -> splash -> startup checks -> Need Location` example, I’d call that:\n- `App Runtime Lens`\n\nAnd I’d avoid:\n- `Infrastructure`\n- `Operations`\n- `Program Control`\n\nIf you want, I can update the new path doc to use `App Runtime Lens` as the formal term."
+

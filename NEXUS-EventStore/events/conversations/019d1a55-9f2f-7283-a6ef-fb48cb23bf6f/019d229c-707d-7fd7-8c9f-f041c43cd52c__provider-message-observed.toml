@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707d-7fd7-8c9f-f041c43cd52c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707d-783f-93f9-b1bb22eaf969"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T10:18:04.908Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "58822e1f867b80c9d751a2c1517cff6a04b726ae9323314e2279166e0b91df6c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-002841-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-002841-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-002841-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 286
+
+[[body.segments]]
+kind = "plain_text"
+text = "Artifact projections are in and pushed as `3ec7166` on `codex/nexus-ingestion-foundation`.\n\nThe new rebuildable read model lives in [ArtifactProjections.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/ArtifactProjections.fs), with CLI wiring in [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs). It writes one file per artifact stream under [NEXUS-EventStore/projections/artifacts](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/artifacts), including provider IDs, file name, reference disposition, capture count, payload-captured status, and latest captured path. A good example is [019d174f-2c81-71e3-9cec-527f951cd6cf.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/artifacts/019d174f-2c81-71e3-9cec-527f951cd6cf.toml).\n\nI added the rebuild command docs here:\n- [rebuild-artifact-projections.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-artifact-projections.md)\n\nVerification was clean: [Nexus.Cli.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj) builds with `0` warnings and `0` errors, and the real event store rebuild wrote `305` artifact projection files. Since the committed store doesn’t yet have any real manual payload captures, those projections currently show `payload_captured = false`, which is exactly what we’d expect. The branch is fully synced."
+

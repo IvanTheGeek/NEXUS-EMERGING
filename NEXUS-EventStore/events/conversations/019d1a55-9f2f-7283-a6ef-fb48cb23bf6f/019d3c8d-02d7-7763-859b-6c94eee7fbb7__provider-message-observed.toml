@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d3c8d-02d7-7763-859b-6c94eee7fbb7"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3c8d-02d7-71ef-897c-4f2058aa2f4c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T01:31:45.037Z"
+observed_at = "2026-03-30T02:22:45.3282834Z"
+imported_at = "2026-03-30T02:22:45.3282834Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3c8c-fa50-702b-bf15-2467b28cf15b"
+
+[content_hash]
+algorithm = "sha256"
+value = "d018856ce8c8f3e6341d280aca532fb04a346b9084b088a6c84d53a295229be0"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-038371-user_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-038371-user_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T02-22-41Z__cheddarbooks__e84f66fe/session_index.jsonl"
+archived_at = "2026-03-30T02:22:43.4078421Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T02-22-41Z__cheddarbooks__e84f66fe/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T02:22:43.4078421Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-038371-user_message"
+role = "human"
+sequence_hint = 3828
+
+[[body.segments]]
+kind = "plain_text"
+text = "PLEASE IMPLEMENT THIS PLAN:\n## Add Formal Browser Testing For LaundryLog Paths\n\n### Summary\nAdopt a two-track testing shape:\n\n- `Expecto` remains the primary test runner for F# logic, state, renderer, and deterministic artifact generation.\n- `JS/TS Playwright Test` becomes the formal browser harness for the tracked LaundryLog workspace artifacts.\n- `Playwright .NET + Expecto` is deferred as a later research spike, not a required parallel harness, until the JS/TS path is working and we have real patterns worth re-expressing in F#.\n\nThe first browser suite should prove the current screen-path behaviors that have already produced real bugs:\n- whole-column navigation\n- start/end alignment\n- lens toggles actually hide/show steps\n\n### Implementation Changes\n- Add an isolated browser-test workspace under the repo, separate from the existing F# test project.\n  Default shape:\n  - `tests/browser/package.json`\n  - `tests/browser/playwright.config.ts`\n  - `tests/browser/specs/path1-screen-path.spec.ts`\n- Treat the tracked workspace artifact as the review and test target:\n  - `/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html`\n- Use a tiny local HTTP server as the formal test path for browser tests.\n  Default:\n  - serve the tracked `workspace/laundrylog/html/` tree during Playwright runs\n  - use that HTTP origin for the formal nav/lens suite\n- Keep one small `file://` smoke check as a secondary compatibility check, not the main harness.\n  Purpose:\n  - confirm the artifact still opens locally as a file\n  - do not rely on `file://` for the main update-monitor or interaction suite\n- Add stable browser-facing hooks where needed if the current DOM is too presentation-driven for reliable selectors.\n  Prefer:\n  - `data-testid`\n  - stable IDs already present\n  - explicit step/lens keys\n- Do not add `xUnit` now.\n  The `.NET + Expecto` path stays deferred until the JS/TS harness is working and useful.\n\n### First Browser Suite\nCreate the first `JS/TS Playwright Test` suite around `PATH1` only.\n\nRequired scenarios:\n- `next` moves exactly one logical column, not a partial pixel drift.\n- `previous` returns one logical column.\n- `go to start` lands on the first logical column.\n- `go to end` lands on the last logical column.\n- top rail position stays synchronized with viewport position at start, intermediate, and end.\n- lens toggle: `Lifecycle` hides non-lifecycle steps.\n- lens toggle: `Runtime` hides non-runtime steps.\n- lens toggle: `Screen Path` hides non-screen-path steps.\n- combined lens states persist and visibly affect step count/layout as intended.\n\nSecondary `file://` smoke scenario:\n- open the tracked screen-path artifact directly from disk\n- verify the page loads and the basic nav controls exist\n- no deeper behavioral guarantees required in this smoke check\n\n### Test Strategy And Boundaries\n- `Expecto` continues to cover:\n  - path/state construction\n  - renderer output invariants\n  - update-sidecar generation\n  - deterministic HTML structure where browser behavior is not required\n- `Playwright Test` covers:\n  - browser scrolling\n  - sticky controls\n  - localStorage-driven toggles\n  - visibility changes after interaction\n  - DOM behavior under real browser layout\n- Defer update-monitor automation to the second Playwright phase.\n  Reason:\n  - nav + lens behavior is already enough to validate the harness and remove current uncertainty\n- Defer `Playwright .NET + Expecto` to a later research spike.\n  Initial spike, when revisited:\n  - one nav scenario\n  - one lens-toggle scenario\n  - goal is F#-idiomatic feasibility, not runner-feature parity with Playwright Test\n\n### Assumptions And Defaults\n- Human decision stands: best-fit tooling is preferred; F# remains the default, but Playwright is the better tool for browser behavior.\n- The formal browser harness is `JS/TS Playwright Test + Expecto`.\n- The repo should not introduce `xUnit` at this stage.\n- HTTP is the primary test transport; `file://` is only a secondary smoke path.\n- The tracked `workspace/` artifacts remain the authoritative browser review/test surface; `tmp/` stays scratch."
+

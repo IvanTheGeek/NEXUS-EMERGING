@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142f-7499-bb2c-4a29e81215a4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142f-796e-acea-cb7a491fa762"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T11:09:49.617Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "0fd29c905870e06bf21f1c5da7edf1e41bd6bca4c036bb6f15d741a36e268f36"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-016860-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-016860-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-016860-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1528
+
+[[body.segments]]
+kind = "plain_text"
+text = "The ingestion-metadata step is done on `logos-intake-foundation` and pushed as `3aa7eb47`.\n\nImports now enter NEXUS with restricted-by-default LOGOS metadata carried through the real ingestion path:\n- import/domain model: [CanonicalHistory.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Domain/CanonicalHistory.fs)\n- provider and Codex import workflows: [ImportWorkflow.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/ImportWorkflow.fs), [CodexImportWorkflow.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/CodexImportWorkflow.fs)\n- manifest and snapshot persistence: [CanonicalStore.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.EventStore/CanonicalStore.fs), [ImportSnapshots.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.EventStore/ImportSnapshots.fs)\n- current status reporting: [CurrentIngestion.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.EventStore/CurrentIngestion.fs)\n- provider-to-LOGOS mapping bridge: [ProviderMappings.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/ProviderMappings.fs), [ImporterTypes.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Importers/ImporterTypes.fs)\n\nI also updated the runbooks and README so this is visible to humans, not just code:\n- [import-provider-export.md](/tmp/nexus-merge-M7SKP3/docs/how-to/import-provider-export.md)\n- [report-current-ingestion.md](/tmp/nexus-merge-M7SKP3/docs/how-to/report-current-ingestion.md)\n- [rebuild-import-snapshots.md](/tmp/nexus-merge-M7SKP3/docs/how-to/rebuild-import-snapshots.md)\n- [logos-source-model-v0.md](/tmp/nexus-merge-M7SKP3/docs/logos-source-model-v0.md)\n- [README.md](/tmp/nexus-merge-M7SKP3/README.md)\n\nValidation is green:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `103` tests passed, `0` failed\n\nYes, the source xmldoc convention stayed in step with this work. The branch worktree at [/tmp/nexus-merge-M7SKP3](/tmp/nexus-merge-M7SKP3) is clean and synced. Your live workspace at [/home/ivan/NEXUS/NEXUS-EMERGING](/home/ivan/NEXUS/NEXUS-EMERGING) is still untouched aside from the separate local event-store outputs under [/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore).\n\nThe next strongest move is to make non-chat intake use the same boundary from entry, so forum/email/issue/app-feedback notes are classified into raw/private/public-safe paths at creation time, not only after the fact."
+

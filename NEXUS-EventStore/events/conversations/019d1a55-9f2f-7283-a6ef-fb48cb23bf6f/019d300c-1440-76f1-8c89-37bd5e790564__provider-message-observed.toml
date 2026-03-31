@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1440-76f1-8c89-37bd5e790564"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1440-7451-a48b-2a814d142793"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.723Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "3829093edf539ada4e36bf750358c81ad7c8a6422ce228063bfcc4d2b2c3a446"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-015962-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-015962-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-015962-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1456
+
+[[body.segments]]
+kind = "plain_text"
+text = "The new ChatGPT export is ingested locally and the concept harvest is done.\n\nOn the live store in [/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore), the latest ChatGPT import is `019d299b-59a0-70a6-9feb-678970b1d72a`, which moved ChatGPT to `95` conversations and `5853` messages. That batch added `7` conversations, and I used those to harvest the ones that looked worth keeping as durable project memory.\n\nI created and pushed a clean harvest branch:\n- `concept-harvest`\n- pushed at `60f2035`\n\nChanges on that branch:\n- updated [fnhci.md](/tmp/nexus-concept-harvest/docs/concepts/fnhci.md) to include the new `FnHCI Concept Overview` conversation as additional provenance\n- added [duckdb-fsharp-analytics.md](/tmp/nexus-concept-harvest/docs/concepts/duckdb-fsharp-analytics.md) as a new seed note from the `DubDB.Net F# API` conversation\n\nCurrent branch status there is clean and synced:\n- [/tmp/nexus-concept-harvest](/tmp/nexus-concept-harvest)\n\nI did not turn the other new conversations into concept notes yet because they looked more operational or personal than durable NEXUS concepts.\n\nNext strongest move is one of:\n- merge `concept-harvest` into `main`\n- continue on `logos-intake-foundation` and thread the sensitivity/pool policy into real ingestion metadata\n- start a public-safe export workflow that requires `PublicSafePoolItem<_>` rather than ad hoc checks"
+

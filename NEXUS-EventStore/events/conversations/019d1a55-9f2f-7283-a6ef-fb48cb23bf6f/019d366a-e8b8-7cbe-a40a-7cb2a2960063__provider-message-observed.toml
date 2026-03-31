@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d366a-e8b8-7cbe-a40a-7cb2a2960063"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d366a-e8b8-7201-9be1-eb0634fb9cdb"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T21:23:16.043Z"
+observed_at = "2026-03-28T21:47:47.5325225Z"
+imported_at = "2026-03-28T21:47:47.5325225Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d366a-e1cc-75f9-a873-e0b8a31d604f"
+
+[content_hash]
+algorithm = "sha256"
+value = "dde2c2fc5009201587ad65fc9793f88e96a62622f31eae722e721d1bec0efa97"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-034649-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-034649-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T21-47-44Z__cheddarbooks__ce649edd/session_index.jsonl"
+archived_at = "2026-03-28T21:47:46.0996717Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T21-47-44Z__cheddarbooks__ce649edd/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T21:47:46.0996717Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-034649-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3420
+
+[[body.segments]]
+kind = "plain_text"
+text = "`v7` is now the primary mobile surface in the renderer, not just a styling reference.\n\nWhat changed:\n- the main screen proving ground now leads with `Screen.EntryForm - Washer Draft` as the hero app surface\n- the other screens render as supporting state variants below it\n- that rule is now enforced in code and recorded durably in [html-screen-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-renderer-proving-ground.md)\n\nKey files:\n- [ScreenHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n- [html-screen-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-renderer-proving-ground.md)\n\nFresh artifact:\n- [LaundryLog_ScreenComponents.html](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.html)\n- ![LaundryLog screens](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `24` tests passed\n\nCommit:\n- `c5aa22f` `model: make v7 screen the primary laundrylog surface`\n\nThe next good move is to tune the hero screen against `v7` more literally now that the page composition itself is finally correct."
+

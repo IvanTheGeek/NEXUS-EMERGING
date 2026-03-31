@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d392b-c8c2-73fd-ab56-d60a7e51d5bf"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d392b-c8c2-750b-8a0d-b6d363822224"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T10:37:05.568Z"
+observed_at = "2026-03-29T10:37:42.0506017Z"
+imported_at = "2026-03-29T10:37:42.0506017Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d392b-c122-7402-8288-7eab7d988cfc"
+
+[content_hash]
+algorithm = "sha256"
+value = "e038608be08a52cd0dac453c23077ed8300877f6de06c3c57f182b98f1e8b610"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-036163-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-036163-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T10-37-39Z__cheddarbooks__ea91464b/session_index.jsonl"
+archived_at = "2026-03-29T10:37:40.444872Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T10-37-39Z__cheddarbooks__ea91464b/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T10:37:40.444872Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-036163-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3593
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, that’s the right direction, and it changes how I think about this renderer.\n\nWhat we have right now is still basically:\n- one horizontal step strip\n- each step is a stacked mini document\n\nBut what you’re describing is the stronger long-term contract:\n- one continuous horizontal path\n- shared row bands across all step columns\n- rows can be turned on/off by lens\n- row heights stay coherent across the whole path when a lens is visible\n\nSo later it should be able to grow into something more like:\n- metadata row\n- app/runtime row\n- screen row\n- AEM row\n- ADM row\n- other lens rows\n\nwith each row having a stable height contract across all columns in that path.\n\nThat means the sticky rail we’re adding is still right, but the deeper layout direction should become:\n- path-level grid owns row bands\n- step columns fill those bands\n- visible lenses add rows instead of each step free-stacking its own content\n\nI’m going to do two things next:\n1. regenerate the current `PATH1` HTML so the sticky rail is visible in your scratch file\n2. add this “shared row bands for future lenses” rule to the screen-path proving-ground note so we don’t lose it"
+

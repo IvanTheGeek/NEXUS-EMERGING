@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3305-7f31-76a6-92f3-61cc95992e4d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3305-7f31-7ed9-8989-0c03c5a08a81"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T05:14:31.872Z"
+observed_at = "2026-03-28T05:58:09.4107919Z"
+imported_at = "2026-03-28T05:58:09.4107919Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3305-7702-771b-a457-56ac8ea7c031"
+
+[content_hash]
+algorithm = "sha256"
+value = "e08d1a583efe1221a6763a73f01805ee5d68b215b8e6eaece719642055f1614a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-026718-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-026718-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T05-58-08Z__cheddarbooks__594e06b8/session_index.jsonl"
+archived_at = "2026-03-28T05:58:08.6911928Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T05-58-08Z__cheddarbooks__594e06b8/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T05:58:08.6911928Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-026718-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2562
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next docs slice is in on `CheddarBooks` branch `laundrylog-fnhci-primitive-map` as commit `88dce81` (`docs: add laundry expense event and view examples`).\n\nWhat changed:\n- [commands.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/commands.md) now has first-pass `LogLaundryExpense` properties plus concrete washer and dryer command examples and their expected resulting events\n- [events.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/events.md) now has explicit `LaundryExpenseLogged` properties, optional properties, and concrete washer/dryer event examples\n- [views.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/views.md) now includes first concrete `visible_entries` examples and ties them to the current `VisibleLaundryExpenseViewLine` idea\n- [command-view-primitive-seam.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/command-view-primitive-seam.md) now explicitly points at those washer/dryer examples as the semantic reference for `VisibleLaundryExpenseViewLine` and `EntryCardState`\n\nThis was docs-only, so I didn’t rerun the build/test suite after the commit. The branch is clean.\n\nThe next strongest move is to add the first correction/removal path slice, probably starting with `LaundryExpenseCorrected`, because we now have enough concrete event and view examples to pressure what an additive correction flow should look like without rewriting history."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3136-ec88-7ac7-ba57-3d97f2b5fda3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3136-ec88-73d3-8ce8-1b66c1cabc6f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T21:29:51.653Z"
+observed_at = "2026-03-27T21:32:54.0279321Z"
+imported_at = "2026-03-27T21:32:54.0279321Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3136-e38b-74ac-a380-8e71e7171abb"
+
+[content_hash]
+algorithm = "sha256"
+value = "417fbffbf35cab0875e9438287b697c4e8f8d48b64ba9bc6137f36d80cfc3296"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-024296-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-024296-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T21-32-52Z__nexus-merge-m7skp3__f8b11984/session_index.jsonl"
+archived_at = "2026-03-27T21:32:53.2595046Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T21-32-52Z__nexus-merge-m7skp3__f8b11984/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T21:32:53.2595046Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-024296-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2281
+
+[[body.segments]]
+kind = "plain_text"
+text = "Recorded at the NEXUS level.\n\n`main` now includes this at `5babba7e`:\n- [glossary.md](/tmp/nexus-merge-M7SKP3/docs/glossary.md)\n- [0010-terminology-flow-slice-batch-scope.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0010-terminology-flow-slice-batch-scope.md)\n\nThe durable Event Modeling terms are now:\n- `CommandSlice`\n- `ViewSlice`\n- `View`\n\nAnd the repo now explicitly says:\n- `CommandSlice` = the intent-side slice\n- `ViewSlice` = the business/read-side slice\n- `View` = the dataset/structure behind a `ViewSlice`\n- `read model` and `ReadSlice` are only reference/search terms, not preferred NEXUS wording\n\nSo yes, those are now NEXUS-wide durable terms for the Event Modeling lens. This was docs-only, so I didn’t run tests."
+

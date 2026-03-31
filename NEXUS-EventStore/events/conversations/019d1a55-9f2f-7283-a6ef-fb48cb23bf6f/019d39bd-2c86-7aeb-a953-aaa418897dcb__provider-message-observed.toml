@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d39bd-2c86-7aeb-a953-aaa418897dcb"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d39bd-2c86-7b73-a71c-1acc7a0c2468"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T13:13:36.46Z"
+observed_at = "2026-03-29T13:16:30.0306595Z"
+imported_at = "2026-03-29T13:16:30.0306595Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d39bd-23ce-7bf4-a668-22b2913c1947"
+
+[content_hash]
+algorithm = "sha256"
+value = "857b346096aeef4782d214d4258105884b24ff134244760ebebab3a9a3f54a28"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-037985-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-037985-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T13-16-23Z__nexus-emerging__33ae2189/session_index.jsonl"
+archived_at = "2026-03-29T13:16:26.5778434Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T13-16-23Z__nexus-emerging__33ae2189/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T13:16:26.5778434Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-037985-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3777
+
+[[body.segments]]
+kind = "plain_text"
+text = "Implemented.\n\nReview this updated tracked file:\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n\nWhat changed:\n- the header now has lens toggles: `Lifecycle`, `Runtime`, `Screen Path`\n- each step now shows `Context` separately from `Lens`\n- the step hierarchy is now:\n  - domain: broader and implicit at page level\n  - bounded context: shown per step, like `ApplicationLifecycle`, `RuntimeOrchestration`, `ScreenPath`\n  - lens: shown per step and toggleable in the header\n  - surface: the concrete rendered thing, like `Screen.AppStart - Runtime Checks`\n\nSo for your example, the intended reading is now:\n- `Context · RuntimeOrchestration`\n- `app runtime lens`\n- `Screen.AppStart - Runtime Checks`\n\nCommits:\n- CheddarBooks: `a6ea827` `model: add lens controls to screen path`\n- NEXUS: `4fa48961` `docs: clarify path page context and lens hierarchy`\n\nVerification:\n- `34` tests passed\n- browser-checked: lens buttons actually change visible step counts\n\nIf the page is already open, reload it once so the new header controls and updated sidecar are picked up."
+

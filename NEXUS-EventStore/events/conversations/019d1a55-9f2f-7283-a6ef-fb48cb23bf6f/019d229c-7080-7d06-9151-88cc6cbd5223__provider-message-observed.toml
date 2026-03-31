@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7080-7d06-9151-88cc6cbd5223"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7080-7b2c-bde2-5af7f43af679"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T13:05:13.128Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "85fd44d516633fa7e5820f18e41908d6eb4a2bbb3c46042d27865d2ae6c8dc92"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-008345-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-008345-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-008345-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 808
+
+[[body.segments]]
+kind = "plain_text"
+text = "Graph rebuild manifests are in and pushed as `2918e89c`.\n\nWhat this adds:\n- every approved full rebuild now writes a TOML manifest under [NEXUS-EventStore/graph/rebuilds](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/rebuilds)\n- the CLI summary now prints:\n  - canonical event files scanned\n  - assertion files written\n  - derivation elapsed\n  - total elapsed\n  - rebuild manifest path\n\nMain code:\n- [GraphAssertions.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphAssertions.fs)\n- [GraphMaterialization.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphMaterialization.fs)\n- [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs)\n\nCoverage/docs:\n- [GraphAssertionTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/GraphAssertionTests.fs)\n- [rebuild-graph-assertions.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-graph-assertions.md)\n- [cli-commands.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/cli-commands.md)\n\nVerified:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `26` tests passed\n\nI also smoke-tested the CLI on a temp fixture store, and it now prints a line like:\n- `Rebuild manifest: graph/rebuilds/2026-03-24T13-04-40Z__full-rebuild.toml`\n\nThe next strongest step is the actual incremental side: define the first graph-materializer update path so imports can update a secondary working layer without requiring a full rebuild. The local untracked ChatGPT import and graph output are still untouched."
+

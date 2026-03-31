@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d35d1-dc7a-761e-9bc9-48f5723ce7ca"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d35d1-dc7a-7b6f-9152-4941d2e1986b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T18:50:57.308Z"
+observed_at = "2026-03-28T19:00:36.8496492Z"
+imported_at = "2026-03-28T19:00:36.8496492Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d35d1-d371-7382-af23-87f9a442d62e"
+
+[content_hash]
+algorithm = "sha256"
+value = "fd3efad9e61a03b0237e3d4f4c50aaee6a27f1fc21fa1ddfc8b7b3ab1676e082"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-033548-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-033548-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T19-00-34Z__cheddarbooks__3b0c8bed/session_index.jsonl"
+archived_at = "2026-03-28T19:00:35.3294617Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T19-00-34Z__cheddarbooks__3b0c8bed/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T19:00:35.3294617Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-033548-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3306
+
+[[body.segments]]
+kind = "plain_text"
+text = "Applied.\n\nWhat changed:\n- `Properties` is now in the footer-left of the data-bearing block\n- lens/context badge stays in the footer-right\n- the corner arrow stays integrated on the right side of the same footer area\n- the old inline `properties` badge inside the content area is gone\n- the block-level properties toggle is now wired through JS instead of relying on the visible `<summary>`\n\nUpdated:\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n- [agent-readme.md](/home/ivan/NEXUS/CheddarBooks/docs/agent-readme.md)\n- [html-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-path-renderer-proving-ground.md)\n\nArtifact:\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n- ![Current PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nCommit:\n- `d8cd352` `model: move properties control into block footer`\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `20` tests passed\n- emitted page script passes `node --check`\n\nAnd I made the .NET verification note durable in [agent-readme.md](/home/ivan/NEXUS/CheddarBooks/docs/agent-readme.md):\n- build and test this repo serially\n- prefer `dotnet build` then `dotnet run --no-build ...`\n- avoid parallel `build` and `test` against the same output tree"
+

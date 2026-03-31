@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d40ab-f986-7a1e-8eea-f4a3f27a6c7c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d40ab-f986-7cac-8502-3f029b13d63b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T20:10:56.845Z"
+observed_at = "2026-03-30T21:35:03.6306188Z"
+imported_at = "2026-03-30T21:35:03.6306188Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d40ab-f1ce-794d-9a11-00a35b2ac30d"
+
+[content_hash]
+algorithm = "sha256"
+value = "16837042ad36f692cba685eeb62f38faed25ae3db41bba75185c665566afe1a6"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-043575-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-043575-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T21-34-57Z__cheddarbooks__2f8cdcc4/session_index.jsonl"
+archived_at = "2026-03-30T21:35:00.1864006Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T21-34-57Z__cheddarbooks__2f8cdcc4/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T21:35:00.1864006Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-043575-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4347
+
+[[body.segments]]
+kind = "plain_text"
+text = "That helps a lot. I think the semantics are becoming:\n\n- new first slice:\n  a user-caused trigger/change slice\n- `AppStarted`:\n  a separate event slice\n- the current splash-visible column:\n  really a read/view/result slice, not the event itself\n\nSo if we model this honestly in AEM-style terms, the first startup run probably becomes:\n\n1. user launch trigger\n2. `AppStarted`\n3. splash/boot read state\n4. runtime-checks change\n5. runtime-checks read state\n6. no-local-session change or finding\n7. no-local-session read state\n8. route-resolved change\n9. need-location read state\n\nThat is much more rigorous than the current mixed NM columns.\n\nI also agree with your naming instinct:\n- `intent` feels too abstract here\n- `command` might work better for the first user-caused startup slice\n- and the top compartment for that first slice probably should not be `SCREEN`\n\nMy current recommendation for the first slice is:\n- whole-column classification: `COMMAND`\n- top compartment label: `TRIGGER`\n\nReason:\n- `COMMAND` says this slice is the initiating change\n- `TRIGGER` says the upper compartment is showing what caused the slice, not a resulting screen\n\nThe two decisions that now matter most are:\n- do we apply this strict change/read split only to the startup segment first, or to the whole NM path now\n- for the first launch slice, do you want `COMMAND + TRIGGER`, or a different visible pair"
+

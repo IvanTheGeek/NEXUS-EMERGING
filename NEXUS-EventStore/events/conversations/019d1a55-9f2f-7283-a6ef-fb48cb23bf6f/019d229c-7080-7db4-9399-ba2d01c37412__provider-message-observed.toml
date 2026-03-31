@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7080-7db4-9399-ba2d01c37412"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7080-758c-8a9d-a4f6a510e828"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T11:36:47.886Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "ce5367089dc0d4bca6eeed8e867cc2e0beb63d1e9ac2c7a06ec68e3bb373b836"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-007928-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-007928-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-007928-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 765
+
+[[body.segments]]
+kind = "plain_text"
+text = "That also fits the picture.\n\nA gradual CPU drop with still-low I/O and low RAM pressure usually points to the workload becoming less “embarrassingly parallel” over time, not to the VM starving. A few likely contributors are:\n- more coordination and bookkeeping in the later derivation/write path\n- more small-file metadata work that doesn’t saturate storage throughput but still serializes parts of the flow\n- GC / allocation shape changing as the in-memory assertion set grows\n- parts of the rebuild simply not parallelized enough to keep 6 vCPU equally busy end to end\n\nSo the signal is still the same: the current architecture is benefiting from more CPU, but it is not shaped to scale linearly with more cores. That’s exactly the kind of evidence we wanted from this rerun. I’m keeping the rebuild going to get the final timing and counts."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1438-7622-9e1f-9452e429fe4a"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1438-724d-b00d-9d33e7407277"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.429Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "6e7c98af676097813410a191a47848fc6ab36e61f55f75596cee1b0d247ca83a"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-010337-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-010337-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-010337-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 990
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next slice is in and pushed as `8696303e`.\n\n`export-graphviz-dot` now supports explicit traceability gating for working-slice exports:\n- `--verification <none|traceable>`\n- `--objects-root <path>`\n\nThis is wired in [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs), documented in [export-graphviz-dot.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/export-graphviz-dot.md) and [cli-commands.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/cli-commands.md), and covered by tests in [GraphvizDotTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/GraphvizDotTests.fs) and [CliHelpTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/CliHelpTests.fs).\n\nBehavior now is:\n- `--verification traceable` is only allowed with `--working-import-id`\n- if verification is clean, export proceeds and reports verified supporting events/raw objects\n- if the provenance chain is broken, the command refuses to write the DOT file and exits with code `2`\n\nExample:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  export-graphviz-dot \\\n  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore \\\n  --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects \\\n  --working-import-id <import-id> \\\n  --verification traceable\n```\n\nValidation is green:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `46` tests passed\n\nI left the real event-store outputs uncommitted, so the only local changes still present are the intentionally untracked data under [NEXUS-EventStore/events](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events), [NEXUS-EventStore/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports), and [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph)."
+

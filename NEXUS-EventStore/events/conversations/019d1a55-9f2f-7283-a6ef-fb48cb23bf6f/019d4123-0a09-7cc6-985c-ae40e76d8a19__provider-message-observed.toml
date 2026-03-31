@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d4123-0a09-7cc6-985c-ae40e76d8a19"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d4123-0a09-7991-9448-b25030ae17f9"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T23:41:44.891Z"
+observed_at = "2026-03-30T23:45:04.2975719Z"
+imported_at = "2026-03-30T23:45:04.2975719Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d4122-f929-789c-92bb-df753437e307"
+
+[content_hash]
+algorithm = "sha256"
+value = "fab7833e56325928a567a5c009d72e3bea6d5f43f60847aaabd421f10350d237"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-044433-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-044433-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T23-44-56Z__nexus-emerging__50c25a71/session_index.jsonl"
+archived_at = "2026-03-30T23:44:59.9603155Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T23-44-56Z__nexus-emerging__50c25a71/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T23:44:59.9603155Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-044433-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4428
+
+[[body.segments]]
+kind = "plain_text"
+text = "The friction is mostly two big workstreams plus a small docs layer, not one tangled bug.\n\n**Main Buckets**\n1. `NEXUS-EventStore` ingestion/history work.\n   - This is the big one: about `8945` untracked paths under [NEXUS-EventStore](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore).\n   - There’s also a tracked projection file with a huge change:\n     - [019d1a55-9f2f-7283-a6ef-fb48cb23bf6f.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations/019d1a55-9f2f-7283-a6ef-fb48cb23bf6f.toml)\n   - This looks like an active import/projection run, not a small edit.\n\n2. Docs-site / docs-structure work.\n   - Untracked:\n     - [docs/repo-overview.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/repo-overview.md)\n     - [docs/decisions/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/decisions/README.md)\n     - [docs/how-to/preview-docs-site.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/preview-docs-site.md)\n     - [docs/assets](/home/ivan/NEXUS/NEXUS-EMERGING/docs/assets)\n     - [mkdocs.yml](/home/ivan/NEXUS/NEXUS-EMERGING/mkdocs.yml)\n     - [requirements-docs.txt](/home/ivan/NEXUS/NEXUS-EMERGING/requirements-docs.txt)\n\n3. Tracked root/docs updates already in flight.\n   - Examples:\n     - [README.md](/home/ivan/NEXUS/NEXUS-EMERGING/README.md)\n     - [docs/index.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/index.md)\n     - [docs/agent-readme.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/agent-readme.md)\n     - [docs/cortex-repo-memory-protocol.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/cortex-repo-memory-protocol.md)\n     - [docs/how-to/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/README.md)\n     - [docs/how-to/git-auth-for-codex.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/git-auth-for-codex.md)\n     - [docs/research/README.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/research/README.md)\n     - [docs/decisions/0008-branch-topology-by-workstream.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/decisions/0008-branch-topology-by-workstream.md)\n     - [.gitignore](/home/ivan/NEXUS/NEXUS-EMERGING/.gitignore)\n\n**What “complete” likely means**\nFor `NEXUS-EventStore`:\n- Decide whether this is a real ingestion batch that should become durable history.\n- If yes:\n  - verify the imports/projections/snapshots/work-batch outputs belong together\n  - confirm they’re not accidental scratch output\n  - commit them as an intentional eventstore checkpoint/batch\n- If no:\n  - move them out of the repo worktree or ignore/clean the scratch outputs\n\nFor the docs-site work:\n- Decide if the repo is formally adopting the docs site now.\n- If yes:\n  - wire up [mkdocs.yml](/home/ivan/NEXUS/NEXUS-EMERGING/mkdocs.yml), [docs/repo-overview.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/repo-overview.md), [docs/assets](/home/ivan/NEXUS/NEXUS-EMERGING/docs/assets), and the new docs readmes/how-tos into one coherent docs-site commit\n  - preview it locally and confirm navigation works\n- If no:\n  - keep those files out of the commit or move them to scratch\n\nFor the tracked docs/root changes:\n- Split them into clean concern-based commits instead of one huge mixed bundle.\n- Likely one commit for docs-site structure, another for branch/doctrine/readme changes, and another for our command/view presentation-rule fix.\n\n**Why I paused on committing NEXUS**\nMy two upstream edits were small:\n- [docs/agent-readme.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/agent-readme.md)\n- [docs/interaction-concern-lines-contexts-and-lenses.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/interaction-concern-lines-contexts-and-lenses.md)\n\nBut they would have landed inside:\n- a massive active eventstore batch\n- a docs-site bootstrap\n- other tracked doc/root edits already underway\n\nSo the real blocker is not “can’t commit”; it’s “should be split intentionally first.”\n\nIf you want, I can do the next step and turn the NEXUS dirty tree into a concrete cleanup plan:\n- what to commit as `eventstore batch`\n- what to commit as `docs-site bootstrap`\n- what to commit as `doctrine/guidance`\n- and what should stay out for now"
+

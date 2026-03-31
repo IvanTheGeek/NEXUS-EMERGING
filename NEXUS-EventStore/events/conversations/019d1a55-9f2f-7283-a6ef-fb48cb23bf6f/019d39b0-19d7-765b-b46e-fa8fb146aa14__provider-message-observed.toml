@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d39b0-19d7-765b-b46e-fa8fb146aa14"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d39b0-19d7-7670-8b7d-0a26212340ff"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T12:57:57.895Z"
+observed_at = "2026-03-29T13:02:13.7787479Z"
+imported_at = "2026-03-29T13:02:13.7787479Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d39b0-1312-7a6c-86e5-4fb1772b9644"
+
+[content_hash]
+algorithm = "sha256"
+value = "4e2839d6c1f39622de0a83138389d66a126226666e481e2681e13565815f773d"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-037817-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-037817-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T13-02-10Z__cheddarbooks__e7610b0e/session_index.jsonl"
+archived_at = "2026-03-29T13:02:12.2168976Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T13-02-10Z__cheddarbooks__e7610b0e/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T13:02:12.2168976Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-037817-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3755
+
+[[body.segments]]
+kind = "plain_text"
+text = "Added a tracked workspace in CheddarBooks and committed it as `800dbeb` (`model: add tracked laundrylog html workspace`).\n\nBest entry point:\n- [workspace/laundrylog/README.md](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/README.md)\n\nTracked current artifacts:\n- [AEM path HTML](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/aem-paths/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n- [Screen path HTML](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n- [Screen path update sidecar](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.update.js)\n- [Screen components HTML](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/screens/LaundryLog_ScreenComponents.html)\n- [Tracked `v7` reference](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/reference/laundrylog-v7.html)\n\nWhat I chose:\n- `workspace/laundrylog/html/aem-paths/`\n- `workspace/laundrylog/html/screen-paths/`\n- `workspace/laundrylog/html/screens/`\n- `workspace/laundrylog/html/reference/`\n\nThat gives you one repo-tracked place for the current “real” HTML surfaces, while `tmp/` stays scratch. I also updated the LaundryLog docs and agent guidance so these workspace files get refreshed in the same commit as renderer changes, not through their own separate commit trigger.\n\nI carried the current compact-header screen-path renderer state into that commit too, and verification stayed clean:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `34` tests passed"
+

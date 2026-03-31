@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d299b-6608-7728-a46c-39a6b26b7d42"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d299b-6607-770b-b0e7-8f376b2dfb67"
+conversation_id = "019d299b-6607-770b-b0e7-8f376b2dfb67"
+message_id = "019d299b-6608-7d28-9923-689790aaf66b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T12:32:47.316127Z"
+observed_at = "2026-03-26T10:05:38.4563037Z"
+imported_at = "2026-03-26T10:05:38.4563037Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d299b-59a0-70a6-9feb-678970b1d72a"
+
+[content_hash]
+algorithm = "sha256"
+value = "823234dc821a32474c24a117cea2e4c40e2ef4bc1562c6dc60486a484e985806"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+conversation_native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "883bfe60-1e03-4af8-b379-94272fa5b8c5"
+conversation_native_id = "69c11e4f-bec8-8328-85c1-9b20674bf9e2"
+message_native_id = "883bfe60-1e03-4af8-b379-94272fa5b8c5"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-25-01-04-04-3ef8fcd0ea8b4ae29d8addd7200fbd72.zip"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-26T10-05-38-4563037Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-26T10:05:38.4563037Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "883bfe60-1e03-4af8-b379-94272fa5b8c5"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 36
+
+[[body.segments]]
+kind = "plain_text"
+text = ":::writing{variant=\"standard\" id=\"94821\"}\n# NEXUS Ontology Update — Record-Centric Model (Intent → Event → Fact → Representation)\n\n## Context\n\nWe are refining the core ontology of the NEXUS system to move away from \"write/read\" and toward a **causality + knowledge + interpretation** model.\n\nThis update introduces **Record as the foundational primitive**, with **Event** and **Fact** as specializations, and aligns the full system around:\n\n```\nIntent → Event → Fact → Representation\n```\n\nThis must be implemented in a way that is:\n\n- consistent with graph-based modeling\n- aligned with event modeling (but not limited to it)\n- extensible across domains (software, knowledge, tutorials, media, etc.)\n- compatible with existing NEXUS principles:\n  - Immutable Evolution\n  - strict separation of causality vs representation\n\n---\n\n## Core Conceptual Model\n\n### 1. Intent (Causality Entry Point)\n\n- Represents a desire or request for change\n- Originates from an Actor\n- Leads to Events\n\n```\nActor → Intent → Event\n```\n\n---\n\n### 2. Record (FOUNDATIONAL PRIMITIVE)\n\n**Record is the base unit of captured meaning.**\n\n> A Record is any persisted, referenceable unit of captured information.\n\nThis is the root abstraction.\n\nAll Events and Facts are Records.\n\n---\n\n### 3. Event (Record of Change)\n\n- A **temporal record**\n- Represents that something *occurred*\n- Always has time semantics\n- Drives the evolution of the system\n\nExamples:\n- OrderPlaced\n- FileImported\n- VideoRendered\n\nDefinition:\n\n> Event = Record of occurrence (change in time)\n\n---\n\n### 4. Fact (Record of Truth)\n\n- A **truth-bearing record**\n- Represents that something *is true*\n- May be time-qualified but is not inherently a transition\n- Derived from Events (directly or indirectly)\n\nExamples:\n- Account exists\n- Balance = 42\n- Video duration = 3:12\n\nDefinition:\n\n> Fact = Record of truth (state/assertion)\n\n---\n\n### 5. Representation (Interpretation Layer)\n\n- Derived from Facts (and sometimes directly from Events)\n- Shaped by a **Lens**\n- Consumed by humans or systems\n\nExamples:\n- UI view\n- API response\n- CLI output\n- report\n- tutorial explanation\n\n---\n\n## Canonical Flow\n\n```\nActor → Intent → Event → Fact → Representation\n```\n\nSemantically:\n\n- Intent causes Events\n- Events establish Facts\n- Facts enable Representations\n\n---\n\n## Graph Interpretation\n\n- Intent = causal node\n- Event = transition record (edge or node depending on modeling choice)\n- Fact = stable/asserted node\n- Representation = derived node via lens\n\nEdges:\n\n- Intent ──causes──▶ Event\n- Event ──establishes──▶ Fact\n- Fact ──interpreted_as──▶ Representation\n\n---\n\n## Required Changes to NEXUS Core\n\n### 1. Introduce Record as First-Class Concept\n\nAdd a base `Record` type.\n\n### 2. Define RecordKind\n\n```fsharp\ntype RecordKind =\n    | Event\n    | Fact\n```\n\n### 3. Define Record Type\n\n```fsharp\ntype Record =\n    { Id : RecordId\n      Kind : RecordKind\n      Subject : NodeId\n      Payload : RecordData\n      Timestamp : Instant option }\n```\n\nNotes:\n- `Timestamp` is required for Event, optional for Fact\n- Do NOT treat Fact as mutable state — it must be append-only or versioned\n\n---\n\n### 4. Optional: Stronger Typing (Preferred)\n\n```fsharp\ntype EventRecord =\n    { Id : RecordId\n      Subject : NodeId\n      OccurredAt : Instant\n      Data : EventData }\n\ntype FactRecord =\n    { Id : RecordId\n      Subject : NodeId\n      AssertedAt : Instant option\n      Data : FactData }\n\ntype Record =\n    | Event of EventRecord\n    | Fact of FactRecord\n```\n\n---\n\n### 5. Update NodeKind (if applicable)\n\nEnsure alignment with:\n\n```fsharp\ntype NodeKind =\n    | Thing\n    | Concept\n    | Role\n    | State\n    | Record\n    | Artifact\n    | Lens\n```\n\nWhere:\n- Record nodes represent Event or Fact instances\n\n---\n\n### 6. Introduce Explicit Edge Semantics\n\nDefine edge types (or conventions):\n\n```text\nIntent ──causes──▶ Event\nEvent ──establishes──▶ Fact\nFact ──interpreted_as──▶ Representation\n```\n\nThese should be explicit in the model (not implicit behavior).\n\n---\n\n### 7. Enforce Separation of Concerns\n\n#### Causality Layer\n- Intent\n- Event\n\n#### Truth Layer\n- Fact (Record)\n\n#### Representation Layer\n- Representation (via Lens)\n\nDO NOT mix:\n- Intent with Representation\n- Fact with mutable state\n- Event with current state\n\n---\n\n## Constraints / Invariants\n\n1. All Events are Records\n2. All Facts are Records\n3. Not all Records are interchangeable — Event ≠ Fact\n4. Events MUST be immutable\n5. Facts MUST be append-only or versioned (no destructive mutation)\n6. Representations MUST NOT be treated as source of truth\n7. Intent NEVER directly produces Representation (must go through Event/Fact)\n\n---\n\n## Design Intent\n\nThis replaces:\n\n```\nWrite ↔ Read (CRUD thinking)\n```\n\nWith:\n\n```\nIntent ↔ Representation (causal + interpretive thinking)\n```\n\nAnd introduces a stable core:\n\n```\nRecord (Event + Fact)\n```\n\n---\n\n## Outcome\n\nThis change should:\n\n- unify software + knowledge + content domains\n- align graph modeling with event modeling\n- create a stable ontology for NEXUS\n- support future AI/CORTEX learning via LOGOS\n- enable multiple representations (FnUI, FnCLI, FnAPI, etc.) cleanly\n\n---\n\n## Implementation Notes\n\n- Keep naming consistent across:\n  - Types.fs\n  - Core.fs\n  - ontology.md\n- Prefer explicitness over magic\n- Do not break existing structure — evolve via additive changes\n- Ensure merge-safe integration with current branch\n\n---\n\n## Deliverables\n\n1. Updated type definitions\n2. Updated ontology.md reflecting this model\n3. Any required adjustments to existing slices (CommandSlice, ProjectionSlice, etc.)\n4. Clear mapping from old terminology → new terminology\n\n---\n\nEnd of prompt.\n:::"
+

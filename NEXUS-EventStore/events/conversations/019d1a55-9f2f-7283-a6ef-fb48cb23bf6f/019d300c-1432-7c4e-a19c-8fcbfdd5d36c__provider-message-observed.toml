@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1432-7c4e-a19c-8fcbfdd5d36c"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1432-78a3-be40-2901eb5fa65c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.181Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "475c7a7217d4cc2b951e4136a03419ee3a7580f0c78b153796fc8fe9648b4486"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000102-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000102-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000102-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 14
+
+[[body.segments]]
+kind = "plain_text"
+text = "This helps a lot. The important shift for me is that this importer is not the end product and not just ETL, it is the first memory-ingestion layer of NEXUS.\n\nFrom what you described, I think we should treat the system as three distinct layers from the beginning:\n\n- Raw object layer: immutable provider artifacts like the original zip, extracted working files, attachments, audio, and anything else the providers give you.\n- Canonical history layer: your append-only event/fact store, where Git is the durable history mechanism.\n- Meaning/projection layer: rebuildable views, ontology, graph nodes, and later the NEXUS-GENESIS/NEXUS intelligence built on top.\n\nThat lines up well with the real files you added:\n- ChatGPT export: 75 conversations in a graph-style `mapping` structure, plus attachments/audio and export metadata.\n- Claude export: 119 conversations, plus `projects`, `memories`, and `users`.\n\nSo one thing feels clear now: yes, we should preserve the original provider zip as the immutable source artifact. Then we can derive extracted working data from it, and from that produce our own canonical events/facts. That keeps provenance clean and matches the object-store idea you’re describing.\n\nA planning list that feels aligned to your vision right now is:\n\n1. Preserve raw provider artifacts exactly as received.\n2. Extract and stage working raw datasets for inspection and diffing.\n3. Normalize conversation/message activity into a canonical append-only event model.\n4. Keep provenance so every canonical fact can point back to raw source artifacts and provider IDs.\n5. Add dedupe and revision observation for overlapping and rolling imports.\n6. Build rebuildable projections so the event store can be queried usefully.\n7. Start shaping NEXUS-GENESIS as the curated foundation derived from that history.\n8. Use that substrate to build the broader NEXUS system that can later generate other systems.\n\nMy strongest recommendation for v1 scope is this:\n- Import conversations and messages first.\n- Preserve attachments, audio, `projects`, `memories`, and `users` as raw-linked artifacts first, without forcing a full ontology for them yet.\n- Make provenance, dedupe, and append-only behavior correct before we get ambitious about higher-level semantics.\n\nThat keeps us from getting ahead of your direction while still building the right foundation.\n\nThe next three questions I need your direction on are:\n\n1. Is v1 primarily about trustworthy ingestion and provenance, with richer semantic extraction deferred until the raw-to-canonical pipeline is solid?\n2. For Claude `projects`/`memories`/`users` and ChatGPT attachments/audio, do you want v1 to preserve and reference them only, or do you already want first-class canonical events for those too?\n3. Do you want me to turn your stage vision into a short architecture/planning note first, before we draft the F# project structure and types?\n\nIf you want, next I can give you a very short “NEXUS ingestion architecture” outline that reflects exactly what you just said, without jumping into code yet."
+

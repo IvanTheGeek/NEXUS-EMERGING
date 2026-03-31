@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7086-7775-869e-f6e60c065d44"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7086-70d1-9ac7-5a5f37ed4f85"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T17:46:07.566Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "86038b15fc3b110e679213184065c65e68101389dd6f31d18864b955f45955e0"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-009606-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-009606-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-009606-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 928
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. I think that’s exactly what we’re running into too.\n\nFiles are excellent for:\n- append-only truth\n- transparency\n- diffability\n- rebuildability\n\nFiles are not excellent for:\n- repeated slice queries\n- adjacency lookups\n- counts and joins\n- interactive exploration at scale\n\nSo the moment an event/file store becomes real, indexes stop being optional. That’s not a failure of the model. It’s a sign the model is alive.\n\nThe important part is how we frame it. For NEXUS, the safe rule is:\n\n- canonical event files remain source truth\n- indexes are derived working structures\n- projections are derived working structures\n- graph working layers are derived working structures\n- all of them must be rebuildable and versioned\n\nThat keeps us from confusing “what is true” with “what is fast.”\n\nSo yes, Adam hitting indexing pressure strongly validates the direction we’ve been taking in:\n- [nexus-graph-materialization-plan.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/nexus-graph-materialization-plan.md)\n- [0006-storage-roles-by-bounded-context.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/decisions/0006-storage-roles-by-bounded-context.md)\n\nMy current take is:\n- event files first\n- explicit derived indexes second\n- keep index formats simple and rebuildable\n- avoid inventing a fancy custom index format too early unless a plain embedded store really fails us\n\nIn other words: yes, same issue, same pressure, and I think we’re on the right track by treating indexing as a separate bounded concern instead of pretending the raw event files should do everything."
+

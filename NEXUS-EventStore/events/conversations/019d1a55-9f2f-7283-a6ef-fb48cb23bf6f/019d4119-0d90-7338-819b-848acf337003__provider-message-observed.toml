@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d4119-0d90-7338-819b-848acf337003"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d4119-0d90-700f-89d4-a9968ddbc834"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T22:03:52.437Z"
+observed_at = "2026-03-30T23:34:11.8123665Z"
+imported_at = "2026-03-30T23:34:11.8123665Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d4119-0464-7662-883d-1710d136588b"
+
+[content_hash]
+algorithm = "sha256"
+value = "04a2d5e3a690ba753c1402d4f643792bc39a97c10fa7cc6f0b985697e2cd8ef5"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-044228-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-044228-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T23-34-05Z__cheddarbooks__e93863ce/session_index.jsonl"
+archived_at = "2026-03-30T23:34:08.5990309Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T23-34-05Z__cheddarbooks__e93863ce/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T23:34:08.5990309Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-044228-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4403
+
+[[body.segments]]
+kind = "plain_text"
+text = "Not exactly. For the current NM law, `Step 01-launch-app` is better understood as:\n\n- `LaunchApp` = the `COMMAND`\n- `AppStarted` = the produced `EVENT`\n- `SplashVisible` = the first resulting `VIEW`\n\nThat’s the shape currently encoded in [NmPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/NmPathHtmlRenderer.fs).\n\nMy recommendation is to keep `AppStarted` over `AppLaunched`.\n\nWhy:\n- `AppLaunched` sounds very close to the user trigger or command.\n- `AppStarted` sounds more like an observed system fact.\n- that separation is useful in this model:\n  - user intent: `LaunchApp`\n  - system fact: `AppStarted`\n  - readable result: `SplashVisible`\n\nIf we want a sharper event name than `AppStarted`, the best alternative is probably `StartupBegan`. That would make the sequence read:\n\n- `LaunchApp`\n- `StartupBegan`\n- `SplashVisible`\n\nI would rank them like this:\n\n1. `AppStarted`\n2. `StartupBegan`\n3. `AppLaunched`\n\nSo my current take is:\n- `Step 01` as a whole should stay `LaunchApp`\n- the event inside it should probably stay `AppStarted`\n- use `AppLaunched` only if you intentionally want the event to mean the launch action itself, not the system crossing into startup\n\nIf you want, I can do a naming pass next and propose the best `COMMAND / EVENT / VIEW` names for the first 8 startup slices before changing code."
+

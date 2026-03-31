@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142f-7c29-b200-0b7d169f5b2b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142f-7f06-b391-cb94d4e3f28f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:47:43.946Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "707e181ecf9cca2363cfbab7e3f8f95ccdc43f2f7cba400a825bb6af21df83b9"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-018636-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-018636-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-018636-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1634
+
+[[body.segments]]
+kind = "plain_text"
+text = "That’s done and pushed on `logos-intake-foundation` as `c32818fa`.\n\nI updated the Markdown docs so internal doc references are actual relative links that GitHub can click through, instead of plain backticked paths. The main entry points are now much better on GitHub:\n- [README.md](/tmp/nexus-merge-M7SKP3/README.md)\n- [NEXUS-Code/README.md](/tmp/nexus-merge-M7SKP3/NEXUS-Code/README.md)\n- [docs/how-to/README.md](/tmp/nexus-merge-M7SKP3/docs/how-to/README.md)\n- [docs/how-to/cli-commands.md](/tmp/nexus-merge-M7SKP3/docs/how-to/cli-commands.md)\n- [docs/repository-concern-lines.md](/tmp/nexus-merge-M7SKP3/docs/repository-concern-lines.md)\n- [0014-repository-concern-lines-and-documentation-spine.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0014-repository-concern-lines-and-documentation-spine.md)\n\nI also fixed the remaining plain references in places like:\n- [NEXUS-EventStore/README.md](/tmp/nexus-merge-M7SKP3/NEXUS-EventStore/README.md)\n- [logos.md](/tmp/nexus-merge-M7SKP3/docs/concepts/logos.md)\n\nI specifically skipped code-fence examples and front matter so example snippets didn’t get mangled. I also verified there are no remaining non-linked `.md` references in prose outside code examples/front matter. Since this was docs-only, I didn’t rerun the build or test suite."
+

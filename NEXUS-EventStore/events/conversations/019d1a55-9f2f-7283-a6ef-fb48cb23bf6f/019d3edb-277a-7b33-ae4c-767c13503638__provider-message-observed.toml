@@ -1,0 +1,54 @@
+schema_version = 1
+event_id = "019d3edb-277a-7b33-ae4c-767c13503638"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3edb-277a-79a4-9088-87ef734dc9f2"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T12:22:50.116Z"
+observed_at = "2026-03-30T13:07:20.5023947Z"
+imported_at = "2026-03-30T13:07:20.5023947Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3edb-1d36-7ae6-bb94-f88a6bc22dd1"
+
+[content_hash]
+algorithm = "sha256"
+value = "cfe7ef97cc5555f6a793e127d5afafcf14da04ba91babe0074c67980b38511a7"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-040682-user_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-040682-user_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T13-07-15Z__cheddarbooks__91db582f/session_index.jsonl"
+archived_at = "2026-03-30T13:07:17.4752183Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T13-07-15Z__cheddarbooks__91db582f/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T13:07:17.4752183Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-040682-user_message"
+role = "human"
+sequence_hint = 4072
+
+[[body.segments]]
+kind = "plain_text"
+text = "PLEASE IMPLEMENT THIS PLAN:\n# Rework NM Columns Into AEM-Style Classified Slices\n\n## Summary\nKeep the legacy screen-path page unchanged. Update only the NM path so each column reads like a broader NM slice with explicit classifications at the top and typed internal boxes below.\n\nThe new NM column grammar should be:\n- classification row first\n- step/key row second\n- title third\n- surface slot next\n- typed internal boxes after that\n\nThis phase should make the NM page feel much closer to the AEM slice language without forcing one universal visible term like `STATE` across every context.\n\n## Key Changes\n### 1. Move the classifications into the NM column header\nFor every NM column, move the current explicit classifications above `Step 01 · 01-app-started`.\n\nUse this order:\n- left side pills:\n  - context group\n  - bounded context\n  - lens\n  - actor/role when present\n- right side:\n  - true surface kind label\n\nResulting shape:\n```text\n[App Runtime] [ApplicationLifecycle] [Lifecycle] [System]     BOOT\nStep 01 · 01-app-started\nAppStarted\n```\n\nRemove the current duplicated lower metadata placement under the surface slot for these same core classifications.\n\n### 2. Change the top-right label into a true surface kind\nThe current top-right words like `LIFECYCLE` and `RUNTIME` overlap too much with the lens pills.\n\nReplace that slot with a true surface/slice kind:\n- lifecycle/runtime boot columns: `BOOT`\n- screen-path columns: `SCREEN`\n- AEM command columns: `COMMAND`\n- AEM view columns: `VIEW`\n- later AEM event columns: `EVENT`\n\nThis keeps the placement and visual strength, but makes the meaning distinct from the lens.\n\n### 3. Apply AEM-style internal boxes across NM, with context-native terms\nGeneralize the AEM box idea, but do not force one universal visible label like `STATE`.\n\nUse these first-pass visible terms:\n- `ApplicationLifecycle`\n  - `SCREEN`\n  - `TRANSITION`\n- `RuntimeOrchestration`\n  - `SCREEN`\n  - `ORCHESTRATION`\n- `ScreenPath`\n  - `SCREEN`\n  - `INTERACTION`\n- `EventModeling`\n  - keep the existing AEM terms:\n    - `SCREEN`\n    - `COMMAND`\n    - `EVENT`\n    - `VIEW`\n\nImportant rule:\n- the deeper shared logic can still be “change side” vs “state/view side”\n- but the visible page should use context-native labels\n\n### 4. Treat EventModeling columns as real AEM slices, not NM shells around AEM\nFor AEM columns:\n- do not keep a competing outer NM body that fights the slice grammar\n- let the AEM slice shell be the real column body\n- keep the shared NM classification row above it\n- keep the current app UI surface in the slice’s top screen slot\n\nSo the AEM column becomes:\n- NM classification row\n- step/key/title\n- actual AEM slice body\n\n### 5. Add contextual hover/click explanation popups for the header pills\nEach classification pill in the NM header row should support:\n- hover on desktop\n- click/focus on touch and keyboard\n\nThe popup should be contextual, not only glossary-like:\n- what the pill means in general\n- why this specific column has that classification\n\nExample:\n- `ApplicationLifecycle`\n  explains that it owns lifecycle phase meaning\n- and explains that `AppStarted` is in that context because the app is entering a lifecycle phase\n\nDo not make this hover-only.\n\n### 6. Use colors as cues, but keep the meaning explicit in text\nUse colors as support, not as the only meaning.\n\nRules:\n- outer column color family represents bounded context\n- `ApplicationLifecycle`, `RuntimeOrchestration`, and `ScreenPath` each get distinct context color families\n- `EventModeling` keeps the established AEM internal blue/green/orange grammar\n- do not use color alone to distinguish meaning; the classification row is the explicit source\n\n## Test Plan\n### Expecto\nUpdate NM renderer tests to prove:\n- classification row is emitted above the step/key line\n- the top-right label uses `BOOT`, `SCREEN`, `COMMAND`, and `VIEW` instead of duplicating lens words\n- lower duplicate classification pills are removed from their old position\n- the chosen context-native internal box labels are emitted:\n  - `TRANSITION`\n  - `ORCHESTRATION`\n  - `INTERACTION`\n  - existing AEM labels remain\n- AEM columns still render through the AEM slice shell, not a competing NM inner shell\n- the old screen-path artifact remains unchanged\n\n### Playwright\nUpdate the NM browser suite to prove:\n- the classification pills appear above the step/key line\n- the top-right kind label changes to the new surface-kind words\n- AEM columns still show the AEM slice body and colors\n- contextual explanation popups open on hover and click/focus\n- popup text changes based on the pill and the current column\n- screen-path browser tests remain unchanged and still pass\n\n## Assumptions\n- this phase is NM-only; the legacy screen-path artifact stays unchanged\n- the first-pass non-AEM internal terms are:\n  - `TRANSITION`\n  - `ORCHESTRATION`\n  - `INTERACTION`\n- these terms are provisional working language and can be refined after reviewing the tangible result\n- the deeper universal role model stays implicit; the page shows context-native visible terms instead of abstract universal labels"
+

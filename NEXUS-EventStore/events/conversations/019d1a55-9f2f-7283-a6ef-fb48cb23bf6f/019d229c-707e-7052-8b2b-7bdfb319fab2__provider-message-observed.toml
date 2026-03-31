@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707e-7052-8b2b-7bdfb319fab2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707e-74a6-b1ff-5fd36b46fc64"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T16:33:46.836Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "9b27d6cb5d307ff6f10eecd274d6a17905fad5b9c437a74f7cc414c08fb8bc8c"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-005195-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-005195-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-005195-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 483
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next feature slice is in and pushed as `5e5ed1e0`.\n\nI added the first real graph rebuild pass in [GraphAssertions.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphAssertions.fs). It derives a thin graph layer from canonical history and writes rebuildable fact files under `graph/assertions/`. The first pass currently emits node-kind facts plus core relationships and small attributes like message role, conversation title, file name, media type, and reference disposition. The new CLI command is wired in [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs), and the human guide is here: [rebuild-graph-assertions.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-graph-assertions.md).\n\nI also added regression coverage in [GraphAssertionTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/GraphAssertionTests.fs). That test proves the rebuild writes assertions, stays deterministic across repeat runs, and produces expected message-to-conversation, message-to-artifact, role, and domain-slug facts from a real canonical import fixture. Validation is green:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `14` tests passed, `0` failed\n\nThe branch is clean and synced to `origin/codex/nexus-ingestion-foundation`. The new command is:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- rebuild-graph-assertions\n```"
+

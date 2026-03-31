@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b3-72fc-a6e0-b5d4b08985d3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b1-7b68-8988-a7f2c582266e"
+conversation_id = "019d1f70-c2b1-7b68-8988-a7f2c582266e"
+message_id = "019d1f70-c2b3-777a-8675-16182bc32ee9"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-21T14:01:09.076256Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "8316b1e4b96f5cc404993174a38acb639236589901251a683c3c91af5e2e9cea"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69bea2a8-ccec-8326-a53f-e24b24633720"
+conversation_native_id = "69bea2a8-ccec-8326-a53f-e24b24633720"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "fda94d72-1e12-42b1-b4db-725f0d685438"
+conversation_native_id = "69bea2a8-ccec-8326-a53f-e24b24633720"
+message_native_id = "fda94d72-1e12-42b1-b4db-725f0d685438"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "fda94d72-1e12-42b1-b4db-725f0d685438"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 26
+
+[[body.segments]]
+kind = "plain_text"
+text = "Good call—that PDF *does* have what we need. Let’s pull this together cleanly.\n\n---\n\n# 🏡 What R-LD and R-HD actually are (from your code)\n\nFrom the definitions section:\n\n- **R-LD** = *Low Density Residential district* fileciteturn5file6  \n- **R-HD** = *High Density Residential district* fileciteturn5file6  \n\nThat’s all the formal definition gives you—but the real meaning comes from how the code tells you to read each district:\n\n> “See Section 1109.02 Low Density Residential (R-LD) District… for a description…” fileciteturn5file8  \n\n👉 So the *actual differences* live in:\n- **Use Table (1104.03.1)** → what you can do\n- **Dimensional tables (1109.xx)** → lot size, setbacks, etc.\n\n---\n\n# 🔍 What the districts *functionally* mean in Springfield\n\nEven though the snippet doesn’t show the full table, we *can infer real differences from the code itself*.\n\n---\n\n## 🟢 R-LD (Low Density Residential)\n\n### Signals from the code\n- Allows animals like:\n  - horses, donkeys, etc. (with limits) fileciteturn5file2  \n- Larger setbacks for animal structures relative to R-LD properties fileciteturn5file2  \n\n👉 That tells you:\n- **Bigger lots**\n- **More suburban / semi-rural character**\n\n### Practical meaning\n- Primarily **single-family homes**\n- Lower density\n- More yard space\n- More tolerance for “non-standard” yard uses (like gardens)\n\n---\n\n## 🟡 R-HD (High Density Residential)\n\n### Signals from the code\n- Much tighter restrictions:\n  - fewer animals allowed fileciteturn5file2  \n- Same setbacks from R-HD property lines (implies closer proximity between homes)\n\n👉 That tells you:\n- **Smaller lots**\n- **More neighbors / tighter spacing**\n\n### Practical meaning\n- Can include:\n  - smaller lots\n  - possibly duplex / multi-family (check use table to confirm exact allowances)\n- More urban feel\n\n---\n\n# ⚖️ The *real* difference (decoded)\n\nThis is the important part:\n\n| Concept | R-LD | R-HD |\n|--------|------|------|\n| Density intent | Low | High |\n| Lot size | Larger | Smaller |\n| Spacing | More open | More compact |\n| Typical housing | Single-family | Mix (often tighter housing) |\n| “Yard freedom” | Higher | Lower |\n\n---\n\n# 🧠 The key insight (this matters for your garden)\n\nZoning districts control:\n\n👉 **Intensity of land use (how much stuff per land)**  \nNOT  \n👉 **Plant type or landscaping choices**\n\nSo whether you are:\n- R-LD ✅\n- R-HD ✅\n\nYour **front yard garden question barely changes**.\n\n---\n\n# 🌱 What actually *changes for you*\n\n### If you are R-LD\n- You’re in the *most permissive residential context*\n- Front yard garden = very low risk\n\n### If you are R-HD\n- Still allowed\n- Just:\n  - keep it tidy\n  - avoid anything that looks like a structure\n  - be mindful of neighbors\n\n---\n\n# ⚠️ One subtle but important clue from the code\n\nThis line:\n\n> “All non-household animals are prohibited from being located in front and side yards.” fileciteturn5file2  \n\n👉 Notice:\n- They explicitly regulate **animals in front yards**\n- They **do NOT regulate plants in front yards**\n\nThat’s actually strong evidence that:\n➡️ **gardening is not a restricted use in front yards**\n\n---\n\n# 🧭 If you want to go deeper\n\nWe can get *very precise* if you want:\n\n- Pull **Table 1109.02 (R-LD)** and **1109.03 (R-HD)**:\n  - minimum lot size\n  - setbacks\n  - building coverage\n\n- Then map your exact plan:\n  - path + raised beds\n  - retaining edge height\n\nAnd I’ll tell you:\n👉 “this is 100% safe” vs “this might trigger zoning review”\n\nJust say 👍"
+

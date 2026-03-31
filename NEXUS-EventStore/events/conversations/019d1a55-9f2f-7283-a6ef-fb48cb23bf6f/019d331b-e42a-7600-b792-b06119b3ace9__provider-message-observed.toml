@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d331b-e42a-7600-b792-b06119b3ace9"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d331b-e42a-79f7-9dc4-3713e1d16eb4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:21:06.691Z"
+observed_at = "2026-03-28T06:22:37.056546Z"
+imported_at = "2026-03-28T06:22:37.056546Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d331b-dc00-7d03-ad81-dc1cdc8d90d9"
+
+[content_hash]
+algorithm = "sha256"
+value = "0b8107ae05736f59213cee755c258d7a3273139b2a202aaa4e9c9c89f48e98d5"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-027307-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-027307-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-22-35Z__nexus-emerging-main__b6ac2d36/session_index.jsonl"
+archived_at = "2026-03-28T06:22:36.1848957Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-22-35Z__nexus-emerging-main__b6ac2d36/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T06:22:36.1848957Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-027307-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2655
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, we can generate the export automatically. You do not have to do it manually.\n\nWhat works now:\n- live backend is the primary current state\n- `export-binfile` works through the Penpot API\n- it returns an SSE progress stream\n- the final `end` event includes an asset URL\n- downloading that asset yields the real `.penpot` ZIP archive\n\nCurrent live export I generated:\n- [LaundryLog.live-export.penpot](/home/ivan/NEXUS/tmp/LaundryLog.live-export.penpot)\n\nCurrent live file confirmed from the backend:\n- file name: `LaundryLog`\n- file id: `55486a26-c3da-805f-8007-c7db38f862df`\n- pages:\n  - `Components`\n  - `Screens`\n  - `PATHS`\n  - `Event Model`\n\nToken storage is now outside the repos:\n- [penpot-local-api-token.txt](/home/ivan/.config/nexus-secrets/penpot-local-api-token.txt)\n- [local secrets note](/home/ivan/.config/nexus-secrets/README.md)\n\nDurable notes recorded:\n- NEXUS branch `codex/penpot-live-backend-export`\n  - commit `2593020e`\n  - [penpot-live-backend-and-export.md](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-live-backend-and-export.md)\n- CheddarBooks branch `laundrylog-fnhci-primitive-map`\n  - commit `e9f378b`\n  - [penpot-projection.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md)\n\nOne important note:\n- MCP is still effectively blocked from my side while the plugin holds the single transport connection\n- so for now, the reliable automation surface is the backend API, and the reliable snapshot surface is exported `.penpot`\n\nThe next strongest move is to turn this into a deterministic helper script so we can do:\n- live file lookup\n- export\n- asset download\n- snapshot save\n\nwithout hand-running the API steps each time."
+

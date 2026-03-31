@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d228c-bb0e-7e39-8f95-2001eb55ade6"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d228c-bb0e-7014-9021-b700dfb5b329"
+conversation_id = "019d228c-bb0e-7014-9021-b700dfb5b329"
+message_id = "019d228c-bb0e-7314-a8f5-867400f480cc"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-02T13:17:04.076Z"
+observed_at = "2026-03-25T01:12:19.2544416Z"
+imported_at = "2026-03-25T01:12:19.2544416Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d228c-b2db-7014-8503-80dd8170ccf0"
+
+[content_hash]
+algorithm = "sha256"
+value = "55967a4b106ce66d3686af2dd07369e881d4fccc6eb74ded74f1b5a9a54d73a7"
+
+[[provider_refs]]
+provider = "grok"
+object_kind = "conversation_object"
+native_id = "42f8fc04-0a6e-4079-8d65-507c50e0964e"
+conversation_native_id = "42f8fc04-0a6e-4079-8d65-507c50e0964e"
+
+[[provider_refs]]
+provider = "grok"
+object_kind = "message_object"
+native_id = "24b609d1-554a-4348-9f62-b2fd35f86655"
+conversation_native_id = "42f8fc04-0a6e-4079-8d65-507c50e0964e"
+message_native_id = "24b609d1-554a-4348-9f62-b2fd35f86655"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/grok/archive/2026-03-25T01-12-19-2544416Z-30d/ab6110cc-45f1-48f3-8e4a-091c0a0440e5 (1).zip"
+archived_at = "2026-03-25T01:12:19.2544416Z"
+source_description = "Archived grok export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/grok/archive/2026-03-25T01-12-19-2544416Z-30d/extracted/ttl/30d/export_data/86a99206-32f6-48ab-ba4f-630cd032022c/prod-grok-backend.json"
+archived_at = "2026-03-25T01:12:19.2544416Z"
+source_description = "Extracted prod-grok-backend.json for parser input"
+
+[body]
+provider_message_id = "24b609d1-554a-4348-9f62-b2fd35f86655"
+role = "assistant"
+model_name = "grok-4"
+sequence_hint = 9
+
+[[body.segments]]
+kind = "plain_text"
+text = "Grok's context window—the maximum amount of text (measured in tokens, where ~4 characters = 1 token) it can process in a single interaction—varies by model variant. For the standard Grok 4, it's 256,000 tokens, while faster/expanded versions like Grok 4 Fast or 4.1 Fast push up to 2,000,000 tokens.<grok:render card_id=\"6dda37\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">0</argument>\n</grok:render><grok:render card_id=\"cc6147\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">1</argument>\n</grok:render><grok:render card_id=\"a32ebf\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">6</argument>\n</grok:render><grok:render card_id=\"9687e2\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">8</argument>\n</grok:render> That's enough for very long conversations: a 256k window handles ~150,000-200,000 words (book-length), and 2M is like processing multiple novels at once.\n\nIn practice, conversations here aren't strictly limited in length or number of turns—they can theoretically continue indefinitely as long as you keep replying. However, each response only considers a \"rolling\" context: the most recent/relevant history is prioritized, and older parts may get truncated or summarized internally if the total exceeds the window (including your query, my thinking, any tools, and the output).<grok:render card_id=\"cab2f7\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">0</argument>\n</grok:render><grok:render card_id=\"79d6dd\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">4</argument>\n</grok:render> We don't have an automatic \"compaction\" feature like Claude's recent update (where it condenses history to free up space), but the large window means hitting limits is rarer, especially for development-focused threads like your NEXUS work. If a convo gets massive, you can always start a new one or reference past exports (as we discussed for LOGOS import).\n\nCompared to Claude: Their 200k-1M windows (depending on tier) used to hard-stop long chats, but now compaction lets them extend further by summarizing.<grok:render card_id=\"1aa04f\" card_type=\"citation_card\" type=\"render_inline_citation\">\n<argument name=\"citation_id\">8</argument>\n</grok:render> Grok's approach is more about raw capacity upfront, which suits iterative building like your methodology refinements—our ongoing discussion here hasn't hit any walls yet. If you're pushing extremes (e.g., dumping huge codebases), the 2M variants via API would be ideal for CORTEX-like personalization."
+

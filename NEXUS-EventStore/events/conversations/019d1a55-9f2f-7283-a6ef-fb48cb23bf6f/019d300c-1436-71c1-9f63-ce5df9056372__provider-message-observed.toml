@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1436-71c1-9f63-ce5df9056372"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1436-7776-83f9-cb381ddec215"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.366Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "632dacfdbd64307b277e80b5bfdf9c3b33cdbb113d8ddf92653b71b5f99bae90"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-006931-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-006931-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-006931-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 660
+
+[[body.segments]]
+kind = "plain_text"
+text = "The full baseline finished, and the next practical step is now in place.\n\nThe real-store rebuild completed at `01:29:26` and produced `84,744` graph assertions from `17,302` canonical event files under [graph/assertions](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/assertions). I pushed the progress-emitter change as `e26a419e`, and then added provenance-based sliced Graphviz export filters as `a115ca03`.\n\nThe full DOT export is here:\n- [nexus-graph.dot](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/exports/nexus-graph.dot)\n\nThat full graph exports as:\n- `8,955` nodes\n- `44,443` visual edges\n\nThat’s too large to be a good first picture, so I generated a smaller real slice for `codex` and rendered it:\n\n- [nexus-graph__provider-codex.dot](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/exports/nexus-graph__provider-codex.dot)\n- [nexus-graph__provider-codex.svg](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/exports/nexus-graph__provider-codex.svg)\n- [nexus-graph__provider-codex.png](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/exports/nexus-graph__provider-codex.png)\n\nThat slice is much more manageable:\n- `868` assertions exported\n- `102` nodes\n- `397` edges\n\nUse the CLI like this now:\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider codex\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider claude\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --import-id <import-id>\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- export-graphviz-dot --provider chatgpt --provider-conversation-id <provider-conversation-id>\n```\n\nThe repo is synced; the only local untracked output is [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph), which contains the rebuild/export artifacts from this run. The next strongest move is conversation-scoped slices from real IDs, because those will be the most readable and the most useful for harvesting ideas like FnHCI."
+

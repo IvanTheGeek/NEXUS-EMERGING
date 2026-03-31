@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7080-7b61-8c0f-0caf84b244e3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7080-7334-a4e5-851f884dc35c"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T12:54:48.947Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "8ed3a9945c4b095760490365250af75dc85cf5d19584395ee8257118bf6c982e"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-008210-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-008210-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-008210-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 791
+
+[[body.segments]]
+kind = "plain_text"
+text = "The heavyweight guard and first materializer boundary are in and pushed as `838c5ee0`.\n\nWhat changed:\n- [GraphMaterialization.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphMaterialization.fs)\n- [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs)\n- [Nexus.EventStore.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/Nexus.EventStore.fsproj)\n- [CliHelpTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/CliHelpTests.fs)\n- [GraphAssertionTests.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/GraphAssertionTests.fs)\n- [rebuild-graph-assertions.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/rebuild-graph-assertions.md)\n- [cli-commands.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/cli-commands.md)\n\nWhat it does now:\n- `rebuild-graph-assertions` requires `--yes` for heavyweight stores\n- the refusal is fast and explicit instead of silently starting a long rebuild\n- the current full rebuild now goes through `GraphMaterialization`, which is the first real seam for later incremental materializers\n\nVerified:\n- `dotnet build /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `25` tests passed\n- real-store CLI refusal works cleanly:\n  - it reports `17820` canonical event files\n  - it exits with code `2`\n  - it tells you to rerun with `--yes`\n\nSo from here, the next strongest step is either:\n- add rebuild metrics/manifests to the guarded full rebuild path\n- or start the first incremental graph materializer behind [GraphMaterialization.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphMaterialization.fs)\n\nThe local untracked ChatGPT import and graph-output files are still untouched."
+

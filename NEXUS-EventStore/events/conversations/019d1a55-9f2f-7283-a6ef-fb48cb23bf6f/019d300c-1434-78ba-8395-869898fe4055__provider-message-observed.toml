@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1434-78ba-8395-869898fe4055"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1434-7ccb-ba9a-e15af4d459c0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.298Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "7c21f5ca8f2aa070b30c10ea0b20f201564d7b17f3e3b4d80baaef9d001d5be0"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-003369-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-003369-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-003369-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 329
+
+[[body.segments]]
+kind = "plain_text"
+text = "`Verify` helps when the thing you care about is the *output shape*, not just a few booleans.\n\nIn this repo, that matters a lot because we generate:\n- TOML event files\n- import manifests\n- projections\n\nWith ordinary assertions, you end up writing lots of small checks like:\n- this field exists\n- this value equals `codex`\n- this count is `97`\n- this path is present\n\nThat works, but it gets tedious and easy to under-check.\n\nWith `Verify`, the test says more like:\n- “render this canonical event”\n- “render this manifest”\n- “rebuild this projection”\n- “compare the whole result to the approved snapshot”\n\nIf the output changes, the test shows a diff.\n\nSo in practical terms, it is very useful for us because:\n- canonical TOML is part of the product\n- projections are part of the product\n- formatting changes can matter\n- schema drift matters\n- it gives you a readable before/after diff instead of a vague failed assertion\n\nA simple mental model:\n\n- normal assertion tests answer:\n  “is this specific fact true?”\n- Verify tests answer:\n  “does this whole generated artifact still look like the thing we intended?”\n\nFor NEXUS, that is valuable because a lot of our behavior is file-emission behavior.\n\nExample use cases here:\n- a `ProviderMessageObserved` TOML file should stay structurally consistent\n- an `ImportManifest` should include the fields and counts we expect\n- a conversation projection should still render the right title, message count, and excerpt after parser changes\n\nWhy this helps you even if you are new to testing:\n- the approved snapshot file is human-readable\n- reviewing a diff is often easier than reading lots of assertion code\n- it doubles as living documentation of expected output\n\nThe caution:\n- snapshot tests are great for generated output\n- they are not enough by themselves for logic/invariants\n- that’s why I’d pair them with ordinary tests and later some `FsCheck`\n\nSo for us:\n- `Expecto` checks behavior and rules\n- `Verify` checks emitted artifacts\n- together they give better confidence than either one alone\n\nIf you want, I can show you a tiny example of what a Verify-style test would look like for one TOML manifest in this repo."
+

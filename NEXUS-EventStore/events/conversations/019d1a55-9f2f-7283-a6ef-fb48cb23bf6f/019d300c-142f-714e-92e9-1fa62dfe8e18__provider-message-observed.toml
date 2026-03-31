@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-142f-714e-92e9-1fa62dfe8e18"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-142f-720a-8a1a-c5fb7d88d3d9"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:07:45.669Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "b138964245066b4bf2f7f68331e9bd05718f4d5c80f872ef3a3c1437945da0ec"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-018133-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-018133-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-018133-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1599
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next step is done on `logos-intake-foundation` and pushed as `eaff2cbd`.\n\nThis slice makes the LOGOS boundary materially safer, not just better labeled. Manual LOGOS intake notes now persist `source_instance`, `access_context`, `acquisition_kind`, `rights_policy`, and optional `attribution_reference` from entry time in [IntakeNotes.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/IntakeNotes.fs) and [Policy.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/Policy.fs). The `public-safe` boundary in [Pools.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/Pools.fs) now requires both public-safe handling and rights that actually allow public distribution, with attribution required when the rights policy demands it. Derived sanitized notes carry rights forward in [SanitizedNotes.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/SanitizedNotes.fs), and public export in [PublicExports.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/PublicExports.fs) now writes attribution obligations into the export manifest instead of leaving that to memory.\n\nThat means your concern is now modeled correctly:\n- `personal-training-only` can stay useful in private flows while being blocked from public-safe export\n- `cc-by` / `cc-by-sa` can cross the public boundary only if attribution is carried with them\n- later GUI/help/about surfaces have a concrete manifest to read from instead of ad hoc notes\n\nI also added the decision at [0013-access-context-and-rights-aware-intake.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0013-access-context-and-rights-aware-intake.md), updated [0012-pool-based-handling-boundaries.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0012-pool-based-handling-boundaries.md), and refreshed the glossary/runbooks/README to match. Validation is green:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `104` tests passed\n\nNext strongest move is the first real Talkyard acquisition flow, using this new model from the start:\n- explicit `source_instance` for `talkyard.ivanthegeek.com` vs `forum.talkyard.io`\n- explicit `access_context` for anonymous vs registered vs admin\n- explicit `acquisition_kind` for `web-scrape` vs `api-pull`\n- later reconciliation between scrape and API observations"
+

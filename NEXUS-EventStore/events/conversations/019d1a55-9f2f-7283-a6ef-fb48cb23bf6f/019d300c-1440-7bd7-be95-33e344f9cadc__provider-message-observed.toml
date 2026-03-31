@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1440-7bd7-be95-33e344f9cadc"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1440-73c5-86fc-1fbf6231ffd7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.717Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "ebf3bfdac75fd7d3043dc106846f75674667585e17bb15bcdad07172b4117078"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-015738-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-015738-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-015738-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1433
+
+[[body.segments]]
+kind = "plain_text"
+text = "The pool-boundary model is in on `logos-intake-foundation`, pushed as `553a7984`.\n\nWhat changed:\n- [Pools.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/Pools.fs)\n- [0012-pool-based-handling-boundaries.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0012-pool-based-handling-boundaries.md)\n- [glossary.md](/tmp/nexus-merge-M7SKP3/docs/glossary.md)\n- [logos-source-model-v0.md](/tmp/nexus-merge-M7SKP3/docs/logos-source-model-v0.md)\n\nThe shape now is:\n\n- policy properties still describe handling\n- pool types now gate downstream use\n\nSo we have explicit F# boundary types for:\n- `RawPoolItem<_>`\n- `PrivatePoolItem<_>`\n- `PublicSafePoolItem<_>`\n\nAnd explicit promotion rules:\n- raw -> private\n- private -> public-safe only when policy is:\n  - `sanitization_status = approved-for-sharing`\n  - `sensitivity = public`\n  - `sharing_scope = public`\n\nI also added bridge helpers so current LOGOS workflow results can enter those pools without rewriting the existing note flows yet.\n\nValidation is clean:\n- `dotnet build NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `100` tests passed, `0` failed\n\nThis gives us the compile-time boundary you were aiming for: future public/export flows can depend on `PublicSafePoolItem<_>` instead of trusting ad hoc property checks.\n\nThe next strongest move is to apply that boundary to one real workflow, most likely:\n- public/share export of LOGOS derived notes\n- or public-safe RAG/embedding candidate generation\n\nThat would be the first place where the new type stops being just modeled and starts actively protecting a real operation."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707d-7763-9e76-844863fcd088"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707d-7b63-b979-ca50c9a4a16f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T11:00:54.493Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "0ba23f36f059baa200f22080b6e8977a9f15451fb817736994c9c5b5047c1bcd"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-003327-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-003327-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-003327-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 325
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. I think this is the right moment to add tests.\n\nWe now have enough real behavior that changes can quietly break important things:\n- provider parsing\n- dedupe\n- revision vs reparse semantics\n- TOML output shape\n- projection rebuilds\n\nWithout tests, the importer will start to feel correct only by memory and spot-checking. That gets risky fast, especially for an append-only event store.\n\nMy take on the options here:\n\n- `Expecto`: best fit for this repo if we want idiomatic F#, composable tests, and executable-spec style.\n- `xUnit`: best fit if you want the most boring/standard .NET test tooling experience.\n- `NUnit`: workable, but I would not choose it first for this codebase.\n- hand-rolled only: useful for smoke commands, but not enough as the main regression suite.\n\nMy recommendation is:\n- use `Expecto` as the main test framework\n- keep the existing CLI smoke commands as operational checks\n- use golden-file style tests for canonical event/projection output\n- use small curated fixtures, not full personal exports, for committed tests\n\nWhy `Expecto` feels right here:\n- it matches the functional style of the code\n- it reads more like executable documentation\n- it fits your Scott Wlaschin / domain-first influences better than attribute-heavy test code\n- it makes it easy to express importer scenarios as data-driven specs\n\nWhat I would test first:\n\n1. Parser fixture tests\n- ChatGPT sample parses expected conversation/message counts\n- Claude sample parses expected conversation/message counts\n- Codex sample parses expected session/message counts\n\n2. Import workflow tests\n- first import appends expected events\n- second import skips duplicates\n- changed normalization version appends reparse observations, not fake revisions\n\n3. Artifact workflow tests\n- first manual capture appends `ArtifactPayloadCaptured`\n- second identical capture is skipped as duplicate\n\n4. Projection tests\n- rebuild conversation projection yields expected title/message count/excerpt\n- rebuild artifact projection reflects unresolved vs captured state\n\n5. TOML golden tests\n- canonical event file output stays stable\n- import manifest output stays stable\n\nI would not start with:\n- property testing everywhere\n- huge fixture suites\n- full raw export archives committed into tests\n\nI’d start with one test project only, something like:\n- [NEXUS-Code/tests/Nexus.Tests](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests)\n\nAnd one fixtures area:\n- [NEXUS-Code/tests/fixtures](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/fixtures)\n\nSo my planning answer is: yes, add tests now, and use them as living executable documentation for importer behavior.\n\nIf you want, the next step can be: scaffold an `Expecto` test project and add the first 3-5 high-value importer tests."
+

@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b1-7201-8a16-3d56dca2a591"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b0-717c-a17d-40e552f1a46d"
+conversation_id = "019d1f70-c2b0-717c-a17d-40e552f1a46d"
+message_id = "019d1f70-c2b1-7bf9-b4a8-689346c30b61"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-21T10:03:03.4504299Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "e1836cd1acb1bcd0d66d797fb26faa55aed7d0949abfdb77676de5b0b6eab49a"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+conversation_native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "5769a931-912a-4dd0-a8b6-c3af0fc59824"
+conversation_native_id = "69be6a05-7588-832e-9c3a-1d29682e4258"
+message_native_id = "5769a931-912a-4dd0-a8b6-c3af0fc59824"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "5769a931-912a-4dd0-a8b6-c3af0fc59824"
+role = "assistant"
+model_name = "gpt-5-3"
+sequence_hint = 35
+
+[[body.segments]]
+kind = "plain_text"
+text = "## 🧠 What TimeShift actually is\n\n**TimeShift** is a **system snapshot tool** for Linux.\n\n👉 Think:\n```text\n\"Undo button for your operating system\"\n```\n\nIt lets you roll your system back to a previous state if something breaks.\n\n---\n\n## 📸 What a “snapshot” means\n\nA snapshot is a **point-in-time copy of your system**.\n\nimage_group{\"aspect_ratio\":\"1:1\",\"query\":[\"linux timeshift snapshot interface\",\"linux filesystem snapshot diagram btrfs rsync\",\"timeshift restore screen linux mint\",\"linux system restore concept illustration\"],\"num_per_query\":1}\n\nBut here’s the key:\n\n👉 It is **NOT a full disk image**\n👉 It is **NOT a backup of everything**\n\n---\n\n## 🔍 What TimeShift DOES back up\n\nBy default, it captures:\n\n- ✅ System files (`/`)\n- ✅ Installed programs\n- ✅ System configuration\n- ✅ Drivers, services, packages\n\n👉 Basically:\n```text\nEverything needed to make the OS behave exactly the same\n```\n\n---\n\n## 🚫 What TimeShift does NOT back up\n\nBy default:\n\n- ❌ Your home files (`/home`)\n  - documents\n  - pictures\n  - downloads\n\n👉 That is intentional.\n\n**Reason:**\n- System restore ≠ personal file backup\n\n---\n\n## 🧩 Mental model (very important)\n\nThink in layers:\n\n```text\n[ Your Files ]        ← NOT TimeShift\n[ Your Apps + OS ]    ← TimeShift snapshot\n[ Linux Kernel ]\n```\n\n---\n\n## ⚙️ How it works under the hood\n\nTimeShift has two modes:\n\n### 1️⃣ RSYNC mode (most common)\n- Copies system files\n- Uses **hard links**\n- Saves space by only storing changes\n\n👉 Works on any filesystem\n\n---\n\n### 2️⃣ BTRFS mode (faster, advanced)\n- Uses filesystem-level snapshots\n- Near-instant\n- Very efficient\n\n👉 Only if your disk is formatted as BTRFS\n\n---\n\n## 🔄 What restore actually does\n\nWhen you restore:\n\n- System files → replaced with snapshot\n- Installed packages → reverted\n- Config → rolled back\n\n👉 It’s like:\n```text\n\"Make my system exactly like it was yesterday\"\n```\n\n---\n\n## 🧪 Real-world example\n\nLet’s say you:\n\n- install a bad driver\n- update breaks something\n- mess up configs\n\nYou run:\n\n```bash\ntimeshift --restore\n```\n\n💥 System goes back to:\n- working drivers\n- old config\n- stable state\n\n---\n\n## 🔥 Why this matters for you\n\nGiven your workflow (NEXUS, dev, experimentation):\n\n👉 You will break things. A lot. (that’s good)\n\nTimeShift gives you:\n\n```text\nConfidence to experiment without fear\n```\n\n---\n\n## ⚠️ Important best practices\n\n### ALWAYS do this before:\n- OS upgrades (like 22.2 → 22.3)\n- installing drivers\n- major tooling changes\n- messing with system configs\n\n---\n\n### Combine with real backups\n\nUse BOTH:\n\n```text\nTimeShift → system rollback\nBackup tool → personal files\n```\n\nExample:\n- TimeShift + rsync/Restic for `/home`\n\n---\n\n## 🧠 One powerful insight (fits your NEXUS thinking)\n\nTimeShift is basically:\n\n```text\nState versioning for your operating system\n```\n\nWhich maps directly to your idea of:\n\n- immutable evolution\n- versioned replacement\n- graph of states over time\n\n👉 Each snapshot = a node in a timeline graph\n\n---\n\n## 🧭 Simple usage\n\n### Create snapshot\n```bash\nsudo timeshift --create\n```\n\n### List snapshots\n```bash\ntimeshift --list\n```\n\n### Restore\n```bash\nsudo timeshift --restore\n```\n\n---\n\n## 🧠 Final takeaway\n\n👉 TimeShift is **not backup — it is system version control**\n\n- Fast rollback\n- Safe experimentation\n- Critical safety net\n\n---\n\nIf you want, I can show you how to:\n- include `/home` safely (advanced config)\n- or integrate TimeShift into a **dev workflow checkpoint system** (very NEXUS-aligned)"
+

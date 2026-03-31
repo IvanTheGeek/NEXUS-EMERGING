@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3c9b-62dc-7840-ab46-0f0540819bf1"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3c9b-62dc-7e66-a07a-a1078fddb1e4"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T02:31:21.756Z"
+observed_at = "2026-03-30T02:38:27.7222618Z"
+imported_at = "2026-03-30T02:38:27.7222618Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3c9b-5b8a-7785-9919-7f254d46b6f2"
+
+[content_hash]
+algorithm = "sha256"
+value = "82dedcb77f5a734b760d221c93576a5f71211f8a704bcdf2864de4c3e9b4e75f"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-038962-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-038962-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T02-38-24Z__cheddarbooks__34f41497/session_index.jsonl"
+archived_at = "2026-03-30T02:38:26.0055721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T02-38-24Z__cheddarbooks__34f41497/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T02:38:26.0055721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-038962-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3892
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. It’s documented now so later agents should default to the right path.\n\nRule recorded:\n- Playwright MCP browser sandbox blocks `file://`\n- use local HTTP for MCP browser work, like `http://127.0.0.1/...`\n- keep `file://` only for manual review or secondary smoke checks\n\nNEXUS-wide:\n- [agent-readme.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/agent-readme.md)\n- [fsharp-usage-learning-and-guidance.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/fsharp-usage-learning-and-guidance.md)\n- commit: `694e766c` `docs: record playwright mcp local http rule`\n\nCheddarBooks local/browser docs:\n- [agent-readme.md](/home/ivan/NEXUS/CheddarBooks/docs/agent-readme.md)\n- [html-screen-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md)\n- [tests/browser/README.md](/home/ivan/NEXUS/CheddarBooks/tests/browser/README.md)\n- commit: `b545da7` `docs: record playwright mcp http usage`\n\nAnd yes, I verified MCP access itself earlier in this session by loading the tracked path page over local HTTP through the Playwright MCP browser.\n\nNo tests were run for these last two commits because they were docs-only."
+

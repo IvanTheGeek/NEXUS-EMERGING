@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d38e1-a26d-7b2a-a9fe-4f18209c2e89"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d38e1-a26d-716b-bfcd-0e1f42dd0935"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T09:12:14.473Z"
+observed_at = "2026-03-29T09:16:42.6430972Z"
+imported_at = "2026-03-29T09:16:42.6430972Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d38e1-9b12-77c2-a784-b9f2dc80c038"
+
+[content_hash]
+algorithm = "sha256"
+value = "7ea8eea9047a3f28b2e36fb8dc81d129a703502185fb1b05f7168dd65fb4fba0"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-035135-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-035135-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T09-16-40Z__cheddarbooks__60afc53e/session_index.jsonl"
+archived_at = "2026-03-29T09:16:41.2403478Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T09-16-40Z__cheddarbooks__60afc53e/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T09:16:41.2403478Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-035135-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3471
+
+[[body.segments]]
+kind = "plain_text"
+text = "I tightened the payment section and disabled validation action to sit closer to `v7`.\n\nWhat changed:\n- payment tiles are a bit flatter and lighter\n- disabled validation button is more compact and calmer\n- session total now sits a little closer under the action area\n- the overall handoff from payment -> validation -> session total is tighter\n\nUpdated:\n- [ScreenHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenHtmlRenderer.fs)\n\nFresh artifact:\n- [LaundryLog_ScreenComponents.html](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.html)\n- ![LaundryLog screens](/home/ivan/NEXUS/tmp/laundrylog-screen-proving-ground/LaundryLog_ScreenComponents.png)\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `25` tests passed\n\nCommit:\n- `afc9f49` `model: tune laundrylog payment and validation rhythm`\n\nThe next strongest pass is probably the validation chips themselves. They still read more like our proving-ground tokens than the exact `v7` state row."
+

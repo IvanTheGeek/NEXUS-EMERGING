@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2cb-7cfa-aaa9-c2a6b4ff0a28"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2cb-7ff8-8ed9-6eafecf822c0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.614Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "06a02c8807d1f6d6d118d35139f3f4038fbf03bc45261290d33ffd16b47b14c6"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-022742-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-022742-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-022742-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2046
+
+[[body.segments]]
+kind = "plain_text"
+text = "Merged and repointed.\n\n`codex-commit-checkpoints` is now on `main` at commit `d254cca7`, and I created a clean stable runtime worktree at [NEXUS-EMERGING-main](/home/ivan/NEXUS/NEXUS-EMERGING-main). I used that path instead of your live [NEXUS-EMERGING](/home/ivan/NEXUS/NEXUS-EMERGING) checkout because the live repo is still on `export-window-analysis` with local event-store output and other uncommitted changes.\n\nThe managed `post-commit` hooks in all three repos are now updated and no longer point at `/tmp`:\n- [NEXUS hook](/home/ivan/NEXUS/NEXUS-EMERGING/.git/hooks/post-commit)\n- [FnTools hook](/home/ivan/NEXUS/FnTools/.git/hooks/post-commit)\n- [CheddarBooks hook](/home/ivan/NEXUS/CheddarBooks/.git/hooks/post-commit)\n\nThey now call:\n- [Nexus.Cli.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING-main/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj)\n\nOne minor note: while reinstalling in parallel, one run hit a harmless MSBuild file-copy contention warning because all three `dotnet run` processes were building the same project output at once. The installs still completed successfully.\n\nFrom here, new commits in those repos should automatically capture a Codex commit checkpoint, and you can look one up later with:\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING-main/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  report-codex-commit-checkpoint \\\n  --repo-root /home/ivan/NEXUS/FnTools \\\n  --commit <sha>\n```"
+

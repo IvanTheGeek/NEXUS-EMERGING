@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707f-7ad0-8bfd-04b82e4cdf99"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707f-733d-b111-56037bdf7d62"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T20:09:37.789Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "6b56e08fb98b9554ec6993b89496b49a41d1c39292b48495122fb92ce20a779f"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-006417-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-006417-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-006417-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 604
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, exactly.\n\nTwo things feel clearly justified now:\n\n- a guardrail on the full rebuild command\n  - something like “this will scan all canonical events and may take a long time; continue?”\n  - or at least an explicit `--from-source` / `--full` flag so it’s a deliberate act\n- a secondary operational layer\n  - not replacing source truth\n  - but giving us a more practical working substrate for graph rebuilds, queries, and visualization over real data\n\nThat would preserve the NEXUS rule I think you’re pointing at:\n- canonical history stays authoritative\n- full rebuild from source remains possible\n- but everyday work should not always pay the full replay cost\n\nSo yes, I think we should plan for:\n- authoritative source layer\n- practical working/index layer\n- derived visualization/query layers on top\n\nThis run is giving us the evidence to justify that split instead of just theorizing it."
+

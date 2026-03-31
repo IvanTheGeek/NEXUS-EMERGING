@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1431-77a4-add6-125947e12035"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1431-78c1-bee3-540e864e0b91"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-27T13:11:26.187Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "885dfd4cdd61086513146d745cc73edbdf898166ad687fce5802fcfae9f511f9"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-020522-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-020522-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-020522-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1834
+
+[[body.segments]]
+kind = "plain_text"
+text = "The batch is complete on `cheddarbooks-foundation`, pushed as `20324c15`, and the branch is clean.\n\nWhat landed:\n- Root portfolio/docs spine now explicitly covers Cheddar, CheddarBooks, and FnTools in [README.md](/tmp/nexus-merge-M7SKP3/README.md), with Cheddar and FnTools grounded in [docs/application-domains/cheddar/README.md](/tmp/nexus-merge-M7SKP3/docs/application-domains/cheddar/README.md) and [docs/fntools-foundation.md](/tmp/nexus-merge-M7SKP3/docs/fntools-foundation.md).\n- The repo now explicitly records that docs and tests are expected as part of work in [0017-docs-and-tests-ship-with-work.md](/tmp/nexus-merge-M7SKP3/docs/decisions/0017-docs-and-tests-ship-with-work.md), and I linked that into [README.md](/tmp/nexus-merge-M7SKP3/README.md), [NEXUS-Code/README.md](/tmp/nexus-merge-M7SKP3/NEXUS-Code/README.md), and [repository-concern-lines.md](/tmp/nexus-merge-M7SKP3/docs/repository-concern-lines.md).\n- The new LOGOS blog adapter is in place in [BlogImports.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/BlogImports.fs), wired through [Program.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Cli/Program.fs), documented in [import-logos-blog-repo.md](/tmp/nexus-merge-M7SKP3/docs/how-to/import-logos-blog-repo.md), and covered by [BlogImportTests.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/BlogImportTests.fs).\n- I imported the real `blog.ivanrainbolt.com` repo into LOGOS, so there are now 9 public-safe notes under [docs/logos-intake/public-safe](/tmp/nexus-merge-M7SKP3/docs/logos-intake/public-safe), including [blog-ivanrainbolt-com-lofty-goals.md](/tmp/nexus-merge-M7SKP3/docs/logos-intake/public-safe/blog-ivanrainbolt-com-lofty-goals.md) and [blog-ivanrainbolt-com-my-views-on-app-development.md](/tmp/nexus-merge-M7SKP3/docs/logos-intake/public-safe/blog-ivanrainbolt-com-my-views-on-app-development.md).\n\nVerification:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- Result: `115` tests passed, `0` failed\n\nOn the `codex` correction: no new Codex adapter was needed here, because Codex ingestion was already present; this batch stayed focused on the new blog->LOGOS path plus the portfolio/docs structure.\n\nThe next strongest move is either:\n- merge `cheddarbooks-foundation` back into `main`, or\n- open the next branch for real Cheddar or FnTools work, probably `cheddar-foundation` or `fntools-foundation` depending on where you want to go next."
+

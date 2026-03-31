@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d32db-1e86-7330-a21c-c4771cfd3f25"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d32db-1e86-721b-8777-2bc8423df86a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T05:08:02.736Z"
+observed_at = "2026-03-28T05:11:52.1153488Z"
+imported_at = "2026-03-28T05:11:52.1153488Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d32db-1633-7aad-8641-434bde0cb13b"
+
+[content_hash]
+algorithm = "sha256"
+value = "62f866188b342427261eb6eff204f8f577442f6b3a4ea37efa0878bef0a1efe4"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-026578-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-026578-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T05-11-51Z__cheddarbooks__1dfbb8cc/session_index.jsonl"
+archived_at = "2026-03-28T05:11:51.4020494Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T05-11-51Z__cheddarbooks__1dfbb8cc/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T05:11:51.4020494Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-026578-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2545
+
+[[body.segments]]
+kind = "plain_text"
+text = "This slice is in on `CheddarBooks` branch `laundrylog-fnhci-primitive-map` as commit `777020d` (`model: map laundrylog slices to primitive state`).\n\nWhat changed:\n- added the new seam note at [command-view-primitive-seam.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/command-view-primitive-seam.md)\n- added the first explicit mapping layer in [SliceStateMappings.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceStateMappings.fs)\n- extended the local domain surface with `PaymentMethod` and fixed `LocationName` to allow `#` in real location names in [DomainModel.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog/DomainModel.fs)\n- updated the LaundryLog docs to surface the seam and your `ViewSlice` clarification:\n  - [README.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/README.md)\n  - [domain-model.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/domain-model.md)\n  - [event-modeling/README.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/README.md)\n  - [event-modeling/views.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/views.md)\n  - [view-contracts.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/view-contracts.md)\n- added tests for payment methods and for the new `CommandSlice`/`ViewSlice` to primitive mappings in [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n\nYour clarification is now reflected explicitly in the docs: a `ViewSlice` can be just the green-box `View`, or, with the right lens on, the `View` plus the resultant business-visible screen.\n\nVerification is clean:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `13` tests passed\n\nThe branch is clean. The next strongest move is to define the first visible-entry card/state shape, because the current `CurrentLaundrySessionViewState` already carries visible entries, but the primitive layer still stops at the summary bar and does not yet project the recent-entry list."
+

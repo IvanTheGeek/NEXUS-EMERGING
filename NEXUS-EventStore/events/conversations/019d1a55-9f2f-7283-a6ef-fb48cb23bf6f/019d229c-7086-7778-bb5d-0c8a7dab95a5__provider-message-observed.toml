@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-7086-7778-bb5d-0c8a7dab95a5"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-7086-7fee-9121-247f9d8bba1f"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-24T18:27:24.035Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "236a1ca5b92b4907f4b99a006a1f3c91fabdb6f3509f9d195e0fe918ce7ada37"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-010123-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-010123-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-010123-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 973
+
+[[body.segments]]
+kind = "plain_text"
+text = "The next slice is in and pushed as `72621807`.\n\nYou can now verify a working slice back to canonical events and raw object refs with:\n\n```bash\ndotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \\\n  verify-working-graph-slice \\\n  --import-id <uuid>\n```\n\nMain pieces:\n- [GraphWorkingVerification.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/GraphWorkingVerification.fs)\n- [Program.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Program.fs)\n- [verify-working-graph-slice.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/verify-working-graph-slice.md)\n\nWhat it checks:\n- working-slice assertions exist\n- supporting canonical event IDs still exist\n- raw object paths still exist\n- assertion provenance still points at the expected import\n\nExit behavior:\n- `0` when the slice verifies cleanly\n- `2` when the provenance chain is broken\n- `1` for command/argument errors\n\nI also added the first reusable TOML string-list reader in [TomlDocument.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.EventStore/TomlDocument.fs), which the verifier uses for provenance arrays.\n\nValidation is green:\n- `dotnet run --project /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `44` tests passed\n\nThe only remaining local changes are still the intentionally untracked real-data outputs under [NEXUS-EventStore/events](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events), [NEXUS-EventStore/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports), and [NEXUS-EventStore/graph](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph)."
+

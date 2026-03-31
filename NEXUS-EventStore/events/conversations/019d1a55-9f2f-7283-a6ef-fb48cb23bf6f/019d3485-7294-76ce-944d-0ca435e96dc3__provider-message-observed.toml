@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3485-7294-76ce-944d-0ca435e96dc3"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3485-7294-72d8-bb3b-24fefad1919b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T12:35:41.359Z"
+observed_at = "2026-03-28T12:57:31.877095Z"
+imported_at = "2026-03-28T12:57:31.877095Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3485-69e4-74ad-b434-c94b3dbb6bdf"
+
+[content_hash]
+algorithm = "sha256"
+value = "6da48dc6be41eb04057b36c8cdf4713980cd5da6b508bc5bda2a5c95e1647f48"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-030225-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-030225-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T12-57-30Z__nexus-emerging-main__5d2193e1/session_index.jsonl"
+archived_at = "2026-03-28T12:57:30.7884069Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T12-57-30Z__nexus-emerging-main__5d2193e1/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T12:57:30.7884069Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-030225-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 2924
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes, the bottom badges are now being treated as `context / lens / audience` markers, not file-ish labels.\n\nThe live board now has a new readable row on the `PATHS` page:\n- `PATH1.Row.V4.Clean`\n\nCurrent badge meaning in that row:\n- screen rows: `ui lens`\n- command rows: `business`\n- event rows: `business`\n- view rows: `classic em`\n\nPreview:\n![PATH1.Row.V4.Clean](/home/ivan/NEXUS/tmp/LaundryLog_PATH1_Row_V4_Clean.png)\n\nI also made the Penpot findings durable:\n- NEXUS: [penpot-surface-comparison.md](/home/ivan/NEXUS/NEXUS-EMERGING-main/docs/penpot-surface-comparison.md)\n  - commit `da7e7ccd`\n- CheddarBooks: [penpot-projection.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-projection.md)\n- CheddarBooks: [penpot-slice-components.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-slice-components.md)\n- CheddarBooks: [penpot-board-seed.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/event-modeling/penpot-board-seed.md)\n  - commit `da687c2`\n\nOne important practical result from the lab: after a detach/local projection step, I would not treat Penpot as preserving a trustworthy back-link to the original component source. Also, `createText(\"...\")` worked, but the created text had to be explicitly resized or the export rendered it as if it were invisible.\n\nNo code tests were run because this was live Penpot work plus docs-only commits.\n\nThe next best move is to tighten the row itself:\n- shorten or lens-hide some property text so the cards breathe better\n- replace the screenshot placeholder with a real screen thumbnail\n- then decide whether the screen-row bottom badge should stay purely lens-oriented or also encode actor visibility separately"
+

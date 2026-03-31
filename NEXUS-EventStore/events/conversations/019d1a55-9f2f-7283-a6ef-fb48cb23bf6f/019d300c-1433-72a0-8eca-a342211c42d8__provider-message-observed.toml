@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1433-72a0-8eca-a342211c42d8"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1433-76c0-9716-901a729d44b3"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.278Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "9f2e0352610ad78a5dc275b5603b130f6746fe001c53a580dc819e2cf191fbba"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-002467-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-002467-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-002467-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 250
+
+[[body.segments]]
+kind = "plain_text"
+text = "Parser-v1 is committed and pushed as `c31a1e6` on `codex/nexus-ingestion-foundation`, and the branch is fully synced with GitHub.\n\nThe main code changes are in [Providers.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Importers/Providers.fs) and [ImporterTypes.fs](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Importers/ImporterTypes.fs). This bumps the active normalization baseline to `provider-export-v1` and improves extraction so Claude and ChatGPT messages prefer real human-visible text over raw JSON-ish wrapper content. I also updated the wire-format/docs in [v0-layout-and-toml.md](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/docs/v0-layout-and-toml.md) and [import-provider-export.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/how-to/import-provider-export.md).\n\nI applied the new parser to the real event store and rebuilt projections. That appended reparse observations, not fake revisions:\n- Claude: `3241` reparses, `0` revisions\n- ChatGPT: `5103` reparses, `0` revisions\n\n`dotnet build` for [Nexus.Cli.fsproj](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj) is green, and the projection output is noticeably cleaner now. The next sensible step is either manual artifact hydration support or a first pass at richer projections over the cleaner canonical history."
+

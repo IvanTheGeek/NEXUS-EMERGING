@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707b-7395-ae95-9e5aff670ec2"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707b-7a86-b05d-0c7afe95e1a1"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-22T16:04:52.188Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "190c9d4359f5c1706c46332ff56ad7cb734130108f75125e3ebcd1f9b21d9549"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-000707-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-000707-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-000707-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 100
+
+[[body.segments]]
+kind = "plain_text"
+text = "The Codex session exporter is in place and the first raw archive snapshot has already been created.\n\nCode and docs:\n- [export_codex_sessions.fsx](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/scripts/export_codex_sessions.fsx)\n- [codex-session-export.md](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Code/docs/codex-session-export.md)\n\nArchived output:\n- [export-manifest.toml](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/archive/2026-03-22T16-03-56Z/export-manifest.toml)\n- [session_index.jsonl](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/archive/2026-03-22T16-03-56Z/session_index.jsonl)\n- [rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/archive/2026-03-22T16-03-56Z/sessions/2026/03/21/rollout-2026-03-21T17-32-16-019d1250-293c-7ef3-8df1-f5127ee80c78.jsonl)\n\nIt also refreshed the `latest/` mirror under:\n- [/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/latest](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/latest)\n\nYou can rerun it any time with:\n\n```bash\ndotnet fsi NEXUS-Code/scripts/export_codex_sessions.fsx\n```\n\nThe script/docs are committed as `eef5742` (`Add Codex session export script`). I deliberately did not commit the exported raw session data itself, so your raw Codex transcript archive exists locally but is still an explicit choice before versioning. The repo is currently only dirty because of untracked raw-object content under [NEXUS-Objects/providers](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers) and [RawDataExports](/home/ivan/NEXUS/NEXUS-EMERGING/RawDataExports).\n\nThe next logical step is to implement TOML serialization and file writers for canonical events and import manifests."
+

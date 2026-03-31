@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d300c-1440-71f2-8825-7eb0562f8af4"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d300c-1440-7f9f-aa7f-f0d18a4a3e2b"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-26T13:15:26.762Z"
+observed_at = "2026-03-27T16:06:28.3104965Z"
+imported_at = "2026-03-27T16:06:28.3104965Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d300c-08d6-734b-9e96-9bbd3efd6e62"
+
+[content_hash]
+algorithm = "sha256"
+value = "6a7e3d68a87ebccad98f3158d65fa32ccc03288edf2acda6e434ba73c4ed73c2"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-017329-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-017329-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/session_index.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-27T16-06-25Z__nexus-merge-m7skp3__ed39e9d5/sessions/2026/03/26/rollout-2026-03-26T09-15-26-019d2a49-15b4-70d1-bb53-83ea716d2d96.jsonl"
+archived_at = "2026-03-27T16:06:26.2748441Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-017329-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1560
+
+[[body.segments]]
+kind = "plain_text"
+text = "The interrupted batch is complete.\n\nOn `logos-intake-foundation`, I finished the pool-aware LOGOS note flow and pushed it as `30cfeaab` (`Add pool-aware LOGOS note handling`). The branch is now clean and synced.\n\nWhat landed:\n- non-chat LOGOS intake notes now enter explicit pool paths at creation time in [IntakeNotes.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/IntakeNotes.fs)\n- sanitized notes now resolve into `private` or `public-safe` pool paths based on policy in [SanitizedNotes.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/SanitizedNotes.fs)\n- the generic pool boundary types were cleaned up and the result bridges were split into [Pools.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/Pools.fs) and [PoolResults.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/PoolResults.fs)\n- handling audit and public export now understand the pool-aware recursive layout in [HandlingReports.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/HandlingReports.fs) and [PublicExports.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Logos/PublicExports.fs)\n- CLI/help/docs were updated to match in [Program.fs](/tmp/nexus-merge-M7SKP3/NEXUS-Code/src/Nexus.Cli/Program.fs), [create-logos-intake-note.md](/tmp/nexus-merge-M7SKP3/docs/how-to/create-logos-intake-note.md), [create-logos-sanitized-note.md](/tmp/nexus-merge-M7SKP3/docs/how-to/create-logos-sanitized-note.md), and [export-logos-public-notes.md](/tmp/nexus-merge-M7SKP3/docs/how-to/export-logos-public-notes.md)\n\nVerification:\n- `dotnet build /tmp/nexus-merge-M7SKP3/NEXUS-Code/NEXUS-Code.slnx`\n- `dotnet run --project /tmp/nexus-merge-M7SKP3/NEXUS-Code/tests/Nexus.Tests/Nexus.Tests.fsproj`\n- `103` tests passed, `0` failed\n\nThe main workspace at [/home/ivan/NEXUS/NEXUS-EMERGING](/home/ivan/NEXUS/NEXUS-EMERGING) was left alone; this was completed in the clean worktree.\n\nNext strongest move: apply the same pool boundary to one real non-chat intake adapter, probably `issue-tracker` or `app-feedback`, so LOGOS notes stop being just manual seeds and start becoming true structured intake flows."
+

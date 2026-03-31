@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d1f70-c2b4-7cee-a9db-46d996d80f4b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1f70-c2b3-7f19-b3a0-42b241038d17"
+conversation_id = "019d1f70-c2b3-7f19-b3a0-42b241038d17"
+message_id = "019d1f70-c2b4-7ae2-ad91-02c17013c3da"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-21T14:33:16.639986Z"
+observed_at = "2026-03-24T10:42:47.5073677Z"
+imported_at = "2026-03-24T10:42:47.5073677Z"
+source_acquisition = "export_zip"
+normalization_version = "provider-export-v1"
+import_id = "019d1f70-b326-7d1e-a106-73dbd399f911"
+
+[content_hash]
+algorithm = "sha256"
+value = "f1a610e933dd07fef6688a2c16881124906ce983460f757ba5f2c4420250ce39"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "conversation_object"
+native_id = "69beeb0e-d04c-8328-883f-f32e311e72ca"
+conversation_native_id = "69beeb0e-d04c-8328-883f-f32e311e72ca"
+
+[[provider_refs]]
+provider = "chatgpt"
+object_kind = "message_object"
+native_id = "b131380e-cd0c-492a-8543-6ddf28bb131c"
+conversation_native_id = "69beeb0e-d04c-8328-883f-f32e311e72ca"
+message_native_id = "b131380e-cd0c-492a-8543-6ddf28bb131c"
+
+[[raw_objects]]
+kind = "provider_export_zip"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/6dcabe6366235ba54dd09835c0f06f95c4ba2daa260f5ccac73dff295d2f1bda-2026-03-23-09-37-02-ef51b1e933c043d0962eae537d856dd0.zip"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Archived chatgpt export zip"
+
+[[raw_objects]]
+kind = "extracted_snapshot"
+relative_path = "providers/chatgpt/archive/2026-03-24T10-42-47Z-full-export/extracted/conversations.json"
+archived_at = "2026-03-24T10:42:47.5073677Z"
+source_description = "Extracted conversations.json for parser input"
+
+[body]
+provider_message_id = "b131380e-cd0c-492a-8543-6ddf28bb131c"
+role = "assistant"
+model_name = "gpt-5-4-thinking"
+sequence_hint = 28
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes — that is a **sound model**, with one important correction:\n\nA customer would usually **buy document-signing certificates from a publicly trusted CA or trust service provider**; they would almost never “become a public certificate authority” themselves. Becoming a root CA that software trusts broadly is a much bigger, heavily governed thing. Mozilla’s root program has formal policies and an application process, which shows how high that bar is. citeturn194739search0turn194739search15\n\nSo the clean architecture is:\n\n**Mode A: customer-owned trust**\n- Business or individual runs the open-source Cheddar software.\n- They obtain their **own document-signing certificate(s)** from a provider.\n- They control their own keys, storage, policies, and evidence packages.\n- Verification can ride on the provider’s trust chain, not on Cheddar’s continued existence. Adobe’s trust model is built around trusted roots and trust lists such as AATL, and document-signing certs are meant to bind identity and document integrity. citeturn194739search1turn194739search4turn194739search2\n\n**Mode B: Cheddar-hosted trust**\n- Cheddar operates a signing service and uses **Cheddar-held signing certs/keys**.\n- Customers use Cheddar as the trust anchor and convenience layer.\n- This is simpler for customers, but it creates dependency on Cheddar’s key management, policies, and business continuity.\n\nThat means your intuition is right: **offer both**.\n\nThe part I would tighten is this:\n\n> “Cheddar might hold the certificate people could go against, just with the understanding that it may not always exist.”\n\nThat is okay **only if** the signed artifacts are self-contained enough that later verification does not require Cheddar’s servers. Acrobat/Reader trust certificate-based signatures through trusted roots and downloaded trust lists, and timestamp services are part of that broader trust model. citeturn194739search13turn194739search4\n\nSo the safer framing is:\n\n**Cheddar can be the operational service, but not the only source of truth.**\n\nFor that, each signed package should contain at least:\n- the signed document\n- the signature object\n- the signer certificate or certificate chain\n- audit trail / evidence log\n- timestamp evidence when used\n- verification metadata or instructions\n\nThat way, if Cheddar disappears, the package can still be checked against the certificate chain and evidence. Document-signing certificates are specifically intended to prove origin, authenticity, and integrity, and timestamping is used to strengthen long-term validation. citeturn194739search5turn194739search8\n\nThe strongest product shape is probably a **three-tier trust model**:\n\n1. **Self-managed**\n   - Customer uses self-signed or privately trusted certs.\n   - Lowest cost, highest autonomy.\n   - Best for internal/private ecosystems.\n\n2. **Bring your own certificate**\n   - Customer buys certs from DigiCert or another provider and plugs them into Cheddar.\n   - Best balance of autonomy and public trust.\n   - Best default for serious business use.\n\n3. **Cheddar-managed trust**\n   - Cheddar holds signing infrastructure for customers who want turnkey onboarding.\n   - Best UX, but highest responsibility and liability for Cheddar.\n\nMy recommendation: make **BYOC the center of the architecture**, and make Cheddar-managed trust an optional convenience layer. That keeps the open-source story strong and avoids making your platform the permanent dependency.\n\nA crisp rule for the product would be:\n\n> **Cheddar may facilitate signing, but the customer should always be able to leave with independently verifiable evidence.**\n\nThat gives you:\n- open-source portability\n- vendor independence\n- a hosted business model\n- survivability if Cheddar shuts down\n\nAnd one more nuance: if you want signatures to “just show as trusted” in Adobe ecosystems, you are generally in the world of certificates issued under trusted programs like AATL/EUTL rather than a purely self-signed model. citeturn194739search4turn194739search10turn194739search7\n\nA good product split would be:\n\n- **Cheddar OSS**: signing engine, evidence packaging, verification tooling, BYOC support\n- **Cheddar Cloud**: hosted workflows, storage, retention, managed keys/certs, convenience UI\n\nThat separation fits your thinking well because the **trust artifact survives**, while the **service layer is optional**.\n\nI can sketch the exact trust architecture next — including **self-managed vs BYOC vs Cheddar-managed** flows and what keys/certificates each mode should own."
+

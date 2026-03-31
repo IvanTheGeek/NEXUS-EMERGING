@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d229c-707f-7aed-890f-e17b395d0d8b"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d229c-707f-74af-9850-2ed09557e85a"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-23T20:01:56.527Z"
+observed_at = "2026-03-25T01:29:28.9568573Z"
+imported_at = "2026-03-25T01:29:28.9568573Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d229c-687c-7a0b-98eb-c2c070542383"
+
+[content_hash]
+algorithm = "sha256"
+value = "596d805e1c2115e73d98e92956aa864f6e494af34005719157ad6548505e56d4"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-006369-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-006369-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/latest/session_index.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/latest/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-25T01:24:46.106693Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-006369-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 595
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. In this layer, the F# code is computing derived graph assertions and then writing them out as TOML files.\n\nMain location for this rebuild:\n- [NEXUS-EventStore/graph/assertions](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/graph/assertions)\n\nShape:\n- one TOML file per derived fact/assertion\n- filenames are deterministic `fact_id.toml`\n\nExamples of other TOML locations in the repo:\n- canonical event streams:\n  - [NEXUS-EventStore/events/conversations](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events/conversations)\n  - [NEXUS-EventStore/events/artifacts](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events/artifacts)\n  - [NEXUS-EventStore/events/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/events/imports)\n- import manifests:\n  - [NEXUS-EventStore/imports](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/imports)\n- rebuildable projections:\n  - [NEXUS-EventStore/projections/conversations](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/conversations)\n  - [NEXUS-EventStore/projections/artifacts](/home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore/projections/artifacts)\n\nFor the current command specifically:\n- it scans `events/`\n- derives graph assertions in memory\n- then rewrites `graph/assertions/` from scratch\n\nSo the reason you haven’t seen files appear yet on the real store is that the current implementation does all the derivation first, and only writes after that phase completes."
+

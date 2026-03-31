@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d35a8-3edd-7dca-8d88-fc6c3f9fe01e"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d35a8-3edd-77d5-97db-13b7c23e2b55"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T18:01:13.72Z"
+observed_at = "2026-03-28T18:15:09.8829692Z"
+imported_at = "2026-03-28T18:15:09.8829692Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d35a8-373a-74b0-b3ff-97482111a684"
+
+[content_hash]
+algorithm = "sha256"
+value = "15357152ef827aca7cd0666f46acee23b182fec1aa1e366c6ef3922677400d2d"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-032993-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-032993-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T18-15-07Z__cheddarbooks__f82ec134/session_index.jsonl"
+archived_at = "2026-03-28T18:15:08.7121412Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T18-15-07Z__cheddarbooks__f82ec134/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-28T18:15:08.7121412Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-032993-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3235
+
+[[body.segments]]
+kind = "plain_text"
+text = "Fixed. Wrapped slice descriptions now expand the shared title/description rows instead of getting clipped.\n\nUpdated:\n- [SliceHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/SliceHtmlRenderer.fs)\n\nArtifact:\n- [LaundryLog_PATH1_CommandSlice_ViewSlice.html](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.html)\n- ![Updated PATH 1 HTML](/home/ivan/NEXUS/tmp/laundrylog-html-proving-ground/LaundryLog_PATH1_CommandSlice_ViewSlice.png)\n\nCommit:\n- `67e765d` `model: let wrapped slice descriptions expand shared rows`\n\nVerification:\n- `dotnet build /home/ivan/NEXUS/CheddarBooks/CheddarBooks.slnx`\n- `dotnet run --project /home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/CheddarBooks.Tests.fsproj`\n- `19` tests passed\n\nThe concrete fix was:\n- shared grid title/description rows now use `minmax(..., max-content)`\n- description/title overflow clipping was removed\n\nSo when a description wraps, the whole row grows for all slices instead of hiding the text."
+

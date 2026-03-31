@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3fb1-272f-7e9a-b04e-ee6ff8d47718"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3fb1-272f-7fd5-9032-f596666bf7c7"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T16:47:53.627Z"
+observed_at = "2026-03-30T17:01:05.6490671Z"
+imported_at = "2026-03-30T17:01:05.6490671Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3fb1-1ef0-74c1-b11a-4aa82b99fd6f"
+
+[content_hash]
+algorithm = "sha256"
+value = "40d7a36c91d702865f4e980b8f5340a0a3127ce61a2c51b773f773c9f32af845"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-042469-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-042469-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T17-01-00Z__cheddarbooks__2deac864/session_index.jsonl"
+archived_at = "2026-03-30T17:01:03.1147573Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T17-01-00Z__cheddarbooks__2deac864/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T17:01:03.1147573Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-042469-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 4247
+
+[[body.segments]]
+kind = "plain_text"
+text = "The NM columns now trim only trailing empty rows, so shorter slices end naturally instead of carrying a blank tail. Shared row alignment is still preserved where content exists: `SCREEN` rows stay aligned, the mixed primary row stays aligned, and AEM `VIEW` columns still keep an empty `secondary` spacer when they need a lower `gwt` row aligned.\n\nReview the tracked NM artifact here:\n- [LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html](/home/ivan/NEXUS/CheddarBooks/workspace/laundrylog/html/nm-paths/LaundryLog_PATH1_NM_FirstLaunch_FirstEntry.html)\n\nMain code/tests:\n- [NmPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/NmPathHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n- [path1-nm-path.spec.ts](/home/ivan/NEXUS/CheddarBooks/tests/browser/specs/path1-nm-path.spec.ts)\n\nVerification was run through the normal repo flow:\n- [verify-workspace-html.sh](/home/ivan/NEXUS/CheddarBooks/scripts/laundrylog/verify-workspace-html.sh)\n- `37` Expecto tests passed\n- `14` Playwright tests passed\n\nThe legacy screen-path artifact was patched back so it stayed unchanged. Commit:\n- `cf24ca850c3bad5c5440cff7bee91e8837961017` `model: trim trailing empty nm rows`"
+

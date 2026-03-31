@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3c8d-02d7-7d8b-b1bf-c1e1e0b6ff00"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3c8d-02d7-7a29-b735-a6bc91efc7f0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-30T01:01:15.167Z"
+observed_at = "2026-03-30T02:22:45.3282834Z"
+imported_at = "2026-03-30T02:22:45.3282834Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3c8c-fa50-702b-bf15-2467b28cf15b"
+
+[content_hash]
+algorithm = "sha256"
+value = "6106a6f36ada36212e09fdc8a81def88a7008fe5d26e0eb02ca687fd1bce30bc"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-038334-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-038334-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-30T02-22-41Z__cheddarbooks__e84f66fe/session_index.jsonl"
+archived_at = "2026-03-30T02:22:43.4078421Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-30T02-22-41Z__cheddarbooks__e84f66fe/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-30T02:22:43.4078421Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-038334-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3822
+
+[[body.segments]]
+kind = "plain_text"
+text = "Yes. The cleanest way to think about this is:\n\n- `Playwright` is the browser automation engine\n- a `test framework/runner` is the thing that discovers tests, runs them, reports results, manages setup/teardown, parallelism, retries, artifacts, and filtering\n\nSo your confusion is very normal. The question is not just “which Playwright?” It is really:\n\n- which browser engine API?\n- which runner owns the browser tests?\n- what job should each runner do?\n\n**What A Test Framework Brings**\nA test framework usually gives you:\n\n- test discovery\n- assertions\n- setup/teardown\n- grouping and filtering\n- parallel execution\n- failure reporting\n- artifacts on failure\n- IDE/CLI integration\n\nIn our current repo, `Expecto` already gives that for F# code tests.\n\nWhat `Playwright Test` adds on top of browser automation is:\n- browser-oriented fixtures\n- retries\n- traces\n- screenshots\n- HTML report\n- project matrix\n- strong browser-debug workflow\n\nThat is why the official docs say the testing ecosystem differs by language, even though the core browser automation API is shared. Sources: [Supported languages](https://playwright.dev/docs/languages), [Playwright intro](https://playwright.dev/docs/intro), [Playwright .NET test runners](https://playwright.dev/dotnet/docs/test-runners).\n\n**Option 1: `JS/TS Playwright Test + Expecto`**\nThis means:\n\n- `Expecto`\n  owns F# code/model/renderer tests\n- `Playwright Test`\n  owns browser behavior tests\n\nWhat it brings:\n- best Playwright experience\n- first-class retries, traces, HTML reporting, projects, screenshot assertions\n- easiest path for testing HTML/JS behavior like:\n  - nav buttons move by whole columns\n  - lens toggles hide/show steps\n  - update sidecar triggers refresh behavior\n\nWhy it’s attractive here:\n- our browser surface is already HTML/CSS/JS-heavy\n- the current bugs are browser-behavior bugs, not F# logic bugs\n- Playwright Test is built exactly for this kind of thing\n\nDownside:\n- two testing systems in one repo\n- adds Node/JS tooling\n\nBut this is not necessarily bad. It can be a healthy split:\n- `Expecto` for deterministic F# truth\n- `Playwright Test` for browser truth\n\n**Option 2: `Playwright .NET + Expecto`**\nThis means:\n\n- `Expecto`\n  still owns test discovery/execution\n- `Playwright .NET`\n  is used as a library inside those Expecto tests\n\nThis is possible. The official .NET docs explicitly say Playwright can be used “as a Playwright Library” and with another test runner. Source: [Playwright .NET library](https://playwright.dev/dotnet/docs/library).\n\nWhat it brings:\n- everything stays in .NET/F#\n- no second JS test stack\n- one runner story for the repo\n\nWhy it is weaker:\n- more custom harness work\n- we would need to build more ourselves:\n  - browser/context/page lifecycle\n  - reusable fixtures/helpers\n  - trace capture policy\n  - screenshot policy\n  - browser-specific reporting conventions\n- we give up the strongest Playwright runner ergonomics\n\nThis is the mismatch:\n- `Expecto` is great for F# tests\n- but it is not a browser-native harness\n- so using it with Playwright means we are choosing “custom integration” over “first-class browser test runner”\n\n**Where The Gap Really Is**\nThe gap is not mainly browser capability.\n\nBoth `Playwright Test` and `Playwright .NET` can drive browsers well.\n\nThe real gap is in the runner layer:\n\n- `JS/TS Playwright Test`\n  gives a very rich built-in browser test harness\n- `Playwright .NET + Expecto`\n  gives us browser automation, but we must assemble more of the harness ourselves\n\nA few concrete examples:\n\n- screenshot assertions:\n  strongest/most built-in with Playwright Test. Sources: [Assertions](https://playwright.dev/docs/test-assertions), [Visual comparisons](https://playwright.dev/docs/test-snapshots)\n- retries:\n  built into Playwright Test runner config. Source: [Retries](https://playwright.dev/docs/test-retries)\n- HTML report:\n  first-class in Playwright Test. Source: [CLI/reporting](https://playwright.dev/docs/test-cli)\n- test isolation:\n  Playwright supports it across languages, but Playwright Test makes it feel more automatic. Sources: [Isolation JS](https://playwright.dev/docs/browser-contexts), [Isolation .NET](https://playwright.dev/dotnet/docs/browser-contexts)\n\n**How I’d Compare Them For This Repo**\n`JS/TS Playwright Test + Expecto`\n- Best browser UX\n- Least custom glue\n- Strongest for current screen-path problems\n- Adds a second toolchain\n\n`Playwright .NET + Expecto`\n- Stays in F#\n- More unified language story\n- More manual harness work\n- We become responsible for more browser-test plumbing\n\n**What I Think You’re Actually Choosing**\nYou are not choosing between “good” and “bad.”\n\nYou are choosing between:\n\n- `specialized best-fit tooling`\n- vs\n- `more unified F#/.NET tooling`\n\nGiven the NEXUS rule we just hardened, that points pretty naturally to:\n- use the tool best suited to the concern\n\nFor browser behavior, that argues for:\n- `JS/TS Playwright Test + Expecto`\n\nFor pure F# renderer/model correctness, that argues for:\n- `Expecto`\n\n**My Recommendation**\nFor CheddarBooks/LaundryLog:\n\n- keep `Expecto` for F# logic and renderer tests\n- add `JS/TS Playwright Test` for browser behavior tests\n- do not try to force browser behavior proof through Expecto unless we have a strong reason\n\nThat gives us a clean mental model:\n- F# proves the page was generated correctly\n- Playwright proves the browser behaves correctly\n\nIf you want, next I can turn that into a concrete side-by-side implementation sketch:\n- folder layout\n- how artifacts get served\n- what the first 3-5 browser tests would be\n- and what would remain in Expecto vs move to Playwright"
+

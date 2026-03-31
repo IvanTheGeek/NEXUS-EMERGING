@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d3993-bd83-76ca-93a0-097268b203f0"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d3993-bd83-74b6-9dbe-611b0cf657e0"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-29T12:28:06.591Z"
+observed_at = "2026-03-29T12:31:15.0398041Z"
+imported_at = "2026-03-29T12:31:15.0398041Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d3993-b65f-76de-acc8-2328e20f32b6"
+
+[content_hash]
+algorithm = "sha256"
+value = "739a3eeafa7979aa28e9c791621e3178fdaa38016c60c0cce68a59a97573426e"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-037507-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-037507-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-29T12-31-09Z__nexus-emerging__16754806/session_index.jsonl"
+archived_at = "2026-03-29T12:31:11.4857058Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-29T12-31-09Z__nexus-emerging__16754806/sessions/2026/03/22/rollout-2026-03-22T16-33-51-019d1741-0a08-7121-9253-044af381b61a.jsonl"
+archived_at = "2026-03-29T12:31:11.4857058Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-037507-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 3713
+
+[[body.segments]]
+kind = "plain_text"
+text = "The local screen-path page now supports self-update awareness through a companion manifest file.\n\nFiles:\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html](/home/ivan/NEXUS/tmp/laundrylog-screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.html)\n- [LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.update.js](/home/ivan/NEXUS/tmp/laundrylog-screen-paths/LaundryLog_PATH1_AppStarted_NeedLocation_FirstEntry.update.js)\n\nWhat it does:\n- polls the `.update.js` sidecar for a newer artifact version\n- offers `Notify Me` or sticky `Auto Refresh`\n- shows `Refresh Now` only when an update is actually available\n- keeps the preference in `localStorage`\n\nCode/docs:\n- [ScreenPathHtmlRenderer.fs](/home/ivan/NEXUS/CheddarBooks/src/CheddarBooks.LaundryLog.UI/ScreenPathHtmlRenderer.fs)\n- [LaundryLogTests.fs](/home/ivan/NEXUS/CheddarBooks/tests/CheddarBooks.Tests/LaundryLogTests.fs)\n- [html-screen-path-renderer-proving-ground.md](/home/ivan/NEXUS/CheddarBooks/docs/laundrylog/html-screen-path-renderer-proving-ground.md)\n- [fsharp-usage-learning-and-guidance.md](/home/ivan/NEXUS/NEXUS-EMERGING/docs/fsharp-usage-learning-and-guidance.md)\n\nVerified:\n- `34` tests passed\n- browser-checked that:\n  - the page notices a changed sidecar manifest\n  - `Refresh Now` appears\n  - the sticky update mode is stored\n\nCommits:\n- CheddarBooks: `501176d` `model: add screen path update monitor`\n- NEXUS: `c531202e` `docs: record local artifact update guidance`\n\nIf the page is already open, reload it once so the new monitor script is active."
+

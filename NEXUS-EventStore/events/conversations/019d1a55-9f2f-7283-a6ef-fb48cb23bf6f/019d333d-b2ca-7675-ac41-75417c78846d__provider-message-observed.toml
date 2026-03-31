@@ -1,0 +1,55 @@
+schema_version = 1
+event_id = "019d333d-b2ca-7675-ac41-75417c78846d"
+event_kind = "provider_message_observed"
+stream_kind = "conversation"
+stream_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+conversation_id = "019d1a55-9f2f-7283-a6ef-fb48cb23bf6f"
+message_id = "019d333d-b2ca-7540-b89d-d6f16b9c7a93"
+domain_id = "ingestion"
+bounded_context_id = "canonical-history"
+occurred_at = "2026-03-28T06:27:33.56Z"
+observed_at = "2026-03-28T06:59:32.4669331Z"
+imported_at = "2026-03-28T06:59:32.4669331Z"
+source_acquisition = "local_session_export"
+normalization_version = "codex-sessions-v1"
+import_id = "019d333d-a9f2-74bb-8b0e-e6f0f1b8e6b3"
+
+[content_hash]
+algorithm = "sha256"
+value = "cd1fa873363b9a337f49e480a82fb42b2000f11c8a7aee2f52f885e6fd2ed84f"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "conversation_object"
+native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+
+[[provider_refs]]
+provider = "codex"
+object_kind = "message_object"
+native_id = "line-021436-agent_message"
+conversation_native_id = "019d1250-293c-7ef3-8df1-f5127ee80c78"
+message_native_id = "line-021436-agent_message"
+
+[[raw_objects]]
+kind = "session_index"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/session_index.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session index JSONL"
+
+[[raw_objects]]
+kind = "session_transcript"
+relative_path = "providers/codex/archive/2026-03-28T06-59-30Z__nexus-emerging-main__632cd641/sessions/2026/03/28/rollout-2026-03-28T02-27-32-019d3320-5d98-7771-9b93-48c49ffc8715.jsonl"
+archived_at = "2026-03-28T06:59:31.0211721Z"
+source_description = "Codex session transcript JSONL"
+
+[body]
+provider_message_id = "line-021436-agent_message"
+role = "assistant"
+model_name = "gpt-5.4"
+sequence_hint = 1935
+
+[[body.segments]]
+kind = "plain_text"
+text = "`FnTools` now exists as a real local sibling repo at [FnTools](/home/ivan/NEXUS/FnTools).\n\nI bootstrapped it from NEXUS `main` commit `1546595e`, initialized Git, and made the first root commit:\n- `577cf55` in `/home/ivan/NEXUS/FnTools`\n\nIt contains:\n- [README.md](/home/ivan/NEXUS/FnTools/README.md)\n- [bootstrap-source.toml](/home/ivan/NEXUS/FnTools/bootstrap-source.toml)\n- [FnTools.slnx](/home/ivan/NEXUS/FnTools/FnTools.slnx)\n- [FnTools.FnHCI](/home/ivan/NEXUS/FnTools/src/FnTools.FnHCI/FnTools.FnHCI.fsproj)\n- [FnTools.FnHCI.UI](/home/ivan/NEXUS/FnTools/src/FnTools.FnHCI.UI/FnTools.FnHCI.UI.fsproj)\n- [FnTools.FnHCI.UI.Blazor](/home/ivan/NEXUS/FnTools/src/FnTools.FnHCI.UI.Blazor/FnTools.FnHCI.UI.Blazor.fsproj)\n- [FnTools.Tests](/home/ivan/NEXUS/FnTools/tests/FnTools.Tests/FnTools.Tests.fsproj)\n\nVerification passed from the new repo root:\n- `dotnet build /home/ivan/NEXUS/FnTools/FnTools.slnx`\n- `dotnet run --no-build --project /home/ivan/NEXUS/FnTools/tests/FnTools.Tests/FnTools.Tests.fsproj`\n- `4` tests passed\n\nI also fixed and verified the reusable bootstrap workflow on NEXUS branch `fntools-repo-bootstrap`:\n- [bootstrap_fntools_repo.sh](/tmp/nexus-merge-M7SKP3/NEXUS-Code/scripts/bootstrap_fntools_repo.sh)\n- [bootstrap-fntools-repo.md](/tmp/nexus-merge-M7SKP3/docs/how-to/bootstrap-fntools-repo.md)\n\nOne limit: GitHub repo creation was not possible from this machine because `gh` is not installed, so `/home/ivan/NEXUS/FnTools` is local-only for now. The next clean move is either:\n- publish this new repo to GitHub and add `origin`\n- or do the same bootstrap for `CheddarBooks` next"
+
