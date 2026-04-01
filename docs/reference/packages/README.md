@@ -31,6 +31,7 @@ Add or update a package note when:
 
 ## Current Notes
 
+- [`talkyard.md`](talkyard.md)
 - [`verify.md`](verify.md)
 
 ## Suggested Note Shape

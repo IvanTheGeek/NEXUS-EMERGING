@@ -1,3 +1,8 @@
+---
+title: Public Content Publishing And Talkyard Comments
+discussion_id: nexus-emerging:talkyard-comments-policy
+---
+
 # Public Content Publishing And Talkyard Comments
 
 This note describes the likely first public-content architecture for NEXUS.
@@ -85,6 +90,24 @@ The current likely first publishing target is:
 
 This keeps the hosting simple while the architecture matures.
 
+## Current NEXUS Site Shape
+
+The current NEXUS docs site now uses:
+
+- GitHub Pages for static site hosting
+- `https://talkyard.ivanthegeek.com` for the discussion layer
+- comments rendered at the bottom of each page just above the site footer
+- comments enabled by default across the site
+- stable explicit discussion identifiers derived from the source Markdown path
+
+The current intended Talkyard category shape is:
+
+- top-level category: `NEXUS`
+- public subcategory: `NEXUS Site Comments`
+- category external ID used by the embed: `nexus_site_comments`
+
+That keeps site-attached comments public and replyable from either the embedded page or the Talkyard side without mixing them into unrelated human-first discussion areas.
+
 ## Future NEXUS Flow
 
 Later, NEXUS should be able to model all of these explicitly:
@@ -132,3 +155,8 @@ But the dominant idea is:
 - public content is a curated output
 - discussion is a linked intake stream
 - both must remain traceable and policy-aware
+
+For later extracted sites:
+
+- CheddarBooks/LaundryLog should get a sibling public subcategory under a `CheddarBooks` top-level category
+- that downstream site should use its own external ID instead of sharing the NEXUS comment stream

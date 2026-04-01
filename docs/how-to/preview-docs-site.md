@@ -16,6 +16,7 @@ The current setup uses the built-in `mkdocs` theme with a custom light-tech styl
 - `requirements-docs.txt`
 - `docs/assets/stylesheets/light-matrix.css`
 - `docs/assets/javascripts/code-copy.js`
+- `docs/assets/javascripts/talkyard-comments.js`
 
 ## Local Preview
 
@@ -37,6 +38,7 @@ Then open:
 ```bash
 source .venv/bin/activate
 mkdocs build
+python3 NEXUS-Code/scripts/verify_docs_talkyard_comments.py
 ```
 
 The generated static site is written to:
@@ -47,4 +49,6 @@ The generated static site is written to:
 
 - `mkdocs` was not installed globally on this machine when this proof-of-concept was added, so the repo instructions assume a local virtualenv instead of a machine-global dependency
 - a few docs still describe the root repo `README.md` as a stronger source than the docs site projection; this is intentional
-- some research notes still contain links that point outside the docs tree and may need a later curation pass before public publishing
+- Talkyard comments now depend on the hosted Talkyard site allowing embeds from `http://127.0.0.1:8000` or `http://localhost:8000`
+- the NEXUS docs site currently uses the `NEXUS Site Comments` public stream via Talkyard category ref `extid:nexus_site_comments`
+- the verification script checks the generated HTML shape and the comments opt-out/override rules, but it does not prove that the Talkyard host itself has allowed the current origin

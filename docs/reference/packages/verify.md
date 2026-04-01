@@ -26,11 +26,11 @@ For the Expecto path specifically, confirm the README and wizard guidance before
 
 Current package references live in:
 
-- [`NEXUS-Code/tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj`](../../../NEXUS-Code/tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj)
+- [`NEXUS-Code/tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/tests/Nexus.Foundation.Tests/Nexus.Foundation.Tests.fsproj)
 
 Current snapshot tests live in:
 
-- [`NEXUS-Code/tests/Nexus.Foundation.Tests/SnapshotTests.fs`](../../../NEXUS-Code/tests/Nexus.Foundation.Tests/SnapshotTests.fs)
+- [`NEXUS-Code/tests/Nexus.Foundation.Tests/SnapshotTests.fs`](https://github.com/IvanTheGeek/NEXUS-EMERGING/blob/main/NEXUS-Code/tests/Nexus.Foundation.Tests/SnapshotTests.fs)
 
 Current runbook:
 

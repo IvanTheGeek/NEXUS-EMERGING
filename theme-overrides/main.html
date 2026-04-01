@@ -14,6 +14,45 @@
   </div>
 {% endblock %}
 
+{% block content %}
+  {% set comments_enabled = page and (page.meta.comments is not sameas false) %}
+  {% set talkyard = config.extra.talkyard if config.extra and config.extra.talkyard else none %}
+  <div class="row">
+    <div class="col-md-3">{% include "toc.html" %}</div>
+    <div class="col-md-9" role="main">{% include "content.html" %}</div>
+  </div>
+  {% if comments_enabled and talkyard %}
+    <div class="row nexus-discussion-row">
+      <div class="col-md-3 nexus-discussion-spacer" aria-hidden="true"></div>
+      <div class="col-md-9 nexus-discussion-shell">
+        <section
+          class="nexus-discussion-block"
+          aria-labelledby="nexus-discussion-title"
+        >
+          <div class="nexus-discussion-meta">
+            <h2 id="nexus-discussion-title">Discussion</h2>
+            <p class="nexus-discussion-note">
+              Public comments live in Talkyard under the NEXUS site comment stream.
+            </p>
+          </div>
+          <div
+            class="talkyard-comments nexus-talkyard-comments"
+            data-talkyard-server-url="{{ talkyard.server_url }}"
+            data-talkyard-category="{{ talkyard.category_ref }}"
+            data-talkyard-namespace="{{ talkyard.discussion_namespace }}"
+            data-source-path="{{ page.file.src_uri if page and page.file else '' }}"
+            data-page-url="{{ page.canonical_url if page and page.canonical_url else '' }}"
+            data-page-title="{{ page.title if page and page.title else config.site_name }}"
+            data-discussion-id="{{ page.meta.discussion_id if page and page.meta and page.meta.discussion_id else '' }}"
+          >
+            <noscript>Please enable JavaScript to view the Talkyard comments for this page.</noscript>
+          </div>
+        </section>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
 {% block footer %}
   <hr>
   <div class="nexus-footer-meta">

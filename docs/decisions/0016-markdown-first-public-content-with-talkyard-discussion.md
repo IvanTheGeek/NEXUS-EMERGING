@@ -70,3 +70,15 @@ Later, NEXUS should support:
 - explicit mapping from a published page to its Talkyard discussion thread
 - ingestion of the discussion layer as feedback
 - attribution/help/about surfaces driven from published-content metadata and export manifests
+
+## Current Implementation Notes
+
+The current NEXUS docs-site projection now implements this direction as:
+
+- GitHub Pages static hosting
+- Talkyard comments embedded at the bottom of pages just above the footer
+- comments enabled by default with page-level opt-out available
+- stable explicit page discussion identifiers instead of URL-only identity
+- public NEXUS site comments grouped under a dedicated `NEXUS Site Comments` stream
+
+Future sibling sites such as CheddarBooks/LaundryLog should use their own sibling Talkyard comment stream and external ID instead of sharing the NEXUS one.

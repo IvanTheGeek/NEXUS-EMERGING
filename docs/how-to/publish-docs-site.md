@@ -35,6 +35,7 @@ Once the workflow file is on `main`:
 ```bash
 source .venv/bin/activate
 mkdocs build
+python3 NEXUS-Code/scripts/verify_docs_talkyard_comments.py
 ```
 
 If you want to inspect the site in a browser before pushing:
@@ -52,4 +53,8 @@ mkdocs serve --dev-addr 127.0.0.1:8000
 - when a docs page needs to link to repo-root files or `NEXUS-Code/`, use explicit GitHub URLs instead of relative filesystem paths
 - when a docs page links to event-store artifacts, prefer explicit URLs in `https://github.com/IvanTheGeek/NEXUS-EventStore/...`
 - for historical `NEXUS-EventStore` citations, prefer commit-pinned GitHub blob URLs so source references stay stable over time
+- the current public comments layer is Talkyard at `https://talkyard.ivanthegeek.com`
+- the current NEXUS docs embed targets the public `NEXUS Site Comments` stream via category ref `extid:nexus_site_comments`
+- allow embedded-comments hosting from `https://ivanthegeek.github.io`, `http://127.0.0.1:8000`, and `http://localhost:8000` in Talkyard admin if local preview or GitHub Pages comments do not appear
+- future downstream sites such as CheddarBooks/LaundryLog should use sibling public categories with their own external IDs instead of sharing the NEXUS comment stream
 - if a later custom domain is desired, configure that separately in GitHub Pages once the base publish flow is stable
