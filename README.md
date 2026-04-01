@@ -115,6 +115,7 @@ Core project memory lives in the repo so humans and AI agents can recover intent
 - [`docs/fntools-foundation.md`](docs/fntools-foundation.md)
 - [`docs/repository-concern-lines.md`](docs/repository-concern-lines.md)
 - [`docs/fsharp-documentation-convention.md`](docs/fsharp-documentation-convention.md)
+- [`docs/reference/packages/README.md`](docs/reference/packages/README.md)
 - [`docs/glossary.md`](docs/glossary.md)
 - [`docs/concepts/`](docs/concepts/README.md)
 - [`docs/how-to/`](docs/how-to/README.md)
@@ -139,6 +140,7 @@ Work in NEXUS is expected to ship with the supporting docs and tests it needs.
 - update CLI help, runbooks, and xmldoc when public command or API surfaces change
 - record important discoveries, corrections, and durable learnings in repo docs instead of leaving them only in chat or memory
 - reference those durable records from the places where the learning matters
+- when using an external package meaningfully, check its official docs and examples before inferring behavior from generated output, and add or update a local note under [`docs/reference/packages/`](docs/reference/packages/README.md) when the package matters to ongoing work here
 - default durable/model time to UTC and localize it in views unless a specific domain rule says otherwise
 - if a change is docs-only or tests are not applicable, state that explicitly rather than leaving it ambiguous
 
@@ -146,6 +148,7 @@ See:
 
 - [`docs/decisions/0017-docs-and-tests-ship-with-work.md`](docs/decisions/0017-docs-and-tests-ship-with-work.md)
 - [`docs/decisions/0021-important-discoveries-become-durable-repo-memory.md`](docs/decisions/0021-important-discoveries-become-durable-repo-memory.md)
+- [`docs/decisions/0025-official-package-docs-first-and-local-package-reference-notes.md`](docs/decisions/0025-official-package-docs-first-and-local-package-reference-notes.md)
 - [`docs/decisions/0020-converged-main-and-active-concern-line-branches.md`](docs/decisions/0020-converged-main-and-active-concern-line-branches.md)
 - [`docs/decisions/0023-utc-for-durable-time-and-localize-in-views.md`](docs/decisions/0023-utc-for-durable-time-and-localize-in-views.md)
 - [`docs/collaboration-protocol.md`](docs/collaboration-protocol.md)

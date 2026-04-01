@@ -80,6 +80,7 @@ See:
 - [`docs/how-to/report-unresolved-artifacts.md`](../docs/how-to/report-unresolved-artifacts.md)
 - [`docs/how-to/export-codex-sessions.md`](../docs/how-to/export-codex-sessions.md)
 - [`docs/how-to/run-tests.md`](../docs/how-to/run-tests.md)
+- [`docs/reference/packages/README.md`](../docs/reference/packages/README.md)
 - [`docs/nexus-ontology-imprint-alignment.md`](../docs/nexus-ontology-imprint-alignment.md)
 - [`docs/logos-source-model-v0.md`](../docs/logos-source-model-v0.md)
 - [`docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md`](../docs/decisions/0015-fnhci-owns-the-top-interaction-namespace.md)
@@ -114,3 +115,5 @@ The suite is now split by concern line:
 - `CheddarBooks.Tests`
 
 When learning a library used here, prefer its repo docs and examples first, then source, with XML/API inspection used only when exact behavior needs confirmation.
+
+If that library becomes part of repeated work here, add or update a short local note under [`docs/reference/packages/`](../docs/reference/packages/README.md) so future work starts from the right official docs and local conventions.
