@@ -23,6 +23,18 @@ module Program =
         | NoVerification
         | TraceableWorkingBatch
 
+    type EventStoreRootDefaultSource =
+        | EnvironmentVariable
+        | InRepo
+        | Sibling
+        | Missing
+
+    type EventStoreRootDefaultResolution =
+        { SelectedPath: string
+          Source: EventStoreRootDefaultSource
+          InRepoPath: string
+          SiblingPath: string }
+
     type private Command =
         | ShowHelp of commandName: string option
         | WriteSampleEventStore of eventStoreRoot: string
@@ -74,8 +86,80 @@ module Program =
     let private repoRoot =
         Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "..", "..", ".."))
 
+    let resolveDefaultEventStoreRootFor repoRoot environmentValue inRepoExists siblingExists =
+        let inRepoPath =
+            Path.GetFullPath(Path.Combine(repoRoot, "NEXUS-EventStore"))
+
+        let siblingPath =
+            Path.GetFullPath(Path.Combine(repoRoot, "..", "NEXUS-EventStore"))
+
+        match environmentValue |> Option.filter (String.IsNullOrWhiteSpace >> not) with
+        | Some value ->
+            { SelectedPath = Path.GetFullPath(value)
+              Source = EnvironmentVariable
+              InRepoPath = inRepoPath
+              SiblingPath = siblingPath }
+        | None when inRepoExists ->
+            { SelectedPath = inRepoPath
+              Source = InRepo
+              InRepoPath = inRepoPath
+              SiblingPath = siblingPath }
+        | None when siblingExists ->
+            { SelectedPath = siblingPath
+              Source = Sibling
+              InRepoPath = inRepoPath
+              SiblingPath = siblingPath }
+        | None ->
+            { SelectedPath = siblingPath
+              Source = Missing
+              InRepoPath = inRepoPath
+              SiblingPath = siblingPath }
+
+    let private defaultEventStoreRootResolution =
+        resolveDefaultEventStoreRootFor
+            repoRoot
+            (Environment.GetEnvironmentVariable("NEXUS_EVENT_STORE_ROOT") |> Option.ofObj)
+            (Directory.Exists(Path.Combine(repoRoot, "NEXUS-EventStore")))
+            (Directory.Exists(Path.GetFullPath(Path.Combine(repoRoot, "..", "NEXUS-EventStore"))))
+
     let private defaultEventStoreRoot =
-        Path.Combine(repoRoot, "NEXUS-EventStore")
+        defaultEventStoreRootResolution.SelectedPath
+
+    let private siblingEventStoreRoot =
+        defaultEventStoreRootResolution.SiblingPath
+
+    let private defaultEventStoreRootDisplay =
+        match defaultEventStoreRootResolution.Source with
+        | EnvironmentVariable ->
+            sprintf "%s (from NEXUS_EVENT_STORE_ROOT)" defaultEventStoreRootResolution.SelectedPath
+        | InRepo ->
+            sprintf "%s (in-repo transition path)" defaultEventStoreRootResolution.SelectedPath
+        | Sibling ->
+            sprintf "%s (sibling repo)" defaultEventStoreRootResolution.SelectedPath
+        | Missing ->
+            sprintf
+                "%s (expected sibling repo; set NEXUS_EVENT_STORE_ROOT, keep an in-repo NEXUS-EventStore during transition, or clone ../NEXUS-EventStore)"
+                defaultEventStoreRootResolution.SelectedPath
+
+    let defaultEventStoreRootMissingMessageFor resolution =
+        sprintf
+            "No default NEXUS event-store root was found. Checked NEXUS_EVENT_STORE_ROOT, in-repo %s, and sibling %s. Clone IvanTheGeek/NEXUS-EventStore to %s or pass --event-store-root <path>."
+            resolution.InRepoPath
+            resolution.SiblingPath
+            resolution.SiblingPath
+
+    let private defaultEventStoreRootMissingMessage () =
+        defaultEventStoreRootMissingMessageFor defaultEventStoreRootResolution
+
+    let validateDefaultEventStoreRootFor resolution eventStoreRoot =
+        let normalizedCommandRoot = Path.GetFullPath(eventStoreRoot)
+        let normalizedDefaultRoot = Path.GetFullPath(resolution.SelectedPath)
+
+        if resolution.Source = Missing
+           && String.Equals(normalizedCommandRoot, normalizedDefaultRoot, StringComparison.OrdinalIgnoreCase) then
+            Error(defaultEventStoreRootMissingMessageFor resolution)
+        else
+            Ok eventStoreRoot
 
     let private defaultObjectsRoot =
         Path.Combine(repoRoot, "NEXUS-Objects")
@@ -371,7 +455,7 @@ module Program =
                   Summary = "Export the current Codex session snapshot, import it, and link it to the current Git HEAD commit."
                   Usage =
                     [ sprintf "%s capture-codex-commit-checkpoint" cliInvocation
-                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/FnTools --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/FnTools --event-store-root %s" cliInvocation siblingEventStoreRoot ]
                   Options =
                     [ "--repo-root <path>", "Override the Git repo whose HEAD commit should be linked. Defaults to the current working directory."
                       "--source-root <path>", sprintf "Override the Codex source root. Defaults to %s." defaultCodexSourceRoot
@@ -380,7 +464,7 @@ module Program =
                       "--force", "Overwrite an existing checkpoint for the same repo and commit." ]
                   Examples =
                     [ sprintf "%s capture-codex-commit-checkpoint" cliInvocation
-                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/CheddarBooks --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                      sprintf "%s capture-codex-commit-checkpoint --repo-root /home/ivan/NEXUS/CheddarBooks --event-store-root %s" cliInvocation siblingEventStoreRoot ]
                   Notes =
                     [ "This is the first commit-linked Codex checkpoint flow for tracing a Git commit back to the chat that led to it."
                       "The checkpoint writes a durable manifest under NEXUS-EventStore/work-batches/commit-checkpoints/<repo>/<commit>.toml."
@@ -418,7 +502,7 @@ module Program =
                       "--event-store-root <path>", sprintf "Override the event-store root used by checkpoint capture. Defaults to %s." defaultEventStoreRoot ]
                   Examples =
                     [ sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/FnTools" cliInvocation
-                      sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/CheddarBooks --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore" cliInvocation ]
+                      sprintf "%s install-codex-commit-checkpoint-hook --repo-root /home/ivan/NEXUS/CheddarBooks --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects --event-store-root %s" cliInvocation siblingEventStoreRoot ]
                   Notes =
                     [ "This writes or updates only the managed NEXUS block inside .git/hooks/post-commit."
                       "Existing hook content is preserved when possible."
@@ -543,9 +627,9 @@ module Program =
                       "--engine <dot|sfdp>", "Graphviz engine. Defaults to dot."
                       "--format <svg|png>", "Rendered output format. Defaults to svg." ]
                   Examples =
-                    [ sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/exports/nexus-graph.dot" cliInvocation
-                      sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/exports/nexus-graph.dot --output-root /tmp/nexus-rendered" cliInvocation
-                      sprintf "%s render-graphviz-dot --input NEXUS-EventStore/graph/working/exports/nexus-working-graph__import-019d....dot --engine sfdp --format png" cliInvocation ]
+                    [ sprintf "%s render-graphviz-dot --input %s" cliInvocation (Path.Combine(siblingEventStoreRoot, "graph", "exports", "nexus-graph.dot"))
+                      sprintf "%s render-graphviz-dot --input %s --output-root /tmp/nexus-rendered" cliInvocation (Path.Combine(siblingEventStoreRoot, "graph", "exports", "nexus-graph.dot"))
+                      sprintf "%s render-graphviz-dot --input %s --engine sfdp --format png" cliInvocation (Path.Combine(siblingEventStoreRoot, "graph", "working", "exports", "nexus-working-graph__import-019d....dot")) ]
                   Notes =
                     [ "This command renders an existing DOT file. Use export-graphviz-dot first if you still need to generate the DOT source."
                       "Use either --output or --output-root, not both."
@@ -932,7 +1016,7 @@ module Program =
         printfn ""
         printfn "Repository defaults:"
         printRows
-            [ "event store", defaultEventStoreRoot
+            [ "event store", defaultEventStoreRootDisplay
               "objects", defaultObjectsRoot
               "docs", defaultDocsRoot
               "codex snapshots", defaultCodexSnapshotRoot ]
@@ -4955,82 +5039,135 @@ module Program =
 
             0
 
+    let private commandEventStoreRoot command =
+        match command with
+        | ShowHelp _ -> None
+        | WriteSampleEventStore _ -> None
+        | CompareProviderExports _ -> None
+        | ReportLogosCatalog -> None
+        | ReportLogosHandling _ -> None
+        | ExportLogosPublicNotes _ -> None
+        | RenderGraphvizDot _ -> None
+        | ImportLogosBlogRepo _ -> None
+        | CreateLogosIntakeNote _ -> None
+        | CreateLogosSanitizedNote _ -> None
+        | CompareImportSnapshots(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | ReportProviderImportHistory(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | ReportCurrentIngestion(eventStoreRoot, _) -> Some eventStoreRoot
+        | ReportConversationOverlapCandidates(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | RebuildImportSnapshots(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | ImportProviderExport request -> Some request.EventStoreRoot
+        | ImportCodexSessions request -> Some request.EventStoreRoot
+        | CaptureCodexCommitCheckpoint request -> Some request.EventStoreRoot
+        | ReportCodexCommitCheckpoint(eventStoreRoot, _, _) -> Some eventStoreRoot
+        | InstallCodexCommitCheckpointHook request -> Some request.EventStoreRoot
+        | CaptureArtifactPayload request -> Some request.EventStoreRoot
+        | RebuildGraphAssertions(eventStoreRoot, _) -> Some eventStoreRoot
+        | ExportGraphvizDot(eventStoreRoot, _, _, _, _, _, _, _, _, _, _) -> Some eventStoreRoot
+        | RebuildArtifactProjections eventStoreRoot -> Some eventStoreRoot
+        | ReportUnresolvedArtifacts(eventStoreRoot, _, _) -> Some eventStoreRoot
+        | ReportWorkingGraphImports(eventStoreRoot, _) -> Some eventStoreRoot
+        | ReportWorkingImportConversations(eventStoreRoot, _, _) -> Some eventStoreRoot
+        | CompareWorkingImportConversations(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | FindWorkingGraphNodes(eventStoreRoot, _, _, _, _, _, _) -> Some eventStoreRoot
+        | ReportWorkingGraphBatch(eventStoreRoot, _, _) -> Some eventStoreRoot
+        | ReportWorkingGraphNeighborhood(eventStoreRoot, _, _, _) -> Some eventStoreRoot
+        | VerifyWorkingGraphBatch(eventStoreRoot, _, _) -> Some eventStoreRoot
+        | RebuildWorkingGraphIndex eventStoreRoot -> Some eventStoreRoot
+        | RebuildConversationProjections eventStoreRoot -> Some eventStoreRoot
+        | CreateConceptNote request -> Some request.EventStoreRoot
+
+    let private validateDefaultEventStoreRoot command =
+        match commandEventStoreRoot command with
+        | None -> Ok command
+        | Some eventStoreRoot ->
+            match validateDefaultEventStoreRootFor defaultEventStoreRootResolution eventStoreRoot with
+            | Ok _ -> Ok command
+            | Error error -> Error error
+
     [<EntryPoint>]
     let main argv =
         match parseCommand (argv |> Array.toList) with
-        | Ok (ShowHelp None) ->
-            usage ()
-            0
-        | Ok (ShowHelp (Some commandName)) ->
-            printCommandHelp commandName
-            0
-        | Ok (WriteSampleEventStore eventStoreRoot) ->
-            writeSampleEventStore eventStoreRoot
-        | Ok (CompareProviderExports(provider, baseZipPath, currentZipPath, limit)) ->
-            compareProviderExports provider baseZipPath currentZipPath limit
-        | Ok (CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit)) ->
-            compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
-        | Ok (ReportProviderImportHistory(eventStoreRoot, objectsRoot, provider, limit)) ->
-            reportProviderImportHistory eventStoreRoot objectsRoot provider limit
-        | Ok (ReportCurrentIngestion(eventStoreRoot, objectsRoot)) ->
-            reportCurrentIngestion eventStoreRoot objectsRoot
-        | Ok ReportLogosCatalog ->
-            reportLogosCatalog ()
-        | Ok (ReportLogosHandling(docsRoot, limit)) ->
-            reportLogosHandling docsRoot limit
-        | Ok (ExportLogosPublicNotes(docsRoot, outputRoot)) ->
-            exportLogosPublicNotes docsRoot outputRoot
-        | Ok (ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit)) ->
-            reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
-        | Ok (RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force)) ->
-            rebuildImportSnapshots eventStoreRoot objectsRoot scope force
-        | Ok (ImportProviderExport request) ->
-            importProviderExport request
-        | Ok (ImportCodexSessions request) ->
-            importCodexSessions request
-        | Ok (CaptureCodexCommitCheckpoint request) ->
-            captureCodexCommitCheckpoint request
-        | Ok (ReportCodexCommitCheckpoint(eventStoreRoot, repoRoot, commitSha)) ->
-            reportCodexCommitCheckpoint eventStoreRoot repoRoot commitSha
-        | Ok (InstallCodexCommitCheckpointHook request) ->
-            installCodexCommitCheckpointHook request
-        | Ok (CaptureArtifactPayload request) ->
-            captureArtifactPayload request
-        | Ok (RebuildGraphAssertions(eventStoreRoot, approved)) ->
-            rebuildGraphAssertions eventStoreRoot approved
-        | Ok (ExportGraphvizDot(eventStoreRoot, objectsRoot, outputPath, outputRoot, verification, provider, providerConversationId, conversationId, importId, workingImportId, workingNodeId)) ->
-            exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId
-        | Ok (RenderGraphvizDot(inputPath, outputPath, outputRoot, engine, format)) ->
-            renderGraphvizDot inputPath outputPath outputRoot engine format
-        | Ok (RebuildArtifactProjections eventStoreRoot) ->
-            rebuildArtifactProjections eventStoreRoot
-        | Ok (ReportUnresolvedArtifacts(eventStoreRoot, provider, limit)) ->
-            reportUnresolvedArtifacts eventStoreRoot provider limit
-        | Ok (ReportWorkingGraphImports(eventStoreRoot, limit)) ->
-            reportWorkingGraphImports eventStoreRoot limit
-        | Ok (ReportWorkingImportConversations(eventStoreRoot, importId, limit)) ->
-            reportWorkingImportConversations eventStoreRoot importId limit
-        | Ok (CompareWorkingImportConversations(eventStoreRoot, baseImportId, currentImportId, limit)) ->
-            compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit
-        | Ok (FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit)) ->
-            findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
-        | Ok (ReportWorkingGraphBatch(eventStoreRoot, importId, limit)) ->
-            reportWorkingGraphBatch eventStoreRoot importId limit
-        | Ok (ReportWorkingGraphNeighborhood(eventStoreRoot, importId, nodeId, limit)) ->
-            reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit
-        | Ok (VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importId)) ->
-            verifyWorkingGraphBatch eventStoreRoot objectsRoot importId
-        | Ok (RebuildWorkingGraphIndex eventStoreRoot) ->
-            rebuildWorkingGraphIndex eventStoreRoot
-        | Ok (RebuildConversationProjections eventStoreRoot) ->
-            rebuildConversationProjections eventStoreRoot
-        | Ok (ImportLogosBlogRepo request) ->
-            importLogosBlogRepo request
-        | Ok (CreateLogosIntakeNote request) ->
-            createLogosIntakeNote request
-        | Ok (CreateLogosSanitizedNote request) ->
-            createLogosSanitizedNote request
-        | Ok (CreateConceptNote request) ->
-            createConceptNote request
+        | Ok command ->
+            match validateDefaultEventStoreRoot command with
+            | Error error ->
+                eprintfn "%s" error
+                1
+            | Ok command ->
+                match command with
+                | ShowHelp None ->
+                    usage ()
+                    0
+                | ShowHelp (Some commandName) ->
+                    printCommandHelp commandName
+                    0
+                | WriteSampleEventStore eventStoreRoot ->
+                    writeSampleEventStore eventStoreRoot
+                | CompareProviderExports(provider, baseZipPath, currentZipPath, limit) ->
+                    compareProviderExports provider baseZipPath currentZipPath limit
+                | CompareImportSnapshots(eventStoreRoot, baseImportId, currentImportId, limit) ->
+                    compareImportSnapshots eventStoreRoot baseImportId currentImportId limit
+                | ReportProviderImportHistory(eventStoreRoot, objectsRoot, provider, limit) ->
+                    reportProviderImportHistory eventStoreRoot objectsRoot provider limit
+                | ReportCurrentIngestion(eventStoreRoot, objectsRoot) ->
+                    reportCurrentIngestion eventStoreRoot objectsRoot
+                | ReportLogosCatalog ->
+                    reportLogosCatalog ()
+                | ReportLogosHandling(docsRoot, limit) ->
+                    reportLogosHandling docsRoot limit
+                | ExportLogosPublicNotes(docsRoot, outputRoot) ->
+                    exportLogosPublicNotes docsRoot outputRoot
+                | ReportConversationOverlapCandidates(eventStoreRoot, leftProvider, rightProvider, limit) ->
+                    reportConversationOverlapCandidates eventStoreRoot leftProvider rightProvider limit
+                | RebuildImportSnapshots(eventStoreRoot, objectsRoot, scope, force) ->
+                    rebuildImportSnapshots eventStoreRoot objectsRoot scope force
+                | ImportProviderExport request ->
+                    importProviderExport request
+                | ImportCodexSessions request ->
+                    importCodexSessions request
+                | CaptureCodexCommitCheckpoint request ->
+                    captureCodexCommitCheckpoint request
+                | ReportCodexCommitCheckpoint(eventStoreRoot, repoRoot, commitSha) ->
+                    reportCodexCommitCheckpoint eventStoreRoot repoRoot commitSha
+                | InstallCodexCommitCheckpointHook request ->
+                    installCodexCommitCheckpointHook request
+                | CaptureArtifactPayload request ->
+                    captureArtifactPayload request
+                | RebuildGraphAssertions(eventStoreRoot, approved) ->
+                    rebuildGraphAssertions eventStoreRoot approved
+                | ExportGraphvizDot(eventStoreRoot, objectsRoot, outputPath, outputRoot, verification, provider, providerConversationId, conversationId, importId, workingImportId, workingNodeId) ->
+                    exportGraphvizDot eventStoreRoot objectsRoot outputPath outputRoot verification provider providerConversationId conversationId importId workingImportId workingNodeId
+                | RenderGraphvizDot(inputPath, outputPath, outputRoot, engine, format) ->
+                    renderGraphvizDot inputPath outputPath outputRoot engine format
+                | RebuildArtifactProjections eventStoreRoot ->
+                    rebuildArtifactProjections eventStoreRoot
+                | ReportUnresolvedArtifacts(eventStoreRoot, provider, limit) ->
+                    reportUnresolvedArtifacts eventStoreRoot provider limit
+                | ReportWorkingGraphImports(eventStoreRoot, limit) ->
+                    reportWorkingGraphImports eventStoreRoot limit
+                | ReportWorkingImportConversations(eventStoreRoot, importId, limit) ->
+                    reportWorkingImportConversations eventStoreRoot importId limit
+                | CompareWorkingImportConversations(eventStoreRoot, baseImportId, currentImportId, limit) ->
+                    compareWorkingImportConversations eventStoreRoot baseImportId currentImportId limit
+                | FindWorkingGraphNodes(eventStoreRoot, importId, provider, matchText, semanticRole, messageRole, limit) ->
+                    findWorkingGraphNodes eventStoreRoot importId provider matchText semanticRole messageRole limit
+                | ReportWorkingGraphBatch(eventStoreRoot, importId, limit) ->
+                    reportWorkingGraphBatch eventStoreRoot importId limit
+                | ReportWorkingGraphNeighborhood(eventStoreRoot, importId, nodeId, limit) ->
+                    reportWorkingGraphNeighborhood eventStoreRoot importId nodeId limit
+                | VerifyWorkingGraphBatch(eventStoreRoot, objectsRoot, importId) ->
+                    verifyWorkingGraphBatch eventStoreRoot objectsRoot importId
+                | RebuildWorkingGraphIndex eventStoreRoot ->
+                    rebuildWorkingGraphIndex eventStoreRoot
+                | RebuildConversationProjections eventStoreRoot ->
+                    rebuildConversationProjections eventStoreRoot
+                | ImportLogosBlogRepo request ->
+                    importLogosBlogRepo request
+                | CreateLogosIntakeNote request ->
+                    createLogosIntakeNote request
+                | CreateLogosSanitizedNote request ->
+                    createLogosSanitizedNote request
+                | CreateConceptNote request ->
+                    createConceptNote request
         | Error exitCode ->
             exitCode

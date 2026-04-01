@@ -44,15 +44,21 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   --repo-root /home/ivan/NEXUS/FnTools
 ```
 
-Install it for `CheddarBooks` while keeping the shared NEXUS object and event-store roots:
+Install it for `CheddarBooks` while keeping the shared NEXUS object root and the sibling `NEXUS-EventStore` repo:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   install-codex-commit-checkpoint-hook \
   --repo-root /home/ivan/NEXUS/CheddarBooks \
   --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects \
-  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore
+  --event-store-root /home/ivan/NEXUS/NEXUS-EventStore
 ```
+
+When no explicit `--event-store-root` is supplied, the CLI now resolves it in this order:
+
+1. `NEXUS_EVENT_STORE_ROOT`
+2. in-repo `NEXUS-EventStore/` during transition
+3. sibling `../NEXUS-EventStore`
 
 ## After Installation
 

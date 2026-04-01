@@ -24,5 +24,6 @@ module Program =
               PropertyTests.tests
               SnapshotTests.tests
               CliHelpTests.tests
+              EventStoreRootResolutionTests.tests
               ConceptNoteTests.tests ]
         |> runTestsWithCLIArgs [] argv

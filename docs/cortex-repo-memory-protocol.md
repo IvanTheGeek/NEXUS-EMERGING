@@ -67,7 +67,7 @@ Canonical history is the append-only trace of what was actually observed or deci
 
 Examples in NEXUS:
 
-- canonical append-only event history in `NEXUS-EventStore/`
+- canonical append-only event history in the sibling `NEXUS-EventStore` repo
 - Git commit history
 - import manifests
 - durable checkpoint manifests

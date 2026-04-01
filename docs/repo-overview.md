@@ -12,14 +12,14 @@ When working directly in the repo, the stronger onboarding surface is still the 
 
 ## Workspace Boundaries
 
-This workspace intentionally separates three concerns, even though they currently live under one root:
+This workspace intentionally separates three concerns across one local repo plus one sibling data repo:
 
 - `NEXUS-Code/`
   F# code, adapters, importer workflow, tests, and later GUI and tools
 - `NEXUS-Objects/`
   provider zips, extracted raw payloads, attachments, and manually added artifacts
-- `NEXUS-EventStore/`
-  append-only canonical events, manifests, projections, and later graph assertions
+- sibling repo `../NEXUS-EventStore/`
+  append-only canonical events, manifests, projections, graph assertions, working batches, and derived local indexes
 
 ## Documentation Spine
 
@@ -47,7 +47,7 @@ Already established:
 - Raw artifacts must be preserved.
 - Canonical history should prefer `Observed` language at the ingestion layer.
 - A first working CLI importer exists for ChatGPT and Claude full-export zips.
-- Canonical events and import manifests can be written into `NEXUS-EventStore/`.
+- Canonical events and import manifests can be written into the sibling `NEXUS-EventStore` repo.
 - A first concept-note curation workflow exists for promoting conversation material into durable repo memory.
 
 Not yet established:
@@ -59,10 +59,11 @@ Not yet established:
 
 ## Git Workflow
 
-This repository preserves branch history intentionally.
+For now, `main` is the steady-state branch.
 
-- merge accepted work back to `main` with `--no-ff`
-- avoid squash merges when the branch history itself is part of the durable record
-- keep implementation branches inspectable later as durable lines of work, thought, and experimentation
+- start from `main`
+- use short-lived side branches only when they materially help
+- merge accepted work back quickly
+- retire the extra branch and worktree once that need ends
 
 For the fuller operating context, continue with [`agent-readme.md`](agent-readme.md) and [`current-focus.md`](current-focus.md).

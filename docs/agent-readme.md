@@ -20,7 +20,7 @@ Prime directive:
 Right now this repo is primarily:
 
 - the foundation repo for NEXUS
-- the ingestion and canonical-history repo
+- the doctrine/code/tooling repo that works alongside the sibling `NEXUS-EventStore` data repo
 - the place where shared collaboration rules should become durable and inspectable
 - the place where upstream doctrine should remain recoverable even when app lines are extracted elsewhere
 
@@ -90,7 +90,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
   - the consumed event need not come from the immediately previous slice
   - multiple views may consume the same prior event
 - when an app-line repo has already corrected this seam multiple times, update the durable docs and AI guidance instead of relying on the next agent to rediscover the same correction from chat
-- treat the SQLite graph working index under `NEXUS-EventStore/graph/working/index/` as a local derived cache: rebuild it when needed, but do not recommit it as durable repo truth
+- treat the SQLite graph working index under the sibling `NEXUS-EventStore/graph/working/index/` repo path as a local derived cache: rebuild it when needed, but do not recommit it as durable repo truth
 
 When work is docs-only or tests are not applicable, say so explicitly.
 

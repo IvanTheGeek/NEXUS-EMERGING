@@ -50,8 +50,8 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 2. Updates the stable latest zip and extracted latest snapshot under `NEXUS-Objects/providers/<provider>/latest/`
 3. Extracts the provider payload and the rest of the zip contents into the raw object layer
 4. Parses provider conversations and messages
-5. Writes canonical events into `NEXUS-EventStore/events/...`
-6. Writes an import manifest into `NEXUS-EventStore/imports/...`
+5. Writes canonical events into the sibling `NEXUS-EventStore/events/...` repo
+6. Writes an import manifest into the sibling `NEXUS-EventStore/imports/...` repo
 7. Records restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata on the import manifest
 8. Writes a normalized import snapshot under `NEXUS-EventStore/snapshots/imports/<import-id>/...`
 9. Carries the same LOGOS metadata into the normalized import-snapshot manifest
@@ -111,7 +111,7 @@ Defaults:
 
 - `--window full`
 - objects root: `NEXUS-Objects/`
-- event-store root: `NEXUS-EventStore/`
+- event-store root: resolved from `NEXUS_EVENT_STORE_ROOT`, an in-repo transition copy if present, or the sibling `../NEXUS-EventStore` repo
 
 Optional overrides:
 
@@ -123,7 +123,7 @@ Optional overrides:
 ## Notes
 
 - The raw object layer is ignored by Git in this repo for now.
-- The canonical event store is intended to be committed.
+- The canonical event store is intended to be committed in the extracted `NEXUS-EventStore` repo.
 - The SQLite graph working index is a local derived cache and may be rebuilt instead of committed.
 - Each import records a `normalization_version` so parser/canonicalizer changes can be tracked explicitly.
 - Each provider import now also records a normalized per-import snapshot so later full exports and rolling windows can be compared without confusing additive dedupe behavior for snapshot truth.

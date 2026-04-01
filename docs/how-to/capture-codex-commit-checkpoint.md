@@ -49,15 +49,17 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- capture-codex-
 
 ## Useful Options
 
-Capture against a different repo while still writing into the shared NEXUS object and event-store roots:
+Capture against a different repo while still writing into the shared NEXUS object root and the sibling event-store repo:
 
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   capture-codex-commit-checkpoint \
   --repo-root /home/ivan/NEXUS/FnTools \
-  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore \
+  --event-store-root /home/ivan/NEXUS/NEXUS-EventStore \
   --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects
 ```
+
+If you omit `--event-store-root`, the CLI now resolves it from `NEXUS_EVENT_STORE_ROOT`, an in-repo transition copy if present, or the sibling `../NEXUS-EventStore` repo.
 
 Override the live Codex source root if needed:
 

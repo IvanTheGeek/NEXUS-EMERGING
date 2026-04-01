@@ -49,6 +49,7 @@ mkdocs serve --dev-addr 127.0.0.1:8000
 - the workflow does not require committing generated HTML into the repo
 - the docs source remains in the existing `docs/` tree
 - keep links to published docs pages relative inside `docs/`
-- when a docs page needs to link to repo-root files, `NEXUS-Code/`, or `NEXUS-EventStore/` artifacts, use explicit GitHub URLs instead of relative filesystem paths
+- when a docs page needs to link to repo-root files or `NEXUS-Code/`, use explicit GitHub URLs instead of relative filesystem paths
+- when a docs page links to event-store artifacts, prefer explicit URLs in `https://github.com/IvanTheGeek/NEXUS-EventStore/...`
 - for historical `NEXUS-EventStore` citations, prefer commit-pinned GitHub blob URLs so source references stay stable over time
 - if a later custom domain is desired, configure that separately in GitHub Pages once the base publish flow is stable

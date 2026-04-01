@@ -7,7 +7,7 @@ Use it when:
 - `graph/working/index/graph-working.sqlite` is missing
 - you intentionally deleted or reset the index
 - you want to prove the SQLite layer is rebuildable from the working-batch files
-- you pulled the repo fresh and need to recreate the local derived index
+- you pulled the sibling `NEXUS-EventStore` repo fresh and need to recreate the local derived index
 
 ## Command
 
@@ -21,7 +21,7 @@ dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
 ```bash
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- \
   rebuild-working-graph-index \
-  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore
+  --event-store-root /home/ivan/NEXUS/NEXUS-EventStore
 ```
 
 ## What It Does

@@ -29,6 +29,12 @@ The CLI supports both:
 - `help <command>`
 - `<command> --help`
 
+Event-store default resolution now follows this order:
+
+1. `NEXUS_EVENT_STORE_ROOT`
+2. in-repo `NEXUS-EventStore/` during transition
+3. sibling `../NEXUS-EventStore`
+
 ## Commands
 
 `write-sample-event-store`
@@ -107,7 +113,7 @@ The CLI supports both:
 `import-provider-export`
 
 - Archives a ChatGPT, Claude, or Grok export zip.
-- Parses provider records and appends canonical observed history into `NEXUS-EventStore/`.
+- Parses provider records and appends canonical observed history into the sibling `NEXUS-EventStore` repo.
 - Also records restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata for the import.
 - Also writes a normalized import snapshot under `snapshots/imports/<import-id>/`.
 - Also materializes a batch-local graph working batch under `graph/working/imports/<import-id>/`.

@@ -6,14 +6,14 @@ The near-term job is to preserve source truth, normalize it into an append-only 
 
 ## Local System Boundaries
 
-Use one workspace for now, but keep three explicit boundaries:
+Use one local workspace plus one sibling data repo, but keep three explicit boundaries:
 
 - `NEXUS-Code/`
   F# importer, provider adapters, serialization, CLI, tests, later GUI/tools
 - `NEXUS-Objects/`
   immutable provider zips, extracted working snapshots, attachments, audio, manually added artifacts
-- `NEXUS-EventStore/`
-  Git-backed append-only canonical events, import manifests, projections, and later graph-derived views
+- sibling repo `../NEXUS-EventStore/`
+  Git-backed append-only canonical events, import manifests, snapshots, projections, graph-derived views, and working batches
 
 ## Core Rules
 

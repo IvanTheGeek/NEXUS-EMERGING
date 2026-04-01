@@ -20,8 +20,8 @@ It then:
 - reads `session_index.jsonl` when present
 - reads transcript files under `sessions/`
 - canonicalizes `user_message` and `agent_message` records
-- writes append-only canonical events into `NEXUS-EventStore/events/`
-- writes an import manifest into `NEXUS-EventStore/imports/`
+- writes append-only canonical events into the sibling `NEXUS-EventStore/events/` repo
+- writes an import manifest into the sibling `NEXUS-EventStore/imports/` repo
 - materializes an import-local graph working batch under `NEXUS-EventStore/graph/working/imports/<import-id>/`
 - updates the graph working catalog under `NEXUS-EventStore/graph/working/catalog/import-batches.toml`
 - refreshes the local SQLite working index under `NEXUS-EventStore/graph/working/index/graph-working.sqlite`
@@ -44,8 +44,10 @@ Import from a specific snapshot or override roots:
 dotnet run --project NEXUS-Code/src/Nexus.Cli/Nexus.Cli.fsproj -- import-codex-sessions \
   --snapshot-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects/providers/codex/archive/2026-03-22T16-03-56Z \
   --objects-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-Objects \
-  --event-store-root /home/ivan/NEXUS/NEXUS-EMERGING/NEXUS-EventStore
+  --event-store-root /home/ivan/NEXUS/NEXUS-EventStore
 ```
+
+If you omit `--event-store-root`, the CLI now resolves it from `NEXUS_EVENT_STORE_ROOT`, an in-repo transition copy if present, or the sibling `../NEXUS-EventStore` repo.
 
 ## Normalization Behavior
 

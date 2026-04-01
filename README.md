@@ -69,14 +69,14 @@ Current surfaced direction includes:
 
 ## Workspace Boundaries
 
-This workspace intentionally separates three concerns, even though they currently live under one root:
+This workspace intentionally separates three concerns across one local repo plus one sibling data repo:
 
 - `NEXUS-Code/`
   F# code, adapters, importer workflow, tests, later GUI/tools
 - `NEXUS-Objects/`
   provider zips, extracted raw payloads, attachments, manually added artifacts
-- `NEXUS-EventStore/`
-  append-only canonical events, manifests, projections, later graph assertions
+- sibling repo `../NEXUS-EventStore/`
+  append-only canonical events, manifests, projections, graph assertions, working batches, and derived local indexes
 
 These boundaries are real design seams now and can become separate systems later.
 
@@ -177,7 +177,7 @@ Already established:
 - FORGE is now explicitly being treated as the NEXUS line for turning repeated useful AI-assisted work into deterministic, reviewable system surfaces.
 - External Event Modeling tools have proven insufficient as the primary long-term workflow, and building our own Event Modeling tool is now an explicit direction with Penpot treated as a near-term integration surface.
 - A first manual artifact hydration command exists for appending `ArtifactPayloadCaptured`.
-- Canonical events and import manifests can be written into `NEXUS-EventStore/`.
+- Canonical events and import manifests can be written into the sibling `NEXUS-EventStore` repo.
 - Normalized import snapshots exist for provider-export imports and can be rebuilt for older imports.
 - A current-ingestion report exists for cross-provider operational status.
 - Provider and Codex imports now enter the system with restricted-by-default LOGOS source, signal, handling-policy, and entry-pool metadata.
@@ -209,13 +209,13 @@ Not yet established:
 
 ## Git Workflow
 
-This repository preserves branch history intentionally.
+For now, prefer `main` as the steady-state branch.
 
-- merge feature and exploration branches into `main` with `--no-ff`
-- do not rely on fast-forward merges for accepted work
-- avoid squash merges when the branch history itself is part of the durable record
-
-The goal is to keep implementation branches inspectable later as durable lines of work, thought, and experimentation.
+- start from `main`
+- use a temporary side branch only when a separate cadence or isolated convergence surface is truly needed
+- merge accepted work back quickly instead of letting local or remote branches linger
+- remove extra worktrees and retire temporary branches once they are merged
+- revisit a richer branch policy later if the work genuinely needs it
 
 Concern-line map:
 
@@ -224,18 +224,10 @@ Concern-line map:
 
 Preferred branch shape:
 
-- start focused work from `main` on a topic branch
-- merge accepted work back with `--no-ff`
-- allow long-lived concern-line branches to merge into `main` multiple times while they are still active
-- merge `main` back into those long-lived branches when shared foundations move
-- avoid direct commits on `main` except for truly tiny administrative fixes
-- delete completed topic branches after merge
-- keep longer-lived branches only when a stream truly continues across multiple merges
-- multiple long-running branches can coexist when they reflect genuinely different concerns
-- periodically merge active long-running branches when convergence matters
-- tag milestone merges when the checkpoint itself should stay easy to find in history
-
-Delete a branch when its history is already preserved by merges into `main` and the line no longer needs to evolve separately.
+- use `main` directly for very small administrative changes
+- otherwise branch briefly from `main` and merge back quickly
+- delete completed branches once their work is preserved on `main`
+- treat extra worktrees as temporary operating tools, not durable reasons to keep old branches alive
 
 Historical milestone:
 
