@@ -48,6 +48,66 @@ The current NEXUS docs site uses:
 - GitHub Pages and local preview both need to be allowlisted in Talkyard admin for embeds to appear
 - API secrets, if used later, should live outside the repo under `/home/ivan/.config/nexus-secrets/`
 
+## Embedded Toolbar Clipping
+
+When Talkyard embedded comments first rendered inside the NEXUS docs site, the `Add Comment` button looked clipped at the top edge.
+
+The important local observation was:
+
+- the problem was inside the Talkyard embedded toolbar, not the NEXUS MkDocs page shell
+- adding padding around the outer iframe or the lower summary bar did not fix the right seam
+- the actionable seam was the top post-actions row inside Talkyard
+
+The better workaround is to place custom CSS in Talkyard admin under `Look and feel -> CSS and JS` and target the embedded toolbar classes directly:
+
+```css
+.dw-p-as.dw-as.esPA {
+  padding-top: 8px !important;
+  padding-right: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.dw-a.dw-a-reply.icon-reply,
+.dw-a.dw-a-flag,
+.dw-a.dw-a-link,
+.dw-a.dw-a-like {
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.dw-t.dw-depth-0.dw-ar-t.s_ThrDsc {
+  padding-top: 6px !important;
+}
+
+.dw-cmts-tlbr.esMetabar {
+  margin-top: 14px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  min-height: auto !important;
+}
+```
+
+If the first pass helps but still feels a little cramped, a small follow-up polish can be added:
+
+```css
+.dw-p-as.dw-as.esPA {
+  min-height: 40px !important;
+}
+
+.dw-a.dw-a-flag,
+.dw-a.dw-a-link,
+.dw-a.dw-a-like {
+  margin-top: 1px !important;
+}
+
+.dw-a.dw-a-reply.icon-reply {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+```
+
+Treat this as a Talkyard-side visual seam, not a MkDocs-host styling seam.
+
 ## Related
 
 - [`../../public-content-publishing-and-talkyard-comments.md`](../../public-content-publishing-and-talkyard-comments.md)
