@@ -30,3 +30,4 @@ Current decisions:
 - [`0022-functionalize-repeatable-work-into-deterministic-surfaces.md`](0022-functionalize-repeatable-work-into-deterministic-surfaces.md)
 - [`0023-utc-for-durable-time-and-localize-in-views.md`](0023-utc-for-durable-time-and-localize-in-views.md)
 - [`0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md`](0024-build-our-own-event-modeling-tool-and-use-penpot-transitionally.md)
+- [`0025-official-package-docs-first-and-local-package-reference-notes.md`](0025-official-package-docs-first-and-local-package-reference-notes.md)

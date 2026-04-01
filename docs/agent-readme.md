@@ -63,6 +63,7 @@ Short version:
 
 - do not leave critical learnings only in chat
 - do not guess from memory, old chat, screenshots, or stale assumptions when the current repo state can be inspected directly; verify the actual docs, code, tests, artifacts, and branch/worktree shape before acting
+- when a task depends on an external package, check the package's official docs entry point, onboarding docs, and examples before inferring behavior from generated outputs or implementation details
 - do not silently turn scratch into doctrine
 - do not rewrite canonical history to simplify the story
 - do keep durable docs current when a learning should guide future work
@@ -79,6 +80,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
 - when a repeat F# seam or implementation preference becomes clear, record it in the appropriate durable guidance surface instead of leaving it as one-off chat memory
+- when an external package becomes important to ongoing work here, add or update a short local note under [`docs/reference/packages/`](reference/packages/README.md) so future work starts from the right official docs and local conventions
 - AI agents may proactively suggest a better-fit tool or language when the concern clearly calls for it, but should keep the reason and tradeoff visible instead of switching silently
 - the human's decision is the controlling one once made; later agents should follow it, while still being allowed to respectfully surface a materially better option if one becomes apparent
 - for Playwright MCP browser work, do not assume `file://` is a valid target; the MCP browser sandbox blocks `file:` URLs, so serve local artifacts over `http://127.0.0.1/...` (or similar local HTTP) first and use that as the browser target

@@ -388,6 +388,15 @@ The current NEXUS-wide usual way is:
 3. source after that
 4. XML docs and low-level API inspection as supporting detail
 
+When the work depends on an external package, treat the package's official docs spine the same way:
+
+1. official README or docs entry point first
+2. official getting-started, quickstart, wizard, or conventions docs next
+3. official examples and tests next
+4. source and low-level inspection only after that
+
+When a package matters to repeated work in NEXUS, add or update a short local note under [`docs/reference/packages/`](reference/packages/README.md).
+
 And for code changes:
 
 - update tests when behavior changes
@@ -464,6 +473,7 @@ For local `file://` HTML artifacts that need update awareness:
 This note complements, not replaces:
 
 - [`fsharp-documentation-convention.md`](fsharp-documentation-convention.md)
+- [`reference/packages/README.md`](reference/packages/README.md)
 - [`how-to/run-tests.md`](how-to/run-tests.md)
 - [`agent-readme.md`](agent-readme.md)
 - [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md)

@@ -61,6 +61,7 @@ Start here when you need orientation instead of one specific deep document.
 ## Glossary And Concepts
 
 - [`glossary.md`](glossary.md)
+- [`reference/packages/README.md`](reference/packages/README.md)
 - [`concepts/README.md`](concepts/README.md)
 - [`concepts/logos.md`](concepts/logos.md)
 - [`concepts/fnhci.md`](concepts/fnhci.md)
