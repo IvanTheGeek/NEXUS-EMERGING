@@ -41,10 +41,9 @@ Before significant work:
 4. read the relevant decision records and runbooks
 5. inspect whether the work belongs on:
    - `main`
-   - an active concern-line branch
-   - a new focused child branch
+   - a truly necessary temporary side branch
 6. inspect the branch relationship to `main`
-7. inspect relevant source and tests
+7. inspect the actual relevant source, tests, docs, artifacts, and repo shape instead of guessing from prior chat or memory
 
 ## Tooling Expectations
 
@@ -73,13 +72,11 @@ This avoids avoidable MSBuild file-copy contention and misleading build noise.
 ## Branching Expectations
 
 - `main` is the current converged shared baseline
-- a single local `main` worktree is the preferred steady state when no concern line needs to evolve separately
-- short-lived branches are preferred for tightly scoped work
-- long-lived branches are allowed only when a concern line still has a real independent cadence across multiple merges
-- accepted work merges into `main` with `--no-ff`
-- active long-lived branches should periodically take merges from `main`
-- active long-lived branches may merge into `main` multiple times and continue afterward
-- direct commits to `main` should be rare and limited to truly tiny administrative fixes; normal follow-up work should happen on a branch
+- for now, `main` is also the default active branch for normal work
+- if a temporary side branch is created, keep it tightly scoped and merge it back into `main` promptly
+- do not keep long-lived concern-line branches alive unless the human explicitly decides to reintroduce that topology later
+- accepted branch work merges into `main` with `--no-ff`
+- direct commits to `main` are acceptable for small admin/docs cleanup while this temporary main-first policy is in effect, but substantial work should still be reviewed intentionally
 
 Branch deletion guidance:
 
@@ -87,11 +84,7 @@ Branch deletion guidance:
 - keep a long-lived branch when its concern line still needs an independent cadence or expects more checkpoint merges
 - delete a long-lived branch once it no longer needs to evolve separately from `main`
 
-Examples of long-lived concern-line branches:
-
-- `fntools-foundation`
-- `cheddarbooks-foundation`
-- `logos-intake-foundation`
+This temporary main-first policy can be revisited later if a concern line truly needs an independent cadence again.
 
 ## Worktree Expectations
 

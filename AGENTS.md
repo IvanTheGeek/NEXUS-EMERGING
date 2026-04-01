@@ -18,11 +18,12 @@ Read in this order before substantial work:
 Working rules:
 
 - do not rely on chat memory alone for project understanding
+- do not guess from memory, old chat, screenshots, or stale assumptions when the current repo state can be inspected directly; verify the actual docs, code, tests, artifacts, and branch/worktree shape before acting
 - keep scratch, durable docs, canonical history, and derived views distinct
 - record durable learnings in the repo when they should matter later
-- prefer a single local `main` worktree as the steady state when no branch truly needs to evolve separately
-- use additional linked Git worktrees as temporary operating surfaces for active side branches, merge/convergence work, or isolated parallel work, then remove them once that need ends
-- after a branch is merged and no longer needs an independent cadence, remove its extra worktree if one exists and delete the local branch; delete the remote branch too when the shared remote no longer needs that ref
+- for now, keep `main` as the default active branch and merge accepted work back into `main` promptly instead of leaving side branches alive longer than needed
+- use additional linked Git worktrees only as temporary operating surfaces for active side branches, merge/convergence work, or isolated parallel work, then remove them once that need ends
+- after a branch is merged, remove its extra worktree if one exists and delete the local branch; delete the remote branch too when the shared remote no longer needs that ref
 - when code, renderer, command behavior, or visible behavior changes, add or update tests by default
 - if a relevant test is not added or updated, say why explicitly
 - for UI, HTML, CSS, renderer, and screen work, inspect the actual local source and current artifacts before changing behavior

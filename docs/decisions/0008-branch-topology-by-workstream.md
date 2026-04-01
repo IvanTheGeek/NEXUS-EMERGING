@@ -4,6 +4,17 @@
 
 Accepted
 
+## Temporary Operating Note
+
+As of 2026-04-01, the repository is intentionally operating in a temporary `main`-first mode:
+
+- keep `main` as the default active branch
+- merge accepted side work back quickly
+- retire local and remote side branches after convergence
+
+This is an operating simplification, not a reversal of the underlying decision.
+The broader workstream-topology model can be revisited later if NEXUS again needs long-lived concern-line branches.
+
 ## Context
 
 NEXUS uses Git history as durable project memory.

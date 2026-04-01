@@ -62,6 +62,7 @@ Use [`cortex-repo-memory-protocol.md`](cortex-repo-memory-protocol.md) for the f
 Short version:
 
 - do not leave critical learnings only in chat
+- do not guess from memory, old chat, screenshots, or stale assumptions when the current repo state can be inspected directly; verify the actual docs, code, tests, artifacts, and branch/worktree shape before acting
 - do not silently turn scratch into doctrine
 - do not rewrite canonical history to simplify the story
 - do keep durable docs current when a learning should guide future work
@@ -74,6 +75,7 @@ When meaningful work changes behavior, terminology, architecture, or repo workfl
 - update tests when code behavior changes
 - when renderer, UI, HTML, CSS, command behavior, or visible behavior changes, add or update tests by default
 - if a relevant test is not added or updated, say why explicitly
+- for now, default to `main` as the active branch and merge accepted side work back quickly instead of letting local or remote branches linger
 - update runbooks and help surfaces when public commands change
 - add durable memory for discoveries that will matter later
 - when a repeat F# seam or implementation preference becomes clear, record it in the appropriate durable guidance surface instead of leaving it as one-off chat memory
