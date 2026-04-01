@@ -26,6 +26,7 @@ Important behavior:
 - when a built `Nexus.Cli.dll` is available, the hook prefers `dotnet <dll>` over `dotnet run --project`
 - if that built CLI is not present yet, the hook falls back to `dotnet run --project`
 - when several repos point at the same shared NEXUS object and event-store roots, capture is serialized internally so overlapping hooks do not race on `providers/codex/latest/`
+- if the NEXUS CLI repo path or worktree used during installation later moves or is retired, rerun this installer so the managed hook block points at the current live CLI path again
 
 ## Command
 
