@@ -22,7 +22,7 @@ function deriveDiscussionId(sourcePath, namespace) {
   return `${scopedNamespace}:${normalizedPath}`;
 }
 
-function ensureTalkyardScript(serverUrl) {
+function ensureTalkyardScript(scriptUrl) {
   const scriptId = "nexus-talkyard-comments-script";
   let script = document.getElementById(scriptId);
 
@@ -34,7 +34,7 @@ function ensureTalkyardScript(serverUrl) {
   script.id = scriptId;
   script.async = true;
   script.defer = true;
-  script.src = `${serverUrl.replace(/\/$/, "")}/-/talkyard-comments.min.js`;
+  script.src = scriptUrl || "https://c1.ty-cdn.net/-/talkyard-comments.min.js";
   document.head.appendChild(script);
   return script;
 }
@@ -47,6 +47,7 @@ function installTalkyardComments() {
   }
 
   const serverUrl = container.dataset.talkyardServerUrl;
+  const scriptUrl = container.dataset.talkyardScriptUrl;
 
   if (!serverUrl) {
     return;
@@ -72,7 +73,7 @@ function installTalkyardComments() {
   }
 
   window.talkyardServerUrl = serverUrl;
-  ensureTalkyardScript(serverUrl);
+  ensureTalkyardScript(scriptUrl);
 }
 
 if (document.readyState === "loading") {

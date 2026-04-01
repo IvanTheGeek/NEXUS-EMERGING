@@ -27,6 +27,7 @@ Talkyard currently provides:
 The current NEXUS docs site uses:
 
 - server URL: `https://talkyard.ivanthegeek.com`
+- embed script URL: `https://c1.ty-cdn.net/-/talkyard-comments.min.js`
 - category ref: `extid:nexus_site_comments`
 - public subcategory name: `NEXUS Site Comments`
 - discussion placement: bottom of the page, just above the footer
